@@ -34,7 +34,8 @@ class _GalleryOverlaysPlaygroundState extends State<GalleryOverlaysPlayground> {
 shadcn.openDrawerOverlay(
   context: context,
   position: shadcn.OverlayPosition.bottom,
-  builder: (context) => shadcn.DrawerContainer(
+  builder: (context) => Padding(
+    padding: EdgeInsets.all(16),
     child: Column(
       children: [
         Text('Quick Ledger Voucher Actions'),
@@ -55,49 +56,47 @@ shadcn.openDrawerOverlay(
                         context: context,
                         position: shadcn.OverlayPosition.bottom,
                         builder: (context) {
-                          return shadcn.DrawerContainer(
-                            child: Padding(
-                              padding: const EdgeInsets.all(AppSpacing.lg),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text('Quick Action Sheet', style: AppTypography.sectionTitle(context)),
-                                      shadcn.GhostButton(
-                                        onPressed: () => Navigator.of(context).pop('Closed Sheet'),
-                                        child: const Icon(AppIcons.close, size: 16),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: AppSpacing.sm),
-                                  Text(
-                                    'Select a quick capability transaction to initiate:',
-                                    style: AppTypography.body(context),
-                                  ),
-                                  const SizedBox(height: AppSpacing.md),
-                                  AppListTile(
-                                    leading: const Icon(AppIcons.receipt, color: AppColors.primaryBlue),
-                                    title: const Text('Create Receipt Voucher'),
-                                    subtitle: const Text('Receive customer payment into treasury'),
-                                    onTap: () => Navigator.of(context).pop('Created Receipt Voucher'),
-                                  ),
-                                  const AppDivider(),
-                                  AppListTile(
-                                    leading: const Icon(AppIcons.box, color: AppColors.secondaryTeal),
-                                    title: const Text('Stock Transfer Order'),
-                                    subtitle: const Text('Initiate inter-warehouse inventory dispatch'),
-                                    onTap: () => Navigator.of(context).pop('Created Stock Transfer'),
-                                  ),
-                                  const SizedBox(height: AppSpacing.md),
-                                  shadcn.SecondaryButton(
-                                    onPressed: () => Navigator.of(context).pop('Cancelled'),
-                                    child: const Text('Cancel'),
-                                  ),
-                                ],
-                              ),
+                          return Padding(
+                            padding: const EdgeInsets.all(AppSpacing.lg),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text('Quick Action Sheet', style: AppTypography.sectionTitle(context)),
+                                    shadcn.GhostButton(
+                                      onPressed: () => Navigator.of(context).pop('Closed Sheet'),
+                                      child: const Icon(AppIcons.close, size: 16),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: AppSpacing.sm),
+                                Text(
+                                  'Select a quick capability transaction to initiate:',
+                                  style: AppTypography.body(context),
+                                ),
+                                const SizedBox(height: AppSpacing.md),
+                                AppListTile(
+                                  leading: const Icon(AppIcons.receipt, color: AppColors.primaryBlue),
+                                  title: const Text('Create Receipt Voucher'),
+                                  subtitle: const Text('Receive customer payment into treasury'),
+                                  onTap: () => Navigator.of(context).pop('Created Receipt Voucher'),
+                                ),
+                                const AppDivider(),
+                                AppListTile(
+                                  leading: const Icon(AppIcons.box, color: AppColors.secondaryTeal),
+                                  title: const Text('Stock Transfer Order'),
+                                  subtitle: const Text('Initiate inter-warehouse inventory dispatch'),
+                                  onTap: () => Navigator.of(context).pop('Created Stock Transfer'),
+                                ),
+                                const SizedBox(height: AppSpacing.md),
+                                shadcn.SecondaryButton(
+                                  onPressed: () => Navigator.of(context).pop('Cancelled'),
+                                  child: const Text('Cancel'),
+                                ),
+                              ],
                             ),
                           );
                         },
@@ -122,26 +121,24 @@ shadcn.openDrawerOverlay(
                         context: context,
                         position: shadcn.OverlayPosition.right,
                         builder: (context) {
-                          return shadcn.DrawerContainer(
-                            child: SizedBox(
-                              width: 320,
-                              child: Padding(
-                                padding: const EdgeInsets.all(AppSpacing.lg),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text('Filter Drawer', style: AppTypography.sectionTitle(context)),
-                                    const SizedBox(height: AppSpacing.md),
-                                    const AppTextField(label: 'Account Code', hint: '1001-00'),
-                                    const SizedBox(height: AppSpacing.sm),
-                                    const AppTextField(label: 'Currency', hint: 'USD'),
-                                    const Spacer(),
-                                    shadcn.PrimaryButton(
-                                      onPressed: () => Navigator.of(context).pop('Filters Applied'),
-                                      child: const Text('Apply Filters'),
-                                    ),
-                                  ],
-                                ),
+                          return SizedBox(
+                            width: 320,
+                            child: Padding(
+                              padding: const EdgeInsets.all(AppSpacing.lg),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('Filter Drawer', style: AppTypography.sectionTitle(context)),
+                                  const SizedBox(height: AppSpacing.md),
+                                  const AppTextField(label: 'Account Code', hint: '1001-00'),
+                                  const SizedBox(height: AppSpacing.sm),
+                                  const AppTextField(label: 'Currency', hint: 'USD'),
+                                  const Spacer(),
+                                  shadcn.PrimaryButton(
+                                    onPressed: () => Navigator.of(context).pop('Filters Applied'),
+                                    child: const Text('Apply Filters'),
+                                  ),
+                                ],
                               ),
                             ),
                           );
@@ -218,8 +215,10 @@ shadcn.Tooltip(
   ),
   child: const Icon(AppIcons.info),
 )''',
-          preview: Row(
-            mainAxisSize: MainAxisSize.min,
+          preview: Wrap(
+            spacing: AppSpacing.md,
+            runSpacing: AppSpacing.xs,
+            crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               shadcn.Tooltip(
                 tooltip: (context) => const shadcn.TooltipContainer(
@@ -234,7 +233,6 @@ shadcn.Tooltip(
                   ],
                 ),
               ),
-              const SizedBox(width: AppSpacing.lg),
               shadcn.OutlineButton(
                 onPressed: () {},
                 child: const Text('Interactive Tooltip Active'),

@@ -66,7 +66,6 @@ class _ApplicationShellState extends State<ApplicationShell> {
     return 0;
   }
 
-
   void _onSelect(BuildContext context, int index) {
     if (index < 0 || index >= _navItems.length) return;
     if (_quickActionsOpen) {
@@ -96,8 +95,18 @@ class _ApplicationShellState extends State<ApplicationShell> {
     AppQuickActionsPanel.show(
       context,
       title: 'Quick Actions',
-      subtitle: 'Execute common business operations & document creation',
+      subtitle: 'Execute common business operations & developer tools',
       items: [
+        AppQuickActionItem(
+          label: 'Component Gallery',
+          description: 'UI gallery & component playground',
+          icon: AppIcons.grid,
+          color: AppColors.accentPurple,
+          onTap: () {
+            setState(() => _quickActionsOpen = false);
+            context.go('/gallery');
+          },
+        ),
         AppQuickActionItem(
           label: 'New Invoice',
           description: 'Create sales invoice',
@@ -123,16 +132,6 @@ class _ApplicationShellState extends State<ApplicationShell> {
           description: 'Inventory item entry',
           icon: AppIcons.box,
           color: AppColors.accentPurple,
-          onTap: () {
-            setState(() => _quickActionsOpen = false);
-            context.go('/services');
-          },
-        ),
-        AppQuickActionItem(
-          label: 'New Voucher',
-          description: 'Receipt or payment voucher',
-          icon: AppIcons.wallet,
-          color: AppColors.success,
           onTap: () {
             setState(() => _quickActionsOpen = false);
             context.go('/services');

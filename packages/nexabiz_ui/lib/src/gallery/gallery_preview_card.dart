@@ -38,19 +38,27 @@ class _GalleryPreviewCardState extends State<GalleryPreviewCard> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+          // Header Row wrapped in responsive Wrap
+          Wrap(
+            alignment: WrapAlignment.spaceBetween,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: AppSpacing.sm,
+            runSpacing: AppSpacing.sm,
             children: [
-              Expanded(
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 600),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
+                    Wrap(
+                      spacing: AppSpacing.sm,
+                      runSpacing: AppSpacing.xxs,
+                      crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
                         Text(
                           widget.name,
                           style: AppTypography.sectionTitle(context),
                         ),
-                        const SizedBox(width: AppSpacing.sm),
                         AppStatusBadge(
                           label: widget.category.label,
                           tone: AppStatusTone.info,
@@ -87,13 +95,25 @@ class _GalleryPreviewCardState extends State<GalleryPreviewCard> {
           const SizedBox(height: AppSpacing.md),
           const AppDivider(),
           const SizedBox(height: AppSpacing.md),
+          // Preview Surface with fluid small-screen adaptation
           AppSurface(
-            padding: const EdgeInsets.all(AppSpacing.lg),
-            child: Center(
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: widget.preview,
-              ),
+            padding: const EdgeInsets.all(AppSpacing.md),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return Center(
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        minWidth: constraints.maxWidth > 0 ? constraints.maxWidth : 0,
+                      ),
+                      child: Center(
+                        child: widget.preview,
+                      ),
+                    ),
+                  ),
+                );
+              },
             ),
           ),
           if (widget.controls != null) ...[
@@ -104,7 +124,7 @@ class _GalleryPreviewCardState extends State<GalleryPreviewCard> {
                 color: AppThemeController.isDark(context)
                     ? const Color(0xFF1E293B)
                     : const Color(0xFFF8FAFC),
-                borderRadius: BorderRadius.circular(AppBorderRadius.md),
+                borderRadius: BorderRadius.circular(8),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -123,9 +143,12 @@ class _GalleryPreviewCardState extends State<GalleryPreviewCard> {
             const SizedBox(height: AppSpacing.sm),
             AppCard(
               padding: const EdgeInsets.all(AppSpacing.md),
-              child: Text(
-                widget.dartCode,
-                style: AppTypography.code(context),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Text(
+                  widget.dartCode,
+                  style: AppTypography.caption(context),
+                ),
               ),
             ),
           ],

@@ -51,8 +51,8 @@ AppTextField(
   enabled: !_inputDisabled,
   onChanged: (val) {},
 )''',
-          preview: SizedBox(
-            width: 300,
+          preview: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 320),
             child: AppTextField(
               label: 'Company Name',
               hint: 'Enter company name...',
@@ -87,8 +87,8 @@ shadcn.TextArea(
   placeholder: const Text('Enter ledger notes or transaction comments...'),
   maxLines: 3,
 )''',
-          preview: const SizedBox(
-            width: 320,
+          preview: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 340),
             child: shadcn.TextArea(
               placeholder: Text('Enter ledger notes or transaction comments...'),
               maxLines: 3,
@@ -111,8 +111,9 @@ shadcn.Checkbox(
   state: _checkboxValue ? shadcn.CheckboxState.checked : shadcn.CheckboxState.unchecked,
   onChanged: (state) {},
 )''',
-          preview: Row(
-            mainAxisSize: MainAxisSize.min,
+          preview: Wrap(
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: AppSpacing.xs,
             children: [
               shadcn.Checkbox(
                 state: _checkboxValue
@@ -122,7 +123,6 @@ shadcn.Checkbox(
                   _checkboxValue = st == shadcn.CheckboxState.checked;
                 }),
               ),
-              const SizedBox(width: AppSpacing.xs),
               Text('Include tax calculation in ledger totals', style: AppTypography.body(context)),
             ],
           ),
@@ -153,14 +153,14 @@ AppSwitch(
   value: _switchValue,
   onChanged: (val) {},
 )''',
-          preview: Row(
-            mainAxisSize: MainAxisSize.min,
+          preview: Wrap(
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: AppSpacing.xs,
             children: [
               AppSwitch(
                 value: _switchValue,
                 onChanged: (val) => setState(() => _switchValue = val),
               ),
-              const SizedBox(width: AppSpacing.xs),
               Text(_switchValue ? 'Real-time Sync Active' : 'Real-time Sync Paused', style: AppTypography.body(context)),
             ],
           ),
@@ -183,8 +183,8 @@ shadcn.Slider(
   max: 100,
   onChanged: (val) {},
 )''',
-          preview: SizedBox(
-            width: 300,
+          preview: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 320),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -232,8 +232,8 @@ AppSelectField<String>(
   ],
   onChanged: (val) {},
 )''',
-          preview: SizedBox(
-            width: 280,
+          preview: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 300),
             child: AppSelectField<String>(
               label: 'Functional Currency',
               value: _selectedCurrency,
@@ -265,14 +265,14 @@ shadcn.StarRating(
   value: _starRating,
   onChanged: (val) {},
 )''',
-          preview: Row(
-            mainAxisSize: MainAxisSize.min,
+          preview: Wrap(
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: AppSpacing.sm,
             children: [
               shadcn.StarRating(
                 value: _starRating,
                 onChanged: (val) => setState(() => _starRating = val),
               ),
-              const SizedBox(width: AppSpacing.sm),
               Text('Rating: ${_starRating.toStringAsFixed(1)} / 5.0', style: AppTypography.body(context)),
             ],
           ),

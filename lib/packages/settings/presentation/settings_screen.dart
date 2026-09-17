@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:go_router/go_router.dart';
 import 'package:nexabiz_ui/nexabiz_ui.dart';
 
 /// Settings & Configuration screen built strictly using canonical `nexabiz_ui` component definitions.
@@ -11,6 +12,20 @@ class SettingsScreen extends StatelessWidget {
       title: 'Settings & Configuration',
       subtitle: 'Application preferences and enterprise profile management',
       sections: [
+        AppSection(
+          title: 'Developer & Design System Tools',
+          child: AppCard(
+            child: AppListTile(
+              leading: const Icon(AppIcons.grid, color: AppColors.accentPurple),
+              title: const Text('UI Component Gallery & Playground'),
+              subtitle: const Text('Interactive shadcn_flutter component showcase & test environment'),
+              trailing: const Icon(AppIcons.chevronRight),
+              onTap: () {
+                context.go('/gallery');
+              },
+            ),
+          ),
+        ),
         AppSection(
           title: 'Application Preferences',
           child: AppCard(

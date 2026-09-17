@@ -45,7 +45,9 @@ shadcn.Tabs(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
+                  Wrap(
+                    spacing: AppSpacing.xs,
+                    runSpacing: AppSpacing.xs,
                     children: [
                       shadcn.GhostButton(
                         onPressed: () => setState(() => _activeTabIndex = 0),
@@ -54,7 +56,6 @@ shadcn.Tabs(
                           style: _activeTabIndex == 0 ? AppTypography.bodyBold(context) : AppTypography.body(context),
                         ),
                       ),
-                      const SizedBox(width: AppSpacing.xs),
                       shadcn.GhostButton(
                         onPressed: () => setState(() => _activeTabIndex = 1),
                         child: Text(
@@ -96,19 +97,15 @@ shadcn.Breadcrumb(
     Text('Chart of Accounts'),
   ],
 )''',
-          preview: Row(
-            mainAxisSize: MainAxisSize.min,
+          preview: Wrap(
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: 4,
+            runSpacing: 4,
             children: [
               Text('Financials', style: AppTypography.caption(context)),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 4),
-                child: Icon(AppIcons.chevronRight, size: 12),
-              ),
+              const Icon(AppIcons.chevronRight, size: 12),
               Text('General Ledger', style: AppTypography.caption(context)),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 4),
-                child: Icon(AppIcons.chevronRight, size: 12),
-              ),
+              const Icon(AppIcons.chevronRight, size: 12),
               Text('Chart of Accounts', style: AppTypography.label(context)),
             ],
           ),
@@ -130,17 +127,17 @@ shadcn.Pagination(
   totalPages: 12,
   onPageChanged: (p) {},
 )''',
-          preview: Row(
-            mainAxisSize: MainAxisSize.min,
+          preview: Wrap(
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: AppSpacing.xs,
+            runSpacing: AppSpacing.xs,
             children: [
               shadcn.OutlineButton(
                 density: shadcn.ButtonDensity.compact,
                 onPressed: () {},
                 child: const Icon(AppIcons.chevronLeft, size: 14),
               ),
-              const SizedBox(width: AppSpacing.xs),
               Text('Page 1 of 12 (120 Records)', style: AppTypography.caption(context)),
-              const SizedBox(width: AppSpacing.xs),
               shadcn.OutlineButton(
                 density: shadcn.ButtonDensity.compact,
                 onPressed: () {},

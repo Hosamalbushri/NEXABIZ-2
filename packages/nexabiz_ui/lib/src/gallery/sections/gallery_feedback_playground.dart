@@ -91,8 +91,8 @@ AppStatusBadge(
 shadcn.Progress(
   progress: _progressValue / 100,
 )''',
-          preview: SizedBox(
-            width: 300,
+          preview: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 320),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -140,8 +140,8 @@ Container(
   height: 18,
   decoration: BoxDecoration(color: AppColors.mutedTextLight.withValues(alpha: 0.2)),
 )''',
-          preview: SizedBox(
-            width: 300,
+          preview: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 320),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

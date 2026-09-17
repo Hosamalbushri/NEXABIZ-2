@@ -92,17 +92,19 @@ shadcn.Toggle(
   onChanged: (val) {},
   child: const Icon(AppIcons.settings),
 )''',
-          preview: Row(
-            mainAxisSize: MainAxisSize.min,
+          preview: Wrap(
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: AppSpacing.md,
+            runSpacing: AppSpacing.xs,
             children: [
               shadcn.Toggle(
                 value: _boldToggled,
                 onChanged: (val) => setState(() => _boldToggled = val),
                 child: const Text('B', style: TextStyle(fontWeight: FontWeight.bold)),
               ),
-              const SizedBox(width: AppSpacing.md),
-              Row(
-                mainAxisSize: MainAxisSize.min,
+              Wrap(
+                spacing: 2,
+                runSpacing: 2,
                 children: [
                   shadcn.OutlineButton(
                     onPressed: () => setState(() => _alignSelection = 'left'),
@@ -184,8 +186,8 @@ AppTextField(
   hint: 'Type a command or search...',
   prefixIcon: Icon(AppIcons.command),
 )''',
-          preview: SizedBox(
-            width: 320,
+          preview: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 340),
             child: AppSurface(
               padding: const EdgeInsets.all(AppSpacing.xs),
               child: Column(

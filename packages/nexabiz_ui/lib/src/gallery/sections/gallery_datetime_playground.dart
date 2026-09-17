@@ -42,8 +42,11 @@ shadcn.Calendar(
             child: AppCard(
               child: Column(
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  Wrap(
+                    alignment: WrapAlignment.spaceBetween,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    spacing: AppSpacing.xs,
+                    runSpacing: AppSpacing.xs,
                     children: [
                       Text('Selected Fiscal Date:', style: AppTypography.label(context)),
                       Text(
@@ -97,10 +100,11 @@ AppDateField(
                   },
                 ),
                 const SizedBox(height: AppSpacing.sm),
-                Row(
+                Wrap(
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: AppSpacing.xs,
                   children: [
                     const Icon(AppIcons.calendar, size: 16),
-                    const SizedBox(width: AppSpacing.xs),
                     Text('Posting Time: 09:30 AM (UTC+3)', style: AppTypography.caption(context)),
                   ],
                 ),

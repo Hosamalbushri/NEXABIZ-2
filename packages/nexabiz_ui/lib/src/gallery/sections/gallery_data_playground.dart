@@ -15,10 +15,10 @@ class _GalleryDataPlaygroundState extends State<GalleryDataPlayground> {
   int _selectedRowIndex = 0;
 
   final List<Map<String, dynamic>> _ledgerRows = [
-    {'voucher': 'RCV-2026-001', 'account': '1010 - Main Cash', 'debit': '\$4,500.00', 'credit': '\$0.00', 'status': 'Posted'},
-    {'voucher': 'PAY-2026-014', 'account': '2010 - Accounts Payable', 'debit': '\$0.00', 'credit': '\$2,150.00', 'status': 'Approved'},
-    {'voucher': 'JRN-2026-089', 'account': '4010 - Sales Revenue', 'debit': '\$0.00', 'credit': '\$8,900.00', 'status': 'Posted'},
-    {'voucher': 'RCV-2026-002', 'account': '1020 - Treasury Bank', 'debit': '\$12,000.00', 'credit': '\$0.00', 'status': 'Draft'},
+    {'voucher': 'RCV-2026-001', 'account': '1010 - Cash', 'debit': '\$4,500.00', 'credit': '\$0.00', 'status': 'Posted'},
+    {'voucher': 'PAY-2026-014', 'account': '2010 - Payable', 'debit': '\$0.00', 'credit': '\$2,150.00', 'status': 'Approved'},
+    {'voucher': 'JRN-2026-089', 'account': '4010 - Sales', 'debit': '\$0.00', 'credit': '\$8,900.00', 'status': 'Posted'},
+    {'voucher': 'RCV-2026-002', 'account': '1020 - Bank', 'debit': '\$12,000.00', 'credit': '\$0.00', 'status': 'Draft'},
   ];
 
   @override
@@ -48,8 +48,8 @@ shadcn.Table(
     ),
   ],
 )''',
-          preview: SizedBox(
-            width: 480,
+          preview: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 480),
             child: AppCard(
               padding: EdgeInsets.zero,
               child: Column(
@@ -59,7 +59,7 @@ shadcn.Table(
                     padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
                     child: Row(
                       children: [
-                        Expanded(flex: 2, child: Text('Voucher #', style: AppTypography.tableHeader(context))),
+                        Expanded(flex: 3, child: Text('Voucher #', style: AppTypography.tableHeader(context))),
                         Expanded(flex: 3, child: Text('Account', style: AppTypography.tableHeader(context))),
                         Expanded(flex: 2, child: Text('Debit', style: AppTypography.tableHeader(context))),
                         Expanded(flex: 2, child: Text('Status', style: AppTypography.tableHeader(context))),
@@ -79,7 +79,7 @@ shadcn.Table(
                         padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
                         child: Row(
                           children: [
-                            Expanded(flex: 2, child: Text(row['voucher'], style: AppTypography.tableCell(context))),
+                            Expanded(flex: 3, child: Text(row['voucher'], style: AppTypography.tableCell(context))),
                             Expanded(flex: 3, child: Text(row['account'], style: AppTypography.tableCell(context))),
                             Expanded(flex: 2, child: Text(row['debit'], style: AppTypography.numericValue(context))),
                             Expanded(
@@ -121,8 +121,8 @@ shadcn.Table(
 AppCard(
   child: Text('final ledger = NexaBizLedger();'),
 )''',
-          preview: SizedBox(
-            width: 320,
+          preview: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 340),
             child: AppCard(
               padding: const EdgeInsets.all(AppSpacing.md),
               child: Text(
@@ -134,7 +134,7 @@ final voucher = ReceiptVoucher(
   currency: "USD",
 );
 await ledger.postTransaction(voucher);''',
-                style: AppTypography.codeSnippet(context),
+                style: AppTypography.caption(context),
               ),
             ),
           ),
@@ -156,19 +156,22 @@ AppCarousel<String>(
   height: 120,
   itemBuilder: (context, item, index) => AppSurface(child: Text(item)),
 )''',
-          preview: SizedBox(
-            width: 320,
+          preview: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 340),
             child: AppCarousel<String>(
               items: const [
                 'Q3 Revenue Target Reached (+18.4%)',
                 'Tax Audit Clearance Verified',
                 'Treasury Bank Balance: \$1,240,500',
               ],
-              height: 100,
+              height: 120,
               autoplay: false,
               itemBuilder: (context, item, index) {
                 return AppSurface(
-                  padding: const EdgeInsets.all(AppSpacing.md),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.md,
+                    vertical: AppSpacing.sm,
+                  ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,

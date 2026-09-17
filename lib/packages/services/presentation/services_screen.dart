@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:go_router/go_router.dart';
 import 'package:nexabiz_ui/nexabiz_ui.dart';
 
 /// Services capability hub built strictly using canonical `nexabiz_ui` primitives.
@@ -13,6 +14,23 @@ class ServicesScreen extends StatelessWidget {
       content: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          AppSection(
+            title: 'System & Developer Tools',
+            subtitle: 'UI design system and component playground',
+            child: AppModuleHubGrid(
+              children: [
+                AppModuleHubTile(
+                  title: 'Component Gallery',
+                  subtitle: 'Interactive shadcn_flutter playground',
+                  icon: AppIcons.grid,
+                  onTap: () {
+                    context.go('/gallery');
+                  },
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: AppSpacing.lg),
           AppSection(
             title: 'Financial & Accounting',
             subtitle: 'Core financial management tools',

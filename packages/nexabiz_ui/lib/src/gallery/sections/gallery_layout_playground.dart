@@ -39,8 +39,8 @@ AppCard(
     ],
   ),
 )''',
-          preview: SizedBox(
-            width: 320,
+          preview: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 340),
             child: AppCard(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -80,8 +80,8 @@ shadcn.Collapsible(
   header: Text('Tax Configuration'),
   children: [Text('VAT Rate: 15%')],
 )''',
-          preview: SizedBox(
-            width: 320,
+          preview: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 340),
             child: AppCard(
               child: Column(
                 children: [
@@ -140,29 +140,31 @@ shadcn.ResizablePanelGroup(
     shadcn.ResizablePanel(child: Text('Transaction Detail')),
   ],
 )''',
-          preview: SizedBox(
-            width: 340,
-            height: 120,
-            child: AppSurface(
-              padding: const EdgeInsets.all(AppSpacing.xs),
-              child: Row(
-                children: [
-                  Expanded(
-                    flex: 1,
-                    child: Container(
-                      color: AppColors.primaryBlue.withValues(alpha: 0.1),
-                      child: Center(child: Text('Left Pane (30%)', style: AppTypography.caption(context))),
+          preview: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 400),
+            child: SizedBox(
+              height: 120,
+              child: AppSurface(
+                padding: const EdgeInsets.all(AppSpacing.xs),
+                child: Row(
+                  children: [
+                    Expanded(
+                      flex: 1,
+                      child: Container(
+                        color: AppColors.primaryBlue.withValues(alpha: 0.1),
+                        child: Center(child: Text('Left Pane (30%)', style: AppTypography.caption(context))),
+                      ),
                     ),
-                  ),
-                  const AppDivider(),
-                  Expanded(
-                    flex: 2,
-                    child: Container(
-                      color: AppColors.secondaryTeal.withValues(alpha: 0.1),
-                      child: Center(child: Text('Main Content Pane (70%)', style: AppTypography.caption(context))),
+                    const AppDivider(),
+                    Expanded(
+                      flex: 2,
+                      child: Container(
+                        color: AppColors.secondaryTeal.withValues(alpha: 0.1),
+                        child: Center(child: Text('Main Content Pane (70%)', style: AppTypography.caption(context))),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
@@ -186,8 +188,8 @@ shadcn.Timeline(
     shadcn.TimelineItem(title: Text('Ledger Posted')),
   ],
 )''',
-          preview: SizedBox(
-            width: 300,
+          preview: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 320),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -222,12 +224,14 @@ shadcn.Timeline(
             color: isDone ? AppColors.success : AppColors.mutedTextLight,
           ),
           const SizedBox(width: AppSpacing.xs),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(title, style: isDone ? AppTypography.bodyBold(context) : AppTypography.body(context)),
-              Text(subtitle, style: AppTypography.caption(context)),
-            ],
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: isDone ? AppTypography.bodyBold(context) : AppTypography.body(context)),
+                Text(subtitle, style: AppTypography.caption(context)),
+              ],
+            ),
           ),
         ],
       ),
