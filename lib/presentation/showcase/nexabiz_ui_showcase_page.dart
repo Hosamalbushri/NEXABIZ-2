@@ -19,8 +19,12 @@ class _NexaBizUiShowcasePageState extends State<NexaBizUiShowcasePage> {
   int _selectedTabIndex = 0;
 
   // Form State Demo
-  final TextEditingController _textController = TextEditingController(text: 'Sample ERP Input');
-  final TextEditingController _textAreaController = TextEditingController(text: 'Sample Multi-line Voucher Notes');
+  final TextEditingController _textController = TextEditingController(
+    text: 'Sample ERP Input',
+  );
+  final TextEditingController _textAreaController = TextEditingController(
+    text: 'Sample Multi-line Voucher Notes',
+  );
   bool _checkboxValue = true;
   bool _switchValue = false;
   String? _selectedSelect = 'sales';
@@ -34,7 +38,9 @@ class _NexaBizUiShowcasePageState extends State<NexaBizUiShowcasePage> {
 
   @override
   Widget build(BuildContext context) {
-    final themeData = _isDark ? AppTheme.dark(density: _density) : AppTheme.light(density: _density);
+    final themeData = _isDark
+        ? AppTheme.dark(density: _density)
+        : AppTheme.light(density: _density);
 
     return Theme(
       data: themeData,
@@ -44,7 +50,9 @@ class _NexaBizUiShowcasePageState extends State<NexaBizUiShowcasePage> {
           headers: [
             AppBar(
               title: const Text('NexaBiz UI Foundation Showcase'),
-              subtitle: const Text('Verified shadcn_flutter v0.0.53 Integration Reference'),
+              subtitle: const Text(
+                'Verified shadcn_flutter v0.0.53 Integration Reference',
+              ),
               trailing: [
                 GhostButton(
                   density: ButtonDensity.icon,
@@ -65,7 +73,9 @@ class _NexaBizUiShowcasePageState extends State<NexaBizUiShowcasePage> {
                           : Density.defaultDensity;
                     });
                   },
-                  child: Text(_density == Density.compactDensity ? 'Std' : 'Compact'),
+                  child: Text(
+                    _density == Density.compactDensity ? 'Std' : 'Compact',
+                  ),
                 ),
               ],
             ),
@@ -111,7 +121,10 @@ class _NexaBizUiShowcasePageState extends State<NexaBizUiShowcasePage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('0. UI Foundation Primitives (AppContainer & AppResponsive)', style: AppTypography.sectionTitle(context)),
+          Text(
+            '0. UI Foundation Primitives (AppContainer & AppResponsive)',
+            style: AppTypography.sectionTitle(context),
+          ),
           const Gap(12),
           Text(
             'Current Viewport: ${width.toStringAsFixed(1)}px | Active Tier: ${tier.name.toUpperCase()} '
@@ -170,9 +183,15 @@ class _NexaBizUiShowcasePageState extends State<NexaBizUiShowcasePage> {
           const Text('Heading 2 - Financial Accounting Overview').h2(),
           const Text('Heading 3 - General Ledger Transactions').h3(),
           const Text('Heading 4 - Invoice Line Items').h4(),
-          const Text('Paragraph - Standard body text supporting both English and Arabic directionality natively.').p(),
-          const Text('Lead Text - High emphasis introductory description text.').lead(),
-          const Text('Muted Text - Secondary detail description or footnote caption.').muted(),
+          const Text(
+            'Paragraph - Standard body text supporting both English and Arabic directionality natively.',
+          ).p(),
+          const Text(
+            'Lead Text - High emphasis introductory description text.',
+          ).lead(),
+          const Text(
+            'Muted Text - Secondary detail description or footnote caption.',
+          ).muted(),
         ],
       ),
     );
@@ -201,10 +220,7 @@ class _NexaBizUiShowcasePageState extends State<NexaBizUiShowcasePage> {
                 onPressed: () {},
                 child: const Text('Outline Button'),
               ),
-              GhostButton(
-                onPressed: () {},
-                child: const Text('Ghost Action'),
-              ),
+              GhostButton(onPressed: () {}, child: const Text('Ghost Action')),
               DestructiveButton(
                 onPressed: () {},
                 child: const Text('Destructive Action'),
@@ -260,10 +276,22 @@ class _NexaBizUiShowcasePageState extends State<NexaBizUiShowcasePage> {
                       itemBuilder: (context, item) => Text(item),
                       popup: (context) => SelectGroup(
                         children: [
-                          SelectItemButton(value: 'sales', child: const Text('Sales Module')),
-                          SelectItemButton(value: 'purchasing', child: const Text('Purchasing Module')),
-                          SelectItemButton(value: 'inventory', child: const Text('Inventory Module')),
-                          SelectItemButton(value: 'financial', child: const Text('Financial Module')),
+                          SelectItemButton(
+                            value: 'sales',
+                            child: const Text('Sales Module'),
+                          ),
+                          SelectItemButton(
+                            value: 'purchasing',
+                            child: const Text('Purchasing Module'),
+                          ),
+                          SelectItemButton(
+                            value: 'inventory',
+                            child: const Text('Inventory Module'),
+                          ),
+                          SelectItemButton(
+                            value: 'financial',
+                            child: const Text('Financial Module'),
+                          ),
                         ],
                       ),
                     ),
@@ -292,8 +320,12 @@ class _NexaBizUiShowcasePageState extends State<NexaBizUiShowcasePage> {
                 spacing: 8,
                 children: [
                   Checkbox(
-                    state: _checkboxValue ? CheckboxState.checked : CheckboxState.unchecked,
-                    onChanged: (state) => setState(() => _checkboxValue = state == CheckboxState.checked),
+                    state: _checkboxValue
+                        ? CheckboxState.checked
+                        : CheckboxState.unchecked,
+                    onChanged: (state) => setState(
+                      () => _checkboxValue = state == CheckboxState.checked,
+                    ),
                   ),
                   const Text('Enable Automatic Posting'),
                 ],
@@ -325,26 +357,19 @@ class _NexaBizUiShowcasePageState extends State<NexaBizUiShowcasePage> {
           Row(
             spacing: 16,
             children: [
-              const Avatar(
-                initials: 'NB',
-              ),
-              PrimaryBadge(
-                child: const Text('Active Account'),
-              ),
-              Chip(
-                child: const Text('Fiscal Year 2026'),
-              ),
-              const SizedBox(
-                width: 100,
-                height: 24,
-              ).asSkeleton(),
+              const Avatar(initials: 'NB'),
+              PrimaryBadge(child: const Text('Active Account')),
+              Chip(child: const Text('Fiscal Year 2026')),
+              const SizedBox(width: 100, height: 24).asSkeleton(),
             ],
           ),
           const Gap(16),
           const Alert(
             leading: Icon(LucideIcons.info),
             title: Text('System Audit Status'),
-            content: Text('All financial ledgers and document sequence generators are operating under strict tenant isolation.'),
+            content: Text(
+              'All financial ledgers and document sequence generators are operating under strict tenant isolation.',
+            ),
           ),
         ],
       ),
@@ -416,8 +441,8 @@ class _NexaBizUiShowcasePageState extends State<NexaBizUiShowcasePage> {
               _selectedTabIndex == 0
                   ? 'Overview Panel Content: Financial summary cards & KPIs.'
                   : _selectedTabIndex == 1
-                      ? 'Transactions Panel Content: Detailed journal entry rows.'
-                      : 'Settings Panel Content: Module parameters configuration.',
+                  ? 'Transactions Panel Content: Detailed journal entry rows.'
+                  : 'Settings Panel Content: Module parameters configuration.',
             ),
           ),
         ],
@@ -439,17 +464,19 @@ class _NexaBizUiShowcasePageState extends State<NexaBizUiShowcasePage> {
                 onPressed: () {
                   showOverlay(
                     context,
-                    DialogConfiguration(
+                    DialogConfiguration<void>(
                       builder: (dialogContext) => AlertDialog(
                         title: const Text('Confirm Posting'),
-                        content: const Text('Are you sure you want to post Voucher JV-2026-001 to the general ledger?'),
+                        content: const Text(
+                          'Are you sure you want to post Voucher JV-2026-001 to the general ledger?',
+                        ),
                         actions: [
                           GhostButton(
-                            onPressed: () => closeOverlay(dialogContext),
+                            onPressed: () => closeOverlay<void>(dialogContext),
                             child: const Text('Cancel'),
                           ),
                           PrimaryButton(
-                            onPressed: () => closeOverlay(dialogContext),
+                            onPressed: () => closeOverlay<void>(dialogContext),
                             child: const Text('Post Voucher'),
                           ),
                         ],

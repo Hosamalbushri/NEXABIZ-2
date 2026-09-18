@@ -29,10 +29,7 @@ class AppContent extends StatelessWidget {
       alignment: alignment,
       child: ConstrainedBox(
         constraints: BoxConstraints(maxWidth: maxWidth),
-        child: Padding(
-          padding: padding ?? defaultPadding,
-          child: child,
-        ),
+        child: Padding(padding: padding ?? defaultPadding, child: child),
       ),
     );
   }

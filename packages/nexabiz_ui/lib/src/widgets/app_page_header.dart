@@ -66,7 +66,7 @@ class AppPageHeader extends StatelessWidget {
             icon: isRtl
                 ? shadcn.LucideIcons.arrowRight
                 : shadcn.LucideIcons.arrowLeft,
-            tooltip: 'رجوع',
+            tooltip: isRtl ? 'رجوع' : 'Back',
             onPressed: onBack ?? () => Navigator.of(context).maybePop(),
           )
         : null;
@@ -76,7 +76,7 @@ class AppPageHeader extends StatelessWidget {
             variant: AppIconButtonVariant.chip,
             iconSize: 18.0,
             icon: shadcn.LucideIcons.slidersHorizontal,
-            tooltip: 'تصفية',
+            tooltip: isRtl ? 'تصفية' : 'Filter',
             badgeCount: filterCount > 0 ? filterCount : null,
             onPressed: onFilterTap,
           )
@@ -86,22 +86,19 @@ class AppPageHeader extends StatelessWidget {
         ? AppIconButton(
             variant: AppIconButtonVariant.chip,
             iconSize: 18.0,
-            icon: isSearching ? shadcn.LucideIcons.x : shadcn.LucideIcons.search,
-            tooltip: isSearching ? 'إغلاق البحث' : 'بحث',
+            icon: isSearching
+                ? shadcn.LucideIcons.x
+                : shadcn.LucideIcons.search,
+            tooltip: isSearching
+                ? (isRtl ? 'إغلاق البحث' : 'Close Search')
+                : (isRtl ? 'بحث' : 'Search'),
             onPressed: onSearchTap,
           )
         : null;
 
-    final startCluster = <Widget>[
-      ?backButton,
-      ?leading,
-    ];
+    final startCluster = <Widget>[?backButton, ?leading];
 
-    final endCluster = <Widget>[
-      ?searchButton,
-      ?filterButton,
-      ...?actions,
-    ];
+    final endCluster = <Widget>[?searchButton, ?filterButton, ...?actions];
 
     final fontSize = _resolveTitleFontSize(title);
 
@@ -128,14 +125,16 @@ class AppPageHeader extends StatelessWidget {
 
     final headerContent = Column(
       mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment:
-          centerTitle ? CrossAxisAlignment.center : CrossAxisAlignment.start,
+      crossAxisAlignment: centerTitle
+          ? CrossAxisAlignment.center
+          : CrossAxisAlignment.start,
       children: [
         if (breadcrumbs != null && breadcrumbs!.isNotEmpty) ...[
           Row(
             mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment:
-                centerTitle ? MainAxisAlignment.center : MainAxisAlignment.start,
+            mainAxisAlignment: centerTitle
+                ? MainAxisAlignment.center
+                : MainAxisAlignment.start,
             children: [
               for (int i = 0; i < breadcrumbs!.length; i++) ...[
                 Text(
@@ -155,7 +154,9 @@ class AppPageHeader extends StatelessWidget {
                       horizontal: AppSpacing.xxs,
                     ),
                     child: Icon(
-                      shadcn.LucideIcons.chevronRight,
+                      isRtl
+                          ? shadcn.LucideIcons.chevronLeft
+                          : shadcn.LucideIcons.chevronRight,
                       size: 14,
                       color: colorScheme.mutedForeground,
                     ),
@@ -185,7 +186,9 @@ class AppPageHeader extends StatelessWidget {
               ),
             Padding(
               padding: EdgeInsets.symmetric(
-                horizontal: startCluster.isNotEmpty || endCluster.isNotEmpty ? 52.0 : 0.0,
+                horizontal: startCluster.isNotEmpty || endCluster.isNotEmpty
+                    ? 52.0
+                    : 0.0,
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -203,8 +206,9 @@ class AppPageHeader extends StatelessWidget {
                           : AlignmentDirectional.centerStart,
                       child: Text(
                         subtitle!,
-                        textAlign:
-                            centerTitle ? TextAlign.center : TextAlign.start,
+                        textAlign: centerTitle
+                            ? TextAlign.center
+                            : TextAlign.start,
                         maxLines: 1,
                         style: theme.typography.xSmall.copyWith(
                           fontSize: 12.0,
@@ -241,9 +245,7 @@ class AppPageHeader extends StatelessWidget {
       );
     }
 
-    final backgroundColor = isDark
-        ? colorScheme.muted
-        : colorScheme.card;
+    final backgroundColor = isDark ? colorScheme.muted : colorScheme.card;
 
     return Container(
       margin: const EdgeInsets.only(bottom: AppSpacing.md),

@@ -17,11 +17,14 @@ void main() {
       for (final file in files) {
         final content = file.readAsStringSync();
         // Disallow custom screen-width MediaQuery checks in feature pages
-        final hasArbitraryWidthCheck = RegExp(r'MediaQuery\.of\(context\)\.size\.width\s*[<>]=?\s*\d+').hasMatch(content);
+        final hasArbitraryWidthCheck = RegExp(
+          r'MediaQuery\.of\(context\)\.size\.width\s*[<>]=?\s*\d+',
+        ).hasMatch(content);
         expect(
           hasArbitraryWidthCheck,
           isFalse,
-          reason: 'File ${file.path} contains arbitrary MediaQuery width check. Use AppBreakpoints or AppResponsive instead.',
+          reason:
+              'File ${file.path} contains arbitrary MediaQuery width check. Use AppBreakpoints or AppResponsive instead.',
         );
       }
     });

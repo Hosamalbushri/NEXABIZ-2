@@ -2,6 +2,7 @@ import '../../core/capabilities/capability_metadata.dart';
 import '../../core/capabilities/nexabiz_capability.dart';
 import '../../core/navigation/nexabiz_navigation_contribution.dart';
 import '../../core/navigation/nexabiz_route_definition.dart';
+import '../../app/router/nexabiz_flutter_route_definition.dart';
 import '../../core/navigation/nexabiz_route_id.dart';
 import 'presentation/services_screen.dart';
 
@@ -14,10 +15,10 @@ class _ServicesNavContribution implements NexaBizNavigationContribution {
 
   @override
   late final List<NexaBizRouteDefinition> routes = [
-    NexaBizRouteDefinition(
+    NexaBizFlutterRouteDefinition(
       routeId: rootRouteId,
       path: '/services',
-      pageBuilder: (context, state) => const ServicesScreen(),
+      pageBuilder: (context) => const ServicesScreen(),
     ),
   ];
 }

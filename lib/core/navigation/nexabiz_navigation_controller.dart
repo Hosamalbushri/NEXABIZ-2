@@ -13,7 +13,11 @@ class NexaBizNavigationController {
   const NexaBizNavigationController(this._registry);
 
   /// Navigate to a logical route by its [NexaBizRouteId].
-  void navigateTo(BuildContext context, NexaBizRouteId routeId, {Object? extra}) {
+  void navigateTo(
+    BuildContext context,
+    NexaBizRouteId routeId, {
+    Object? extra,
+  }) {
     final routeDef = _registry.getRoute(routeId);
     context.go(routeDef.path, extra: extra);
   }

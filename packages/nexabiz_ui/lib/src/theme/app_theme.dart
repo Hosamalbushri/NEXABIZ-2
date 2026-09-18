@@ -78,13 +78,12 @@ class AppTheme {
     double surfaceOpacity = 0.95,
     double surfaceBlur = 4.0,
     shadcn.Density density = shadcn.Density.defaultDensity,
-  }) =>
-      light(
-        radius: radius,
-        surfaceOpacity: surfaceOpacity,
-        surfaceBlur: surfaceBlur,
-        density: density,
-      );
+  }) => light(
+    radius: radius,
+    surfaceOpacity: surfaceOpacity,
+    surfaceBlur: surfaceBlur,
+    density: density,
+  );
 
   /// Backwards-compatible alias for dark shadcn theme.
   static shadcn.ThemeData shadcnDark({
@@ -92,13 +91,12 @@ class AppTheme {
     double surfaceOpacity = 0.95,
     double surfaceBlur = 4.0,
     shadcn.Density density = shadcn.Density.defaultDensity,
-  }) =>
-      dark(
-        radius: radius,
-        surfaceOpacity: surfaceOpacity,
-        surfaceBlur: surfaceBlur,
-        density: density,
-      );
+  }) => dark(
+    radius: radius,
+    surfaceOpacity: surfaceOpacity,
+    surfaceBlur: surfaceBlur,
+    density: density,
+  );
 
   /// Supplementary Material ThemeData for infrastructure interoperability.
   static ThemeData materialLight() {

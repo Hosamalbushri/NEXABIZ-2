@@ -82,16 +82,11 @@ class AppTabs extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        if (item.icon != null) ...[
-          item.icon!,
-          const SizedBox(width: 6),
-        ],
+        if (item.icon != null) ...[item.icon!, const SizedBox(width: 6)],
         labelWidget,
         if (item.badge != null) ...[
           const SizedBox(width: 6),
-          shadcn.SecondaryBadge(
-            child: Text(item.badge!),
-          ),
+          shadcn.SecondaryBadge(child: Text(item.badge!)),
         ],
       ],
     );
@@ -113,9 +108,7 @@ class AppTabs extends StatelessWidget {
         expand: expand,
         padding: padding,
         children: items.map<shadcn.TabChild>((item) {
-          return shadcn.TabItem(
-            child: _buildTabLabel(item),
-          );
+          return shadcn.TabItem(child: _buildTabLabel(item));
         }).toList(),
       );
     } else {
@@ -123,9 +116,7 @@ class AppTabs extends StatelessWidget {
         index: safeIndex,
         onChanged: onChanged,
         children: items.map<shadcn.TabChild>((item) {
-          return shadcn.TabItem(
-            child: _buildTabLabel(item),
-          );
+          return shadcn.TabItem(child: _buildTabLabel(item));
         }).toList(),
       );
     }

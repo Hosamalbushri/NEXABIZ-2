@@ -3,6 +3,10 @@ import 'package:flutter/material.dart';
 import '../../layout/app_page.dart';
 
 /// Legacy compatible responsive page shell pattern delegating to canonical [AppPage].
+@Deprecated(
+  'Use AppPage directly. '
+  'This compatibility wrapper will be removed in a future cleanup.',
+)
 class AppPageShell extends StatelessWidget {
   const AppPageShell({
     super.key,

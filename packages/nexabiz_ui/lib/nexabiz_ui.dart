@@ -1,13 +1,6 @@
 // Canonical NexaBiz UI Barrel Export
 
-// Theme & Design Tokens
-export 'src/theme/app_colors.dart';
-export 'src/theme/app_typography.dart';
-export 'src/theme/app_spacing.dart';
-export 'src/theme/app_radius.dart';
-export 'src/theme/app_dimensions.dart';
-export 'src/theme/app_breakpoints.dart';
-export 'src/theme/app_shadows.dart';
+// Theme & Theme Controller
 export 'src/theme/app_theme.dart';
 export 'src/theme/app_theme_controller.dart';
 
@@ -113,4 +106,3 @@ export 'src/presentation/patterns/app_detail_page_pattern.dart';
 // Component Gallery & Playground
 export 'src/gallery/component_gallery_page.dart';
 export 'src/gallery/gallery_state_controller.dart';
-

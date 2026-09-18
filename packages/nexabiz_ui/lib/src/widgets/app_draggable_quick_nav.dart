@@ -33,8 +33,10 @@ class _AppDraggableQuickNavState extends State<AppDraggableQuickNav> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final backgroundColor = (isDark ? AppColors.darkSurface : AppColors.lightSurface)
-        .withValues(alpha: 0.92);
+    final backgroundColor =
+        (isDark ? AppColors.darkSurface : AppColors.lightSurface).withValues(
+          alpha: 0.92,
+        );
 
     return Positioned(
       left: _offset.dx,
@@ -54,7 +56,10 @@ class _AppDraggableQuickNavState extends State<AppDraggableQuickNav> {
           color: backgroundColor,
           borderRadius: BorderRadius.circular(24),
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xs, vertical: 4),
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.xs,
+              vertical: 4,
+            ),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(24),
               border: Border.all(
@@ -67,7 +72,10 @@ class _AppDraggableQuickNavState extends State<AppDraggableQuickNav> {
                 IconButton(
                   icon: const Icon(Icons.arrow_back_rounded, size: 18),
                   padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                  constraints: const BoxConstraints(
+                    minWidth: 32,
+                    minHeight: 32,
+                  ),
                   onPressed: widget.onBackTap,
                   tooltip: 'Back',
                 ),
@@ -79,7 +87,10 @@ class _AppDraggableQuickNavState extends State<AppDraggableQuickNav> {
                 IconButton(
                   icon: const Icon(Icons.dashboard_rounded, size: 18),
                   padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                  constraints: const BoxConstraints(
+                    minWidth: 32,
+                    minHeight: 32,
+                  ),
                   onPressed: widget.onHomeTap,
                   tooltip: 'Dashboard',
                 ),
@@ -89,9 +100,16 @@ class _AppDraggableQuickNavState extends State<AppDraggableQuickNav> {
                   color: isDark ? AppColors.borderDark : AppColors.borderLight,
                 ),
                 IconButton(
-                  icon: const Icon(Icons.flash_on_rounded, size: 18, color: AppColors.primaryBlue),
+                  icon: const Icon(
+                    Icons.flash_on_rounded,
+                    size: 18,
+                    color: AppColors.primaryBlue,
+                  ),
                   padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                  constraints: const BoxConstraints(
+                    minWidth: 32,
+                    minHeight: 32,
+                  ),
                   onPressed: widget.onQuickActionsTap,
                   tooltip: 'Quick Actions',
                 ),

@@ -209,10 +209,7 @@ class AppDialog<T> extends StatelessWidget {
                 fontWeight: FontWeight.w500,
               ),
             ),
-            if (customBody != null) ...[
-              const SizedBox(height: 14),
-              customBody,
-            ],
+            if (customBody != null) ...[const SizedBox(height: 14), customBody],
           ],
         ),
       ),
@@ -227,20 +224,31 @@ class AppDialog<T> extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     final isFullscreen = size == AppDialogSize.fullscreen;
-    final hasHeader = title != null || description != null || icon != null || leading != null || trailing != null || showCloseButton;
-    final renderActions = showActions && (actions == null || actions!.isNotEmpty);
+    final hasHeader =
+        title != null ||
+        description != null ||
+        icon != null ||
+        leading != null ||
+        trailing != null ||
+        showCloseButton;
+    final renderActions =
+        showActions && (actions == null || actions!.isNotEmpty);
 
     final dialogBgColor = colorScheme.popover;
     final borderColor = colorScheme.border;
     final footerBgColor = colorScheme.muted.withValues(alpha: 0.3);
 
-    final rawAvatar = leading ?? (icon != null
-        ? AppIconAvatar(
-            icon: icon!,
-            tone: isDestructive ? AppIconAvatarTone.error : AppIconAvatarTone.primary,
-            size: AppIconAvatarSize.sm,
-          )
-        : null);
+    final rawAvatar =
+        leading ??
+        (icon != null
+            ? AppIconAvatar(
+                icon: icon!,
+                tone: isDestructive
+                    ? AppIconAvatarTone.error
+                    : AppIconAvatarTone.primary,
+                size: AppIconAvatarSize.sm,
+              )
+            : null);
 
     final resolvedLeading = rawAvatar != null
         ? Container(
@@ -248,7 +256,11 @@ class AppDialog<T> extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: (isDestructive ? colorScheme.destructive : colorScheme.primary).withValues(alpha: isDark ? 0.3 : 0.2),
+                color:
+                    (isDestructive
+                            ? colorScheme.destructive
+                            : colorScheme.primary)
+                        .withValues(alpha: isDark ? 0.3 : 0.2),
                 width: 1,
               ),
             ),
@@ -274,19 +286,23 @@ class AppDialog<T> extends StatelessWidget {
 
     Widget headerWidget = const SizedBox.shrink();
     if (hasHeader) {
-      final Widget leftSlotWidget = resolvedLeading ?? (showCloseButton && trailing == null ? const SizedBox(width: 28) : const SizedBox.shrink());
-      final Widget rightSlotWidget = trailing ?? (closeButtonWidget ?? (resolvedLeading != null ? const SizedBox(width: 28) : const SizedBox.shrink()));
+      final Widget leftSlotWidget =
+          resolvedLeading ??
+          (showCloseButton && trailing == null
+              ? const SizedBox(width: 28)
+              : const SizedBox.shrink());
+      final Widget rightSlotWidget =
+          trailing ??
+          (closeButtonWidget ??
+              (resolvedLeading != null
+                  ? const SizedBox(width: 28)
+                  : const SizedBox.shrink()));
 
       headerWidget = Container(
         padding: const EdgeInsets.fromLTRB(24, 20, 20, 16),
         decoration: BoxDecoration(
           color: dialogBgColor,
-          border: Border(
-            bottom: BorderSide(
-              color: borderColor,
-              width: 1,
-            ),
-          ),
+          border: Border(bottom: BorderSide(color: borderColor, width: 1)),
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -296,12 +312,16 @@ class AppDialog<T> extends StatelessWidget {
             Expanded(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: centerHeader ? CrossAxisAlignment.center : CrossAxisAlignment.start,
+                crossAxisAlignment: centerHeader
+                    ? CrossAxisAlignment.center
+                    : CrossAxisAlignment.start,
                 children: [
                   if (title != null)
                     Text(
                       title!,
-                      textAlign: centerHeader ? TextAlign.center : TextAlign.start,
+                      textAlign: centerHeader
+                          ? TextAlign.center
+                          : TextAlign.start,
                       style: TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.w700,
@@ -313,7 +333,9 @@ class AppDialog<T> extends StatelessWidget {
                     const SizedBox(height: 3),
                     Text(
                       description!,
-                      textAlign: centerHeader ? TextAlign.center : TextAlign.start,
+                      textAlign: centerHeader
+                          ? TextAlign.center
+                          : TextAlign.start,
                       style: TextStyle(
                         fontSize: 13,
                         height: 1.45,
@@ -403,7 +425,9 @@ class AppDialog<T> extends StatelessWidget {
             Expanded(
               child: AppButton(
                 label: confirmLabel,
-                variant: isDestructive ? AppButtonVariant.destructive : AppButtonVariant.filled,
+                variant: isDestructive
+                    ? AppButtonVariant.destructive
+                    : AppButtonVariant.filled,
                 isLoading: isLoading,
                 expand: true,
                 onPressed: isLoading
@@ -424,12 +448,7 @@ class AppDialog<T> extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(24, 14, 24, 18),
         decoration: BoxDecoration(
           color: footerBgColor,
-          border: Border(
-            top: BorderSide(
-              color: borderColor,
-              width: 1,
-            ),
-          ),
+          border: Border(top: BorderSide(color: borderColor, width: 1)),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
@@ -440,7 +459,9 @@ class AppDialog<T> extends StatelessWidget {
 
     final maxDialogWidth = size.maxWidth;
     final viewportHeight = mediaQuery.size.height;
-    final maxDialogHeight = isFullscreen ? viewportHeight : viewportHeight * 0.88;
+    final maxDialogHeight = isFullscreen
+        ? viewportHeight
+        : viewportHeight * 0.88;
 
     return Center(
       child: Padding(

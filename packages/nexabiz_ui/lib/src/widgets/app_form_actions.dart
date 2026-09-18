@@ -40,10 +40,7 @@ class AppFormActions extends StatelessWidget {
     final content = Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        if (extraActions != null) ...[
-          ...extraActions!,
-          const Spacer(),
-        ],
+        if (extraActions != null) ...[...extraActions!, const Spacer()],
         if (onCancel != null) ...[
           AppButton(
             label: cancelLabel,
@@ -83,4 +80,3 @@ class AppFormActions extends StatelessWidget {
     );
   }
 }
-

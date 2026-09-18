@@ -123,10 +123,9 @@ class _AppStepperState extends State<AppStepper> {
         _controller = shadcn.StepperController(currentStep: widget.currentStep);
         _internalController = true;
       }
-    } else if (widget.currentStep != oldWidget.currentStep) {
-      if (_controller.value.currentStep != widget.currentStep) {
-        _controller.jumpToStep(widget.currentStep);
-      }
+    }
+    if (_controller.value.currentStep != widget.currentStep) {
+      _controller.jumpToStep(widget.currentStep);
     }
   }
 

@@ -2,29 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nexabiz_ui/nexabiz_ui.dart';
 
-/// Default shell navigation destinations matching NexaBiz ERP visual structure.
-final List<AppNavItem> defaultShellNavItems = [
-  const AppNavItem(
-    label: 'Dashboard',
-    icon: AppIcons.dashboard,
-    routePath: '/dashboard',
-  ),
-  const AppNavItem(
-    label: 'Services',
-    icon: AppIcons.grid,
-    routePath: '/services',
-  ),
-  const AppNavItem(
-    label: 'Reports',
-    icon: AppIcons.chart,
-    routePath: '/reports',
-  ),
-  const AppNavItem(
-    label: 'Settings',
-    icon: AppIcons.settings,
-    routePath: '/settings',
-  ),
-];
+import '../../l10n/app_localizations.dart';
 
 /// Canonical application shell providing responsive layout adaptation across Mobile,
 /// Tablet, and Desktop platforms using canonical `nexabiz_ui` primitives.
@@ -49,16 +27,40 @@ class ApplicationShell extends StatefulWidget {
 class _ApplicationShellState extends State<ApplicationShell> {
   bool _quickActionsOpen = false;
 
-  List<AppNavItem> get _navItems =>
-      widget.items.isNotEmpty ? widget.items : defaultShellNavItems;
+  List<AppNavItem> _getNavItems(BuildContext context) {
+    if (widget.items.isNotEmpty) return widget.items;
+    final l10n = AppLocalizations.of(context);
+    return [
+      AppNavItem(
+        label: l10n.navDashboard,
+        icon: AppIcons.dashboard,
+        routePath: '/dashboard',
+      ),
+      AppNavItem(
+        label: l10n.navServices,
+        icon: AppIcons.grid,
+        routePath: '/services',
+      ),
+      AppNavItem(
+        label: l10n.navReports,
+        icon: AppIcons.chart,
+        routePath: '/reports',
+      ),
+      AppNavItem(
+        label: l10n.navSettings,
+        icon: AppIcons.settings,
+        routePath: '/settings',
+      ),
+    ];
+  }
 
-  int get _selectedIndex {
+  int _getSelectedIndex(List<AppNavItem> navItems) {
     if (widget.navigationShell != null) {
       return widget.navigationShell!.currentIndex;
     }
     final cleanPath = widget.currentPath.split('?').first;
-    for (var i = 0; i < _navItems.length; i++) {
-      final p = _navItems[i].routePath;
+    for (var i = 0; i < navItems.length; i++) {
+      final p = navItems[i].routePath;
       if (cleanPath == p || cleanPath.startsWith('$p/')) {
         return i;
       }
@@ -66,8 +68,8 @@ class _ApplicationShellState extends State<ApplicationShell> {
     return 0;
   }
 
-  void _onSelect(BuildContext context, int index) {
-    if (index < 0 || index >= _navItems.length) return;
+  void _onSelect(BuildContext context, int index, List<AppNavItem> navItems) {
+    if (index < 0 || index >= navItems.length) return;
     if (_quickActionsOpen) {
       setState(() => _quickActionsOpen = false);
     }
@@ -77,7 +79,7 @@ class _ApplicationShellState extends State<ApplicationShell> {
         initialLocation: index == widget.navigationShell!.currentIndex,
       );
     } else {
-      final targetPath = _navItems[index].routePath;
+      final targetPath = navItems[index].routePath;
       if (widget.currentPath != targetPath) {
         context.go(targetPath);
       }
@@ -91,25 +93,27 @@ class _ApplicationShellState extends State<ApplicationShell> {
       return;
     }
 
+    final l10n = AppLocalizations.of(context);
+
     setState(() => _quickActionsOpen = true);
-    AppQuickActionsPanel.show(
+    AppQuickActionsPanel.show<void>(
       context,
-      title: 'Quick Actions',
-      subtitle: 'Execute common business operations & developer tools',
+      title: l10n.quickActionsTitle,
+      subtitle: l10n.quickActionsSubtitle,
       items: [
         AppQuickActionItem(
-          label: 'Component Gallery',
-          description: 'UI gallery & component playground',
+          label: l10n.quickActionComponentGallery,
+          description: l10n.quickActionComponentGalleryDesc,
           icon: AppIcons.grid,
           color: AppColors.accentPurple,
           onTap: () {
             setState(() => _quickActionsOpen = false);
-            context.go('/gallery');
+            context.push('/gallery');
           },
         ),
         AppQuickActionItem(
-          label: 'New Invoice',
-          description: 'Create sales invoice',
+          label: l10n.quickActionNewInvoice,
+          description: l10n.quickActionNewInvoiceDesc,
           icon: AppIcons.receipt,
           color: AppColors.primaryBlue,
           onTap: () {
@@ -118,8 +122,8 @@ class _ApplicationShellState extends State<ApplicationShell> {
           },
         ),
         AppQuickActionItem(
-          label: 'New Customer',
-          description: 'Register customer account',
+          label: l10n.quickActionNewCustomer,
+          description: l10n.quickActionNewCustomerDesc,
           icon: AppIcons.userAdd,
           color: AppColors.secondaryTeal,
           onTap: () {
@@ -128,8 +132,8 @@ class _ApplicationShellState extends State<ApplicationShell> {
           },
         ),
         AppQuickActionItem(
-          label: 'Add Product',
-          description: 'Inventory item entry',
+          label: l10n.quickActionAddProduct,
+          description: l10n.quickActionAddProductDesc,
           icon: AppIcons.box,
           color: AppColors.accentPurple,
           onTap: () {
@@ -147,14 +151,17 @@ class _ApplicationShellState extends State<ApplicationShell> {
 
   @override
   Widget build(BuildContext context) {
+    final navItems = _getNavItems(context);
+    final selectedIndex = _getSelectedIndex(navItems);
+
     return AppResponsiveScaffold(
-      currentIndex: _selectedIndex,
-      onNavigationIndexChanged: (index) => _onSelect(context, index),
+      currentIndex: selectedIndex,
+      onNavigationIndexChanged: (index) => _onSelect(context, index, navItems),
       extendBody: true,
       mobileBottomBar: AppCustomBottomNav(
-        currentIndex: _selectedIndex,
-        items: _navItems,
-        onTap: (index) => _onSelect(context, index),
+        currentIndex: selectedIndex,
+        items: navItems,
+        onTap: (index) => _onSelect(context, index, navItems),
         onFabTap: () => _toggleQuickActions(context),
         isFabOpen: _quickActionsOpen,
         fabIcon: AppIcons.plus,

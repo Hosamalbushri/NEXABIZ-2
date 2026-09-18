@@ -22,7 +22,6 @@ import 'app_text_field.dart';
 import 'app_tree.dart';
 import 'app_custom_app_bar.dart';
 
-
 /// Canonical NexaBiz Design System component aliases.
 ///
 /// These aliases expose standard NexaBiz-prefixed component names
@@ -79,7 +78,6 @@ typedef NexaBizTreeNode<T> = shadcn.TreeNode<T>;
 typedef NexaBizTreeItemNode<T> = shadcn.TreeItemNode<T>;
 typedef NexaBizTreeRootNode<T> = shadcn.TreeRootNode<T>;
 typedef NexaBizBranchLine = shadcn.BranchLine;
-
 
 /// Dialog helper aliases.
 final showNexaBizDialog = AppDialog.show;

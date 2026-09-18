@@ -33,7 +33,11 @@ class AppFormSheet extends StatefulWidget {
   final IconData? icon;
 
   /// Async form submission callback receiving form values.
-  final FutureOr<void> Function(BuildContext context, shadcn.FormMapValues values)? onSubmit;
+  final FutureOr<void> Function(
+    BuildContext context,
+    shadcn.FormMapValues values,
+  )?
+  onSubmit;
 
   /// Optional external form controller.
   final shadcn.FormController? controller;
@@ -54,7 +58,8 @@ class AppFormSheet extends StatefulWidget {
     String? title,
     String? subtitle,
     IconData? icon,
-    FutureOr<void> Function(BuildContext context, shadcn.FormMapValues values)? onSubmit,
+    FutureOr<void> Function(BuildContext context, shadcn.FormMapValues values)?
+    onSubmit,
     shadcn.FormController? controller,
     String submitLabel = 'حفظ',
     String cancelLabel = 'إلغاء',
@@ -104,12 +109,18 @@ class _AppFormSheetState extends State<AppFormSheet> {
   @override
   void didUpdateWidget(covariant AppFormSheet oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.controller != oldWidget.controller && widget.controller != null) {
+    if (widget.controller != oldWidget.controller) {
       if (_isInternalController) {
         _controller.dispose();
         _isInternalController = false;
       }
-      _controller = widget.controller!;
+      if (widget.controller != null) {
+        _controller = widget.controller!;
+        _isInternalController = false;
+      } else {
+        _controller = shadcn.FormController();
+        _isInternalController = true;
+      }
     }
   }
 
@@ -124,23 +135,27 @@ class _AppFormSheetState extends State<AppFormSheet> {
   Future<void> _handleSubmit(BuildContext context) async {
     if (_isSubmitting) return;
 
-    setState(() {
-      _errorMessage = null;
-    });
+    if (mounted) {
+      setState(() {
+        _errorMessage = null;
+      });
+    }
 
     final result = await context.submitForm();
-    if (result.errors.isNotEmpty || !context.mounted) {
+    if (result.errors.isNotEmpty || !mounted || !context.mounted) {
       return;
     }
 
     if (widget.onSubmit != null) {
-      setState(() {
-        _isSubmitting = true;
-      });
+      if (mounted) {
+        setState(() {
+          _isSubmitting = true;
+        });
+      }
 
       try {
         await widget.onSubmit!(context, result.values);
-        if (context.mounted) {
+        if (mounted && context.mounted) {
           shadcn.closeSheet(context);
         }
       } catch (e) {
@@ -152,7 +167,7 @@ class _AppFormSheetState extends State<AppFormSheet> {
         }
       }
     } else {
-      if (context.mounted) {
+      if (mounted && context.mounted) {
         shadcn.closeSheet(context);
       }
     }
@@ -174,7 +189,10 @@ class _AppFormSheetState extends State<AppFormSheet> {
               // Header
               if (widget.title != null || widget.icon != null)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
                   decoration: BoxDecoration(
                     border: Border(
                       bottom: BorderSide(color: theme.colorScheme.border),
@@ -183,7 +201,11 @@ class _AppFormSheetState extends State<AppFormSheet> {
                   child: Row(
                     children: [
                       if (widget.icon != null) ...[
-                        Icon(widget.icon, size: 20, color: theme.colorScheme.primary),
+                        Icon(
+                          widget.icon,
+                          size: 20,
+                          color: theme.colorScheme.primary,
+                        ),
                         const SizedBox(width: 10),
                       ],
                       Expanded(
@@ -227,11 +249,18 @@ class _AppFormSheetState extends State<AppFormSheet> {
               // Error banner if any
               if (_errorMessage != null)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   color: theme.colorScheme.destructive.withValues(alpha: 0.1),
                   child: Row(
                     children: [
-                      Icon(Icons.error_outline, size: 16, color: theme.colorScheme.destructive),
+                      Icon(
+                        Icons.error_outline,
+                        size: 16,
+                        color: theme.colorScheme.destructive,
+                      ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
@@ -253,7 +282,10 @@ class _AppFormSheetState extends State<AppFormSheet> {
               ),
               // Footer Action Bar
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
                 decoration: BoxDecoration(
                   border: Border(
                     top: BorderSide(color: theme.colorScheme.border),
@@ -276,7 +308,9 @@ class _AppFormSheetState extends State<AppFormSheet> {
                     ),
                     const SizedBox(width: 8),
                     shadcn.Button.primary(
-                      onPressed: _isSubmitting ? null : () => _handleSubmit(formContext),
+                      onPressed: _isSubmitting
+                          ? null
+                          : () => _handleSubmit(formContext),
                       child: _isSubmitting
                           ? const SizedBox(
                               width: 16,

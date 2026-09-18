@@ -56,14 +56,9 @@ class AppMasterDetailPage extends StatelessWidget {
           return Row(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              SizedBox(
-                width: masterWidth,
-                child: master,
-              ),
+              SizedBox(width: masterWidth, child: master),
               const SizedBox(width: AppLayoutTokens.sectionGap),
-              Expanded(
-                child: detail,
-              ),
+              Expanded(child: detail),
             ],
           );
         },

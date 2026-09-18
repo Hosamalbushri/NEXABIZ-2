@@ -5,6 +5,7 @@ import '../../packages/services/services_capability.dart';
 import '../../packages/settings/settings_capability.dart';
 
 import '../../packages/gallery/gallery_capability.dart';
+import '../../packages/development/navigation_test_lab/navigation_test_lab_capability.dart';
 
 /// Central compile-time manifest defining all capabilities registered in NexaBiz ERP.
 class NexaBizCapabilityManifest {
@@ -12,10 +13,11 @@ class NexaBizCapabilityManifest {
 
   /// Immutable list of all application capabilities.
   static List<NexaBizCapability> get capabilities => [
-        DashboardCapability(),
-        ServicesCapability(),
-        ReportsCapability(),
-        SettingsCapability(),
-        GalleryCapability(),
-      ];
+    DashboardCapability(),
+    ServicesCapability(),
+    ReportsCapability(),
+    SettingsCapability(),
+    GalleryCapability(),
+    NavigationTestLabCapability(),
+  ];
 }

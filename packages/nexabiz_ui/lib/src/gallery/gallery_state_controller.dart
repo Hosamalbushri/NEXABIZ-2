@@ -76,8 +76,13 @@ class GalleryStateController extends ChangeNotifier {
     notifyListeners();
   }
 
-  bool isComponentMatching(String name, String description, GalleryCategory category) {
-    if (_selectedCategory != GalleryCategory.all && _selectedCategory != category) {
+  bool isComponentMatching(
+    String name,
+    String description,
+    GalleryCategory category,
+  ) {
+    if (_selectedCategory != GalleryCategory.all &&
+        _selectedCategory != category) {
       return false;
     }
     if (_searchQuery.isEmpty) return true;

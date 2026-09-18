@@ -3,7 +3,7 @@ import 'nexabiz_route_id.dart';
 /// Framework-neutral route definition.
 ///
 /// Represents a navigation node mapping a logical [routeId] to a URI transport [path].
-/// The [pageBuilder] is an opaque builder delegate resolved by infrastructure router adapters.
+/// Presentation bindings are supplied by infrastructure-specific definitions.
 class NexaBizRouteDefinition {
   /// Logical route identity.
   final NexaBizRouteId routeId;
@@ -11,14 +11,7 @@ class NexaBizRouteDefinition {
   /// Transport URI path (e.g. '/demo').
   final String path;
 
-  /// Framework-neutral page builder delegate.
-  final Object? pageBuilder;
-
-  const NexaBizRouteDefinition({
-    required this.routeId,
-    required this.path,
-    this.pageBuilder,
-  });
+  const NexaBizRouteDefinition({required this.routeId, required this.path});
 
   @override
   bool operator ==(Object other) =>

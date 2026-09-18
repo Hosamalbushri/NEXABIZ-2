@@ -26,7 +26,9 @@ void main() {
   });
 
   group('NexaBiz UI Component Widgets Test', () {
-    testWidgets('AppButton renders label and triggers callback', (tester) async {
+    testWidgets('AppButton renders label and triggers callback', (
+      tester,
+    ) async {
       bool pressed = false;
 
       await tester.pumpWidget(
@@ -46,7 +48,9 @@ void main() {
       expect(pressed, isTrue);
     });
 
-    testWidgets('AppTextField renders placeholder and receives text', (tester) async {
+    testWidgets('AppTextField renders placeholder and receives text', (
+      tester,
+    ) async {
       final controller = TextEditingController();
 
       await tester.pumpWidget(
@@ -62,37 +66,45 @@ void main() {
       );
 
       expect(find.text('Enter Customer Name'), findsOneWidget);
-      await tester.enterText(find.byType(shadcn.TextField), 'NexaBiz Corporation');
+      await tester.enterText(
+        find.byType(shadcn.TextField),
+        'NexaBiz Corporation',
+      );
       expect(controller.text, equals('NexaBiz Corporation'));
     });
 
-    testWidgets('AppPaginationBar renders page numbers and page-size selector', (tester) async {
-      int currentPage = 0;
-      int selectedSize = 10;
+    testWidgets(
+      'AppPaginationBar renders page numbers and page-size selector',
+      (tester) async {
+        int currentPage = 0;
+        int selectedSize = 10;
 
-      await tester.pumpWidget(
-        shadcn.ShadcnApp(
-          theme: AppTheme.light(),
-          home: Scaffold(
-            body: AppPaginationBar(
-              page: currentPage,
-              totalPages: 5,
-              totalCount: 50,
-              pageSize: selectedSize,
-              pageSizeOptions: const [10, 25, 50],
-              onPageChanged: (p) => currentPage = p,
-              onPageSizeChanged: (s) => selectedSize = s,
+        await tester.pumpWidget(
+          shadcn.ShadcnApp(
+            theme: AppTheme.light(),
+            home: Scaffold(
+              body: AppPaginationBar(
+                page: currentPage,
+                totalPages: 5,
+                totalCount: 50,
+                pageSize: selectedSize,
+                pageSizeOptions: const [10, 25, 50],
+                onPageChanged: (p) => currentPage = p,
+                onPageSizeChanged: (s) => selectedSize = s,
+              ),
             ),
           ),
-        ),
-      );
+        );
 
-      expect(find.byType(AppPaginationBar), findsOneWidget);
-      expect(find.byType(shadcn.Pagination), findsOneWidget);
-      expect(find.byType(shadcn.Select<int>), findsOneWidget);
-    });
+        expect(find.byType(AppPaginationBar), findsOneWidget);
+        expect(find.byType(shadcn.Pagination), findsOneWidget);
+        expect(find.byType(shadcn.Select<int>), findsOneWidget);
+      },
+    );
 
-    testWidgets('AppPageHeader renders title, subtitle, and breadcrumbs', (tester) async {
+    testWidgets('AppPageHeader renders title, subtitle, and breadcrumbs', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         shadcn.ShadcnApp(
           theme: AppTheme.light(),

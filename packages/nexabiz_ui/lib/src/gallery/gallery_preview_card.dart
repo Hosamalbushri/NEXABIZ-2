@@ -86,7 +86,9 @@ class _GalleryPreviewCardState extends State<GalleryPreviewCard> {
                   children: [
                     const Icon(AppIcons.command, size: 14),
                     const SizedBox(width: 4),
-                    Text(_showCode ? 'Hide Code' : 'View Code'),
+                    Flexible(
+                      child: Text(_showCode ? 'Hide Code' : 'View Code'),
+                    ),
                   ],
                 ),
               ),
@@ -105,11 +107,11 @@ class _GalleryPreviewCardState extends State<GalleryPreviewCard> {
                     scrollDirection: Axis.horizontal,
                     child: ConstrainedBox(
                       constraints: BoxConstraints(
-                        minWidth: constraints.maxWidth > 0 ? constraints.maxWidth : 0,
+                        minWidth: constraints.maxWidth > 0
+                            ? constraints.maxWidth
+                            : 0,
                       ),
-                      child: Center(
-                        child: widget.preview,
-                      ),
+                      child: Center(child: widget.preview),
                     ),
                   ),
                 );

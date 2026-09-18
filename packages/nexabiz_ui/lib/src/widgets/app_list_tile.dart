@@ -42,39 +42,74 @@ class AppListTile extends StatelessWidget {
       color: colorScheme.mutedForeground,
     );
 
-    final tileContent = Padding(
-      padding: padding,
-      child: Row(
-        children: [
-          if (leading != null) ...[
-            leading!,
-            const SizedBox(width: AppSpacing.md),
+    final tileContent = LayoutBuilder(
+      builder: (context, constraints) {
+        final availableWidth = constraints.maxWidth;
+        // Adapt layout when available component width is restricted (< 280px)
+        final isCompactTile = availableWidth.isFinite && availableWidth < 320.0;
+
+        final titleTextGroup = Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            DefaultTextStyle(style: titleStyle, child: title),
+            if (subtitle != null) ...[
+              const SizedBox(height: AppSpacing.xxs),
+              DefaultTextStyle(style: subtitleStyle, child: subtitle!),
+            ],
           ],
-          Expanded(
+        );
+
+        if (isCompactTile && trailing != null) {
+          return Padding(
+            padding: padding,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                DefaultTextStyle(
-                  style: titleStyle,
-                  child: title,
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (leading != null) ...[
+                      leading!,
+                      const SizedBox(width: AppSpacing.sm),
+                    ],
+                    Expanded(child: titleTextGroup),
+                  ],
                 ),
-                if (subtitle != null) ...[
-                  const SizedBox(height: AppSpacing.xxs),
-                  DefaultTextStyle(
-                    style: subtitleStyle,
-                    child: subtitle!,
+                const SizedBox(height: AppSpacing.xs),
+                Padding(
+                  padding: EdgeInsetsDirectional.only(
+                    start: leading != null ? (AppSpacing.md + 18.0) : 0.0,
                   ),
-                ],
+                  child: DefaultTextStyle(
+                    style: subtitleStyle,
+                    child: trailing!,
+                  ),
+                ),
               ],
             ),
+          );
+        }
+
+        return Padding(
+          padding: padding,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              if (leading != null) ...[
+                leading!,
+                const SizedBox(width: AppSpacing.md),
+              ],
+              Expanded(child: titleTextGroup),
+              if (trailing != null) ...[
+                const SizedBox(width: AppSpacing.sm),
+                trailing!,
+              ],
+            ],
           ),
-          if (trailing != null) ...[
-            const SizedBox(width: AppSpacing.sm),
-            trailing!,
-          ],
-        ],
-      ),
+        );
+      },
     );
 
     if (!enabled || onTap == null) {
@@ -109,10 +144,7 @@ class AppDivider extends StatelessWidget {
     return SizedBox(
       height: height,
       child: Center(
-        child: Container(
-          height: thickness,
-          color: effectiveColor,
-        ),
+        child: Container(height: thickness, color: effectiveColor),
       ),
     );
   }

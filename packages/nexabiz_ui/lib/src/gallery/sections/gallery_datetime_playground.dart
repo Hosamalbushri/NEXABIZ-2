@@ -9,7 +9,8 @@ class GalleryDateTimePlayground extends StatefulWidget {
   const GalleryDateTimePlayground({super.key, required this.controller});
 
   @override
-  State<GalleryDateTimePlayground> createState() => _GalleryDateTimePlaygroundState();
+  State<GalleryDateTimePlayground> createState() =>
+      _GalleryDateTimePlaygroundState();
 }
 
 class _GalleryDateTimePlaygroundState extends State<GalleryDateTimePlayground> {
@@ -23,13 +24,18 @@ class _GalleryDateTimePlaygroundState extends State<GalleryDateTimePlayground> {
     final cards = <Widget>[];
 
     // 1. Calendar
-    if (ctrl.isComponentMatching('Calendar', 'Full month calendar selection grid', cat)) {
+    if (ctrl.isComponentMatching(
+      'Calendar',
+      'Full month calendar selection grid',
+      cat,
+    )) {
       cards.add(
         GalleryPreviewCard(
           name: 'Calendar',
           category: cat,
           description: 'Calendar view primitive for date selection.',
-          usageNotes: 'Use for fiscal period range pickers and date selection dialogs.',
+          usageNotes:
+              'Use for fiscal period range pickers and date selection dialogs.',
           dartCode: '''
 shadcn.Calendar(
   selectionMode: shadcn.CalendarSelectionMode.single,
@@ -48,7 +54,10 @@ shadcn.Calendar(
                     spacing: AppSpacing.xs,
                     runSpacing: AppSpacing.xs,
                     children: [
-                      Text('Selected Fiscal Date:', style: AppTypography.label(context)),
+                      Text(
+                        'Selected Fiscal Date:',
+                        style: AppTypography.label(context),
+                      ),
                       Text(
                         '${_selectedDate.year}-${_selectedDate.month.toString().padLeft(2, '0')}-${_selectedDate.day.toString().padLeft(2, '0')}',
                         style: AppTypography.numericValue(context),
@@ -75,12 +84,17 @@ shadcn.Calendar(
     }
 
     // 2. DatePicker / TimePicker
-    if (ctrl.isComponentMatching('DatePicker / TimePicker', 'Input controls for date and time selection', cat)) {
+    if (ctrl.isComponentMatching(
+      'DatePicker / TimePicker',
+      'Input controls for date and time selection',
+      cat,
+    )) {
       cards.add(
         GalleryPreviewCard(
           name: 'DatePicker & TimePicker',
           category: cat,
-          description: 'Compact dropdown picker controls for dates and time values.',
+          description:
+              'Compact dropdown picker controls for dates and time values.',
           usageNotes: 'Use AppDateField across all transaction creation forms.',
           dartCode: '''
 AppDateField(
@@ -105,7 +119,10 @@ AppDateField(
                   spacing: AppSpacing.xs,
                   children: [
                     const Icon(AppIcons.calendar, size: 16),
-                    Text('Posting Time: 09:30 AM (UTC+3)', style: AppTypography.caption(context)),
+                    Text(
+                      'Posting Time: 09:30 AM (UTC+3)',
+                      style: AppTypography.caption(context),
+                    ),
                   ],
                 ),
               ],
@@ -117,10 +134,12 @@ AppDateField(
 
     return Column(
       children: cards
-          .map((card) => Padding(
-                padding: const EdgeInsets.only(bottom: AppSpacing.md),
-                child: card,
-              ))
+          .map(
+            (card) => Padding(
+              padding: const EdgeInsets.only(bottom: AppSpacing.md),
+              child: card,
+            ),
+          )
           .toList(),
     );
   }

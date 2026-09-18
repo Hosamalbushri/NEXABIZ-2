@@ -70,15 +70,23 @@ class AppSortableList<T> extends StatelessWidget {
     return shadcn.Sortable<T>(
       key: key,
       data: shadcn.SortableData<T>(item),
-      onAcceptTop: (dropped) => _handleReorder(dropped.data, index, isBefore: true),
-      onAcceptBottom: (dropped) => _handleReorder(dropped.data, index, isBefore: false),
-      onAcceptLeft: (dropped) => _handleReorder(dropped.data, index, isBefore: true),
-      onAcceptRight: (dropped) => _handleReorder(dropped.data, index, isBefore: false),
+      onAcceptTop: (dropped) =>
+          _handleReorder(dropped.data, index, isBefore: true),
+      onAcceptBottom: (dropped) =>
+          _handleReorder(dropped.data, index, isBefore: false),
+      onAcceptLeft: (dropped) =>
+          _handleReorder(dropped.data, index, isBefore: true),
+      onAcceptRight: (dropped) =>
+          _handleReorder(dropped.data, index, isBefore: false),
       child: itemBuilder(context, item, index),
     );
   }
 
-  void _handleReorder(T draggedItem, int targetIndex, {required bool isBefore}) {
+  void _handleReorder(
+    T draggedItem,
+    int targetIndex, {
+    required bool isBefore,
+  }) {
     if (onReorder == null) return;
     final oldIndex = items.indexOf(draggedItem);
     if (oldIndex == -1) return;

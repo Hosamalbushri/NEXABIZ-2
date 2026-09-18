@@ -123,7 +123,7 @@ class AppDrawerSheet extends StatelessWidget {
                     if (onClose != null) {
                       onClose!();
                     } else {
-                      shadcn.closeDrawer(context);
+                      shadcn.closeDrawer<void>(context);
                     }
                   },
                 ),
@@ -132,19 +132,14 @@ class AppDrawerSheet extends StatelessWidget {
           ),
         // Body Content
         Flexible(
-          child: SingleChildScrollView(
-            padding: padding,
-            child: child,
-          ),
+          child: SingleChildScrollView(padding: padding, child: child),
         ),
         // Actions Strip
         if (actions != null && actions!.isNotEmpty)
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              border: Border(
-                top: BorderSide(color: theme.colorScheme.border),
-              ),
+              border: Border(top: BorderSide(color: theme.colorScheme.border)),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,

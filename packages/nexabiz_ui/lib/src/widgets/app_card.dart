@@ -32,17 +32,11 @@ class AppCard extends StatelessWidget {
     final card = shadcn.Card(
       child: onTap == null
           ? content
-          : GestureDetector(
-              onTap: onTap,
-              child: content,
-            ),
+          : GestureDetector(onTap: onTap, child: content),
     );
 
     if (margin != null) {
-      return Padding(
-        padding: margin!,
-        child: card,
-      );
+      return Padding(padding: margin!, child: card);
     }
 
     return card;

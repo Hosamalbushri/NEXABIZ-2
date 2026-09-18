@@ -4,7 +4,14 @@ import 'package:shadcn_flutter/shadcn_flutter.dart' as shadcn;
 import '../theme/app_dimensions.dart';
 import '../theme/tokens/app_icons.dart';
 
-enum AppIconButtonVariant { standard, primary, destructive, outline, ghost, chip }
+enum AppIconButtonVariant {
+  standard,
+  primary,
+  destructive,
+  outline,
+  ghost,
+  chip,
+}
 
 /// Canonical icon button primitive for NexaBiz ERP built natively on [shadcn_flutter].
 class AppIconButton extends StatefulWidget {
@@ -53,21 +60,22 @@ class _AppIconButtonState extends State<AppIconButton> {
             widget.icon,
             size: widget.iconSize,
             color: widget.variant == AppIconButtonVariant.chip
-                ? (enabled ? accent : colorScheme.mutedForeground.withValues(alpha: 0.38))
+                ? (enabled
+                      ? accent
+                      : colorScheme.mutedForeground.withValues(alpha: 0.38))
                 : widget.color,
           );
 
-    final Widget badgedChild = widget.badgeCount != null && widget.badgeCount! > 0
+    final Widget badgedChild =
+        widget.badgeCount != null && widget.badgeCount! > 0
         ? Stack(
             clipBehavior: Clip.none,
             children: [
               childWidget,
-              Positioned(
+              PositionedDirectional(
                 top: -4,
-                right: -4,
-                child: shadcn.PrimaryBadge(
-                  child: Text('${widget.badgeCount}'),
-                ),
+                end: -4,
+                child: shadcn.PrimaryBadge(child: Text('${widget.badgeCount}')),
               ),
             ],
           )
@@ -107,30 +115,31 @@ class _AppIconButtonState extends State<AppIconButton> {
     }
 
     Widget button = switch (widget.variant) {
-      AppIconButtonVariant.standard || AppIconButtonVariant.ghost => shadcn.GhostButton(
-          onPressed: handler,
-          density: shadcn.ButtonDensity.icon,
-          shape: shadcn.ButtonShape.circle,
-          child: badgedChild,
-        ),
+      AppIconButtonVariant.standard ||
+      AppIconButtonVariant.ghost => shadcn.GhostButton(
+        onPressed: handler,
+        density: shadcn.ButtonDensity.icon,
+        shape: shadcn.ButtonShape.circle,
+        child: badgedChild,
+      ),
       AppIconButtonVariant.primary => shadcn.PrimaryButton(
-          onPressed: handler,
-          density: shadcn.ButtonDensity.icon,
-          shape: shadcn.ButtonShape.circle,
-          child: badgedChild,
-        ),
+        onPressed: handler,
+        density: shadcn.ButtonDensity.icon,
+        shape: shadcn.ButtonShape.circle,
+        child: badgedChild,
+      ),
       AppIconButtonVariant.destructive => shadcn.DestructiveButton(
-          onPressed: handler,
-          density: shadcn.ButtonDensity.icon,
-          shape: shadcn.ButtonShape.circle,
-          child: badgedChild,
-        ),
+        onPressed: handler,
+        density: shadcn.ButtonDensity.icon,
+        shape: shadcn.ButtonShape.circle,
+        child: badgedChild,
+      ),
       AppIconButtonVariant.outline => shadcn.OutlineButton(
-          onPressed: handler,
-          density: shadcn.ButtonDensity.icon,
-          shape: shadcn.ButtonShape.circle,
-          child: badgedChild,
-        ),
+        onPressed: handler,
+        density: shadcn.ButtonDensity.icon,
+        shape: shadcn.ButtonShape.circle,
+        child: badgedChild,
+      ),
       AppIconButtonVariant.chip => const SizedBox.shrink(),
     };
 

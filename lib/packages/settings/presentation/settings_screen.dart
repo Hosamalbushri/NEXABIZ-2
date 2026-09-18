@@ -2,120 +2,208 @@ import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nexabiz_ui/nexabiz_ui.dart';
 
-/// Settings & Configuration screen built strictly using canonical `nexabiz_ui` component definitions.
+import '../../../app/localization/app_locale_controller.dart';
+import '../../../l10n/app_localizations.dart';
+
+/// Settings & Configuration screen built strictly using canonical `nexabiz_ui` primitives.
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
+  void _showLanguageSelector(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final currentCode = AppLocaleController.currentLocale.languageCode;
+
+    AppDialog.show<void>(
+      context: context,
+      title: l10n.settingsLanguageSelectTitle,
+      size: AppDialogSize.small,
+      showActions: false,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          AppListTile(
+            leading: const Icon(AppIcons.globe, color: AppColors.primaryBlue),
+            title: Text(l10n.languageEnglish),
+            subtitle: Text(l10n.languageEnglishSubtitle),
+            trailing: currentCode == 'en'
+                ? const Icon(AppIcons.check, color: AppColors.success)
+                : null,
+            onTap: () {
+              AppLocaleController.setLocale(const Locale('en'));
+              Navigator.of(context, rootNavigator: true).pop();
+            },
+          ),
+          const AppDivider(),
+          AppListTile(
+            leading: const Icon(AppIcons.globe, color: AppColors.secondaryTeal),
+            title: Text(l10n.languageArabic),
+            subtitle: Text(l10n.languageArabicSubtitle),
+            trailing: currentCode == 'ar'
+                ? const Icon(AppIcons.check, color: AppColors.success)
+                : null,
+            onTap: () {
+              AppLocaleController.setLocale(const Locale('ar'));
+              Navigator.of(context, rootNavigator: true).pop();
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return AppSettingsPage(
-      title: 'Settings & Configuration',
-      subtitle: 'Application preferences and enterprise profile management',
-      sections: [
-        AppSection(
-          title: 'Developer & Design System Tools',
-          child: AppCard(
-            child: AppListTile(
-              leading: const Icon(AppIcons.grid, color: AppColors.accentPurple),
-              title: const Text('UI Component Gallery & Playground'),
-              subtitle: const Text('Interactive shadcn_flutter component showcase & test environment'),
-              trailing: const Icon(AppIcons.chevronRight),
-              onTap: () {
-                context.go('/gallery');
-              },
-            ),
-          ),
-        ),
-        AppSection(
-          title: 'Application Preferences',
-          child: AppCard(
-            child: Column(
-              children: [
-                ValueListenableBuilder(
-                  valueListenable: AppThemeController.themeModeNotifier,
-                  builder: (context, mode, _) {
-                    final isDark = AppThemeController.isDark(context);
-                    return AppListTile(
-                      leading: const Icon(AppIcons.settings),
-                      title: const Text('Dark Mode'),
+    final l10n = AppLocalizations.of(context);
+    return AppDashboardPage(
+      title: l10n.settingsTitle,
+      subtitle: l10n.settingsSubtitle,
+      content: ValueListenableBuilder(
+        valueListenable: AppThemeController.themeModeNotifier,
+        builder: (context, themeMode, _) {
+          final isDark = AppThemeController.isDark(context);
+          final currentLangName = AppLocaleController.isRtl
+              ? l10n.languageArabic
+              : l10n.languageEnglish;
+
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              AppSection(
+                title: l10n.settingsDevToolsSection,
+                child: Column(
+                  children: [
+                    AppListTile(
+                      leading: const Icon(
+                        AppIcons.layers,
+                        color: AppColors.accentPurple,
+                      ),
+                      title: Text(l10n.settingsNavTestLab),
+                      subtitle: Text(l10n.settingsNavTestLabSubtitle),
+                      trailing: const Icon(
+                        AppIcons.chevronRight,
+                        size: 16,
+                      ),
+                      onTap: () => context.push('/dev/navigation'),
+                    ),
+                    const AppDivider(),
+                    AppListTile(
+                      leading: const Icon(
+                        AppIcons.grid,
+                        color: AppColors.primaryBlue,
+                      ),
+                      title: Text(l10n.settingsGallery),
+                      subtitle: Text(l10n.settingsGallerySubtitle),
+                      trailing: const Icon(
+                        AppIcons.chevronRight,
+                        size: 16,
+                      ),
+                      onTap: () => context.push('/gallery'),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: AppSpacing.lg),
+              AppSection(
+                title: l10n.settingsAppPreferencesSection,
+                child: Column(
+                  children: [
+                    AppListTile(
+                      leading: const Icon(
+                        AppIcons.settings,
+                        color: AppColors.secondaryTeal,
+                      ),
+                      title: Text(l10n.settingsDarkMode),
                       subtitle: Text(
-                          isDark ? 'Dark theme enabled' : 'Light theme enabled'),
+                        isDark ? l10n.settingsDarkModeOn : l10n.settingsDarkModeOff,
+                      ),
                       trailing: AppSwitch(
                         value: isDark,
                         onChanged: (val) {
                           AppThemeController.toggleTheme(val);
                         },
                       ),
-                    );
-                  },
+                    ),
+                    const AppDivider(),
+                    AppListTile(
+                      leading: const Icon(
+                        AppIcons.globe,
+                        color: AppColors.primaryBlue,
+                      ),
+                      title: Text(l10n.settingsLanguage),
+                      subtitle: Text(currentLangName),
+                      trailing: const Icon(
+                        AppIcons.chevronRight,
+                        size: 16,
+                      ),
+                      onTap: () => _showLanguageSelector(context),
+                    ),
+                  ],
                 ),
-                const AppDivider(),
-                AppListTile(
-                  leading: const Icon(AppIcons.globe),
-                  title: const Text('Language & Localization'),
-                  subtitle: const Text('English (US)'),
-                  trailing: const Icon(AppIcons.chevronRight),
-                  onTap: () {},
+              ),
+              const SizedBox(height: AppSpacing.lg),
+              AppSection(
+                title: l10n.settingsCompanyProfileSection,
+                child: Column(
+                  children: [
+                    AppListTile(
+                      leading: const Icon(
+                        AppIcons.bank,
+                        color: AppColors.primaryBlue,
+                      ),
+                      title: Text(l10n.settingsCompanyProfile),
+                      subtitle: Text(l10n.settingsCompanyProfileSubtitle),
+                    ),
+                    const AppDivider(),
+                    AppListTile(
+                      leading: const Icon(
+                        AppIcons.wallet,
+                        color: AppColors.secondaryTeal,
+                      ),
+                      title: Text(l10n.settingsFunctionalCurrency),
+                      subtitle: Text(l10n.settingsFunctionalCurrencySubtitle),
+                      trailing: AppStatusBadge(
+                        label: l10n.statusPrimary,
+                        tone: AppStatusTone.info,
+                        animate: false,
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ),
-        ),
-        AppSection(
-          title: 'Company & Currency Profile',
-          child: AppCard(
-            child: Column(
-              children: [
-                AppListTile(
-                  leading: const Icon(AppIcons.building),
-                  title: const Text('Company Profile'),
-                  subtitle: const Text('NexaBiz Enterprise Corp.'),
-                  trailing: const Icon(AppIcons.chevronRight),
-                  onTap: () {},
+              ),
+              const SizedBox(height: AppSpacing.lg),
+              AppSection(
+                title: l10n.settingsSecuritySyncSection,
+                child: Column(
+                  children: [
+                    AppListTile(
+                      leading: const Icon(
+                        AppIcons.check,
+                        color: AppColors.success,
+                      ),
+                      title: Text(l10n.settingsSecurityControls),
+                      subtitle: Text(l10n.settingsSecurityControlsSubtitle),
+                    ),
+                    const AppDivider(),
+                    AppListTile(
+                      leading: const Icon(
+                        AppIcons.refresh,
+                        color: AppColors.primaryBlue,
+                      ),
+                      title: Text(l10n.settingsOfflineSync),
+                      subtitle: Text(l10n.settingsOfflineSyncSubtitle),
+                      trailing: AppStatusBadge(
+                        label: l10n.statusSynced,
+                        tone: AppStatusTone.success,
+                        animate: false,
+                      ),
+                    ),
+                  ],
                 ),
-                const AppDivider(),
-                const AppListTile(
-                  leading: Icon(AppIcons.wallet),
-                  title: Text('Functional Currency'),
-                  subtitle: Text('USD - United States Dollar'),
-                  trailing: AppStatusBadge(
-                    label: 'Primary',
-                    tone: AppStatusTone.info,
-                    animate: false,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        AppSection(
-          title: 'Security & Sync',
-          child: AppCard(
-            child: Column(
-              children: [
-                AppListTile(
-                  leading: const Icon(AppIcons.shield),
-                  title: const Text('Security & Access Controls'),
-                  subtitle: const Text('Manage user roles and capability permissions'),
-                  trailing: const Icon(AppIcons.chevronRight),
-                  onTap: () {},
-                ),
-                const AppDivider(),
-                const AppListTile(
-                  leading: Icon(AppIcons.refresh),
-                  title: Text('Offline Sync & Storage'),
-                  subtitle: Text('All local databases up to date'),
-                  trailing: AppStatusBadge(
-                    label: 'Synced',
-                    tone: AppStatusTone.success,
-                    animate: false,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
+              ),
+            ],
+          );
+        },
+      ),
     );
   }
 }

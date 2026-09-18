@@ -79,6 +79,20 @@ class _AppChipInputState<T> extends State<AppChipInput<T>> {
   }
 
   @override
+  void didUpdateWidget(covariant AppChipInput<T> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.controller != oldWidget.controller) {
+      if (oldWidget.controller == null) {
+        _internalController?.dispose();
+        _internalController = null;
+      }
+    } else if (widget.controller == null &&
+        oldWidget.initialChips != widget.initialChips) {
+      _effectiveController.chips = List.from(widget.initialChips ?? []);
+    }
+  }
+
+  @override
   void dispose() {
     _internalController?.dispose();
     super.dispose();
@@ -93,7 +107,9 @@ class _AppChipInputState<T> extends State<AppChipInput<T>> {
       chipBuilder: widget.chipBuilder,
       onChipSubmitted: widget.onChipSubmitted,
       onChipsChanged: widget.onChipsChanged,
-      placeholder: effectivePlaceholder != null ? Text(effectivePlaceholder) : null,
+      placeholder: effectivePlaceholder != null
+          ? Text(effectivePlaceholder)
+          : null,
       enabled: widget.enabled,
       autofocus: widget.autofocus,
       readOnly: widget.readOnly,

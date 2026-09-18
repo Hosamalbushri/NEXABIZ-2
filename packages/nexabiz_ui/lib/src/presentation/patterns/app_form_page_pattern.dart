@@ -3,6 +3,10 @@ import 'package:flutter/material.dart';
 import '../../layout/app_form_page.dart';
 
 /// Legacy compatible Form Page pattern delegating to canonical [AppFormPage].
+@Deprecated(
+  'Use AppFormPage directly. '
+  'This compatibility wrapper will be removed in a future cleanup.',
+)
 class AppFormPagePattern extends StatelessWidget {
   const AppFormPagePattern({
     super.key,

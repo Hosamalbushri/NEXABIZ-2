@@ -66,7 +66,8 @@ class AppMultiSelectField<T> extends StatelessWidget {
   final AppFieldDensity density;
 
   /// Optional custom builder for items inside the popup menu.
-  final Widget Function(BuildContext context, T item, bool isSelected)? itemBuilder;
+  final Widget Function(BuildContext context, T item, bool isSelected)?
+  itemBuilder;
 
   @override
   Widget build(BuildContext context) {
@@ -119,7 +120,8 @@ class AppMultiSelectField<T> extends StatelessWidget {
                     value: item,
                     child: Builder(
                       builder: (ctx) {
-                        final popupHandle = shadcn.Data.maybeOf<shadcn.SelectPopupHandle>(ctx);
+                        final popupHandle =
+                            shadcn.Data.maybeOf<shadcn.SelectPopupHandle>(ctx);
                         final selected = popupHandle?.isSelected(item) ?? false;
                         return itemBuilder!(ctx, item, selected);
                       },

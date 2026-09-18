@@ -74,7 +74,7 @@ class AppSelectField<T> extends StatelessWidget {
         }
         return Text(item.toString());
       },
-      popup: shadcn.SelectPopup.builder(
+      popup: shadcn.SelectPopup<T>.builder(
         builder: (context, searchQuery) {
           return shadcn.SelectItemList(
             children: items.map((item) {

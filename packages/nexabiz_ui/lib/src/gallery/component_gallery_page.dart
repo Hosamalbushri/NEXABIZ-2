@@ -53,8 +53,13 @@ class _ComponentGalleryPageState extends State<ComponentGalleryPage> {
                 // Page Header
                 AppPageHeader(
                   title: 'Shadcn Flutter Component Gallery & Playground',
-                  subtitle: 'Interactive design-system reference, live property tuning, RTL/LTR & responsive testing environment',
-                  breadcrumbs: const ['Developer Tools', 'Design System', 'Gallery'],
+                  subtitle:
+                      'Interactive design-system reference, live property tuning, RTL/LTR & responsive testing environment',
+                  breadcrumbs: const [
+                    'Developer Tools',
+                    'Design System',
+                    'Gallery',
+                  ],
                   actions: [
                     shadcn.OutlineButton(
                       onPressed: () => _controller.toggleDirectionality(),
@@ -63,7 +68,11 @@ class _ComponentGalleryPageState extends State<ComponentGalleryPage> {
                         children: [
                           const Icon(AppIcons.globe, size: 16),
                           const SizedBox(width: 4),
-                          Text(_controller.directionality == TextDirection.rtl ? 'LTR Mode' : 'RTL Mode'),
+                          Text(
+                            _controller.directionality == TextDirection.rtl
+                                ? 'LTR Mode'
+                                : 'RTL Mode',
+                          ),
                         ],
                       ),
                     ),
@@ -82,7 +91,8 @@ class _ComponentGalleryPageState extends State<ComponentGalleryPage> {
                             child: AppTextField(
                               hint: 'Search components by name or keyword...',
                               prefixIcon: const Icon(AppIcons.search, size: 16),
-                              onChanged: (query) => _controller.setSearchQuery(query),
+                              onChanged: (query) =>
+                                  _controller.setSearchQuery(query),
                             ),
                           ),
                           const SizedBox(width: AppSpacing.sm),
@@ -91,10 +101,17 @@ class _ComponentGalleryPageState extends State<ComponentGalleryPage> {
                             child: AppSelectField<GalleryViewportSize>(
                               value: _controller.viewportSize,
                               onChanged: (val) {
-                                if (val != null) _controller.setViewportSize(val);
+                                if (val != null) {
+                                  _controller.setViewportSize(val);
+                                }
                               },
                               items: GalleryViewportSize.values
-                                  .map((sz) => AppSelectItem(value: sz, label: sz.label))
+                                  .map(
+                                    (sz) => AppSelectItem(
+                                      value: sz,
+                                      label: sz.label,
+                                    ),
+                                  )
                                   .toList(),
                             ),
                           ),
@@ -107,9 +124,12 @@ class _ComponentGalleryPageState extends State<ComponentGalleryPage> {
                         scrollDirection: Axis.horizontal,
                         child: Row(
                           children: GalleryCategory.values.map((cat) {
-                            final isSelected = _controller.selectedCategory == cat;
+                            final isSelected =
+                                _controller.selectedCategory == cat;
                             return Padding(
-                              padding: const EdgeInsets.only(right: AppSpacing.xs),
+                              padding: const EdgeInsets.only(
+                                right: AppSpacing.xs,
+                              ),
                               child: shadcn.GhostButton(
                                 onPressed: () => _controller.setCategory(cat),
                                 child: Container(
@@ -118,7 +138,11 @@ class _ComponentGalleryPageState extends State<ComponentGalleryPage> {
                                     vertical: AppSpacing.xxs,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: isSelected ? AppColors.primaryBlue.withValues(alpha: 0.15) : null,
+                                    color: isSelected
+                                        ? AppColors.primaryBlue.withValues(
+                                            alpha: 0.15,
+                                          )
+                                        : null,
                                     borderRadius: BorderRadius.circular(4),
                                   ),
                                   child: Row(
@@ -127,13 +151,19 @@ class _ComponentGalleryPageState extends State<ComponentGalleryPage> {
                                       Icon(
                                         cat.icon,
                                         size: 14,
-                                        color: isSelected ? AppColors.primaryBlue : null,
+                                        color: isSelected
+                                            ? AppColors.primaryBlue
+                                            : null,
                                       ),
                                       const SizedBox(width: 4),
                                       Text(
                                         cat.label,
                                         style: isSelected
-                                            ? AppTypography.bodyBold(context).copyWith(color: AppColors.primaryBlue)
+                                            ? AppTypography.bodyBold(
+                                                context,
+                                              ).copyWith(
+                                                color: AppColors.primaryBlue,
+                                              )
                                             : AppTypography.body(context),
                                       ),
                                     ],
@@ -188,14 +218,23 @@ class _ComponentGalleryPageState extends State<ComponentGalleryPage> {
           children: [
             Container(
               color: AppColors.primaryBlue,
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: 4),
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.sm,
+                vertical: 4,
+              ),
               child: Row(
                 children: [
-                  const Icon(AppIcons.box, size: 14, color: AppColors.lightSurface),
+                  const Icon(
+                    AppIcons.box,
+                    size: 14,
+                    color: AppColors.lightSurface,
+                  ),
                   const SizedBox(width: 4),
                   Text(
                     'Simulated Viewport: ${_controller.viewportSize.label}',
-                    style: AppTypography.caption(context).copyWith(color: AppColors.lightSurface),
+                    style: AppTypography.caption(
+                      context,
+                    ).copyWith(color: AppColors.lightSurface),
                   ),
                 ],
               ),

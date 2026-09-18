@@ -9,7 +9,8 @@ class GalleryActionsPlayground extends StatefulWidget {
   const GalleryActionsPlayground({super.key, required this.controller});
 
   @override
-  State<GalleryActionsPlayground> createState() => _GalleryActionsPlaygroundState();
+  State<GalleryActionsPlayground> createState() =>
+      _GalleryActionsPlaygroundState();
 }
 
 class _GalleryActionsPlaygroundState extends State<GalleryActionsPlayground> {
@@ -25,13 +26,19 @@ class _GalleryActionsPlaygroundState extends State<GalleryActionsPlayground> {
     final cards = <Widget>[];
 
     // 1. Button Variants
-    if (ctrl.isComponentMatching('Button', 'Interactive action button with multiple variants', cat)) {
+    if (ctrl.isComponentMatching(
+      'Button',
+      'Interactive action button with multiple variants',
+      cat,
+    )) {
       cards.add(
         GalleryPreviewCard(
           name: 'Button',
           category: cat,
-          description: 'Primary action trigger with Primary, Secondary, Outline, Ghost, and Destructive variants.',
-          usageNotes: 'Use shadcn button primitives or AppButton across all forms, dialogs, and headers.',
+          description:
+              'Primary action trigger with Primary, Secondary, Outline, Ghost, and Destructive variants.',
+          usageNotes:
+              'Use shadcn button primitives or AppButton across all forms, dialogs, and headers.',
           dartCode: '''
 shadcn.PrimaryButton(
   onPressed: _btnDisabled ? null : () {},
@@ -79,13 +86,18 @@ shadcn.PrimaryButton(
     }
 
     // 2. Toggle & ToggleGroup
-    if (ctrl.isComponentMatching('Toggle / ToggleGroup', 'Interactive selection toggles', cat)) {
+    if (ctrl.isComponentMatching(
+      'Toggle / ToggleGroup',
+      'Interactive selection toggles',
+      cat,
+    )) {
       cards.add(
         GalleryPreviewCard(
           name: 'Toggle / ToggleGroup',
           category: cat,
           description: 'Single or multi-select toggle controls.',
-          usageNotes: 'Use for view switching (Grid vs List) or text formatting controls.',
+          usageNotes:
+              'Use for view switching (Grid vs List) or text formatting controls.',
           dartCode: '''
 shadcn.Toggle(
   value: _boldToggled,
@@ -100,7 +112,10 @@ shadcn.Toggle(
               shadcn.Toggle(
                 value: _boldToggled,
                 onChanged: (val) => setState(() => _boldToggled = val),
-                child: const Text('B', style: TextStyle(fontWeight: FontWeight.bold)),
+                child: const Text(
+                  'B',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
               ),
               Wrap(
                 spacing: 2,
@@ -108,15 +123,33 @@ shadcn.Toggle(
                 children: [
                   shadcn.OutlineButton(
                     onPressed: () => setState(() => _alignSelection = 'left'),
-                    child: Icon(AppIcons.chevronLeft, size: 16, color: _alignSelection == 'left' ? AppColors.primaryBlue : null),
+                    child: Icon(
+                      AppIcons.chevronLeft,
+                      size: 16,
+                      color: _alignSelection == 'left'
+                          ? AppColors.primaryBlue
+                          : null,
+                    ),
                   ),
                   shadcn.OutlineButton(
                     onPressed: () => setState(() => _alignSelection = 'center'),
-                    child: Icon(AppIcons.grid, size: 16, color: _alignSelection == 'center' ? AppColors.primaryBlue : null),
+                    child: Icon(
+                      AppIcons.grid,
+                      size: 16,
+                      color: _alignSelection == 'center'
+                          ? AppColors.primaryBlue
+                          : null,
+                    ),
                   ),
                   shadcn.OutlineButton(
                     onPressed: () => setState(() => _alignSelection = 'right'),
-                    child: Icon(AppIcons.chevronRight, size: 16, color: _alignSelection == 'right' ? AppColors.primaryBlue : null),
+                    child: Icon(
+                      AppIcons.chevronRight,
+                      size: 16,
+                      color: _alignSelection == 'right'
+                          ? AppColors.primaryBlue
+                          : null,
+                    ),
                   ),
                 ],
               ),
@@ -127,15 +160,20 @@ shadcn.Toggle(
     }
 
     // 3. DropdownMenu & ContextMenu
-    if (ctrl.isComponentMatching('DropdownMenu', 'Contextual dropdown menu overlay', cat)) {
+    if (ctrl.isComponentMatching(
+      'DropdownMenu',
+      'Contextual dropdown menu overlay',
+      cat,
+    )) {
       cards.add(
         GalleryPreviewCard(
           name: 'DropdownMenu',
           category: cat,
           description: 'Contextual popover menu attached to a trigger widget.',
-          usageNotes: 'Use for table row actions (Edit, Print, Export, Delete).',
+          usageNotes:
+              'Use for table row actions (Edit, Print, Export, Delete).',
           dartCode: '''
-shadcn.showDropdown(
+shadcn.showDropdown<void>(
   context: context,
   builder: (context) => shadcn.DropdownMenu(
     children: [
@@ -148,7 +186,7 @@ shadcn.showDropdown(
 );''',
           preview: shadcn.OutlineButton(
             onPressed: () {
-              shadcn.showDropdown(
+              shadcn.showDropdown<void>(
                 context: context,
                 builder: (context) => const shadcn.DropdownMenu(
                   children: [
@@ -174,12 +212,17 @@ shadcn.showDropdown(
     }
 
     // 4. Command Palette
-    if (ctrl.isComponentMatching('Command', 'Command palette search & action launcher', cat)) {
+    if (ctrl.isComponentMatching(
+      'Command',
+      'Command palette search & action launcher',
+      cat,
+    )) {
       cards.add(
         GalleryPreviewCard(
           name: 'Command',
           category: cat,
-          description: 'Searchable command palette for quick navigation and actions.',
+          description:
+              'Searchable command palette for quick navigation and actions.',
           usageNotes: 'Use for global quick command search (Ctrl+K).',
           dartCode: '''
 AppTextField(
@@ -216,10 +259,12 @@ AppTextField(
 
     return Column(
       children: cards
-          .map((card) => Padding(
-                padding: const EdgeInsets.only(bottom: AppSpacing.md),
-                child: card,
-              ))
+          .map(
+            (card) => Padding(
+              padding: const EdgeInsets.only(bottom: AppSpacing.md),
+              child: card,
+            ),
+          )
           .toList(),
     );
   }

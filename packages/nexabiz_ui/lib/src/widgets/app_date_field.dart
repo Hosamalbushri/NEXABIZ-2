@@ -13,7 +13,7 @@ class AppDateField extends StatelessWidget {
     required this.value,
     required this.onChanged,
     this.label,
-    this.hint = 'اختر التاريخ...',
+    this.hint,
     this.placeholder,
     this.required = false,
     this.enabled = true,
@@ -39,7 +39,7 @@ class AppDateField extends StatelessWidget {
   final String? label;
 
   /// Default hint text when no date is selected.
-  final String hint;
+  final String? hint;
 
   /// Custom placeholder widget when no date is selected.
   final Widget? placeholder;
@@ -101,6 +101,8 @@ class AppDateField extends StatelessWidget {
     final hasError = errorText != null && errorText!.isNotEmpty;
 
     final isInteractive = enabled && !readOnly;
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
+    final effectiveHint = hint ?? (isRtl ? 'اختر التاريخ...' : 'Select date...');
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -136,7 +138,7 @@ class AppDateField extends StatelessWidget {
         shadcn.DatePicker(
           value: value,
           onChanged: isInteractive ? onChanged : null,
-          placeholder: placeholder ?? Text(hint),
+          placeholder: placeholder ?? Text(effectiveHint),
           mode: mode,
           dialogTitle: dialogTitle ?? (label != null ? Text(label!) : null),
           stateBuilder: _effectiveStateBuilder,

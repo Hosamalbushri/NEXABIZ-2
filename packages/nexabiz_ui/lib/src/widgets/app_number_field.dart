@@ -69,10 +69,7 @@ class AppNumberField extends StatelessWidget {
           max: max?.toInt(),
         )
       else
-        shadcn.TextInputFormatters.digitsOnly(
-          min: min,
-          max: max,
-        ),
+        shadcn.TextInputFormatters.digitsOnly(min: min, max: max),
     ];
 
     final features = <shadcn.InputFeature>[
@@ -118,10 +115,7 @@ class AppNumberField extends StatelessWidget {
         ],
         Row(
           children: [
-            if (prefix != null) ...[
-              prefix!,
-              const SizedBox(width: 8),
-            ],
+            if (prefix != null) ...[prefix!, const SizedBox(width: 8)],
             Expanded(
               child: shadcn.TextField(
                 controller: controller,
@@ -131,7 +125,9 @@ class AppNumberField extends StatelessWidget {
                 enabled: isInteractive,
                 readOnly: readOnly,
                 placeholder: placeholder ?? (hint != null ? Text(hint!) : null),
-                keyboardType: TextInputType.numberWithOptions(decimal: allowDecimals),
+                keyboardType: TextInputType.numberWithOptions(
+                  decimal: allowDecimals,
+                ),
                 inputFormatters: formatters,
                 features: features,
                 onChanged: (text) {
@@ -145,10 +141,7 @@ class AppNumberField extends StatelessWidget {
                 },
               ),
             ),
-            if (suffix != null) ...[
-              const SizedBox(width: 8),
-              suffix!,
-            ],
+            if (suffix != null) ...[const SizedBox(width: 8), suffix!],
           ],
         ),
         if (hasError) ...[

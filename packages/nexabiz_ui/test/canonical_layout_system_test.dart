@@ -4,24 +4,23 @@ import 'package:nexabiz_ui/nexabiz_ui.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart' as shadcn;
 
 void main() {
-  Widget buildTestableWidget(Widget child, {TextDirection textDirection = TextDirection.rtl}) {
+  Widget buildTestableWidget(
+    Widget child, {
+    TextDirection textDirection = TextDirection.rtl,
+  }) {
     return shadcn.ShadcnApp(
       theme: AppTheme.light(),
-      home: Directionality(
-        textDirection: textDirection,
-        child: child,
-      ),
+      home: Directionality(textDirection: textDirection, child: child),
     );
   }
 
   group('NexaBiz Canonical Layout System Hardening Tests', () {
-    testWidgets('AppPage renders scrollable body correctly', (WidgetTester tester) async {
+    testWidgets('AppPage renders scrollable body correctly', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         buildTestableWidget(
-          const AppPage(
-            header: Text('Page Header'),
-            child: Text('Page Child'),
-          ),
+          const AppPage(header: Text('Page Header'), child: Text('Page Child')),
         ),
       );
 
@@ -30,16 +29,16 @@ void main() {
       expect(find.byType(SingleChildScrollView), findsOneWidget);
     });
 
-    testWidgets('AppPage renders non-scrollable body without overflow', (WidgetTester tester) async {
+    testWidgets('AppPage renders non-scrollable body without overflow', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         buildTestableWidget(
           const AppPage(
             scrollable: false,
             header: Text('Fixed Header'),
             child: Column(
-              children: [
-                Expanded(child: Text('Expanded Content')),
-              ],
+              children: [Expanded(child: Text('Expanded Content'))],
             ),
           ),
         ),
@@ -50,7 +49,9 @@ void main() {
       expect(find.byType(SingleChildScrollView), findsNothing);
     });
 
-    testWidgets('AppConstraints apply correct max widths', (WidgetTester tester) async {
+    testWidgets('AppConstraints apply correct max widths', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         buildTestableWidget(
           const Column(
@@ -67,33 +68,83 @@ void main() {
       );
 
       final contentBox = tester.widget<ConstrainedBox>(
-        find.ancestor(of: find.text('Content'), matching: find.byType(ConstrainedBox)).first,
+        find
+            .ancestor(
+              of: find.text('Content'),
+              matching: find.byType(ConstrainedBox),
+            )
+            .first,
       );
       final formBox = tester.widget<ConstrainedBox>(
-        find.ancestor(of: find.text('Form'), matching: find.byType(ConstrainedBox)).first,
+        find
+            .ancestor(
+              of: find.text('Form'),
+              matching: find.byType(ConstrainedBox),
+            )
+            .first,
       );
       final tableBox = tester.widget<ConstrainedBox>(
-        find.ancestor(of: find.text('Table'), matching: find.byType(ConstrainedBox)).first,
+        find
+            .ancestor(
+              of: find.text('Table'),
+              matching: find.byType(ConstrainedBox),
+            )
+            .first,
       );
       final dashboardBox = tester.widget<ConstrainedBox>(
-        find.ancestor(of: find.text('Dashboard'), matching: find.byType(ConstrainedBox)).first,
+        find
+            .ancestor(
+              of: find.text('Dashboard'),
+              matching: find.byType(ConstrainedBox),
+            )
+            .first,
       );
       final detailsBox = tester.widget<ConstrainedBox>(
-        find.ancestor(of: find.text('Details'), matching: find.byType(ConstrainedBox)).first,
+        find
+            .ancestor(
+              of: find.text('Details'),
+              matching: find.byType(ConstrainedBox),
+            )
+            .first,
       );
       final settingsBox = tester.widget<ConstrainedBox>(
-        find.ancestor(of: find.text('Settings'), matching: find.byType(ConstrainedBox)).first,
+        find
+            .ancestor(
+              of: find.text('Settings'),
+              matching: find.byType(ConstrainedBox),
+            )
+            .first,
       );
 
-      expect(contentBox.constraints.maxWidth, equals(AppLayoutTokens.maxPageWidth));
-      expect(formBox.constraints.maxWidth, equals(AppLayoutTokens.maxFormWidth));
-      expect(tableBox.constraints.maxWidth, equals(AppLayoutTokens.maxTableWidth));
-      expect(dashboardBox.constraints.maxWidth, equals(AppLayoutTokens.maxDashboardWidth));
-      expect(detailsBox.constraints.maxWidth, equals(AppLayoutTokens.maxDetailsWidth));
-      expect(settingsBox.constraints.maxWidth, equals(AppLayoutTokens.maxSettingsWidth));
+      expect(
+        contentBox.constraints.maxWidth,
+        equals(AppLayoutTokens.maxPageWidth),
+      );
+      expect(
+        formBox.constraints.maxWidth,
+        equals(AppLayoutTokens.maxFormWidth),
+      );
+      expect(
+        tableBox.constraints.maxWidth,
+        equals(AppLayoutTokens.maxTableWidth),
+      );
+      expect(
+        dashboardBox.constraints.maxWidth,
+        equals(AppLayoutTokens.maxDashboardWidth),
+      );
+      expect(
+        detailsBox.constraints.maxWidth,
+        equals(AppLayoutTokens.maxDetailsWidth),
+      );
+      expect(
+        settingsBox.constraints.maxWidth,
+        equals(AppLayoutTokens.maxSettingsWidth),
+      );
     });
 
-    testWidgets('AppTablePage renders table state', (WidgetTester tester) async {
+    testWidgets('AppTablePage renders table state', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         buildTestableWidget(
           AppTablePage(
@@ -106,7 +157,9 @@ void main() {
       expect(find.text('Table Content'), findsOneWidget);
     });
 
-    testWidgets('AppTablePage renders loading state', (WidgetTester tester) async {
+    testWidgets('AppTablePage renders loading state', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         buildTestableWidget(
           AppTablePage(
@@ -120,7 +173,9 @@ void main() {
       await tester.pump(const Duration(seconds: 3));
     });
 
-    testWidgets('AppTablePage renders error state', (WidgetTester tester) async {
+    testWidgets('AppTablePage renders error state', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         buildTestableWidget(
           AppTablePage(
@@ -135,7 +190,9 @@ void main() {
       await tester.pump(const Duration(seconds: 3));
     });
 
-    testWidgets('AppTablePage renders empty state', (WidgetTester tester) async {
+    testWidgets('AppTablePage renders empty state', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         buildTestableWidget(
           AppTablePage(
@@ -149,7 +206,9 @@ void main() {
       await tester.pump(const Duration(seconds: 3));
     });
 
-    testWidgets('AppFormPage handles page loading state', (WidgetTester tester) async {
+    testWidgets('AppFormPage handles page loading state', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         buildTestableWidget(
           AppFormPage(
@@ -164,7 +223,9 @@ void main() {
       await tester.pump(const Duration(seconds: 3));
     });
 
-    testWidgets('AppFormPage handles page error state', (WidgetTester tester) async {
+    testWidgets('AppFormPage handles page error state', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         buildTestableWidget(
           AppFormPage(
@@ -179,7 +240,9 @@ void main() {
       await tester.pump(const Duration(seconds: 3));
     });
 
-    testWidgets('AppGrid adjusts columns dynamically based on breakpoints', (WidgetTester tester) async {
+    testWidgets('AppGrid adjusts columns dynamically based on breakpoints', (
+      WidgetTester tester,
+    ) async {
       tester.view.physicalSize = const Size(400, 800);
       tester.view.devicePixelRatio = 1.0;
 

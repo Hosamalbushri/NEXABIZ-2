@@ -3,6 +3,10 @@ import 'package:flutter/material.dart';
 import '../../layout/app_details_page.dart';
 
 /// Legacy compatible Detail Page pattern delegating to canonical [AppDetailsPage].
+@Deprecated(
+  'Use AppDetailsPage directly. '
+  'This compatibility wrapper will be removed in a future cleanup.',
+)
 class AppDetailPagePattern extends StatelessWidget {
   const AppDetailPagePattern({
     super.key,

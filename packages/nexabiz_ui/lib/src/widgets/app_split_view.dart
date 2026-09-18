@@ -40,10 +40,7 @@ class AppSplitView extends StatelessWidget {
           maxSize: maxMasterWidth,
           child: master,
         ),
-        shadcn.ResizablePane.flex(
-          initialFlex: 1,
-          child: detail,
-        ),
+        shadcn.ResizablePane.flex(initialFlex: 1, child: detail),
       ],
     );
   }

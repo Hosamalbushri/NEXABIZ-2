@@ -47,7 +47,9 @@ class AppPaginationBar extends StatelessWidget {
         ? 0
         : ((page + 1) * pageSize).clamp(0, totalCount);
 
-    final safe1BasedPage = totalPages <= 0 ? 1 : (page + 1).clamp(1, totalPages);
+    final safe1BasedPage = totalPages <= 0
+        ? 1
+        : (page + 1).clamp(1, totalPages);
     final safeTotalPages = totalPages <= 0 ? 1 : totalPages;
 
     return DecoratedBox(
@@ -134,7 +136,7 @@ class _PageSizeSelector extends StatelessWidget {
             }
           },
           itemBuilder: (context, item) => Text('$item'),
-          popup: shadcn.SelectPopup.builder(
+          popup: shadcn.SelectPopup<int>.builder(
             builder: (context, searchQuery) {
               return shadcn.SelectItemList(
                 children: options.map((size) {

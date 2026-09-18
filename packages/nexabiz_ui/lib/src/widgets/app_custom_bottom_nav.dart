@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart' as shadcn;
 
 import '../theme/tokens/app_spacing.dart';
+import '../theme/tokens/app_typography.dart';
 
 /// Item definition for [AppCustomBottomNav].
 class AppNavItem {
@@ -77,9 +78,8 @@ class _QuickActionsFabState extends State<QuickActionsFab>
       enabled: true,
       label: widget.tooltip,
       child: shadcn.Tooltip(
-        tooltip: (context) => shadcn.TooltipContainer(
-          child: Text(widget.tooltip),
-        ),
+        tooltip: (context) =>
+            shadcn.TooltipContainer(child: Text(widget.tooltip)),
         child: GestureDetector(
           onTap: _handleTap,
           onTapDown: (_) => _setPressed(true),
@@ -94,10 +94,14 @@ class _QuickActionsFabState extends State<QuickActionsFab>
               height: QuickActionsFab.size,
               decoration: BoxDecoration(
                 color: colorScheme.primary,
-                borderRadius: BorderRadius.circular(QuickActionsFab.cornerRadius),
+                borderRadius: BorderRadius.circular(
+                  QuickActionsFab.cornerRadius,
+                ),
                 boxShadow: [
                   BoxShadow(
-                    color: colorScheme.primary.withValues(alpha: isDark ? 0.45 : 0.25),
+                    color: colorScheme.primary.withValues(
+                      alpha: isDark ? 0.45 : 0.25,
+                    ),
                     blurRadius: _pressed ? 6 : 14,
                     offset: Offset(0, _pressed ? 2 : 5),
                   ),
@@ -111,10 +115,7 @@ class _QuickActionsFabState extends State<QuickActionsFab>
                   transitionBuilder: (child, animation) {
                     return ScaleTransition(
                       scale: animation,
-                      child: FadeTransition(
-                        opacity: animation,
-                        child: child,
-                      ),
+                      child: FadeTransition(opacity: animation, child: child),
                     );
                   },
                   child: Icon(
@@ -191,14 +192,13 @@ class AppCustomBottomNav extends StatelessWidget {
           decoration: BoxDecoration(
             color: colorScheme.popover,
             border: Border(
-              top: BorderSide(
-                color: colorScheme.border,
-                width: 1.0,
-              ),
+              top: BorderSide(color: colorScheme.border, width: 1.0),
             ),
             boxShadow: [
               BoxShadow(
-                color: colorScheme.primary.withValues(alpha: isDark ? 0.20 : 0.08),
+                color: colorScheme.primary.withValues(
+                  alpha: isDark ? 0.20 : 0.08,
+                ),
                 blurRadius: 16,
                 offset: const Offset(0, -4),
               ),
@@ -264,8 +264,9 @@ class _NavItem extends StatelessWidget {
     final activeColor = colorScheme.primary;
     final inactiveColor = colorScheme.mutedForeground;
 
-    final iconData =
-        selected && item.activeIcon != null ? item.activeIcon! : item.icon;
+    final iconData = selected && item.activeIcon != null
+        ? item.activeIcon!
+        : item.icon;
 
     return Semantics(
       button: true,
@@ -306,6 +307,7 @@ class _NavItem extends StatelessWidget {
                 duration: const Duration(milliseconds: 220),
                 curve: Curves.easeOutCubic,
                 style: TextStyle(
+                  fontFamily: AppTypography.fontFamilyName,
                   fontSize: 11.0,
                   fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
                   color: selected ? activeColor : inactiveColor,

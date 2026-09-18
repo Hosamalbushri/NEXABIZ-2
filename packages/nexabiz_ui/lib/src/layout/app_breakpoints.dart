@@ -26,7 +26,8 @@ class AppBreakpoints {
 
   static bool isCompact(double width) => width < mobile;
   static bool isMedium(double width) => width >= mobile && width < tablet;
-  static bool isExpanded(double width) => width >= tablet && width < largeDesktop;
+  static bool isExpanded(double width) =>
+      width >= tablet && width < largeDesktop;
   static bool isWide(double width) => width >= largeDesktop;
 
   static bool isMobile(double width) => width < mobile;

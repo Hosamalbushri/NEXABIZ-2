@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:nexabiz/app/app.dart';
 import 'package:nexabiz/app/shell/application_shell.dart';
 import 'package:nexabiz_ui/nexabiz_ui.dart';
 
@@ -43,25 +44,28 @@ void main() {
 
       return MediaQuery(
         data: MediaQueryData(size: Size(width, height)),
-        child: NexaBizRootApp.router(
-          routerConfig: router,
-        ),
+        child: NexaBizApp(router: router),
       );
     }
 
-    testWidgets('renders AppResponsiveScaffold and AppCustomBottomNav on Mobile', (tester) async {
-      tester.view.physicalSize = const Size(400, 800);
-      tester.view.devicePixelRatio = 1.0;
-      addTearDown(tester.view.resetPhysicalSize);
+    testWidgets(
+      'renders AppResponsiveScaffold and AppCustomBottomNav on Mobile',
+      (tester) async {
+        tester.view.physicalSize = const Size(400, 800);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(tester.view.resetPhysicalSize);
 
-      await tester.pumpWidget(buildTestShell(width: 400, height: 800));
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(buildTestShell(width: 400, height: 800));
+        await tester.pumpAndSettle();
 
-      expect(find.byType(AppCustomBottomNav), findsOneWidget);
-      expect(find.text('Dashboard Content'), findsOneWidget);
-    });
+        expect(find.byType(AppCustomBottomNav), findsOneWidget);
+        expect(find.text('Dashboard Content'), findsOneWidget);
+      },
+    );
 
-    testWidgets('renders AppResponsiveScaffold on Tablet & Desktop', (tester) async {
+    testWidgets('renders AppResponsiveScaffold on Tablet & Desktop', (
+      tester,
+    ) async {
       tester.view.physicalSize = const Size(1200, 900);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(tester.view.resetPhysicalSize);

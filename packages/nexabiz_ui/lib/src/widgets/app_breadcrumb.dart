@@ -13,11 +13,7 @@ class AppBreadcrumbItem {
   final Widget? icon;
 
   /// Creates an [AppBreadcrumbItem].
-  const AppBreadcrumbItem({
-    required this.label,
-    this.onTap,
-    this.icon,
-  });
+  const AppBreadcrumbItem({required this.label, this.onTap, this.icon});
 }
 
 /// A canonical NexaBiz route hierarchy breadcrumb trail component.
@@ -58,19 +54,12 @@ class AppBreadcrumb extends StatelessWidget {
       if (item.icon != null) {
         labelWidget = Row(
           mainAxisSize: MainAxisSize.min,
-          children: [
-            item.icon!,
-            const SizedBox(width: 4),
-            labelWidget,
-          ],
+          children: [item.icon!, const SizedBox(width: 4), labelWidget],
         );
       }
 
       if (!isLast && item.onTap != null) {
-        labelWidget = GestureDetector(
-          onTap: item.onTap,
-          child: labelWidget,
-        );
+        labelWidget = GestureDetector(onTap: item.onTap, child: labelWidget);
       }
 
       children.add(labelWidget);

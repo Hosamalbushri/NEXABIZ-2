@@ -101,7 +101,11 @@ class AppHoverPreview extends StatelessWidget {
                         color: theme.colorScheme.muted,
                         borderRadius: theme.borderRadiusSm,
                       ),
-                      child: Icon(icon, size: 16, color: theme.colorScheme.primary),
+                      child: Icon(
+                        icon,
+                        size: 16,
+                        color: theme.colorScheme.primary,
+                      ),
                     ),
                     const SizedBox(width: 8),
                   ],
@@ -134,10 +138,7 @@ class AppHoverPreview extends StatelessWidget {
                       ],
                     ),
                   ),
-                  if (badge != null)
-                    shadcn.SecondaryBadge(
-                      child: Text(badge!),
-                    ),
+                  if (badge != null) shadcn.SecondaryBadge(child: Text(badge!)),
                 ],
               ),
               if (fields.isNotEmpty) ...[

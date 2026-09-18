@@ -13,7 +13,7 @@ class AppDateRangeField extends StatelessWidget {
     required this.value,
     required this.onChanged,
     this.label,
-    this.hint = 'اختر الفترة الزمنية...',
+    this.hint,
     this.placeholder,
     this.required = false,
     this.enabled = true,
@@ -38,7 +38,7 @@ class AppDateRangeField extends StatelessWidget {
   final String? label;
 
   /// Default hint text when no range is selected.
-  final String hint;
+  final String? hint;
 
   /// Custom placeholder widget when no range is selected.
   final Widget? placeholder;
@@ -96,6 +96,8 @@ class AppDateRangeField extends StatelessWidget {
     final theme = shadcn.Theme.of(context);
     final hasError = errorText != null && errorText!.isNotEmpty;
     final isInteractive = enabled && !readOnly;
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
+    final effectiveHint = hint ?? (isRtl ? 'اختر الفترة الزمنية...' : 'Select date range...');
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -131,7 +133,7 @@ class AppDateRangeField extends StatelessWidget {
         shadcn.DateRangePicker(
           value: value,
           onChanged: isInteractive ? onChanged : null,
-          placeholder: placeholder ?? Text(hint),
+          placeholder: placeholder ?? Text(effectiveHint),
           mode: mode,
           dialogTitle: dialogTitle ?? (label != null ? Text(label!) : null),
           stateBuilder: _effectiveStateBuilder,

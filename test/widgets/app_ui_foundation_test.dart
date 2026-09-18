@@ -8,10 +8,7 @@ void main() {
     return shadcn.ShadcnApp(
       home: MediaQuery(
         data: MediaQueryData(size: size),
-        child: Directionality(
-          textDirection: TextDirection.rtl,
-          child: child,
-        ),
+        child: Directionality(textDirection: TextDirection.rtl, child: child),
       ),
     );
   }
@@ -19,55 +16,53 @@ void main() {
   group('AppContainer Primitive Tests', () {
     testWidgets('AppContainer.page enforces max width 1200', (tester) async {
       await tester.pumpWidget(
-        buildTestApp(
-          const AppContainer.page(
-            child: Text('Page Content'),
-          ),
-        ),
+        buildTestApp(const AppContainer.page(child: Text('Page Content'))),
       );
 
       expect(find.text('Page Content'), findsOneWidget);
       final constrainedBox = tester.widget<ConstrainedBox>(
-        find.ancestor(
-          of: find.text('Page Content'),
-          matching: find.byType(ConstrainedBox),
-        ).first,
+        find
+            .ancestor(
+              of: find.text('Page Content'),
+              matching: find.byType(ConstrainedBox),
+            )
+            .first,
       );
       expect(constrainedBox.constraints.maxWidth, 1200.0);
     });
 
     testWidgets('AppContainer.form enforces max width 640', (tester) async {
       await tester.pumpWidget(
-        buildTestApp(
-          const AppContainer.form(
-            child: Text('Form Content'),
-          ),
-        ),
+        buildTestApp(const AppContainer.form(child: Text('Form Content'))),
       );
 
       expect(find.text('Form Content'), findsOneWidget);
       final constrainedBox = tester.widget<ConstrainedBox>(
-        find.ancestor(
-          of: find.text('Form Content'),
-          matching: find.byType(ConstrainedBox),
-        ).first,
+        find
+            .ancestor(
+              of: find.text('Form Content'),
+              matching: find.byType(ConstrainedBox),
+            )
+            .first,
       );
       expect(constrainedBox.constraints.maxWidth, 640.0);
     });
   });
 
   group('AppPageState Primitive Tests', () {
-    testWidgets('AppLoading renders loading indicator correctly', (tester) async {
+    testWidgets('AppLoading renders loading indicator correctly', (
+      tester,
+    ) async {
       await tester.pumpWidget(
-        buildTestApp(
-          const AppLoading(message: 'Loading Ledger Data...'),
-        ),
+        buildTestApp(const AppLoading(message: 'Loading Ledger Data...')),
       );
 
       expect(find.byType(AppLoading), findsOneWidget);
     });
 
-    testWidgets('AppErrorState renders error message and retry button', (tester) async {
+    testWidgets('AppErrorState renders error message and retry button', (
+      tester,
+    ) async {
       bool retried = false;
       await tester.pumpWidget(
         buildTestApp(
@@ -85,11 +80,7 @@ void main() {
 
     testWidgets('AppEmptyState renders empty state correctly', (tester) async {
       await tester.pumpWidget(
-        buildTestApp(
-          const AppEmptyState(
-            title: 'No Entries Found',
-          ),
-        ),
+        buildTestApp(const AppEmptyState(title: 'No Entries Found')),
       );
 
       expect(find.text('No Entries Found'), findsOneWidget);

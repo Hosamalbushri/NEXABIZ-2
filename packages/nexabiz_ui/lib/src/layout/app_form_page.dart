@@ -80,7 +80,9 @@ class AppFormPage extends StatelessWidget {
 
     if (isPageLoading) {
       return AppPage(
-        maxWidth: secondaryBody != null ? AppLayoutTokens.maxWideFormWidth : maxWidth,
+        maxWidth: secondaryBody != null
+            ? AppLayoutTokens.maxWideFormWidth
+            : maxWidth,
         scrollable: effectiveScrollable,
         header: AppPageHeader(
           title: title,
@@ -96,7 +98,9 @@ class AppFormPage extends StatelessWidget {
 
     if (errorText != null) {
       return AppPage(
-        maxWidth: secondaryBody != null ? AppLayoutTokens.maxWideFormWidth : maxWidth,
+        maxWidth: secondaryBody != null
+            ? AppLayoutTokens.maxWideFormWidth
+            : maxWidth,
         scrollable: effectiveScrollable,
         header: AppPageHeader(
           title: title,
@@ -129,17 +133,17 @@ class AppFormPage extends StatelessWidget {
               ],
             )
           : (isBodyScrollView
-              ? body
-              : Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    body,
-                    if (secondaryBody != null) ...[
-                      const SizedBox(height: AppLayoutTokens.formGroupGap),
-                      secondaryBody!,
+                ? body
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      body,
+                      if (secondaryBody != null) ...[
+                        const SizedBox(height: AppLayoutTokens.formGroupGap),
+                        secondaryBody!,
+                      ],
                     ],
-                  ],
-                )),
+                  )),
     );
 
     final formChildren = [
@@ -158,7 +162,9 @@ class AppFormPage extends StatelessWidget {
     ];
 
     return AppPage(
-      maxWidth: secondaryBody != null ? AppLayoutTokens.maxWideFormWidth : maxWidth,
+      maxWidth: secondaryBody != null
+          ? AppLayoutTokens.maxWideFormWidth
+          : maxWidth,
       scrollable: effectiveScrollable,
       header: AppPageHeader(
         title: title,

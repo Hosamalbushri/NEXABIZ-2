@@ -50,7 +50,7 @@ class AppConfirmationDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AppDialog(
+    return AppDialog<bool>(
       title: title,
       size: AppDialogSize.small,
       isLoading: isLoading,

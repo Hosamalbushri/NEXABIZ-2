@@ -37,13 +37,18 @@ class _GalleryFormsPlaygroundState extends State<GalleryFormsPlayground> {
     final cards = <Widget>[];
 
     // 1. TextField / Input
-    if (ctrl.isComponentMatching('Input / TextField', 'Text input primitive for single line text entries', cat)) {
+    if (ctrl.isComponentMatching(
+      'Input / TextField',
+      'Text input primitive for single line text entries',
+      cat,
+    )) {
       cards.add(
         GalleryPreviewCard(
           name: 'Input / TextField',
           category: cat,
           description: 'Canonical text input box derived from shadcn_flutter.',
-          usageNotes: 'Use AppTextField for standardized ERP form field inputs.',
+          usageNotes:
+              'Use AppTextField for standardized ERP form field inputs.',
           dartCode: '''
 AppTextField(
   label: 'Company Name',
@@ -75,13 +80,19 @@ AppTextField(
     }
 
     // 2. TextArea
-    if (ctrl.isComponentMatching('TextArea', 'Multi-line text input field', cat)) {
+    if (ctrl.isComponentMatching(
+      'TextArea',
+      'Multi-line text input field',
+      cat,
+    )) {
       cards.add(
         GalleryPreviewCard(
           name: 'TextArea',
           category: cat,
-          description: 'Multi-line input field for notes, descriptions, and comments.',
-          usageNotes: 'Use for journal entry descriptions or customer address fields.',
+          description:
+              'Multi-line input field for notes, descriptions, and comments.',
+          usageNotes:
+              'Use for journal entry descriptions or customer address fields.',
           dartCode: '''
 shadcn.TextArea(
   placeholder: const Text('Enter ledger notes or transaction comments...'),
@@ -90,7 +101,9 @@ shadcn.TextArea(
           preview: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 340),
             child: shadcn.TextArea(
-              placeholder: Text('Enter ledger notes or transaction comments...'),
+              placeholder: Text(
+                'Enter ledger notes or transaction comments...',
+              ),
               maxLines: 3,
             ),
           ),
@@ -99,12 +112,17 @@ shadcn.TextArea(
     }
 
     // 3. Checkbox
-    if (ctrl.isComponentMatching('Checkbox', 'Selectable check box state control', cat)) {
+    if (ctrl.isComponentMatching(
+      'Checkbox',
+      'Selectable check box state control',
+      cat,
+    )) {
       cards.add(
         GalleryPreviewCard(
           name: 'Checkbox',
           category: cat,
-          description: 'Toggleable checkbox control supporting checked and unchecked states.',
+          description:
+              'Toggleable checkbox control supporting checked and unchecked states.',
           usageNotes: 'Use for line item inclusion or batch approval toggles.',
           dartCode: '''
 shadcn.Checkbox(
@@ -123,7 +141,10 @@ shadcn.Checkbox(
                   _checkboxValue = st == shadcn.CheckboxState.checked;
                 }),
               ),
-              Text('Include tax calculation in ledger totals', style: AppTypography.body(context)),
+              Text(
+                'Include tax calculation in ledger totals',
+                style: AppTypography.body(context),
+              ),
             ],
           ),
           controls: Row(
@@ -147,7 +168,8 @@ shadcn.Checkbox(
           name: 'Switch',
           category: cat,
           description: 'On/Off toggle switch primitive.',
-          usageNotes: 'Use for binary configuration options like Dark Mode or Auto-sync.',
+          usageNotes:
+              'Use for binary configuration options like Dark Mode or Auto-sync.',
           dartCode: '''
 AppSwitch(
   value: _switchValue,
@@ -161,7 +183,12 @@ AppSwitch(
                 value: _switchValue,
                 onChanged: (val) => setState(() => _switchValue = val),
               ),
-              Text(_switchValue ? 'Real-time Sync Active' : 'Real-time Sync Paused', style: AppTypography.body(context)),
+              Text(
+                _switchValue
+                    ? 'Real-time Sync Active'
+                    : 'Real-time Sync Paused',
+                style: AppTypography.body(context),
+              ),
             ],
           ),
         ),
@@ -169,13 +196,19 @@ AppSwitch(
     }
 
     // 5. Slider
-    if (ctrl.isComponentMatching('Slider', 'Continuous or discrete range slider', cat)) {
+    if (ctrl.isComponentMatching(
+      'Slider',
+      'Continuous or discrete range slider',
+      cat,
+    )) {
       cards.add(
         GalleryPreviewCard(
           name: 'Slider',
           category: cat,
-          description: 'Interactive range slider widget for selecting numeric values.',
-          usageNotes: 'Use for discount percentages, threshold values, or opacity controls.',
+          description:
+              'Interactive range slider widget for selecting numeric values.',
+          usageNotes:
+              'Use for discount percentages, threshold values, or opacity controls.',
           dartCode: '''
 shadcn.Slider(
   value: shadcn.SliderValue.single(_sliderValue),
@@ -192,7 +225,10 @@ shadcn.Slider(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text('Discount Rate:', style: AppTypography.label(context)),
-                    Text('${_sliderValue.round()}%', style: AppTypography.numericValue(context)),
+                    Text(
+                      '${_sliderValue.round()}%',
+                      style: AppTypography.numericValue(context),
+                    ),
                   ],
                 ),
                 const SizedBox(height: AppSpacing.xs),
@@ -214,13 +250,18 @@ shadcn.Slider(
     }
 
     // 6. Select / Dropdown
-    if (ctrl.isComponentMatching('Select', 'Dropdown select menu component', cat)) {
+    if (ctrl.isComponentMatching(
+      'Select',
+      'Dropdown select menu component',
+      cat,
+    )) {
       cards.add(
         GalleryPreviewCard(
           name: 'Select / Dropdown',
           category: cat,
           description: 'Single choice select dropdown primitive.',
-          usageNotes: 'Use for currency selection, warehouse location, or document type.',
+          usageNotes:
+              'Use for currency selection, warehouse location, or document type.',
           dartCode: '''
 AppSelectField<String>(
   label: 'Functional Currency',
@@ -253,13 +294,18 @@ AppSelectField<String>(
     }
 
     // 7. StarRating
-    if (ctrl.isComponentMatching('StarRating', 'Interactive star rating input widget', cat)) {
+    if (ctrl.isComponentMatching(
+      'StarRating',
+      'Interactive star rating input widget',
+      cat,
+    )) {
       cards.add(
         GalleryPreviewCard(
           name: 'StarRating',
           category: cat,
           description: 'Star rating indicator and input control.',
-          usageNotes: 'Use for vendor evaluation scores or customer feedback ratings.',
+          usageNotes:
+              'Use for vendor evaluation scores or customer feedback ratings.',
           dartCode: '''
 shadcn.StarRating(
   value: _starRating,
@@ -273,7 +319,10 @@ shadcn.StarRating(
                 value: _starRating,
                 onChanged: (val) => setState(() => _starRating = val),
               ),
-              Text('Rating: ${_starRating.toStringAsFixed(1)} / 5.0', style: AppTypography.body(context)),
+              Text(
+                'Rating: ${_starRating.toStringAsFixed(1)} / 5.0',
+                style: AppTypography.body(context),
+              ),
             ],
           ),
         ),
@@ -282,10 +331,12 @@ shadcn.StarRating(
 
     return Column(
       children: cards
-          .map((card) => Padding(
-                padding: const EdgeInsets.only(bottom: AppSpacing.md),
-                child: card,
-              ))
+          .map(
+            (card) => Padding(
+              padding: const EdgeInsets.only(bottom: AppSpacing.md),
+              child: card,
+            ),
+          )
           .toList(),
     );
   }

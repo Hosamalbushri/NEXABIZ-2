@@ -140,4 +140,3 @@ class AppSettingsConstraint extends StatelessWidget {
     );
   }
 }
-

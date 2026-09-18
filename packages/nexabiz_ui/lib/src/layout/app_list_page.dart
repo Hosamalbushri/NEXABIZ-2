@@ -117,8 +117,10 @@ class _AppListPageState<T> extends State<AppListPage<T>> {
 
   @override
   Widget build(BuildContext context) {
-    final hasSearch = widget.onSearchChanged != null || widget.searchController != null;
-    final showSearchToolbar = _isSearchExpanded || (widget.searchController?.text.isNotEmpty == true);
+    final hasSearch =
+        widget.onSearchChanged != null || widget.searchController != null;
+    final showSearchToolbar =
+        _isSearchExpanded || (widget.searchController?.text.isNotEmpty == true);
 
     return AppPage(
       maxWidth: widget.maxWidth,
@@ -151,7 +153,9 @@ class _AppListPageState<T> extends State<AppListPage<T>> {
                 });
               },
               searchHint: widget.searchHint,
-              onFilterTap: widget.showFilterInHeader ? null : widget.onFilterTap,
+              onFilterTap: widget.showFilterInHeader
+                  ? null
+                  : widget.onFilterTap,
               filterCount: widget.activeFilterCount,
             ),
           ],
@@ -159,7 +163,9 @@ class _AppListPageState<T> extends State<AppListPage<T>> {
             const SizedBox(height: AppLayoutTokens.tableFilterGap),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: AppLayoutTokens.pagePaddingStandard),
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppLayoutTokens.pagePaddingStandard,
+              ),
               child: Row(children: widget.activeFilterChips),
             ),
           ],

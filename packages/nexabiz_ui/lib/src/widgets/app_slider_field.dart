@@ -51,7 +51,9 @@ class AppSliderField extends StatelessWidget {
     final theme = shadcn.Theme.of(context);
     final hasError = errorText != null && errorText!.isNotEmpty;
     final isInteractive = enabled && onChanged != null;
-    final formattedValue = valueFormatter != null ? valueFormatter!(value) : _defaultFormat(value);
+    final formattedValue = valueFormatter != null
+        ? valueFormatter!(value)
+        : _defaultFormat(value);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -115,24 +117,27 @@ class AppSliderField extends StatelessWidget {
         ),
         if (showMinMaxLabels) ...[
           const SizedBox(height: 4),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                min.toStringAsFixed(0),
-                style: theme.typography.small.copyWith(
-                  color: theme.colorScheme.mutedForeground,
-                  fontSize: 11,
+          Directionality(
+            textDirection: TextDirection.ltr,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  min.toStringAsFixed(0),
+                  style: theme.typography.small.copyWith(
+                    color: theme.colorScheme.mutedForeground,
+                    fontSize: 11,
+                  ),
                 ),
-              ),
-              Text(
-                max.toStringAsFixed(0),
-                style: theme.typography.small.copyWith(
-                  color: theme.colorScheme.mutedForeground,
-                  fontSize: 11,
+                Text(
+                  max.toStringAsFixed(0),
+                  style: theme.typography.small.copyWith(
+                    color: theme.colorScheme.mutedForeground,
+                    fontSize: 11,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
         if (hasError) ...[

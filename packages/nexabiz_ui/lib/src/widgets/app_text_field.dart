@@ -101,9 +101,7 @@ class AppTextField extends StatelessWidget {
         ? Icon(
             prefixIcon as IconData,
             size: 18,
-            color: enabled
-                ? colorScheme.primary
-                : colorScheme.mutedForeground,
+            color: enabled ? colorScheme.primary : colorScheme.mutedForeground,
           )
         : prefixIcon as Widget?;
 
@@ -115,7 +113,6 @@ class AppTextField extends StatelessWidget {
       density: density,
       enabled: enabled,
       readOnly: readOnly,
-      focusNode: focusNode,
       prefix: prefixWidget,
       suffix: suffixIcon,
       child: childInput,

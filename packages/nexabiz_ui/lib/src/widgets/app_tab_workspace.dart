@@ -99,16 +99,11 @@ class AppTabWorkspace<T> extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              if (leading != null) ...[
-                leading,
-                const SizedBox(width: 6),
-              ],
+              if (leading != null) ...[leading, const SizedBox(width: 6)],
               Text(title),
               if (badge != null) ...[
                 const SizedBox(width: 6),
-                shadcn.SecondaryBadge(
-                  child: Text(badge),
-                ),
+                shadcn.SecondaryBadge(child: Text(badge)),
               ],
               if (onCloseTab != null) ...[
                 const SizedBox(width: 6),

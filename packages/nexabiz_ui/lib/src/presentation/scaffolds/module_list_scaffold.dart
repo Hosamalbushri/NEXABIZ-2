@@ -7,6 +7,10 @@ import '../patterns/app_list_page_pattern.dart';
 ///
 /// Delegates to canonical [AppListPagePattern] while maintaining backwards compatibility
 /// for legacy list screen invocations.
+@Deprecated(
+  'Use AppListPage directly. '
+  'This compatibility wrapper will be removed in a future cleanup.',
+)
 class ModuleListScaffold<T> extends StatelessWidget {
   const ModuleListScaffold({
     super.key,

@@ -10,17 +10,26 @@ class AppModuleHubCard extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.onTap,
+    this.mirrorIconInRtl = false,
   });
 
   final IconData icon;
   final String title;
   final String subtitle;
   final VoidCallback onTap;
+  final bool mirrorIconInRtl;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
+
+    final shouldFlip = isRtl && (icon.matchTextDirection || mirrorIconInRtl);
+    Widget iconWidget = Icon(icon, color: colorScheme.primary);
+    if (shouldFlip) {
+      iconWidget = Transform.flip(flipX: true, child: iconWidget);
+    }
 
     return Semantics(
       container: true,
@@ -53,7 +62,7 @@ class AppModuleHubCard extends StatelessWidget {
                       color: colorScheme.primary.withValues(alpha: 0.14),
                       borderRadius: BorderRadius.circular(AppRadius.md),
                     ),
-                    child: Icon(icon, color: colorScheme.primary),
+                    child: iconWidget,
                   ),
                   const SizedBox(width: AppSpacing.md),
                   Expanded(
@@ -77,7 +86,9 @@ class AppModuleHubCard extends StatelessWidget {
                     ),
                   ),
                   Icon(
-                    Icons.chevron_right,
+                    Directionality.of(context) == TextDirection.rtl
+                        ? Icons.chevron_left
+                        : Icons.chevron_right,
                     color: colorScheme.onSurfaceVariant,
                   ),
                 ],

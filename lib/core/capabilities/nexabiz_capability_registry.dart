@@ -6,6 +6,8 @@ import 'nexabiz_capability.dart';
 /// Lifecycle:
 /// Construct -> Register -> Validate -> Topological Sort -> Index -> Lock -> Read-only Runtime
 class NexaBizCapabilityRegistry {
+  // Runtime IDs use lower snake case, without trimming or normalization.
+  static final RegExp _canonicalId = RegExp(r'^[a-z][a-z0-9_]*$');
   final Map<String, NexaBizCapability> _registeredCapabilities = {};
   List<NexaBizCapability> _sortedCapabilities = [];
   bool _isLocked = false;
@@ -22,6 +24,11 @@ class NexaBizCapabilityRegistry {
     final id = capability.capabilityId;
     if (id.trim().isEmpty) {
       throw StateError('Capability ID cannot be empty or whitespace.');
+    }
+    if (id != id.trim() || !_canonicalId.hasMatch(id)) {
+      throw StateError(
+        'Capability ID "$id" must be canonical lower snake case.',
+      );
     }
 
     if (_registeredCapabilities.containsKey(id)) {
@@ -60,8 +67,11 @@ class NexaBizCapabilityRegistry {
 
       for (final depId in dependsOn) {
         if (depId.trim().isEmpty) {
+          throw StateError('Capability "$capId" has an empty dependency ID.');
+        }
+        if (depId != depId.trim() || !_canonicalId.hasMatch(depId)) {
           throw StateError(
-            'Capability "$capId" has an empty dependency ID.',
+            'Capability "$capId" has noncanonical dependency ID "$depId".',
           );
         }
         if (depId == capId) {
@@ -103,17 +113,18 @@ class NexaBizCapabilityRegistry {
       }
     }
 
-    // Sort queue initial keys deterministically by metadata sortOrder / ID
-    queue.sort((a, b) {
+    // Apply the same precedence whenever dependencies unlock more capabilities.
+    int compareReadyCapabilities(String a, String b) {
       final orderA = _registeredCapabilities[a]!.metadata.sortOrder;
       final orderB = _registeredCapabilities[b]!.metadata.sortOrder;
       if (orderA != orderB) return orderA.compareTo(orderB);
       return a.compareTo(b);
-    });
+    }
 
     final sortedResult = <NexaBizCapability>[];
 
     while (queue.isNotEmpty) {
+      queue.sort(compareReadyCapabilities);
       final currentId = queue.removeAt(0);
       sortedResult.add(_registeredCapabilities[currentId]!);
 
@@ -170,7 +181,9 @@ class NexaBizCapabilityRegistry {
 
   void _checkIsLocked() {
     if (!_isLocked) {
-      throw StateError('Capability registry must be validated and locked before reading.');
+      throw StateError(
+        'Capability registry must be validated and locked before reading.',
+      );
     }
   }
 }

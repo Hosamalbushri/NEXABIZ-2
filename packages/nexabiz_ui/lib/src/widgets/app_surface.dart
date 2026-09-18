@@ -38,15 +38,14 @@ class AppSurface extends StatelessWidget {
 
     final effectiveRadius = borderRadius ?? BorderRadius.circular(AppRadius.lg);
 
-    final Color effectiveBackground = backgroundColor ??
+    final Color effectiveBackground =
+        backgroundColor ??
         (variant == AppSurfaceVariant.flat
             ? colorScheme.muted
             : colorScheme.card);
 
     final Border? effectiveBorder = variant == AppSurfaceVariant.outlined
-        ? Border.all(
-            color: borderColor ?? colorScheme.border,
-          )
+        ? Border.all(color: borderColor ?? colorScheme.border)
         : null;
 
     final List<BoxShadow>? effectiveShadow = variant == AppSurfaceVariant.raised

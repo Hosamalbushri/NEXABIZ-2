@@ -9,7 +9,8 @@ class GalleryOverlaysPlayground extends StatefulWidget {
   const GalleryOverlaysPlayground({super.key, required this.controller});
 
   @override
-  State<GalleryOverlaysPlayground> createState() => _GalleryOverlaysPlaygroundState();
+  State<GalleryOverlaysPlayground> createState() =>
+      _GalleryOverlaysPlaygroundState();
 }
 
 class _GalleryOverlaysPlaygroundState extends State<GalleryOverlaysPlayground> {
@@ -23,13 +24,19 @@ class _GalleryOverlaysPlaygroundState extends State<GalleryOverlaysPlayground> {
     final cards = <Widget>[];
 
     // 1. Bottom Sheet / Drawer Playground (shadcn_flutter native openDrawerOverlay)
-    if (ctrl.isComponentMatching('Sheet / Drawer', 'Bottom sheet and slide-over drawer overlay primitive', cat)) {
+    if (ctrl.isComponentMatching(
+      'Sheet / Drawer',
+      'Bottom sheet and slide-over drawer overlay primitive',
+      cat,
+    )) {
       cards.add(
         GalleryPreviewCard(
           name: 'Bottom Sheet / Drawer (shadcn_flutter native)',
           category: cat,
-          description: 'Native shadcn_flutter drawer overlay supporting bottom sheet presentation, scrollable content, and form inputs.',
-          usageNotes: 'Uses shadcn_flutter openDrawerOverlay. Absolutely NO Material showModalBottomSheet.',
+          description:
+              'Native shadcn_flutter drawer overlay supporting bottom sheet presentation, scrollable content, and form inputs.',
+          usageNotes:
+              'Uses shadcn_flutter openDrawerOverlay. Absolutely NO Material showModalBottomSheet.',
           dartCode: '''
 shadcn.openDrawerOverlay(
   context: context,
@@ -63,12 +70,23 @@ shadcn.openDrawerOverlay(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text('Quick Action Sheet', style: AppTypography.sectionTitle(context)),
+                                    Text(
+                                      'Quick Action Sheet',
+                                      style: AppTypography.sectionTitle(
+                                        context,
+                                      ),
+                                    ),
                                     shadcn.GhostButton(
-                                      onPressed: () => Navigator.of(context).pop('Closed Sheet'),
-                                      child: const Icon(AppIcons.close, size: 16),
+                                      onPressed: () => Navigator.of(
+                                        context,
+                                      ).pop('Closed Sheet'),
+                                      child: const Icon(
+                                        AppIcons.close,
+                                        size: 16,
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -79,21 +97,36 @@ shadcn.openDrawerOverlay(
                                 ),
                                 const SizedBox(height: AppSpacing.md),
                                 AppListTile(
-                                  leading: const Icon(AppIcons.receipt, color: AppColors.primaryBlue),
+                                  leading: const Icon(
+                                    AppIcons.receipt,
+                                    color: AppColors.primaryBlue,
+                                  ),
                                   title: const Text('Create Receipt Voucher'),
-                                  subtitle: const Text('Receive customer payment into treasury'),
-                                  onTap: () => Navigator.of(context).pop('Created Receipt Voucher'),
+                                  subtitle: const Text(
+                                    'Receive customer payment into treasury',
+                                  ),
+                                  onTap: () => Navigator.of(
+                                    context,
+                                  ).pop('Created Receipt Voucher'),
                                 ),
                                 const AppDivider(),
                                 AppListTile(
-                                  leading: const Icon(AppIcons.box, color: AppColors.secondaryTeal),
+                                  leading: const Icon(
+                                    AppIcons.box,
+                                    color: AppColors.secondaryTeal,
+                                  ),
                                   title: const Text('Stock Transfer Order'),
-                                  subtitle: const Text('Initiate inter-warehouse inventory dispatch'),
-                                  onTap: () => Navigator.of(context).pop('Created Stock Transfer'),
+                                  subtitle: const Text(
+                                    'Initiate inter-warehouse inventory dispatch',
+                                  ),
+                                  onTap: () => Navigator.of(
+                                    context,
+                                  ).pop('Created Stock Transfer'),
                                 ),
                                 const SizedBox(height: AppSpacing.md),
                                 shadcn.SecondaryButton(
-                                  onPressed: () => Navigator.of(context).pop('Cancelled'),
+                                  onPressed: () =>
+                                      Navigator.of(context).pop('Cancelled'),
                                   child: const Text('Cancel'),
                                 ),
                               ],
@@ -128,14 +161,25 @@ shadcn.openDrawerOverlay(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text('Filter Drawer', style: AppTypography.sectionTitle(context)),
+                                  Text(
+                                    'Filter Drawer',
+                                    style: AppTypography.sectionTitle(context),
+                                  ),
                                   const SizedBox(height: AppSpacing.md),
-                                  const AppTextField(label: 'Account Code', hint: '1001-00'),
+                                  const AppTextField(
+                                    label: 'Account Code',
+                                    hint: '1001-00',
+                                  ),
                                   const SizedBox(height: AppSpacing.sm),
-                                  const AppTextField(label: 'Currency', hint: 'USD'),
+                                  const AppTextField(
+                                    label: 'Currency',
+                                    hint: 'USD',
+                                  ),
                                   const Spacer(),
                                   shadcn.PrimaryButton(
-                                    onPressed: () => Navigator.of(context).pop('Filters Applied'),
+                                    onPressed: () => Navigator.of(
+                                      context,
+                                    ).pop('Filters Applied'),
                                     child: const Text('Apply Filters'),
                                   ),
                                 ],
@@ -154,7 +198,10 @@ shadcn.openDrawerOverlay(
                 ],
               ),
               const SizedBox(height: AppSpacing.xs),
-              Text('Last Action Result: $_sheetResult', style: AppTypography.caption(context)),
+              Text(
+                'Last Action Result: $_sheetResult',
+                style: AppTypography.caption(context),
+              ),
             ],
           ),
         ),
@@ -162,12 +209,17 @@ shadcn.openDrawerOverlay(
     }
 
     // 2. Dialog & AlertDialog Playground
-    if (ctrl.isComponentMatching('Dialog / AlertDialog', 'Modal dialog overlay primitive', cat)) {
+    if (ctrl.isComponentMatching(
+      'Dialog / AlertDialog',
+      'Modal dialog overlay primitive',
+      cat,
+    )) {
       cards.add(
         GalleryPreviewCard(
           name: 'Dialog / AlertDialog',
           category: cat,
-          description: 'Native modal dialog overlay for confirmation actions and data prompts.',
+          description:
+              'Native modal dialog overlay for confirmation actions and data prompts.',
           usageNotes: 'Use AppDialog.confirm for modal confirmations.',
           dartCode: '''
 AppDialog.confirm(
@@ -182,7 +234,8 @@ AppDialog.confirm(
               AppDialog.confirm(
                 context: context,
                 title: 'Confirm Journal Posting',
-                message: 'Posting this voucher will permanently lock ledger entry #INV-2026-0042 and update general ledger balances.',
+                message:
+                    'Posting this voucher will permanently lock ledger entry #INV-2026-0042 and update general ledger balances.',
                 confirmLabel: 'Post Ledger',
                 onConfirm: () {},
               );
@@ -201,13 +254,18 @@ AppDialog.confirm(
     }
 
     // 3. Popover & Tooltip
-    if (ctrl.isComponentMatching('Popover / Tooltip', 'Contextual popup overlay and tooltip', cat)) {
+    if (ctrl.isComponentMatching(
+      'Popover / Tooltip',
+      'Contextual popup overlay and tooltip',
+      cat,
+    )) {
       cards.add(
         GalleryPreviewCard(
           name: 'Popover & Tooltip',
           category: cat,
           description: 'Floating contextual popovers and tooltip hints.',
-          usageNotes: 'Use Tooltip and Popover for inline field hints or popover controls.',
+          usageNotes:
+              'Use Tooltip and Popover for inline field hints or popover controls.',
           dartCode: '''
 shadcn.Tooltip(
   tooltip: (context) => const shadcn.TooltipContainer(
@@ -222,14 +280,23 @@ shadcn.Tooltip(
             children: [
               shadcn.Tooltip(
                 tooltip: (context) => const shadcn.TooltipContainer(
-                  child: Text('Functional currency used for General Ledger reporting'),
+                  child: Text(
+                    'Functional currency used for General Ledger reporting',
+                  ),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text('USD Currency Info', style: AppTypography.body(context)),
+                    Text(
+                      'USD Currency Info',
+                      style: AppTypography.body(context),
+                    ),
                     const SizedBox(width: 4),
-                    const Icon(AppIcons.info, size: 16, color: AppColors.primaryBlue),
+                    const Icon(
+                      AppIcons.info,
+                      size: 16,
+                      color: AppColors.primaryBlue,
+                    ),
                   ],
                 ),
               ),
@@ -245,10 +312,12 @@ shadcn.Tooltip(
 
     return Column(
       children: cards
-          .map((card) => Padding(
-                padding: const EdgeInsets.only(bottom: AppSpacing.md),
-                child: card,
-              ))
+          .map(
+            (card) => Padding(
+              padding: const EdgeInsets.only(bottom: AppSpacing.md),
+              child: card,
+            ),
+          )
           .toList(),
     );
   }

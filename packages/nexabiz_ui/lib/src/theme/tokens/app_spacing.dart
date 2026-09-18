@@ -43,7 +43,8 @@ class AppSpacing {
       shadcn.Theme.of(context).density;
 
   static double baseGapOf(BuildContext context) =>
-      shadcn.Theme.of(context).density.baseGap * shadcn.Theme.of(context).scaling;
+      shadcn.Theme.of(context).density.baseGap *
+      shadcn.Theme.of(context).scaling;
 
   static double baseContainerPaddingOf(BuildContext context) =>
       shadcn.Theme.of(context).density.baseContainerPadding *
@@ -53,4 +54,3 @@ class AppSpacing {
       shadcn.Theme.of(context).density.baseContentPadding *
       shadcn.Theme.of(context).scaling;
 }
-

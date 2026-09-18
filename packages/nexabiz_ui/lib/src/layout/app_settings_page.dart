@@ -80,10 +80,7 @@ class AppSettingsPage extends StatelessWidget {
           ],
           if (actions != null && actions!.isNotEmpty) ...[
             const SizedBox(height: AppLayoutTokens.sectionGap),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: actions!,
-            ),
+            Row(mainAxisAlignment: MainAxisAlignment.end, children: actions!),
           ],
         ],
       ),

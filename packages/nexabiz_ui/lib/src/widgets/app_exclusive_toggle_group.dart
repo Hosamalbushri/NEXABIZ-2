@@ -63,9 +63,8 @@ class AppExclusiveToggleGroup<T> extends StatelessWidget {
 
       if (option.tooltip != null && option.tooltip!.isNotEmpty) {
         toggle = shadcn.Tooltip(
-          tooltip: (context) => shadcn.TooltipContainer(
-            child: Text(option.tooltip!),
-          ),
+          tooltip: (context) =>
+              shadcn.TooltipContainer(child: Text(option.tooltip!)),
           child: toggle,
         );
       }

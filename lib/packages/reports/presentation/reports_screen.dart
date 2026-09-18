@@ -1,20 +1,23 @@
 import 'package:flutter/widgets.dart';
 import 'package:nexabiz_ui/nexabiz_ui.dart';
 
+import '../../../l10n/app_localizations.dart';
+
 /// Enterprise Reports screen built strictly using canonical `nexabiz_ui` primitives.
 class ReportsScreen extends StatelessWidget {
   const ReportsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return AppDashboardPage(
-      title: 'Reports Hub',
-      subtitle: 'Financial, Operational, & Analytical Reports',
+      title: l10n.reportsTitle,
+      subtitle: l10n.reportsSubtitle,
       content: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           AppSection(
-            title: 'Engine Status',
+            title: l10n.reportsEngineStatus,
             child: AppSurface(
               padding: const EdgeInsets.all(AppSpacing.md),
               child: Row(
@@ -23,12 +26,12 @@ class ReportsScreen extends StatelessWidget {
                   const SizedBox(width: AppSpacing.sm),
                   Expanded(
                     child: Text(
-                      'Reporting Engine Integration Standby • Clean data adapters ready',
+                      l10n.reportsEngineStatusBody,
                       style: AppTypography.caption(context),
                     ),
                   ),
-                  const AppStatusBadge(
-                    label: 'Standby',
+                  AppStatusBadge(
+                    label: l10n.statusStandby,
                     tone: AppStatusTone.warning,
                     animate: false,
                   ),
@@ -38,30 +41,30 @@ class ReportsScreen extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.lg),
           AppSection(
-            title: 'Financial Reports',
+            title: l10n.reportsFinancialReports,
             child: AppModuleHubGrid(
               children: [
                 AppModuleHubTile(
-                  title: 'Trial Balance',
-                  subtitle: 'Debit/Credit summaries',
+                  title: l10n.reportsTrialBalance,
+                  subtitle: l10n.reportsTrialBalanceSubtitle,
                   icon: AppIcons.wallet,
                   onTap: () {},
                 ),
                 AppModuleHubTile(
-                  title: 'Balance Sheet',
-                  subtitle: 'Assets & Liabilities',
+                  title: l10n.reportsBalanceSheet,
+                  subtitle: l10n.reportsBalanceSheetSubtitle,
                   icon: AppIcons.chart,
                   onTap: () {},
                 ),
                 AppModuleHubTile(
-                  title: 'Profit & Loss',
-                  subtitle: 'Income vs Expense',
+                  title: l10n.reportsProfitLoss,
+                  subtitle: l10n.reportsProfitLossSubtitle,
                   icon: AppIcons.grid,
                   onTap: () {},
                 ),
                 AppModuleHubTile(
-                  title: 'General Ledger Audit',
-                  subtitle: 'Journal verification',
+                  title: l10n.reportsGLAudit,
+                  subtitle: l10n.reportsGLAuditSubtitle,
                   icon: AppIcons.check,
                   onTap: () {},
                 ),

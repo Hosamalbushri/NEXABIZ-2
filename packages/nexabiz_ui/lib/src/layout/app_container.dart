@@ -56,10 +56,10 @@ class AppContainer extends StatelessWidget {
     this.scrollable = true,
     this.scrollController,
     this.physics,
-  })  : maxWidth = AppContainerWidths.expanded,
-        minWidth = null,
-        alignment = Alignment.topCenter,
-        centerContent = true;
+  }) : maxWidth = AppContainerWidths.expanded,
+       minWidth = null,
+       alignment = Alignment.topCenter,
+       centerContent = true;
 
   /// Form section container preset (max 640px wide).
   const AppContainer.form({
@@ -69,10 +69,10 @@ class AppContainer extends StatelessWidget {
     this.scrollable = true,
     this.scrollController,
     this.physics,
-  })  : maxWidth = AppContainerWidths.form,
-        minWidth = null,
-        alignment = Alignment.topCenter,
-        centerContent = true;
+  }) : maxWidth = AppContainerWidths.form,
+       minWidth = null,
+       alignment = Alignment.topCenter,
+       centerContent = true;
 
   /// Entity details view container preset (max 960px wide).
   const AppContainer.details({
@@ -82,10 +82,10 @@ class AppContainer extends StatelessWidget {
     this.scrollable = true,
     this.scrollController,
     this.physics,
-  })  : maxWidth = AppContainerWidths.details,
-        minWidth = null,
-        alignment = Alignment.topCenter,
-        centerContent = true;
+  }) : maxWidth = AppContainerWidths.details,
+       minWidth = null,
+       alignment = Alignment.topCenter,
+       centerContent = true;
 
   /// Dense accounting data table container preset (max 1440px or full width).
   const AppContainer.table({
@@ -95,10 +95,10 @@ class AppContainer extends StatelessWidget {
     this.scrollable = false,
     this.scrollController,
     this.physics,
-  })  : maxWidth = AppContainerWidths.dashboard,
-        minWidth = null,
-        alignment = Alignment.topCenter,
-        centerContent = true;
+  }) : maxWidth = AppContainerWidths.dashboard,
+       minWidth = null,
+       alignment = Alignment.topCenter,
+       centerContent = true;
 
   /// ERP Dashboard container preset (max 1440px wide).
   const AppContainer.dashboard({
@@ -108,10 +108,10 @@ class AppContainer extends StatelessWidget {
     this.scrollable = true,
     this.scrollController,
     this.physics,
-  })  : maxWidth = AppContainerWidths.dashboard,
-        minWidth = null,
-        alignment = Alignment.topCenter,
-        centerContent = true;
+  }) : maxWidth = AppContainerWidths.dashboard,
+       minWidth = null,
+       alignment = Alignment.topCenter,
+       centerContent = true;
 
   /// Application Settings container preset (max 800px wide).
   const AppContainer.settings({
@@ -121,10 +121,10 @@ class AppContainer extends StatelessWidget {
     this.scrollable = true,
     this.scrollController,
     this.physics,
-  })  : maxWidth = AppContainerWidths.readable,
-        minWidth = null,
-        alignment = Alignment.topCenter,
-        centerContent = true;
+  }) : maxWidth = AppContainerWidths.readable,
+       minWidth = null,
+       alignment = Alignment.topCenter,
+       centerContent = true;
 
   /// Modal overlay dialog/sheet container preset (max 600px wide).
   const AppContainer.modal({
@@ -134,10 +134,10 @@ class AppContainer extends StatelessWidget {
     this.scrollable = false,
     this.scrollController,
     this.physics,
-  })  : maxWidth = AppContainerWidths.compact,
-        minWidth = null,
-        alignment = Alignment.center,
-        centerContent = true;
+  }) : maxWidth = AppContainerWidths.compact,
+       minWidth = null,
+       alignment = Alignment.center,
+       centerContent = true;
 
   final Widget child;
   final double maxWidth;
@@ -162,30 +162,20 @@ class AppContainer extends StatelessWidget {
 
     final effectivePadding = padding ?? defaultPadding;
 
-    Widget content = BoxConstraints(
-      maxWidth: maxWidth,
-      minWidth: minWidth ?? 0.0,
-    ) != const BoxConstraints()
+    Widget content =
+        BoxConstraints(maxWidth: maxWidth, minWidth: minWidth ?? 0.0) !=
+            const BoxConstraints()
         ? ConstrainedBox(
             constraints: BoxConstraints(
               maxWidth: maxWidth,
               minWidth: minWidth ?? 0.0,
             ),
-            child: Padding(
-              padding: effectivePadding,
-              child: child,
-            ),
+            child: Padding(padding: effectivePadding, child: child),
           )
-        : Padding(
-            padding: effectivePadding,
-            child: child,
-          );
+        : Padding(padding: effectivePadding, child: child);
 
     if (centerContent) {
-      content = Align(
-        alignment: alignment,
-        child: content,
-      );
+      content = Align(alignment: alignment, child: content);
     }
 
     if (scrollable) {

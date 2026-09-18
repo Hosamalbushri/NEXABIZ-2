@@ -57,7 +57,9 @@ class AppCheckbox extends StatelessWidget {
   shadcn.CheckboxState get _effectiveState {
     if (state != null) return state!;
     if (value == null) return shadcn.CheckboxState.indeterminate;
-    return value! ? shadcn.CheckboxState.checked : shadcn.CheckboxState.unchecked;
+    return value!
+        ? shadcn.CheckboxState.checked
+        : shadcn.CheckboxState.unchecked;
   }
 
   void _handleChanged(shadcn.CheckboxState newState) {

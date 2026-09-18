@@ -3,6 +3,10 @@ import 'package:flutter/material.dart';
 import '../../layout/app_list_page.dart';
 
 /// Legacy compatible List Page pattern delegating to canonical [AppListPage].
+@Deprecated(
+  'Use AppListPage directly. '
+  'This compatibility wrapper will be removed in a future cleanup.',
+)
 class AppListPagePattern<T> extends StatelessWidget {
   const AppListPagePattern({
     super.key,

@@ -78,7 +78,8 @@ class AppChoiceCardGroup<T> extends StatelessWidget {
                           : theme.colorScheme.mutedForeground,
                     ),
                   ),
-                  if (option.subtitle != null && option.subtitle!.isNotEmpty) ...[
+                  if (option.subtitle != null &&
+                      option.subtitle!.isNotEmpty) ...[
                     const SizedBox(height: 2),
                     Text(
                       option.subtitle!,

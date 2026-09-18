@@ -28,7 +28,8 @@ void main() {
         expect(
           content.contains('flex_color_scheme'),
           isFalse,
-          reason: 'File ${file.path} contains unauthorized flex_color_scheme import!',
+          reason:
+              'File ${file.path} contains unauthorized flex_color_scheme import!',
         );
       }
     });
@@ -44,83 +45,102 @@ void main() {
         expect(
           content.contains('dependOnInheritedWidgetOfExactType<shadcn.Theme>'),
           isFalse,
-          reason: 'File ${file.path} contains inline fallback shadcn.Theme check!',
+          reason:
+              'File ${file.path} contains inline fallback shadcn.Theme check!',
         );
       }
     });
 
-    test('GUARD-03: Material DropdownButton is not used in nexabiz_ui components', () {
-      final dartFiles = srcDir
-          .listSync(recursive: true)
-          .whereType<File>()
-          .where((f) => f.path.endsWith('.dart'));
+    test(
+      'GUARD-03: Material DropdownButton is not used in nexabiz_ui components',
+      () {
+        final dartFiles = srcDir
+            .listSync(recursive: true)
+            .whereType<File>()
+            .where((f) => f.path.endsWith('.dart'));
 
-      for (final file in dartFiles) {
-        final content = file.readAsStringSync();
-        expect(
-          content.contains('DropdownButton'),
-          isFalse,
-          reason: 'File ${file.path} contains unauthorized Material DropdownButton!',
-        );
-      }
-    });
-
-    test('GUARD-04: Direct Material buttons (ElevatedButton, TextButton, OutlinedButton) instantiation is not used in nexabiz_ui widgets', () {
-      final widgetsDir = Directory('${srcDir.path}/widgets');
-      if (!widgetsDir.existsSync()) return;
-
-      final dartFiles = widgetsDir
-          .listSync(recursive: true)
-          .whereType<File>()
-          .where((f) => f.path.endsWith('.dart'));
-
-      for (final file in dartFiles) {
-        final content = file.readAsStringSync();
-        for (final forbidden in ['ElevatedButton(', 'TextButton(', 'OutlinedButton(']) {
+        for (final file in dartFiles) {
+          final content = file.readAsStringSync();
           expect(
-            content.contains(forbidden),
+            content.contains('DropdownButton'),
             isFalse,
-            reason: 'File ${file.path} contains unauthorized Material button $forbidden!',
+            reason:
+                'File ${file.path} contains unauthorized Material DropdownButton!',
           );
         }
-      }
-    });
+      },
+    );
 
-    test('GUARD-05: Material Card widget instantiation is not used directly in nexabiz_ui widgets', () {
-      final widgetsDir = Directory('${srcDir.path}/widgets');
-      if (!widgetsDir.existsSync()) return;
+    test(
+      'GUARD-04: Direct Material buttons (ElevatedButton, TextButton, OutlinedButton) instantiation is not used in nexabiz_ui widgets',
+      () {
+        final widgetsDir = Directory('${srcDir.path}/widgets');
+        if (!widgetsDir.existsSync()) return;
 
-      final dartFiles = widgetsDir
-          .listSync(recursive: true)
-          .whereType<File>()
-          .where((f) => f.path.endsWith('.dart'));
+        final dartFiles = widgetsDir
+            .listSync(recursive: true)
+            .whereType<File>()
+            .where((f) => f.path.endsWith('.dart'));
 
-      for (final file in dartFiles) {
-        if (file.path.endsWith('app_card.dart')) continue;
-        final content = file.readAsStringSync();
-        expect(
-          RegExp(r'(?<!shadcn\.)\bCard\(').hasMatch(content),
-          isFalse,
-          reason: 'File ${file.path} contains direct Material Card widget!',
-        );
-      }
+        for (final file in dartFiles) {
+          final content = file.readAsStringSync();
+          for (final forbidden in [
+            'ElevatedButton(',
+            'TextButton(',
+            'OutlinedButton(',
+          ]) {
+            expect(
+              content.contains(forbidden),
+              isFalse,
+              reason:
+                  'File ${file.path} contains unauthorized Material button $forbidden!',
+            );
+          }
+        }
+      },
+    );
 
-    });
+    test(
+      'GUARD-05: Material Card widget instantiation is not used directly in nexabiz_ui widgets',
+      () {
+        final widgetsDir = Directory('${srcDir.path}/widgets');
+        if (!widgetsDir.existsSync()) return;
 
-    test('GUARD-06: Third-party form packages like flutter_form_builder are not imported', () {
-      final dartFiles = srcDir
-          .listSync(recursive: true)
-          .whereType<File>()
-          .where((f) => f.path.endsWith('.dart'));
+        final dartFiles = widgetsDir
+            .listSync(recursive: true)
+            .whereType<File>()
+            .where((f) => f.path.endsWith('.dart'));
 
-      for (final file in dartFiles) {
-        final content = file.readAsStringSync();
-        expect(
-          content.contains('flutter_form_builder'),
-          isFalse,
-          reason: 'File ${file.path} contains unauthorized flutter_form_builder import!',
-        );
-      }
-    });
+        for (final file in dartFiles) {
+          if (file.path.endsWith('app_card.dart')) continue;
+          final content = file.readAsStringSync();
+          expect(
+            RegExp(r'(?<!shadcn\.)\bCard\(').hasMatch(content),
+            isFalse,
+            reason: 'File ${file.path} contains direct Material Card widget!',
+          );
+        }
+      },
+    );
+
+    test(
+      'GUARD-06: Third-party form packages like flutter_form_builder are not imported',
+      () {
+        final dartFiles = srcDir
+            .listSync(recursive: true)
+            .whereType<File>()
+            .where((f) => f.path.endsWith('.dart'));
+
+        for (final file in dartFiles) {
+          final content = file.readAsStringSync();
+          expect(
+            content.contains('flutter_form_builder'),
+            isFalse,
+            reason:
+                'File ${file.path} contains unauthorized flutter_form_builder import!',
+          );
+        }
+      },
+    );
   });
 }

@@ -24,7 +24,8 @@ abstract final class AppThemeController {
 
   /// Toggle between light and dark theme mode.
   static void toggleTheme(bool isDark) {
-    themeModeNotifier.value =
-        isDark ? shadcn.ThemeMode.dark : shadcn.ThemeMode.light;
+    themeModeNotifier.value = isDark
+        ? shadcn.ThemeMode.dark
+        : shadcn.ThemeMode.light;
   }
 }

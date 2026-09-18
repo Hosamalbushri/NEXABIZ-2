@@ -3,6 +3,7 @@ import 'package:shadcn_flutter/shadcn_flutter.dart' as shadcn;
 
 import '../theme/tokens/app_icons.dart';
 import '../theme/tokens/app_spacing.dart';
+import '../theme/tokens/app_typography.dart';
 import 'app_icon_button.dart';
 
 double _resolveTitleFontSize(String title) {
@@ -107,12 +108,15 @@ class AppCustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     final resolvedStyle = (style ?? AppCustomAppBarStyle.adaptive(context));
     final isCentered = centerTitle ?? resolvedStyle.centerTitle;
 
-    final background = resolvedStyle.backgroundColor ??
+    final background =
+        resolvedStyle.backgroundColor ??
         (isDark ? colorScheme.muted : colorScheme.card);
     final foreground = resolvedStyle.foregroundColor ?? colorScheme.foreground;
-    final shadowColor = resolvedStyle.shadowColor ??
+    final shadowColor =
+        resolvedStyle.shadowColor ??
         colorScheme.primary.withValues(alpha: isDark ? 0.18 : 0.12);
 
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
     final canPop = Navigator.canPop(context);
     final shouldShowBack = showBackButton || canPop;
 
@@ -123,8 +127,8 @@ class AppCustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       leadingWidget = AppIconButton(
         variant: AppIconButtonVariant.chip,
         iconSize: 18.0,
-        icon: AppIcons.chevronRight,
-        tooltip: 'رجوع',
+        icon: isRtl ? AppIcons.chevronRight : AppIcons.chevronLeft,
+        tooltip: isRtl ? 'رجوع' : 'Back',
         onPressed: onBack ?? () => Navigator.of(context).maybePop(),
       );
     } else if (showMenuButton) {
@@ -132,7 +136,7 @@ class AppCustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         variant: AppIconButtonVariant.chip,
         iconSize: 18.0,
         icon: AppIcons.grid,
-        tooltip: 'القائمة',
+        tooltip: isRtl ? 'القائمة' : 'Menu',
         onPressed: onMenu,
       );
     }
@@ -144,7 +148,7 @@ class AppCustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           variant: AppIconButtonVariant.chip,
           iconSize: 18.0,
           icon: shadcn.LucideIcons.search,
-          tooltip: 'بحث',
+          tooltip: isRtl ? 'بحث' : 'Search',
           onPressed: onSearch,
         ),
       if (showNotifications)
@@ -152,7 +156,7 @@ class AppCustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           variant: AppIconButtonVariant.chip,
           iconSize: 18.0,
           icon: shadcn.LucideIcons.bell,
-          tooltip: 'الإشعارات',
+          tooltip: isRtl ? 'الإشعارات' : 'Notifications',
           badgeCount: notificationCount > 0 ? notificationCount : null,
           onPressed: onNotifications,
         ),
@@ -162,13 +166,15 @@ class AppCustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
     final titleWidget = Column(
       mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment:
-          isCentered ? CrossAxisAlignment.center : CrossAxisAlignment.start,
+      crossAxisAlignment: isCentered
+          ? CrossAxisAlignment.center
+          : CrossAxisAlignment.start,
       children: [
         FittedBox(
           fit: BoxFit.scaleDown,
-          alignment:
-              isCentered ? Alignment.center : AlignmentDirectional.centerStart,
+          alignment: isCentered
+              ? Alignment.center
+              : AlignmentDirectional.centerStart,
           child: Text(
             title,
             maxLines: 1,
@@ -176,6 +182,7 @@ class AppCustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             overflow: TextOverflow.visible,
             textAlign: isCentered ? TextAlign.center : TextAlign.start,
             style: TextStyle(
+              fontFamily: AppTypography.fontFamilyName,
               fontSize: fontSize,
               fontWeight: FontWeight.w700,
               letterSpacing: -0.6,
@@ -196,6 +203,7 @@ class AppCustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               textAlign: isCentered ? TextAlign.center : TextAlign.start,
               maxLines: 1,
               style: TextStyle(
+                fontFamily: AppTypography.fontFamilyName,
                 fontSize: 12.0,
                 color: colorScheme.mutedForeground,
               ),
@@ -247,7 +255,8 @@ class AppCustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                           ),
                         Padding(
                           padding: EdgeInsets.symmetric(
-                            horizontal: leadingWidget != null ||
+                            horizontal:
+                                leadingWidget != null ||
                                     trailingCluster.isNotEmpty
                                 ? 52.0
                                 : 0.0,
@@ -260,9 +269,11 @@ class AppCustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                for (var i = 0;
-                                    i < trailingCluster.length;
-                                    i++) ...[
+                                for (
+                                  var i = 0;
+                                  i < trailingCluster.length;
+                                  i++
+                                ) ...[
                                   if (i > 0)
                                     const SizedBox(width: AppSpacing.xs),
                                   trailingCluster[i],

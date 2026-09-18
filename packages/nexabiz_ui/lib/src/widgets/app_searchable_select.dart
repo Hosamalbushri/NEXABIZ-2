@@ -51,6 +51,14 @@ class AppSearchableSelect<T> extends StatefulWidget {
 class _AppSearchableSelectState<T> extends State<AppSearchableSelect<T>> {
   String _searchQuery = '';
 
+  @override
+  void didUpdateWidget(covariant AppSearchableSelect<T> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.items != oldWidget.items) {
+      _searchQuery = '';
+    }
+  }
+
   String _getSearchText(T item) {
     if (widget.searchValueBuilder != null) {
       return widget.searchValueBuilder!(item);
@@ -99,7 +107,9 @@ class _AppSearchableSelectState<T> extends State<AppSearchableSelect<T>> {
           value: widget.value,
           onChanged: isInteractive ? widget.onChanged : null,
           enabled: isInteractive,
-          placeholder: widget.placeholder ?? (widget.hint != null ? Text(widget.hint!) : null),
+          placeholder:
+              widget.placeholder ??
+              (widget.hint != null ? Text(widget.hint!) : null),
           itemBuilder: (context, value) {
             if (widget.valueBuilder != null) {
               return widget.valueBuilder!(context, value);
@@ -116,7 +126,10 @@ class _AppSearchableSelectState<T> extends State<AppSearchableSelect<T>> {
                 }).toList();
 
                 return Container(
-                  constraints: const BoxConstraints(maxHeight: 300, minWidth: 220),
+                  constraints: const BoxConstraints(
+                    maxHeight: 300,
+                    minWidth: 220,
+                  ),
                   padding: const EdgeInsets.all(8),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -133,18 +146,21 @@ class _AppSearchableSelectState<T> extends State<AppSearchableSelect<T>> {
                       Expanded(
                         child: filteredItems.isEmpty
                             ? (widget.emptyBuilder != null
-                                ? widget.emptyBuilder!(context)
-                                : Center(
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(16.0),
-                                      child: Text(
-                                        'لا توجد نتائج',
-                                        style: theme.typography.small.copyWith(
-                                          color: theme.colorScheme.mutedForeground,
+                                  ? widget.emptyBuilder!(context)
+                                  : Center(
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(16.0),
+                                        child: Text(
+                                          'لا توجد نتائج',
+                                          style: theme.typography.small
+                                              .copyWith(
+                                                color: theme
+                                                    .colorScheme
+                                                    .mutedForeground,
+                                              ),
                                         ),
                                       ),
-                                    ),
-                                  ))
+                                    ))
                             : ListView.builder(
                                 shrinkWrap: true,
                                 itemCount: filteredItems.length,
@@ -173,7 +189,8 @@ class _AppSearchableSelectState<T> extends State<AppSearchableSelect<T>> {
               fontWeight: FontWeight.w500,
             ),
           ),
-        ] else if (widget.helperText != null && widget.helperText!.isNotEmpty) ...[
+        ] else if (widget.helperText != null &&
+            widget.helperText!.isNotEmpty) ...[
           const SizedBox(height: 4),
           Text(
             widget.helperText!,

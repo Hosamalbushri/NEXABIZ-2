@@ -9,10 +9,12 @@ class GalleryNavigationPlayground extends StatefulWidget {
   const GalleryNavigationPlayground({super.key, required this.controller});
 
   @override
-  State<GalleryNavigationPlayground> createState() => _GalleryNavigationPlaygroundState();
+  State<GalleryNavigationPlayground> createState() =>
+      _GalleryNavigationPlaygroundState();
 }
 
-class _GalleryNavigationPlaygroundState extends State<GalleryNavigationPlayground> {
+class _GalleryNavigationPlaygroundState
+    extends State<GalleryNavigationPlayground> {
   int _activeTabIndex = 0;
 
   @override
@@ -23,13 +25,18 @@ class _GalleryNavigationPlaygroundState extends State<GalleryNavigationPlaygroun
     final cards = <Widget>[];
 
     // 1. Tabs
-    if (ctrl.isComponentMatching('Tabs', 'Tabbed container navigation primitive', cat)) {
+    if (ctrl.isComponentMatching(
+      'Tabs',
+      'Tabbed container navigation primitive',
+      cat,
+    )) {
       cards.add(
         GalleryPreviewCard(
           name: 'Tabs (TabContainer / TabList / TabPane)',
           category: cat,
           description: 'Tabbed navigation container primitive.',
-          usageNotes: 'Use for switching views (Overview, Ledger Items, Attachments, Audit Log).',
+          usageNotes:
+              'Use for switching views (Overview, Ledger Items, Attachments, Audit Log).',
           dartCode: '''
 shadcn.Tabs(
   index: _activeTabIndex,
@@ -53,14 +60,18 @@ shadcn.Tabs(
                         onPressed: () => setState(() => _activeTabIndex = 0),
                         child: Text(
                           'Overview',
-                          style: _activeTabIndex == 0 ? AppTypography.bodyBold(context) : AppTypography.body(context),
+                          style: _activeTabIndex == 0
+                              ? AppTypography.bodyBold(context)
+                              : AppTypography.body(context),
                         ),
                       ),
                       shadcn.GhostButton(
                         onPressed: () => setState(() => _activeTabIndex = 1),
                         child: Text(
                           'Ledger Entries',
-                          style: _activeTabIndex == 1 ? AppTypography.bodyBold(context) : AppTypography.body(context),
+                          style: _activeTabIndex == 1
+                              ? AppTypography.bodyBold(context)
+                              : AppTypography.body(context),
                         ),
                       ),
                     ],
@@ -82,13 +93,19 @@ shadcn.Tabs(
     }
 
     // 2. Breadcrumb
-    if (ctrl.isComponentMatching('Breadcrumb', 'Hierarchy trail breadcrumb widget', cat)) {
+    if (ctrl.isComponentMatching(
+      'Breadcrumb',
+      'Hierarchy trail breadcrumb widget',
+      cat,
+    )) {
       cards.add(
         GalleryPreviewCard(
           name: 'Breadcrumb',
           category: cat,
-          description: 'Navigational breadcrumb trail representing page location.',
-          usageNotes: 'Use inside AppPageHeader for deep ERP navigation tracks.',
+          description:
+              'Navigational breadcrumb trail representing page location.',
+          usageNotes:
+              'Use inside AppPageHeader for deep ERP navigation tracks.',
           dartCode: '''
 shadcn.Breadcrumb(
   children: [
@@ -114,7 +131,11 @@ shadcn.Breadcrumb(
     }
 
     // 3. Pagination
-    if (ctrl.isComponentMatching('Pagination', 'Page navigation control for multi-page data tables', cat)) {
+    if (ctrl.isComponentMatching(
+      'Pagination',
+      'Page navigation control for multi-page data tables',
+      cat,
+    )) {
       cards.add(
         GalleryPreviewCard(
           name: 'Pagination',
@@ -137,7 +158,10 @@ shadcn.Pagination(
                 onPressed: () {},
                 child: const Icon(AppIcons.chevronLeft, size: 14),
               ),
-              Text('Page 1 of 12 (120 Records)', style: AppTypography.caption(context)),
+              Text(
+                'Page 1 of 12 (120 Records)',
+                style: AppTypography.caption(context),
+              ),
               shadcn.OutlineButton(
                 density: shadcn.ButtonDensity.compact,
                 onPressed: () {},
@@ -151,10 +175,12 @@ shadcn.Pagination(
 
     return Column(
       children: cards
-          .map((card) => Padding(
-                padding: const EdgeInsets.only(bottom: AppSpacing.md),
-                child: card,
-              ))
+          .map(
+            (card) => Padding(
+              padding: const EdgeInsets.only(bottom: AppSpacing.md),
+              child: card,
+            ),
+          )
           .toList(),
     );
   }

@@ -1,8 +1,10 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart' as shadcn;
 
 import '../theme/tokens/app_spacing.dart';
-import 'app_custom_bottom_nav.dart';
+import 'app_bottom_sheet.dart';
 
 /// Single item descriptor for quick actions grid.
 class AppQuickActionItem {
@@ -36,34 +38,110 @@ class AppQuickActionsPanel extends StatelessWidget {
     this.onClose,
   });
 
-  /// Displays the quick actions panel using [showModalBottomSheet].
+  // Keep close(context) usable from the shell's original Navigator context.
+  // Each invocation remains independent, as with the previous modal API.
+  static final _activePanels = <NavigatorState, List<VoidCallback>>{};
+
+  /// Displays the quick actions panel through the canonical sheet overlay.
   static Future<T?> show<T>(
     BuildContext context, {
     required List<AppQuickActionItem> items,
     String title = 'Quick Actions',
     String? subtitle,
   }) async {
-    return showModalBottomSheet<T>(
+    final owner = Navigator.of(context);
+    final previousFocus = FocusManager.instance.primaryFocus;
+    final direction = Directionality.of(context);
+    BuildContext? sheetContext;
+    late shadcn.DrawerOverlayCompleter<T?> overlay;
+    var closing = false;
+    void closePanel() {
+      if (closing) return;
+      closing = true;
+      final mountedContext = sheetContext;
+      if (mountedContext != null && mountedContext.mounted) {
+        AppBottomSheet.close<T>(mountedContext);
+      } else {
+        overlay.remove();
+      }
+    }
+
+    overlay = shadcn.openSheetOverlay<T>(
       context: context,
-      backgroundColor: const Color(0x00000000),
-      isScrollControlled: true,
-      useSafeArea: true,
-      builder: (ctx) => AppQuickActionsPanel(
-        title: title,
-        subtitle: subtitle,
-        items: items,
-        onClose: () => Navigator.of(ctx).pop(),
+      position: shadcn.OverlayPosition.bottom,
+      barrierDismissible: true,
+      draggable: true,
+      constraints: const BoxConstraints(
+        maxWidth: AppBottomSheet.defaultMaxWidth,
       ),
+      builder: (ctx) {
+        sheetContext = ctx;
+        // SheetWrapper already applies the bottom/side safe-area padding.
+        return PopScope(
+          canPop: false,
+          onPopInvokedWithResult: (didPop, result) {
+            if (didPop) return;
+            closePanel();
+          },
+          child: MediaQuery.removePadding(
+            context: ctx,
+            removeLeft: true,
+            removeRight: true,
+            removeBottom: true,
+            child: Directionality(
+              textDirection: direction,
+              child: Padding(
+                padding: EdgeInsets.only(
+                  bottom: MediaQuery.viewInsetsOf(ctx).bottom,
+                ),
+                child: SingleChildScrollView(
+                  child: AppQuickActionsPanel(
+                    title: title,
+                    subtitle: subtitle,
+                    items: items,
+                    onClose: closePanel,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
     );
+    final panels = _activePanels.putIfAbsent(owner, () => []);
+    panels.add(closePanel);
+    try {
+      return await overlay.future;
+    } finally {
+      panels.remove(closePanel);
+      if (panels.isEmpty) _activePanels.remove(owner);
+      if (previousFocus?.context?.mounted == true &&
+          previousFocus!.canRequestFocus) {
+        previousFocus.requestFocus();
+      }
+    }
   }
 
-  /// Closes the active quick actions bottom sheet panel.
-  static void close(BuildContext context) {
-    if (Navigator.of(context).canPop()) {
-      Navigator.of(context).pop();
-    } else {
-      shadcn.closeSheet(context);
+  /// Closes the latest quick-actions panel belonging to the caller's Navigator if open.
+  /// Returns true if an active panel was found and closed.
+  static bool closeActivePanel(BuildContext context) {
+    final nav = Navigator.maybeOf(context);
+    final panels = _activePanels[nav];
+    if (panels != null && panels.isNotEmpty) {
+      panels.last();
+      return true;
     }
+    return false;
+  }
+
+  /// Closes the latest quick-actions panel belonging to the caller's Navigator.
+  static void close(BuildContext context) {
+    if (context.findAncestorWidgetOfExactType<shadcn.SheetWrapper>() != null) {
+      AppBottomSheet.close<void>(context);
+      return;
+    }
+    final panels = _activePanels[Navigator.maybeOf(context)];
+    if (panels != null && panels.isNotEmpty) panels.last();
   }
 
   @override
@@ -75,180 +153,188 @@ class AppQuickActionsPanel extends StatelessWidget {
       clipBehavior: Clip.none,
       alignment: Alignment.topCenter,
       children: [
-        Container(
-          margin: const EdgeInsets.only(top: QuickActionsFab.size / 2),
-          decoration: BoxDecoration(
-            color: colorScheme.popover,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-            border: Border.all(color: colorScheme.border),
-            boxShadow: [
-              BoxShadow(
-                color: colorScheme.primary.withValues(alpha: 0.15),
-                blurRadius: 24,
-                offset: const Offset(0, -8),
-              ),
-            ],
-          ),
-          child: SafeArea(
-            top: false,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.md,
-                AppSpacing.lg,
-                AppSpacing.md,
-                AppSpacing.md,
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Drag Handle Indicator
-                  Center(
-                    child: Container(
-                      width: 40,
-                      height: 4,
-                      margin: const EdgeInsets.only(bottom: AppSpacing.sm),
-                      decoration: BoxDecoration(
-                        color: colorScheme.border,
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ),
-                  ),
-
-              // Panel Header
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          title,
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: colorScheme.foreground,
-                          ),
-                        ),
-                        if (subtitle != null) ...[
-                          const SizedBox(height: AppSpacing.xxs),
+        SafeArea(
+          top: false,
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.md),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Panel Header (Title, Subtitle & Close Button)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
                           Text(
-                            subtitle!,
+                            title,
                             style: TextStyle(
-                              fontSize: 12,
-                              color: colorScheme.mutedForeground,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: colorScheme.foreground,
                             ),
                           ),
-                        ],
-                      ],
-                    ),
-                  ),
-                  shadcn.IconButton.ghost(
-                    icon: const Icon(shadcn.LucideIcons.x, size: 18),
-                    onPressed: onClose ?? () => shadcn.closeSheet(context),
-                  ),
-                ],
-              ),
-              const SizedBox(height: AppSpacing.md),
-
-              // Action Items Grid
-              Flexible(
-                child: GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: AppSpacing.sm,
-                    crossAxisSpacing: AppSpacing.sm,
-                    childAspectRatio: 2.2,
-                  ),
-                  itemCount: items.length,
-                  itemBuilder: (context, index) {
-                    final item = items[index];
-                    final itemColor = item.color ?? colorScheme.primary;
-
-                    return GestureDetector(
-                      onTap: () {
-                        if (onClose != null) {
-                          onClose!();
-                        } else {
-                          shadcn.closeDrawer(context);
-                        }
-                        item.onTap();
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: AppSpacing.xs,
-                          vertical: AppSpacing.xxs,
-                        ),
-                        decoration: BoxDecoration(
-                          color: itemColor.withValues(alpha: 0.08),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: itemColor.withValues(alpha: 0.18),
-                          ),
-                        ),
-                        child: Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(AppSpacing.xxs),
-                              decoration: BoxDecoration(
-                                color: itemColor.withValues(alpha: 0.16),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Icon(item.icon, size: 20, color: itemColor),
-                            ),
-                            const SizedBox(width: AppSpacing.xs),
-                            Expanded(
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    item.label,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w600,
-                                      color: colorScheme.foreground,
-                                    ),
-                                  ),
-                                  if (item.description != null)
-                                    Text(
-                                      item.description!,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        color: colorScheme.mutedForeground,
-                                      ),
-                                    ),
-                                ],
+                          if (subtitle != null) ...[
+                            const SizedBox(height: AppSpacing.xxs),
+                            Text(
+                              subtitle!,
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: colorScheme.mutedForeground,
                               ),
                             ),
                           ],
-                        ),
+                        ],
                       ),
-                    );
-                  },
+                    ),
+                    shadcn.IconButton.ghost(
+                      icon: const Icon(shadcn.LucideIcons.x, size: 18),
+                      onPressed: onClose ?? () => close(context),
+                    ),
+                  ],
                 ),
+                const SizedBox(height: AppSpacing.md),
+
+                // Action Items Grid
+                  Flexible(
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        double lineHeight(double fontSize) {
+                          final painter = TextPainter(
+                            text: TextSpan(
+                              text: 'Ag',
+                              style: DefaultTextStyle.of(
+                                context,
+                              ).style.copyWith(fontSize: fontSize),
+                            ),
+                            textDirection: Directionality.of(context),
+                            textScaler: MediaQuery.textScalerOf(context),
+                          )..layout();
+                          final height = painter.height;
+                          painter.dispose();
+                          return height;
+                        }
+
+                        final labelHeight = lineHeight(13);
+                        final descriptionHeight = lineHeight(10);
+                        final contentHeight =
+                            items.any((item) => item.description != null)
+                            ? labelHeight + descriptionHeight
+                            : labelHeight;
+                        final tileWidth =
+                            (constraints.maxWidth - AppSpacing.sm) / 2;
+                        // Preserve the normal aspect ratio, but let scaled text
+                        // determine a larger minimum extent when necessary.
+                        final tileHeight = math.max(
+                          tileWidth / 2.2,
+                          math.max(20 + AppSpacing.xxs * 2, contentHeight) +
+                              AppSpacing.xxs * 2 +
+                              Border.all().dimensions.vertical,
+                        );
+                        return GridView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                                mainAxisSpacing: AppSpacing.sm,
+                                crossAxisSpacing: AppSpacing.sm,
+                                mainAxisExtent: tileHeight,
+                              ),
+                          itemCount: items.length,
+                          itemBuilder: (context, index) {
+                            final item = items[index];
+                            final itemColor = item.color ?? colorScheme.primary;
+
+                            return GestureDetector(
+                              onTap: () {
+                                if (onClose != null) {
+                                  onClose!();
+                                } else {
+                                  shadcn.closeDrawer<void>(context);
+                                }
+                                item.onTap();
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: AppSpacing.xs,
+                                  vertical: AppSpacing.xxs,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: itemColor.withValues(alpha: 0.08),
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: itemColor.withValues(alpha: 0.18),
+                                  ),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.all(
+                                        AppSpacing.xxs,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: itemColor.withValues(
+                                          alpha: 0.16,
+                                        ),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: Icon(
+                                        item.icon,
+                                        size: 20,
+                                        color: itemColor,
+                                      ),
+                                    ),
+                                    const SizedBox(width: AppSpacing.xs),
+                                    Expanded(
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            item.label,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                              fontSize: 13,
+                                              fontWeight: FontWeight.w600,
+                                              color: colorScheme.foreground,
+                                            ),
+                                          ),
+                                          if (item.description != null)
+                                            Text(
+                                              item.description!,
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(
+                                                fontSize: 10,
+                                                color:
+                                                    colorScheme.mutedForeground,
+                                              ),
+                                            ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
-      ),
-    ),
-    Positioned(
-      top: 0,
-      child: QuickActionsFab(
-        tooltip: 'Close Quick Actions',
-        isOpen: true,
-        onPressed: onClose ?? () => close(context),
-      ),
-    ),
-  ],
-);
+      ],
+    );
   }
 }

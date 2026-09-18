@@ -20,6 +20,7 @@ version: 1.0.0+1
 
 environment:
   sdk: ^3.12.2
+  flutter: '>=3.44.0'
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -32,6 +33,7 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
+  shared_preferences: ^2.5.2
 
   nexabiz_ui:
     path: packages/nexabiz_ui
@@ -40,9 +42,9 @@ dependencies:
 
   go_router: ^14.8.1
 
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
+  # Icon font asset retained for Flutter's Cupertino icon family.
   cupertino_icons: ^1.0.8
+
 
 dev_dependencies:
   flutter_test:
@@ -60,6 +62,7 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
+  generate: true
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
@@ -83,4 +86,3 @@ flutter:
           weight: 700
         - asset: assets/fonts/Cairo/static/Cairo-Black.ttf
           weight: 900
-

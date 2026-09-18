@@ -5,6 +5,10 @@ import '../patterns/app_form_page_pattern.dart';
 /// Reusable ERP Module Form Page Scaffold.
 ///
 /// Delegates to canonical [AppFormPagePattern] while maintaining backwards compatibility.
+@Deprecated(
+  'Use AppFormPage directly. '
+  'This compatibility wrapper will be removed in a future cleanup.',
+)
 class ModuleFormScaffold extends StatelessWidget {
   const ModuleFormScaffold({
     super.key,

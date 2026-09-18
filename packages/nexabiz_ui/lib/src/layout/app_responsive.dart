@@ -2,11 +2,12 @@ import 'package:flutter/widgets.dart';
 import 'app_breakpoints.dart';
 
 /// Builder callback for [AppResponsive.builder].
-typedef AppResponsiveWidgetBuilder = Widget Function(
-  BuildContext context,
-  AppBreakpointTier tier,
-  BoxConstraints constraints,
-);
+typedef AppResponsiveWidgetBuilder =
+    Widget Function(
+      BuildContext context,
+      AppBreakpointTier tier,
+      BoxConstraints constraints,
+    );
 
 /// Canonical responsive layout utilities and responsive builder primitives for NexaBiz UI.
 class AppResponsive {

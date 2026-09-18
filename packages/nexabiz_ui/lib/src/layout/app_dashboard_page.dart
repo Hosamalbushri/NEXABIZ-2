@@ -42,7 +42,8 @@ class AppDashboardPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final hasHeader = title.isNotEmpty ||
+    final hasHeader =
+        title.isNotEmpty ||
         (subtitle != null && subtitle!.isNotEmpty) ||
         (headerActions != null && headerActions!.isNotEmpty);
 

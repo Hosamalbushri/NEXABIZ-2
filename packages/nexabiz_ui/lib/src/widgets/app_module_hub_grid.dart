@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
-import '../theme/app_breakpoints.dart';
 import '../theme/app_radius.dart';
 import '../theme/app_shadows.dart';
 import '../theme/app_spacing.dart';
@@ -33,6 +32,7 @@ class AppModuleHubTile extends StatelessWidget {
     required this.onTap,
     this.animate = true,
     this.animationDelay = Duration.zero,
+    this.mirrorIconInRtl = false,
   });
 
   final IconData icon;
@@ -41,6 +41,7 @@ class AppModuleHubTile extends StatelessWidget {
   final VoidCallback onTap;
   final bool animate;
   final Duration animationDelay;
+  final bool mirrorIconInRtl;
 
   @override
   Widget build(BuildContext context) {
@@ -48,79 +49,181 @@ class AppModuleHubTile extends StatelessWidget {
     final colorScheme = theme.colorScheme;
     final brightness = theme.brightness;
 
-    final card = Semantics(
-      container: true,
-      button: true,
-      label: title,
-      hint: subtitle,
-      child: Material(
-        color: Colors.transparent,
-        elevation: 0,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(AppRadius.lg),
-          child: Ink(
-            decoration: BoxDecoration(
-              color: colorScheme.surface,
-              borderRadius: BorderRadius.circular(AppRadius.lg),
-              border: Border.all(
-                color: colorScheme.outlineVariant.withValues(alpha: 0.55),
-              ),
-              boxShadow: AppShadows.card(brightness),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(AppSpacing.md),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  DecoratedBox(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [
-                          colorScheme.primary.withValues(alpha: 0.16),
-                          colorScheme.secondary.withValues(alpha: 0.10),
+    final card = LayoutBuilder(
+      builder: (context, constraints) {
+        final isCompactWidth = constraints.maxWidth < 190;
+        final isCompactHeight = constraints.maxHeight < 140;
+        final isHorizontal = isCompactHeight || isCompactWidth;
+
+        final isConstrainedVertical =
+            constraints.maxHeight < 210 || constraints.maxWidth < 240;
+        final iconBoxSize = isConstrainedVertical ? 44.0 : 58.0;
+        final iconGraphicSize = isConstrainedVertical ? 22.0 : 28.0;
+        final tilePadding = isConstrainedVertical
+            ? const EdgeInsets.all(AppSpacing.sm)
+            : const EdgeInsets.all(AppSpacing.md);
+        final gapSize = isConstrainedVertical ? 4.0 : AppSpacing.sm;
+
+        Widget buildTileIcon(double size) {
+          final isRtl = Directionality.of(context) == TextDirection.rtl;
+          final shouldFlip = isRtl && (icon.matchTextDirection || mirrorIconInRtl);
+          final iconWidget = Icon(
+            icon,
+            color: colorScheme.primary,
+            size: size,
+          );
+          if (shouldFlip) {
+            return Transform.flip(flipX: true, child: iconWidget);
+          }
+          return iconWidget;
+        }
+
+        final content = isHorizontal
+            ? Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.md,
+                  vertical: AppSpacing.sm,
+                ),
+                child: Row(
+                  children: [
+                    DecoratedBox(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: AlignmentDirectional.topStart,
+                          end: AlignmentDirectional.bottomEnd,
+                          colors: [
+                            colorScheme.primary.withValues(alpha: 0.16),
+                            colorScheme.secondary.withValues(alpha: 0.10),
+                          ],
+                        ),
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: colorScheme.primary.withValues(alpha: 0.12),
+                        ),
+                      ),
+                      child: SizedBox(
+                        width: 44,
+                        height: 44,
+                        child: buildTileIcon(22),
+                      ),
+                    ),
+                    const SizedBox(width: AppSpacing.md),
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            title,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: -0.2,
+                              height: 1.2,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Flexible(
+                            child: Text(
+                              subtitle,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: colorScheme.onSurfaceVariant,
+                                height: 1.25,
+                              ),
+                            ),
+                          ),
                         ],
                       ),
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: colorScheme.primary.withValues(alpha: 0.12),
+                    ),
+                  ],
+                ),
+              )
+            : Padding(
+                padding: tilePadding,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    DecoratedBox(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: AlignmentDirectional.topStart,
+                          end: AlignmentDirectional.bottomEnd,
+                          colors: [
+                            colorScheme.primary.withValues(alpha: 0.16),
+                            colorScheme.secondary.withValues(alpha: 0.10),
+                          ],
+                        ),
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: colorScheme.primary.withValues(alpha: 0.12),
+                        ),
+                      ),
+                      child: SizedBox(
+                        width: iconBoxSize,
+                        height: iconBoxSize,
+                        child: buildTileIcon(iconGraphicSize),
                       ),
                     ),
-                    child: SizedBox(
-                      width: 58,
-                      height: 58,
-                      child: Icon(icon, color: colorScheme.primary, size: 28),
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.sm),
-                  Text(
-                    title,
-                    textAlign: TextAlign.center,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: -0.2,
-                      height: 1.2,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Flexible(
-                    child: Text(
-                      subtitle,
-                      textAlign: TextAlign.center,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
-                        height: 1.25,
+                    SizedBox(height: gapSize),
+                    Flexible(
+                      child: Text(
+                        title,
+                        textAlign: TextAlign.center,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: -0.2,
+                          height: 1.2,
+                        ),
                       ),
                     ),
+                    const SizedBox(height: 2),
+                    Flexible(
+                      child: Text(
+                        subtitle,
+                        textAlign: TextAlign.center,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                          height: 1.25,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+
+        return Semantics(
+          container: true,
+          button: true,
+          label: title,
+          hint: subtitle,
+          child: Material(
+            color: Colors.transparent,
+            elevation: 0,
+            child: InkWell(
+              onTap: onTap,
+              borderRadius: BorderRadius.circular(AppRadius.lg),
+              child: Ink(
+                decoration: BoxDecoration(
+                  color: colorScheme.surface,
+                  borderRadius: BorderRadius.circular(AppRadius.lg),
+                  border: Border.all(
+                    color: colorScheme.outlineVariant.withValues(alpha: 0.55),
                   ),
-                ],
+                  boxShadow: AppShadows.card(brightness),
+                ),
+                child: content,
               ),
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
 
     if (!animate) {
@@ -152,13 +255,22 @@ class AppModuleHubGrid extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final width = constraints.maxWidth;
-        final crossAxisCount = AppBreakpoints.isDesktop(width)
-            ? 4
-            : AppBreakpoints.isTablet(width)
-            ? 3
-            : 2;
+        int crossAxisCount;
+        double childAspectRatio;
 
-        final childAspectRatio = AppBreakpoints.isMobile(width) ? 0.80 : 0.90;
+        if (width < 360) {
+          crossAxisCount = 1;
+          childAspectRatio = 2.8;
+        } else if (width < 600) {
+          crossAxisCount = 2;
+          childAspectRatio = 0.95;
+        } else if (width < 900) {
+          crossAxisCount = 3;
+          childAspectRatio = 0.90;
+        } else {
+          crossAxisCount = 4;
+          childAspectRatio = 0.95;
+        }
 
         return GridView.builder(
           shrinkWrap: true,

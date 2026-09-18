@@ -46,9 +46,7 @@ class AppEmptyState extends StatelessWidget {
                 Icon(
                   icon,
                   size: iconSize,
-                  color: colorScheme.onSurfaceVariant.withValues(
-                    alpha: 0.5,
-                  ),
+                  color: colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
                 ),
                 SizedBox(height: gapAfterIcon),
                 Text(

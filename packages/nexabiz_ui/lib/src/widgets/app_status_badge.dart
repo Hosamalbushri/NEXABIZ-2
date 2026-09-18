@@ -77,10 +77,7 @@ class AppStatusBadge extends StatelessWidget {
         break;
     }
 
-    final semanticBadge = Semantics(
-      label: label,
-      child: badge,
-    );
+    final semanticBadge = Semantics(label: label, child: badge);
 
     if (!animate) {
       return semanticBadge;

@@ -29,25 +29,84 @@ class AppTypography {
       x9Large: TextStyle(fontFamily: fontFamilyName, fontSize: 144),
       thin: TextStyle(fontFamily: fontFamilyName, fontWeight: FontWeight.w100),
       light: TextStyle(fontFamily: fontFamilyName, fontWeight: FontWeight.w300),
-      extraLight: TextStyle(fontFamily: fontFamilyName, fontWeight: FontWeight.w200),
-      normal: TextStyle(fontFamily: fontFamilyName, fontWeight: FontWeight.w400),
-      medium: TextStyle(fontFamily: fontFamilyName, fontWeight: FontWeight.w500),
-      semiBold: TextStyle(fontFamily: fontFamilyName, fontWeight: FontWeight.w600),
+      extraLight: TextStyle(
+        fontFamily: fontFamilyName,
+        fontWeight: FontWeight.w200,
+      ),
+      normal: TextStyle(
+        fontFamily: fontFamilyName,
+        fontWeight: FontWeight.w400,
+      ),
+      medium: TextStyle(
+        fontFamily: fontFamilyName,
+        fontWeight: FontWeight.w500,
+      ),
+      semiBold: TextStyle(
+        fontFamily: fontFamilyName,
+        fontWeight: FontWeight.w600,
+      ),
       bold: TextStyle(fontFamily: fontFamilyName, fontWeight: FontWeight.w700),
-      extraBold: TextStyle(fontFamily: fontFamilyName, fontWeight: FontWeight.w800),
+      extraBold: TextStyle(
+        fontFamily: fontFamilyName,
+        fontWeight: FontWeight.w800,
+      ),
       black: TextStyle(fontFamily: fontFamilyName, fontWeight: FontWeight.w900),
-      italic: TextStyle(fontFamily: fontFamilyName, fontStyle: FontStyle.italic),
-      h1: TextStyle(fontFamily: fontFamilyName, fontSize: 36, fontWeight: FontWeight.w800),
-      h2: TextStyle(fontFamily: fontFamilyName, fontSize: 30, fontWeight: FontWeight.w600),
-      h3: TextStyle(fontFamily: fontFamilyName, fontSize: 24, fontWeight: FontWeight.w600),
-      h4: TextStyle(fontFamily: fontFamilyName, fontSize: 18, fontWeight: FontWeight.w600),
-      p: TextStyle(fontFamily: fontFamilyName, fontSize: 16, fontWeight: FontWeight.w400),
-      blockQuote: TextStyle(fontFamily: fontFamilyName, fontSize: 16, fontWeight: FontWeight.w400, fontStyle: FontStyle.italic),
-      inlineCode: TextStyle(fontFamily: fontFamilyName, fontSize: 14, fontWeight: FontWeight.w600),
+      italic: TextStyle(
+        fontFamily: fontFamilyName,
+        fontStyle: FontStyle.italic,
+      ),
+      h1: TextStyle(
+        fontFamily: fontFamilyName,
+        fontSize: 36,
+        fontWeight: FontWeight.w800,
+      ),
+      h2: TextStyle(
+        fontFamily: fontFamilyName,
+        fontSize: 30,
+        fontWeight: FontWeight.w600,
+      ),
+      h3: TextStyle(
+        fontFamily: fontFamilyName,
+        fontSize: 24,
+        fontWeight: FontWeight.w600,
+      ),
+      h4: TextStyle(
+        fontFamily: fontFamilyName,
+        fontSize: 18,
+        fontWeight: FontWeight.w600,
+      ),
+      p: TextStyle(
+        fontFamily: fontFamilyName,
+        fontSize: 16,
+        fontWeight: FontWeight.w400,
+      ),
+      blockQuote: TextStyle(
+        fontFamily: fontFamilyName,
+        fontSize: 16,
+        fontWeight: FontWeight.w400,
+        fontStyle: FontStyle.italic,
+      ),
+      inlineCode: TextStyle(
+        fontFamily: fontFamilyName,
+        fontSize: 14,
+        fontWeight: FontWeight.w600,
+      ),
       lead: TextStyle(fontFamily: fontFamilyName, fontSize: 20),
-      textLarge: TextStyle(fontFamily: fontFamilyName, fontSize: 20, fontWeight: FontWeight.w600),
-      textSmall: TextStyle(fontFamily: fontFamilyName, fontSize: 14, fontWeight: FontWeight.w500),
-      textMuted: TextStyle(fontFamily: fontFamilyName, fontSize: 14, fontWeight: FontWeight.w400),
+      textLarge: TextStyle(
+        fontFamily: fontFamilyName,
+        fontSize: 20,
+        fontWeight: FontWeight.w600,
+      ),
+      textSmall: TextStyle(
+        fontFamily: fontFamilyName,
+        fontSize: 14,
+        fontWeight: FontWeight.w500,
+      ),
+      textMuted: TextStyle(
+        fontFamily: fontFamilyName,
+        fontSize: 14,
+        fontWeight: FontWeight.w400,
+      ),
     );
   }
 
@@ -176,20 +235,24 @@ class AppTypography {
   static TextStyle display(BuildContext context) =>
       typographyOf(context).h1.copyWith(fontFamily: fontFamilyName);
 
-  static TextStyle pageTitle(BuildContext context) =>
-      typographyOf(context).h2.copyWith(fontFamily: fontFamilyName, fontSize: 24);
+  static TextStyle pageTitle(BuildContext context) => typographyOf(
+    context,
+  ).h2.copyWith(fontFamily: fontFamilyName, fontSize: 24);
 
-  static TextStyle sectionTitle(BuildContext context) =>
-      typographyOf(context).h3.copyWith(fontFamily: fontFamilyName, fontSize: 18);
+  static TextStyle sectionTitle(BuildContext context) => typographyOf(
+    context,
+  ).h3.copyWith(fontFamily: fontFamilyName, fontSize: 18);
 
-  static TextStyle subsectionTitle(BuildContext context) =>
-      typographyOf(context).h4.copyWith(fontFamily: fontFamilyName, fontSize: 15);
+  static TextStyle subsectionTitle(BuildContext context) => typographyOf(
+    context,
+  ).h4.copyWith(fontFamily: fontFamilyName, fontSize: 15);
 
   static TextStyle body(BuildContext context) =>
       typographyOf(context).p.copyWith(fontFamily: fontFamilyName);
 
-  static TextStyle bodyBold(BuildContext context) =>
-      typographyOf(context).p.copyWith(fontFamily: fontFamilyName, fontWeight: FontWeight.bold);
+  static TextStyle bodyBold(BuildContext context) => typographyOf(
+    context,
+  ).p.copyWith(fontFamily: fontFamilyName, fontWeight: FontWeight.bold);
 
   static TextStyle bodyMedium(BuildContext context) =>
       typographyOf(context).textSmall.copyWith(fontFamily: fontFamilyName);
@@ -197,31 +260,54 @@ class AppTypography {
   static TextStyle bodySmall(BuildContext context) =>
       typographyOf(context).xSmall.copyWith(fontFamily: fontFamilyName);
 
-  static TextStyle label(BuildContext context) =>
-      typographyOf(context).textSmall.copyWith(fontFamily: fontFamilyName, fontWeight: FontWeight.w600);
+  static TextStyle label(BuildContext context) => typographyOf(
+    context,
+  ).textSmall.copyWith(fontFamily: fontFamilyName, fontWeight: FontWeight.w600);
 
   static TextStyle caption(BuildContext context) =>
-      typographyOf(context).xSmall.copyWith(fontFamily: fontFamilyName, color: shadcn.Theme.of(context).colorScheme.mutedForeground);
+      typographyOf(context).xSmall.copyWith(
+        fontFamily: fontFamilyName,
+        color: shadcn.Theme.of(context).colorScheme.mutedForeground,
+      );
 
   static TextStyle tableHeader(BuildContext context) =>
-      typographyOf(context).textSmall.copyWith(fontFamily: fontFamilyName, fontWeight: FontWeight.w700, fontSize: 13);
+      typographyOf(context).textSmall.copyWith(
+        fontFamily: fontFamilyName,
+        fontWeight: FontWeight.w700,
+        fontSize: 13,
+      );
 
-  static TextStyle tableCell(BuildContext context) =>
-      typographyOf(context).textSmall.copyWith(fontFamily: fontFamilyName, fontSize: 13);
+  static TextStyle tableCell(BuildContext context) => typographyOf(
+    context,
+  ).textSmall.copyWith(fontFamily: fontFamilyName, fontSize: 13);
 
-  static TextStyle inputText(BuildContext context) =>
-      typographyOf(context).p.copyWith(fontFamily: fontFamilyName, fontSize: 14);
+  static TextStyle inputText(BuildContext context) => typographyOf(
+    context,
+  ).p.copyWith(fontFamily: fontFamilyName, fontSize: 14);
 
   static TextStyle helperText(BuildContext context) =>
-      typographyOf(context).xSmall.copyWith(fontFamily: fontFamilyName, color: shadcn.Theme.of(context).colorScheme.mutedForeground);
+      typographyOf(context).xSmall.copyWith(
+        fontFamily: fontFamilyName,
+        color: shadcn.Theme.of(context).colorScheme.mutedForeground,
+      );
 
   static TextStyle errorText(BuildContext context) =>
-      typographyOf(context).xSmall.copyWith(fontFamily: fontFamilyName, color: shadcn.Theme.of(context).colorScheme.destructive);
+      typographyOf(context).xSmall.copyWith(
+        fontFamily: fontFamilyName,
+        color: shadcn.Theme.of(context).colorScheme.destructive,
+      );
 
   static TextStyle numericValue(BuildContext context) =>
-      typographyOf(context).p.copyWith(fontFamily: fontFamilyName, fontWeight: FontWeight.w600, fontSize: 15);
+      typographyOf(context).p.copyWith(
+        fontFamily: fontFamilyName,
+        fontWeight: FontWeight.w600,
+        fontSize: 15,
+      );
 
   static TextStyle currencyValue(BuildContext context) =>
-      typographyOf(context).p.copyWith(fontFamily: fontFamilyName, fontWeight: FontWeight.w700, fontSize: 15);
+      typographyOf(context).p.copyWith(
+        fontFamily: fontFamilyName,
+        fontWeight: FontWeight.w700,
+        fontSize: 15,
+      );
 }
-

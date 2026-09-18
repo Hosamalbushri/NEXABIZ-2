@@ -1,7 +1,16 @@
 import 'package:flutter/material.dart';
 import '../theme/tokens/app_radii.dart';
 
-enum AppIconAvatarTone { primary, secondary, success, warning, error, info, neutral }
+enum AppIconAvatarTone {
+  primary,
+  secondary,
+  success,
+  warning,
+  error,
+  info,
+  neutral,
+}
+
 enum AppIconAvatarSize { sm, md, lg }
 
 /// Canonical icon tile avatar widget for NexaBiz ERP.
@@ -39,15 +48,19 @@ class AppIconAvatar extends StatelessWidget {
       AppIconAvatarSize.lg => 28.0,
     };
 
-    final Color baseColor = customColor ?? switch (tone) {
-      AppIconAvatarTone.primary => colorScheme.primary,
-      AppIconAvatarTone.secondary => colorScheme.secondary,
-      AppIconAvatarTone.success => Colors.green,
-      AppIconAvatarTone.warning => Colors.amber.shade700,
-      AppIconAvatarTone.error => colorScheme.error,
-      AppIconAvatarTone.info => Colors.lightBlue,
-      AppIconAvatarTone.neutral => colorScheme.onSurface.withValues(alpha: 0.6),
-    };
+    final Color baseColor =
+        customColor ??
+        switch (tone) {
+          AppIconAvatarTone.primary => colorScheme.primary,
+          AppIconAvatarTone.secondary => colorScheme.secondary,
+          AppIconAvatarTone.success => Colors.green,
+          AppIconAvatarTone.warning => Colors.amber.shade700,
+          AppIconAvatarTone.error => colorScheme.error,
+          AppIconAvatarTone.info => Colors.lightBlue,
+          AppIconAvatarTone.neutral => colorScheme.onSurface.withValues(
+            alpha: 0.6,
+          ),
+        };
 
     final Color bgColor = baseColor.withValues(alpha: 0.12);
     final Color borderColor = baseColor.withValues(alpha: 0.24);
@@ -61,11 +74,7 @@ class AppIconAvatar extends StatelessWidget {
         border: Border.all(color: borderColor, width: 1.0),
       ),
       child: Center(
-        child: Icon(
-          icon,
-          size: iconSize,
-          color: baseColor,
-        ),
+        child: Icon(icon, size: iconSize, color: baseColor),
       ),
     );
   }

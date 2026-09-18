@@ -59,16 +59,18 @@ class AppCarousel<T> extends StatefulWidget {
 
 class _AppCarouselState<T> extends State<AppCarousel<T>> {
   shadcn.CarouselController? _internalController;
+  bool _isInternalController = false;
   int _currentIndex = 0;
 
   shadcn.CarouselController get _effectiveController =>
-      widget.controller ?? (_internalController ??= shadcn.CarouselController());
+      widget.controller ?? _internalController!;
 
   @override
   void initState() {
     super.initState();
     if (widget.controller == null) {
       _internalController = shadcn.CarouselController();
+      _isInternalController = true;
     }
   }
 
@@ -76,19 +78,23 @@ class _AppCarouselState<T> extends State<AppCarousel<T>> {
   void didUpdateWidget(covariant AppCarousel<T> oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.controller != oldWidget.controller) {
-      if (oldWidget.controller == null) {
+      if (_isInternalController) {
         _internalController?.dispose();
         _internalController = null;
+        _isInternalController = false;
       }
       if (widget.controller == null) {
         _internalController = shadcn.CarouselController();
+        _isInternalController = true;
       }
     }
   }
 
   @override
   void dispose() {
-    _internalController?.dispose();
+    if (_isInternalController) {
+      _internalController?.dispose();
+    }
     super.dispose();
   }
 
@@ -142,29 +148,42 @@ class _AppCarouselState<T> extends State<AppCarousel<T>> {
                 },
               ),
               if (widget.showControls && widget.items.length > 1) ...[
-                Positioned(
-                  left: 8,
-                  child: shadcn.OutlineButton(
-                    density: shadcn.ButtonDensity.compact,
-                    shape: shadcn.ButtonShape.circle,
-                    onPressed: _handlePrevious,
-                    child: const shadcn.Icon(
-                      shadcn.LucideIcons.chevronLeft,
-                      size: 18,
-                    ),
-                  ),
-                ),
-                Positioned(
-                  right: 8,
-                  child: shadcn.OutlineButton(
-                    density: shadcn.ButtonDensity.compact,
-                    shape: shadcn.ButtonShape.circle,
-                    onPressed: _handleNext,
-                    child: const shadcn.Icon(
-                      shadcn.LucideIcons.chevronRight,
-                      size: 18,
-                    ),
-                  ),
+                Builder(
+                  builder: (context) {
+                    final isRtl = Directionality.of(context) == TextDirection.rtl;
+                    return Stack(
+                      children: [
+                        PositionedDirectional(
+                          start: 8,
+                          child: shadcn.OutlineButton(
+                            density: shadcn.ButtonDensity.compact,
+                            shape: shadcn.ButtonShape.circle,
+                            onPressed: _handlePrevious,
+                            child: shadcn.Icon(
+                              isRtl
+                                  ? shadcn.LucideIcons.chevronRight
+                                  : shadcn.LucideIcons.chevronLeft,
+                              size: 18,
+                            ),
+                          ),
+                        ),
+                        PositionedDirectional(
+                          end: 8,
+                          child: shadcn.OutlineButton(
+                            density: shadcn.ButtonDensity.compact,
+                            shape: shadcn.ButtonShape.circle,
+                            onPressed: _handleNext,
+                            child: shadcn.Icon(
+                              isRtl
+                                  ? shadcn.LucideIcons.chevronLeft
+                                  : shadcn.LucideIcons.chevronRight,
+                              size: 18,
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
                 ),
               ],
             ],
@@ -174,32 +193,31 @@ class _AppCarouselState<T> extends State<AppCarousel<T>> {
           const SizedBox(height: 12),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(
-              widget.items.length,
-              (index) {
-                final isActive = index == _currentIndex;
-                return GestureDetector(
-                  onTap: () {
-                    _effectiveController.animateTo(
-                      index.toDouble(),
-                      const Duration(milliseconds: 300),
-                    );
-                  },
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    margin: const EdgeInsets.symmetric(horizontal: 4),
-                    width: isActive ? 16 : 8,
-                    height: 8,
-                    decoration: BoxDecoration(
-                      color: isActive
-                          ? theme.colorScheme.primary
-                          : theme.colorScheme.mutedForeground.withValues(alpha: 0.3),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
+            children: List.generate(widget.items.length, (index) {
+              final isActive = index == _currentIndex;
+              return GestureDetector(
+                onTap: () {
+                  _effectiveController.animateTo(
+                    index.toDouble(),
+                    const Duration(milliseconds: 300),
+                  );
+                },
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  margin: const EdgeInsets.symmetric(horizontal: 4),
+                  width: isActive ? 16 : 8,
+                  height: 8,
+                  decoration: BoxDecoration(
+                    color: isActive
+                        ? theme.colorScheme.primary
+                        : theme.colorScheme.mutedForeground.withValues(
+                            alpha: 0.3,
+                          ),
+                    borderRadius: BorderRadius.circular(4),
                   ),
-                );
-              },
-            ),
+                ),
+              );
+            }),
           ),
         ],
       ],

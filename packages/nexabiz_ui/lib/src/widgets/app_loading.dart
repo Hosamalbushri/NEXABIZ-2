@@ -4,7 +4,6 @@ import 'package:shadcn_flutter/shadcn_flutter.dart' as shadcn;
 import '../theme/app_spacing.dart';
 import 'app_card.dart';
 
-
 enum AppLoadingStyle { circular, linear, skeletonList }
 
 /// Loading indicator with optional skeleton placeholders backed by shadcn_flutter.
@@ -77,7 +76,6 @@ class AppLoading extends StatelessWidget {
                 ),
               );
             },
-
           ),
         ).asSkeleton();
     }

@@ -1,6 +1,8 @@
 import 'package:flutter/widgets.dart';
 import 'package:nexabiz_ui/nexabiz_ui.dart';
 
+import '../../../l10n/app_localizations.dart';
+
 class _DashboardHighlightItem {
   final String title;
   final String subtitle;
@@ -21,9 +23,10 @@ class DashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return AppDashboardPage(
-      title: 'NexaBiz Dashboard',
-      subtitle: 'Welcome back to NexaBiz ERP',
+      title: l10n.dashboardTitle,
+      subtitle: l10n.dashboardSubtitle,
       statsGrid: const _DashboardKpiGrid(),
       carousel: const _DashboardCarouselSection(),
       content: const _SystemStatusBanner(),
@@ -35,80 +38,91 @@ class DashboardScreen extends StatelessWidget {
 class _DashboardCarouselSection extends StatelessWidget {
   const _DashboardCarouselSection();
 
-  static const List<_DashboardHighlightItem> _highlights = [
-    _DashboardHighlightItem(
-      title: 'Q3 Financial Revenue Peak',
-      subtitle: 'Sales target exceeded by +14.2% with \$124,500.00 total volume.',
-      badge: 'Financial Highlight',
-      icon: AppIcons.trendingUp,
-    ),
-    _DashboardHighlightItem(
-      title: 'Inventory Reorder Alert',
-      subtitle: '18 active purchase orders in transit across main warehouses.',
-      badge: 'Supply Chain',
-      icon: AppIcons.box,
-    ),
-    _DashboardHighlightItem(
-      title: 'Automated Voucher Sync',
-      subtitle: 'All real-time receipt & payment voucher ledgers fully synchronized.',
-      badge: 'Real-time Ledger',
-      icon: AppIcons.wallet,
-    ),
-  ];
+  List<_DashboardHighlightItem> _getHighlights(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return [
+      _DashboardHighlightItem(
+        title: l10n.dashboardHighlight1Title,
+        subtitle: l10n.dashboardHighlight1Subtitle,
+        badge: l10n.dashboardHighlight1Badge,
+        icon: AppIcons.trendingUp,
+      ),
+      _DashboardHighlightItem(
+        title: l10n.dashboardHighlight2Title,
+        subtitle: l10n.dashboardHighlight2Subtitle,
+        badge: l10n.dashboardHighlight2Badge,
+        icon: AppIcons.box,
+      ),
+      _DashboardHighlightItem(
+        title: l10n.dashboardHighlight3Title,
+        subtitle: l10n.dashboardHighlight3Subtitle,
+        badge: l10n.dashboardHighlight3Badge,
+        icon: AppIcons.wallet,
+      ),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final highlights = _getHighlights(context);
+
     return AppCard(
       padding: const EdgeInsets.all(AppSpacing.sm),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.only(left: 4, bottom: AppSpacing.xs),
+            padding: const EdgeInsetsDirectional.only(
+              start: AppSpacing.xxs,
+              bottom: AppSpacing.xs,
+            ),
             child: Text(
-              'Enterprise Highlights',
+              l10n.dashboardEnterpriseHighlights,
               style: AppTypography.sectionTitle(context),
             ),
           ),
           AppCarousel<_DashboardHighlightItem>(
-            height: 156,
+            height: 172,
             autoplay: true,
             autoplaySpeed: const Duration(seconds: 5),
-            items: _highlights,
+            items: highlights,
             itemBuilder: (context, item, index) {
               return AppSurface(
                 padding: const EdgeInsets.symmetric(
                   horizontal: AppSpacing.md,
                   vertical: AppSpacing.sm,
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Row(
-                      children: [
-                        AppStatusBadge(
-                          label: item.badge,
-                          tone: AppStatusTone.info,
-                          animate: false,
-                        ),
-                        const Spacer(),
-                        Icon(item.icon, size: 20, color: AppColors.primaryBlue),
-                      ],
-                    ),
-                    const SizedBox(height: AppSpacing.xs),
-                    Text(
-                      item.title,
-                      style: AppTypography.bodyBold(context),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      item.subtitle,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: AppTypography.caption(context),
-                    ),
-                  ],
+                child: SingleChildScrollView(
+                  physics: const NeverScrollableScrollPhysics(),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: AppStatusBadge(
+                              label: item.badge,
+                              tone: AppStatusTone.info,
+                              animate: false,
+                            ),
+                          ),
+                          const SizedBox(width: AppSpacing.xs),
+                          Icon(item.icon, size: 20, color: AppColors.primaryBlue),
+                        ],
+                      ),
+                      const SizedBox(height: AppSpacing.xs),
+                      Text(item.title, style: AppTypography.bodyBold(context)),
+                      const SizedBox(height: 4),
+                      Text(
+                        item.subtitle,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTypography.caption(context),
+                      ),
+                    ],
+                  ),
                 ),
               );
             },
@@ -124,6 +138,7 @@ class _SystemStatusBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return AppSurface(
       padding: const EdgeInsets.all(AppSpacing.md),
       child: Row(
@@ -133,19 +148,19 @@ class _SystemStatusBanner extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Modular Clean Architecture Active',
+                  l10n.dashboardArchitectureActive,
                   style: AppTypography.bodyBold(context),
                 ),
                 const SizedBox(height: AppSpacing.xxs),
                 Text(
-                  'System operational • Real-time capability synchronization enabled',
+                  l10n.dashboardArchitectureSubtitle,
                   style: AppTypography.caption(context),
                 ),
               ],
             ),
           ),
-          const AppStatusBadge(
-            label: 'Online',
+          AppStatusBadge(
+            label: l10n.statusOnline,
             tone: AppStatusTone.success,
             animate: false,
           ),
@@ -160,33 +175,34 @@ class _DashboardKpiGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const AppGrid(
+    final l10n = AppLocalizations.of(context);
+    return AppGrid(
       children: [
         _KpiTile(
-          title: 'Total Sales',
+          title: l10n.kpiTotalSales,
           value: '\$124,500.00',
-          subtitle: '+12.5% this month',
+          subtitle: l10n.kpiTotalSalesSubtitle,
           icon: AppIcons.trendingUp,
           tone: AppStatusTone.success,
         ),
         _KpiTile(
-          title: 'Purchases',
+          title: l10n.kpiPurchases,
           value: '\$45,210.00',
-          subtitle: '18 active POs',
+          subtitle: l10n.kpiPurchasesSubtitle,
           icon: AppIcons.shoppingBag,
           tone: AppStatusTone.info,
         ),
         _KpiTile(
-          title: 'Receivables',
+          title: l10n.kpiReceivables,
           value: '\$18,400.00',
-          subtitle: '4 pending invoices',
+          subtitle: l10n.kpiReceivablesSubtitle,
           icon: AppIcons.wallet,
           tone: AppStatusTone.warning,
         ),
         _KpiTile(
-          title: 'Stock Valuation',
+          title: l10n.kpiStockValuation,
           value: '\$310,900.00',
-          subtitle: '1,240 inventory items',
+          subtitle: l10n.kpiStockValuationSubtitle,
           icon: AppIcons.box,
           tone: AppStatusTone.neutral,
         ),
@@ -235,11 +251,8 @@ class _KpiTile extends StatelessWidget {
           const SizedBox(height: AppSpacing.xs),
           FittedBox(
             fit: BoxFit.scaleDown,
-            alignment: Alignment.centerLeft,
-            child: Text(
-              value,
-              style: AppTypography.numericValue(context),
-            ),
+            alignment: AlignmentDirectional.centerStart,
+            child: Text(value, style: AppTypography.numericValue(context)),
           ),
           const SizedBox(height: 2),
           Text(
@@ -259,34 +272,36 @@ class _RecentActivitySection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final captionStyle = AppTypography.caption(context);
     return AppSection(
-      title: 'Recent Activity',
-      child: AppCard(
-        child: Column(
-          children: [
-            AppListTile(
-              leading: const Icon(AppIcons.receipt, color: AppColors.primaryBlue),
-              title: const Text('Sales Invoice #INV-2026-0042'),
-              subtitle: const Text('Customer: Acma Trading Co. • \$3,450.00'),
-              trailing: Text('10 mins ago', style: captionStyle),
+      title: l10n.recentActivityTitle,
+      child: Column(
+        children: [
+          AppListTile(
+            leading: const Icon(AppIcons.receipt, color: AppColors.primaryBlue),
+            title: Text(l10n.recentActivityItem1Title),
+            subtitle: Text(l10n.recentActivityItem1Subtitle),
+            trailing: Text(l10n.recentActivityItem1Time, style: captionStyle),
+          ),
+          const AppDivider(),
+          AppListTile(
+            leading: const Icon(
+              AppIcons.refresh,
+              color: AppColors.secondaryTeal,
             ),
-            const AppDivider(),
-            AppListTile(
-              leading: const Icon(AppIcons.refresh, color: AppColors.secondaryTeal),
-              title: const Text('Stock Transfer #TR-902'),
-              subtitle: const Text('Main Warehouse → Retail Branch B'),
-              trailing: Text('1 hour ago', style: captionStyle),
-            ),
-            const AppDivider(),
-            AppListTile(
-              leading: const Icon(AppIcons.check, color: AppColors.success),
-              title: const Text('Receipt Voucher #RCV-1021'),
-              subtitle: const Text('Payment received for #INV-2026-0019'),
-              trailing: Text('3 hours ago', style: captionStyle),
-            ),
-          ],
-        ),
+            title: Text(l10n.recentActivityItem2Title),
+            subtitle: Text(l10n.recentActivityItem2Subtitle),
+            trailing: Text(l10n.recentActivityItem2Time, style: captionStyle),
+          ),
+          const AppDivider(),
+          AppListTile(
+            leading: const Icon(AppIcons.check, color: AppColors.success),
+            title: Text(l10n.recentActivityItem3Title),
+            subtitle: Text(l10n.recentActivityItem3Subtitle),
+            trailing: Text(l10n.recentActivityItem3Time, style: captionStyle),
+          ),
+        ],
       ),
     );
   }

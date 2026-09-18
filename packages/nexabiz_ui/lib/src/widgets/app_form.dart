@@ -58,11 +58,7 @@ class AppFormSection extends StatelessWidget {
                     color: colorScheme.primary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(theme.radiusSm),
                   ),
-                  child: Icon(
-                    icon,
-                    size: 18,
-                    color: colorScheme.primary,
-                  ),
+                  child: Icon(icon, size: 18, color: colorScheme.primary),
                 ),
                 const SizedBox(width: AppSpacing.sm),
               ] else ...[
@@ -117,10 +113,7 @@ class AppFormSection extends StatelessWidget {
       ],
     );
 
-    return shadcn.Card(
-      padding: padding,
-      child: column,
-    );
+    return shadcn.Card(padding: padding, child: column);
   }
 }
 
@@ -219,103 +212,108 @@ class AppForm extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                // Header Bar
-                if (hasHeader) ...[
-                  Row(
-                    children: [
-                      if (icon != null) ...[
-                        Container(
-                          padding: const EdgeInsets.all(AppSpacing.xs),
-                          decoration: BoxDecoration(
-                            color: colorScheme.primary.withValues(alpha: 0.12),
-                            borderRadius: BorderRadius.circular(theme.radiusSm),
-                          ),
-                          child: Icon(
-                            icon,
-                            color: colorScheme.primary,
-                            size: 24,
-                          ),
-                        ),
-                        const SizedBox(width: AppSpacing.sm),
-                      ],
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            if (title != null)
-                              Text(
-                                title!,
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: colorScheme.foreground,
-                                ),
-                              ),
-                            if (subtitle != null) ...[
-                              const SizedBox(height: 2),
-                              Text(
-                                subtitle!,
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  color: colorScheme.mutedForeground,
-                                ),
-                              ),
-                            ],
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: AppSpacing.md),
-                ],
-
-                // Global Error Banner
-                if (errorMessage != null && errorMessage!.trim().isNotEmpty) ...[
-                  Container(
-                    padding: const EdgeInsets.all(AppSpacing.md),
-                    decoration: BoxDecoration(
-                      color: colorScheme.destructive.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(theme.radiusMd),
-                      border: Border.all(
-                        color: colorScheme.destructive.withValues(alpha: 0.5),
-                      ),
-                    ),
-                    child: Row(
+                  // Header Bar
+                  if (hasHeader) ...[
+                    Row(
                       children: [
-                        Icon(
-                          Icons.error_outline_rounded,
-                          color: colorScheme.destructive,
-                          size: 20,
-                        ),
-                        const SizedBox(width: AppSpacing.sm),
-                        Expanded(
-                          child: Text(
-                            errorMessage!,
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: colorScheme.destructive,
-                              fontWeight: FontWeight.w500,
+                        if (icon != null) ...[
+                          Container(
+                            padding: const EdgeInsets.all(AppSpacing.xs),
+                            decoration: BoxDecoration(
+                              color: colorScheme.primary.withValues(
+                                alpha: 0.12,
+                              ),
+                              borderRadius: BorderRadius.circular(
+                                theme.radiusSm,
+                              ),
+                            ),
+                            child: Icon(
+                              icon,
+                              color: colorScheme.primary,
+                              size: 24,
                             ),
                           ),
+                          const SizedBox(width: AppSpacing.sm),
+                        ],
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (title != null)
+                                Text(
+                                  title!,
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: colorScheme.foreground,
+                                  ),
+                                ),
+                              if (subtitle != null) ...[
+                                const SizedBox(height: 2),
+                                Text(
+                                  subtitle!,
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: colorScheme.mutedForeground,
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
                         ),
                       ],
                     ),
-                  ),
-                  const SizedBox(height: AppSpacing.md),
-                ],
+                    const SizedBox(height: AppSpacing.md),
+                  ],
 
-                // Form Children / Sections
-                for (int i = 0; i < children.length; i++) ...[
-                  children[i],
-                  if (i < children.length - 1) SizedBox(height: spacing),
+                  // Global Error Banner
+                  if (errorMessage != null &&
+                      errorMessage!.trim().isNotEmpty) ...[
+                    Container(
+                      padding: const EdgeInsets.all(AppSpacing.md),
+                      decoration: BoxDecoration(
+                        color: colorScheme.destructive.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(theme.radiusMd),
+                        border: Border.all(
+                          color: colorScheme.destructive.withValues(alpha: 0.5),
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.error_outline_rounded,
+                            color: colorScheme.destructive,
+                            size: 20,
+                          ),
+                          const SizedBox(width: AppSpacing.sm),
+                          Expanded(
+                            child: Text(
+                              errorMessage!,
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: colorScheme.destructive,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                  ],
+
+                  // Form Children / Sections
+                  for (int i = 0; i < children.length; i++) ...[
+                    children[i],
+                    if (i < children.length - 1) SizedBox(height: spacing),
+                  ],
                 ],
-              ],
+              ),
             ),
           ),
         ),
       ),
-    ),
-  );
+    );
 
     final actionsWidget = AppFormActions(
       onSubmit: onSubmit,

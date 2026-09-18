@@ -1,4 +1,7 @@
+import 'dart:math' as math;
+
 import 'package:flutter/widgets.dart';
+import 'package:shadcn_flutter/shadcn_flutter.dart' as shadcn;
 import '../../../nexabiz_ui.dart';
 import '../gallery_preview_card.dart';
 
@@ -14,11 +17,35 @@ class GalleryDataPlayground extends StatefulWidget {
 class _GalleryDataPlaygroundState extends State<GalleryDataPlayground> {
   int _selectedRowIndex = 0;
 
-  final List<Map<String, dynamic>> _ledgerRows = [
-    {'voucher': 'RCV-2026-001', 'account': '1010 - Cash', 'debit': '\$4,500.00', 'credit': '\$0.00', 'status': 'Posted'},
-    {'voucher': 'PAY-2026-014', 'account': '2010 - Payable', 'debit': '\$0.00', 'credit': '\$2,150.00', 'status': 'Approved'},
-    {'voucher': 'JRN-2026-089', 'account': '4010 - Sales', 'debit': '\$0.00', 'credit': '\$8,900.00', 'status': 'Posted'},
-    {'voucher': 'RCV-2026-002', 'account': '1020 - Bank', 'debit': '\$12,000.00', 'credit': '\$0.00', 'status': 'Draft'},
+  final List<Map<String, String>> _ledgerRows = [
+    {
+      'voucher': 'RCV-2026-001',
+      'account': '1010 - Cash',
+      'debit': '\$4,500.00',
+      'credit': '\$0.00',
+      'status': 'Posted',
+    },
+    {
+      'voucher': 'PAY-2026-014',
+      'account': '2010 - Payable',
+      'debit': '\$0.00',
+      'credit': '\$2,150.00',
+      'status': 'Approved',
+    },
+    {
+      'voucher': 'JRN-2026-089',
+      'account': '4010 - Sales',
+      'debit': '\$0.00',
+      'credit': '\$8,900.00',
+      'status': 'Posted',
+    },
+    {
+      'voucher': 'RCV-2026-002',
+      'account': '1020 - Bank',
+      'debit': '\$12,000.00',
+      'credit': '\$0.00',
+      'status': 'Draft',
+    },
   ];
 
   @override
@@ -29,13 +56,19 @@ class _GalleryDataPlaygroundState extends State<GalleryDataPlayground> {
     final cards = <Widget>[];
 
     // 1. Table Playground (Accounting / Ledger Data Table)
-    if (ctrl.isComponentMatching('Table', 'Data table with headers, rows, and alignment', cat)) {
+    if (ctrl.isComponentMatching(
+      'Table',
+      'Data table with headers, rows, and alignment',
+      cat,
+    )) {
       cards.add(
         GalleryPreviewCard(
           name: 'Table / Data Grid',
           category: cat,
-          description: 'Data grid table primitive for accounting ledgers and ERP reports.',
-          usageNotes: 'Use Table with AppTypography.tableHeader and tableCell for financial statement grids.',
+          description:
+              'Data grid table primitive for accounting ledgers and ERP reports.',
+          usageNotes:
+              'Use Table with AppTypography.tableHeader and tableCell for financial statement grids.',
           dartCode: '''
 shadcn.Table(
   rows: [
@@ -55,14 +88,43 @@ shadcn.Table(
               child: Column(
                 children: [
                   Container(
-                    color: AppThemeController.isDark(context) ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9),
-                    padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
+                    color: AppThemeController.isDark(context)
+                        ? const Color(0xFF1E293B)
+                        : const Color(0xFFF1F5F9),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.md,
+                      vertical: AppSpacing.sm,
+                    ),
                     child: Row(
                       children: [
-                        Expanded(flex: 3, child: Text('Voucher #', style: AppTypography.tableHeader(context))),
-                        Expanded(flex: 3, child: Text('Account', style: AppTypography.tableHeader(context))),
-                        Expanded(flex: 2, child: Text('Debit', style: AppTypography.tableHeader(context))),
-                        Expanded(flex: 2, child: Text('Status', style: AppTypography.tableHeader(context))),
+                        Expanded(
+                          flex: 3,
+                          child: Text(
+                            'Voucher #',
+                            style: AppTypography.tableHeader(context),
+                          ),
+                        ),
+                        Expanded(
+                          flex: 3,
+                          child: Text(
+                            'Account',
+                            style: AppTypography.tableHeader(context),
+                          ),
+                        ),
+                        Expanded(
+                          flex: 2,
+                          child: Text(
+                            'Debit',
+                            style: AppTypography.tableHeader(context),
+                          ),
+                        ),
+                        Expanded(
+                          flex: 2,
+                          child: Text(
+                            'Status',
+                            style: AppTypography.tableHeader(context),
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -74,21 +136,46 @@ shadcn.Table(
                       onTap: () => setState(() => _selectedRowIndex = index),
                       child: Container(
                         color: isSelected
-                            ? (AppThemeController.isDark(context) ? const Color(0xFF334155) : const Color(0xFFE2E8F0))
+                            ? (AppThemeController.isDark(context)
+                                  ? const Color(0xFF334155)
+                                  : const Color(0xFFE2E8F0))
                             : null,
-                        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.md,
+                          vertical: AppSpacing.sm,
+                        ),
                         child: Row(
                           children: [
-                            Expanded(flex: 3, child: Text(row['voucher'], style: AppTypography.tableCell(context))),
-                            Expanded(flex: 3, child: Text(row['account'], style: AppTypography.tableCell(context))),
-                            Expanded(flex: 2, child: Text(row['debit'], style: AppTypography.numericValue(context))),
+                            Expanded(
+                              flex: 3,
+                              child: Text(
+                                row['voucher']!,
+                                style: AppTypography.tableCell(context),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 3,
+                              child: Text(
+                                row['account']!,
+                                style: AppTypography.tableCell(context),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 2,
+                              child: Text(
+                                row['debit']!,
+                                style: AppTypography.numericValue(context),
+                              ),
+                            ),
                             Expanded(
                               flex: 2,
                               child: AppStatusBadge(
-                                label: row['status'],
+                                label: row['status']!,
                                 tone: row['status'] == 'Posted'
                                     ? AppStatusTone.success
-                                    : (row['status'] == 'Approved' ? AppStatusTone.info : AppStatusTone.neutral),
+                                    : (row['status'] == 'Approved'
+                                          ? AppStatusTone.info
+                                          : AppStatusTone.neutral),
                                 animate: false,
                               ),
                             ),
@@ -110,13 +197,18 @@ shadcn.Table(
     }
 
     // 2. CodeSnippet / CodeBlock
-    if (ctrl.isComponentMatching('CodeSnippet', 'Syntax highlighted code display primitive', cat)) {
+    if (ctrl.isComponentMatching(
+      'CodeSnippet',
+      'Syntax highlighted code display primitive',
+      cat,
+    )) {
       cards.add(
         GalleryPreviewCard(
           name: 'CodeSnippet / CodeBlock',
           category: cat,
           description: 'Syntax-highlighted code block component.',
-          usageNotes: 'Use AppCard code container for API responses, formula previews, and audit code.',
+          usageNotes:
+              'Use AppCard code container for API responses, formula previews, and audit code.',
           dartCode: '''
 AppCard(
   child: Text('final ledger = NexaBizLedger();'),
@@ -143,12 +235,17 @@ await ledger.postTransaction(voucher);''',
     }
 
     // 3. Carousel
-    if (ctrl.isComponentMatching('Carousel', 'Smooth sliding carousel widget', cat)) {
+    if (ctrl.isComponentMatching(
+      'Carousel',
+      'Smooth sliding carousel widget',
+      cat,
+    )) {
       cards.add(
         GalleryPreviewCard(
           name: 'Carousel',
           category: cat,
-          description: 'Sliding carousel for highlight banners and KPI metric summary slides.',
+          description:
+              'Sliding carousel for highlight banners and KPI metric summary slides.',
           usageNotes: 'Use AppCarousel on executive dashboard screens.',
           dartCode: '''
 AppCarousel<String>(
@@ -158,29 +255,109 @@ AppCarousel<String>(
 )''',
           preview: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 340),
-            child: AppCarousel<String>(
-              items: const [
-                'Q3 Revenue Target Reached (+18.4%)',
-                'Tax Audit Clearance Verified',
-                'Treasury Bank Balance: \$1,240,500',
-              ],
-              height: 120,
-              autoplay: false,
-              itemBuilder: (context, item, index) {
-                return AppSurface(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.md,
-                    vertical: AppSpacing.sm,
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const AppStatusBadge(label: 'Executive Insight', tone: AppStatusTone.info, animate: false),
-                      const SizedBox(height: AppSpacing.xs),
-                      Text(item, style: AppTypography.bodyBold(context)),
-                    ],
-                  ),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                const items = [
+                  'Q3 Revenue Target Reached (+18.4%)',
+                  'Tax Audit Clearance Verified',
+                  'Treasury Bank Balance: \$1,240,500',
+                ];
+                const padding = EdgeInsets.symmetric(
+                  horizontal: AppSpacing.md,
+                  vertical: AppSpacing.sm,
+                );
+                final border = Border.all().dimensions;
+                final contentWidth =
+                    constraints.maxWidth -
+                    padding.horizontal -
+                    border.horizontal;
+                final direction = Directionality.of(context);
+                final baseStyle = DefaultTextStyle.of(context).style;
+                final badgeStyle =
+                    shadcn.ComponentTheme.maybeOf<shadcn.BadgeTheme>(
+                      context,
+                    )?.outlineStyle ??
+                    const shadcn.ButtonStyle.outline(
+                      size: shadcn.ButtonSize.small,
+                      density: shadcn.ButtonDensity.dense,
+                    ).copyWith(
+                      textStyle: (context, states, value) =>
+                          value.copyWith(fontWeight: FontWeight.w500),
+                    );
+                final badgePadding = badgeStyle
+                    .padding(context, {})
+                    .resolve(direction);
+                final badgeMargin = badgeStyle
+                    .margin(context, {})
+                    .resolve(direction);
+                double textHeight(String text, TextStyle style, double width) {
+                  final painter = TextPainter(
+                    text: TextSpan(text: text, style: baseStyle.merge(style)),
+                    textDirection: direction,
+                    textScaler: MediaQuery.textScalerOf(context),
+                    locale: Localizations.maybeLocaleOf(context),
+                    textHeightBehavior: DefaultTextStyle.of(
+                      context,
+                    ).textHeightBehavior,
+                  )..layout(maxWidth: width);
+                  final height = painter.height;
+                  painter.dispose();
+                  return height;
+                }
+
+                final badgeHeight =
+                    textHeight(
+                      'Executive Insight',
+                      badgeStyle.textStyle(context, {}),
+                      contentWidth -
+                          badgePadding.horizontal -
+                          badgeMargin.horizontal,
+                    ) +
+                    badgePadding.vertical +
+                    badgeMargin.vertical;
+                final bodyHeight = items
+                    .map(
+                      (item) => textHeight(
+                        item,
+                        AppTypography.bodyBold(context),
+                        contentWidth,
+                      ),
+                    )
+                    .reduce(math.max);
+                // Carousel needs a bounded extent. Keep the original 120px minimum,
+                // and grow it for the longest slide at the actual width/text scale.
+                final height = math
+                    .max(
+                      120.0,
+                      badgeHeight +
+                          AppSpacing.xs +
+                          bodyHeight +
+                          padding.vertical +
+                          border.vertical,
+                    )
+                    .ceilToDouble();
+                return AppCarousel<String>(
+                  items: items,
+                  height: height,
+                  autoplay: false,
+                  itemBuilder: (context, item, index) {
+                    return AppSurface(
+                      padding: padding,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const AppStatusBadge(
+                            label: 'Executive Insight',
+                            tone: AppStatusTone.info,
+                            animate: false,
+                          ),
+                          const SizedBox(height: AppSpacing.xs),
+                          Text(item, style: AppTypography.bodyBold(context)),
+                        ],
+                      ),
+                    );
+                  },
                 );
               },
             ),
@@ -191,10 +368,12 @@ AppCarousel<String>(
 
     return Column(
       children: cards
-          .map((card) => Padding(
-                padding: const EdgeInsets.only(bottom: AppSpacing.md),
-                child: card,
-              ))
+          .map(
+            (card) => Padding(
+              padding: const EdgeInsets.only(bottom: AppSpacing.md),
+              child: card,
+            ),
+          )
           .toList(),
     );
   }

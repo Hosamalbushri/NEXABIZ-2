@@ -39,7 +39,8 @@ class AppSection extends StatelessWidget {
     final theme = shadcn.Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    final hasHeader = title != null || description != null || icon != null || actions != null;
+    final hasHeader =
+        title != null || description != null || icon != null || actions != null;
     final contentList = child != null ? [child!] : children;
 
     final column = Column(
@@ -57,11 +58,7 @@ class AppSection extends StatelessWidget {
                     color: colorScheme.primary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(theme.radiusSm),
                   ),
-                  child: Icon(
-                    icon,
-                    size: 18,
-                    color: colorScheme.primary,
-                  ),
+                  child: Icon(icon, size: 18, color: colorScheme.primary),
                 ),
                 const SizedBox(width: AppSpacing.sm),
               ] else if (title != null) ...[
@@ -101,10 +98,7 @@ class AppSection extends StatelessWidget {
               ),
               if (actions != null && actions!.isNotEmpty) ...[
                 const SizedBox(width: AppSpacing.sm),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: actions!,
-                ),
+                Row(mainAxisSize: MainAxisSize.min, children: actions!),
               ],
             ],
           ),
@@ -123,17 +117,22 @@ class AppSection extends StatelessWidget {
       ],
     );
 
-    if (showBorder) {
-      return shadcn.Card(
-        padding: padding,
-        child: column,
-      );
-    }
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final availableWidth = constraints.maxWidth;
+        final effectivePadding =
+            (padding == AppLayoutTokens.sectionPaddingDirectional &&
+                availableWidth.isFinite &&
+                availableWidth < 360.0)
+            ? AppLayoutTokens.pagePaddingDirectionalCompact
+            : padding;
 
-    return Padding(
-      padding: padding,
-      child: column,
+        if (showBorder) {
+          return shadcn.Card(padding: effectivePadding, child: column);
+        }
+
+        return Padding(padding: effectivePadding, child: column);
+      },
     );
   }
 }
-

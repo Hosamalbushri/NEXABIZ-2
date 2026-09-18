@@ -38,7 +38,7 @@ class AppTree<T> extends StatelessWidget {
 
   /// Builder function called for each tree item node.
   final Widget Function(BuildContext context, shadcn.TreeItemNode<T> node)
-      builder;
+  builder;
 
   /// Explicit width constraint for the tree surface container.
   final double? width;
@@ -153,16 +153,17 @@ class AppTree<T> extends StatelessWidget {
       );
     }
 
-    final hasHeader = title != null || (headerActions != null && headerActions!.isNotEmpty) || onAddRoot != null;
+    final hasHeader =
+        title != null ||
+        (headerActions != null && headerActions!.isNotEmpty) ||
+        onAddRoot != null;
 
     if (hasHeader || showBorder) {
       final theme = shadcn.Theme.of(context);
       return Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(theme.radiusMd),
-          border: Border.all(
-            color: theme.colorScheme.border,
-          ),
+          border: Border.all(color: theme.colorScheme.border),
         ),
         child: Column(
           mainAxisSize: shrinkWrap ? MainAxisSize.min : MainAxisSize.max,
@@ -170,12 +171,13 @@ class AppTree<T> extends StatelessWidget {
           children: [
             if (hasHeader)
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
                 decoration: BoxDecoration(
                   border: Border(
-                    bottom: BorderSide(
-                      color: theme.colorScheme.border,
-                    ),
+                    bottom: BorderSide(color: theme.colorScheme.border),
                   ),
                 ),
                 child: Row(
@@ -262,16 +264,17 @@ class AppTreeNodeRow<T> extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final hasMenu = onAddChild != null || onEdit != null || onDelete != null || (actions != null && actions!.isNotEmpty);
+    final hasMenu =
+        onAddChild != null ||
+        onEdit != null ||
+        onDelete != null ||
+        (actions != null && actions!.isNotEmpty);
 
     return Padding(
       padding: padding,
       child: Row(
         children: [
-          if (leading != null) ...[
-            leading!,
-            const SizedBox(width: 8),
-          ],
+          if (leading != null) ...[leading!, const SizedBox(width: 8)],
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -285,7 +288,10 @@ class AppTreeNodeRow<T> extends StatelessWidget {
                   children: [
                     if (level != null)
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 1,
+                        ),
                         decoration: BoxDecoration(
                           color: colorScheme.surfaceContainerHighest,
                           borderRadius: BorderRadius.circular(4),
@@ -300,17 +306,11 @@ class AppTreeNodeRow<T> extends StatelessWidget {
                     ...?badges,
                   ],
                 ),
-                if (subtitle != null) ...[
-                  const SizedBox(height: 2),
-                  subtitle!,
-                ],
+                if (subtitle != null) ...[const SizedBox(height: 2), subtitle!],
               ],
             ),
           ),
-          if (trailing != null) ...[
-            const SizedBox(width: 8),
-            trailing!,
-          ],
+          if (trailing != null) ...[const SizedBox(width: 8), trailing!],
           if (hasMenu)
             PopupMenuButton<String>(
               icon: Icon(

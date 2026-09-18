@@ -15,25 +15,25 @@ enum AppFieldDensity {
 
 extension AppFieldDensityX on AppFieldDensity {
   double get height => switch (this) {
-        AppFieldDensity.compact => 36.0,
-        AppFieldDensity.standard => 44.0,
-        AppFieldDensity.large => 52.0,
-      };
+    AppFieldDensity.compact => 36.0,
+    AppFieldDensity.standard => 44.0,
+    AppFieldDensity.large => 52.0,
+  };
 
   EdgeInsetsGeometry get contentPadding => switch (this) {
-        AppFieldDensity.compact => const EdgeInsets.symmetric(
-            horizontal: 10,
-            vertical: 6,
-          ),
-        AppFieldDensity.standard => const EdgeInsets.symmetric(
-            horizontal: 12,
-            vertical: 10,
-          ),
-        AppFieldDensity.large => const EdgeInsets.symmetric(
-            horizontal: 14,
-            vertical: 12,
-          ),
-      };
+    AppFieldDensity.compact => const EdgeInsets.symmetric(
+      horizontal: 10,
+      vertical: 6,
+    ),
+    AppFieldDensity.standard => const EdgeInsets.symmetric(
+      horizontal: 12,
+      vertical: 10,
+    ),
+    AppFieldDensity.large => const EdgeInsets.symmetric(
+      horizontal: 14,
+      vertical: 12,
+    ),
+  };
 }
 
 /// Canonical presentation shell for NexaBiz ERP form fields.
@@ -96,8 +96,8 @@ class _AppFieldShellState extends State<AppFieldShell> {
     final fillColor = !widget.enabled
         ? colorScheme.muted.withValues(alpha: 0.5)
         : widget.readOnly
-            ? colorScheme.muted.withValues(alpha: 0.3)
-            : colorScheme.card;
+        ? colorScheme.muted.withValues(alpha: 0.3)
+        : colorScheme.card;
 
     Color borderColor;
     if (hasError) {
@@ -135,13 +135,17 @@ class _AppFieldShellState extends State<AppFieldShell> {
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(
-                      lbl,
-                      style: theme.typography.small.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: widget.enabled
-                            ? colorScheme.foreground
-                            : colorScheme.mutedForeground,
+                    // The label owns the remaining width; the required marker
+                    // remains visible while long labels wrap at word boundaries.
+                    Flexible(
+                      child: Text(
+                        lbl,
+                        style: theme.typography.small.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: widget.enabled
+                              ? colorScheme.foreground
+                              : colorScheme.mutedForeground,
+                        ),
                       ),
                     ),
                     if (widget.required) ...[
@@ -182,7 +186,9 @@ class _AppFieldShellState extends State<AppFieldShell> {
                         )
                       else if (hasError)
                         BoxShadow(
-                          color: colorScheme.destructive.withValues(alpha: 0.12),
+                          color: colorScheme.destructive.withValues(
+                            alpha: 0.12,
+                          ),
                           blurRadius: 4,
                           spreadRadius: 1,
                         ),

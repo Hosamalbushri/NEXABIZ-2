@@ -162,11 +162,7 @@ class _AppDataTableState<T> extends State<AppDataTable<T>> {
                   child: Row(
                     children: [
                       if (widget.title != null)
-                        Expanded(
-                          child: Text(
-                            widget.title!,
-                          ).h4(),
-                        ),
+                        Expanded(child: Text(widget.title!).h4()),
                       if (widget.actions != null) ...widget.actions!,
                     ],
                   ),
@@ -204,7 +200,9 @@ class _AppDataTableState<T> extends State<AppDataTable<T>> {
                                         ? () => widget.onRowTap!(item)
                                         : null,
                                     child: Padding(
-                                      padding: const EdgeInsets.all(AppSpacing.sm),
+                                      padding: const EdgeInsets.all(
+                                        AppSpacing.sm,
+                                      ),
                                       child: c,
                                     ),
                                   ),

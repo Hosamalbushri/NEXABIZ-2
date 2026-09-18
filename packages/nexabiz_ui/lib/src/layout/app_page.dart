@@ -37,7 +37,8 @@ class AppPage extends StatelessWidget {
     final shadcnTheme = shadcn.Theme.of(context);
     final mediaWidth = MediaQuery.of(context).size.width;
 
-    final defaultPadding = padding ??
+    final defaultPadding =
+        padding ??
         (AppBreakpoints.isCompact(mediaWidth)
             ? AppLayoutTokens.pagePaddingDirectionalCompact
             : AppLayoutTokens.pagePaddingDirectionalStandard);
@@ -56,8 +57,7 @@ class AppPage extends StatelessWidget {
 
     if (scrollable) {
       return Scaffold(
-        backgroundColor:
-            backgroundColor ?? shadcnTheme.colorScheme.background,
+        backgroundColor: backgroundColor ?? shadcnTheme.colorScheme.background,
         appBar: appBar,
         body: SafeArea(
           child: SingleChildScrollView(
@@ -79,8 +79,7 @@ class AppPage extends StatelessWidget {
     }
 
     return Scaffold(
-      backgroundColor:
-          backgroundColor ?? shadcnTheme.colorScheme.background,
+      backgroundColor: backgroundColor ?? shadcnTheme.colorScheme.background,
       appBar: appBar,
       body: SafeArea(
         child: Padding(

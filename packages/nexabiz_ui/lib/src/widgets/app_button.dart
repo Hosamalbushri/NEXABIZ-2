@@ -38,14 +38,11 @@ class AppButton extends StatelessWidget {
             height: 16,
             child: shadcn.CircularProgressIndicator(strokeWidth: 2),
           )
-        : (icon != null && !trailingIcon
-            ? Icon(icon, size: 18)
-            : null);
+        : (icon != null && !trailingIcon ? Icon(icon, size: 18) : null);
 
-    final trailingWidget =
-        !isLoading && icon != null && trailingIcon
-            ? Icon(icon, size: 18)
-            : null;
+    final trailingWidget = !isLoading && icon != null && trailingIcon
+        ? Icon(icon, size: 18)
+        : null;
 
     final childWidget = Text(
       label,
@@ -60,40 +57,41 @@ class AppButton extends StatelessWidget {
 
     final Widget button = switch (variant) {
       AppButtonVariant.filled => shadcn.PrimaryButton(
-          onPressed: handler,
-          density: buttonDensity,
-          leading: leadingWidget,
-          trailing: trailingWidget,
-          child: childWidget,
-        ),
-      AppButtonVariant.elevated || AppButtonVariant.tonal => shadcn.SecondaryButton(
-          onPressed: handler,
-          density: buttonDensity,
-          leading: leadingWidget,
-          trailing: trailingWidget,
-          child: childWidget,
-        ),
+        onPressed: handler,
+        density: buttonDensity,
+        leading: leadingWidget,
+        trailing: trailingWidget,
+        child: childWidget,
+      ),
+      AppButtonVariant.elevated ||
+      AppButtonVariant.tonal => shadcn.SecondaryButton(
+        onPressed: handler,
+        density: buttonDensity,
+        leading: leadingWidget,
+        trailing: trailingWidget,
+        child: childWidget,
+      ),
       AppButtonVariant.outlined => shadcn.OutlineButton(
-          onPressed: handler,
-          density: buttonDensity,
-          leading: leadingWidget,
-          trailing: trailingWidget,
-          child: childWidget,
-        ),
+        onPressed: handler,
+        density: buttonDensity,
+        leading: leadingWidget,
+        trailing: trailingWidget,
+        child: childWidget,
+      ),
       AppButtonVariant.text => shadcn.GhostButton(
-          onPressed: handler,
-          density: buttonDensity,
-          leading: leadingWidget,
-          trailing: trailingWidget,
-          child: childWidget,
-        ),
+        onPressed: handler,
+        density: buttonDensity,
+        leading: leadingWidget,
+        trailing: trailingWidget,
+        child: childWidget,
+      ),
       AppButtonVariant.destructive => shadcn.DestructiveButton(
-          onPressed: handler,
-          density: buttonDensity,
-          leading: leadingWidget,
-          trailing: trailingWidget,
-          child: childWidget,
-        ),
+        onPressed: handler,
+        density: buttonDensity,
+        leading: leadingWidget,
+        trailing: trailingWidget,
+        child: childWidget,
+      ),
     };
 
     final double height = isCompact
@@ -101,16 +99,9 @@ class AppButton extends StatelessWidget {
         : AppDimensions.buttonHeight;
 
     if (expand) {
-      return SizedBox(
-        width: double.infinity,
-        height: height,
-        child: button,
-      );
+      return SizedBox(width: double.infinity, height: height, child: button);
     }
 
-    return SizedBox(
-      height: height,
-      child: button,
-    );
+    return SizedBox(height: height, child: button);
   }
 }

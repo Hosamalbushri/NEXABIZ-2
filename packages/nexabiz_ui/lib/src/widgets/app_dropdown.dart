@@ -18,7 +18,7 @@ class AppDropdown<T> extends StatelessWidget {
     required this.onChanged,
     this.value,
     this.label,
-    this.hint = 'اختر الخيار...',
+    this.hint,
     this.placeholder,
     this.required = false,
     this.errorText,
@@ -30,7 +30,7 @@ class AppDropdown<T> extends StatelessWidget {
   final T? value;
   final ValueChanged<T?>? onChanged;
   final String? label;
-  final String hint;
+  final String? hint;
   final Widget? placeholder;
   final bool required;
   final String? errorText;
@@ -41,6 +41,8 @@ class AppDropdown<T> extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = shadcn.Theme.of(context);
     final hasError = errorText != null && errorText!.isNotEmpty;
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
+    final effectiveHint = hint ?? (isRtl ? 'اختر الخيار...' : 'Select option...');
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -77,7 +79,7 @@ class AppDropdown<T> extends StatelessWidget {
           value: value,
           enabled: enabled,
           onChanged: (val) => onChanged?.call(val),
-          placeholder: placeholder ?? Text(hint),
+          placeholder: placeholder ?? Text(effectiveHint),
           itemBuilder: (context, item) {
             for (final element in items) {
               if (element.value == item) {
@@ -86,7 +88,7 @@ class AppDropdown<T> extends StatelessWidget {
             }
             return Text(item.toString());
           },
-          popup: shadcn.SelectPopup.builder(
+          popup: shadcn.SelectPopup<T>.builder(
             builder: (context, searchQuery) {
               return shadcn.SelectItemList(
                 children: items.map((item) {

@@ -1,73 +1,85 @@
-import 'package:shadcn_flutter/shadcn_flutter.dart' hide Card;
+import 'package:flutter/widgets.dart';
 import 'package:nexabiz_ui/nexabiz_ui.dart';
 
-/// Minimal demo page created solely to verify capability registration,
-/// navigation contribution, GoRouter adapter translation, and NexaBiz UI package consumption.
+import '../../../l10n/app_localizations.dart';
+
 class DemoPage extends StatelessWidget {
   const DemoPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return AppPage(
-      header: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text('NexaBiz Demo Capability').h2(),
-          const Gap(4),
-          const Text('Verified clean architecture capability registration & shadcn_flutter integration').muted(),
-        ],
-      ),
-      child: SurfaceCard(
-        padding: const EdgeInsets.all(AppSpacing.xl),
+    final l10n = AppLocalizations.of(context);
+    return AppDashboardPage(
+      title: l10n.demoTitle,
+      subtitle: l10n.demoSubtitle,
+      content: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
           children: [
-            const Row(
-              children: [
-                AppStatusBadge(
-                  label: 'Capability Architecture Verified',
-                  tone: AppStatusTone.success,
-                  animate: false,
-                ),
-              ],
-            ),
-            const Gap(16),
-            const Text('NexaBiz Demo Capability').h2(),
-            const Gap(8),
-            Text(
-              'This capability exists to prove capability registration, topological sorting, '
-              'navigation registry resolution, GoRouter infrastructure adaptation, and '
-              'canonical NexaBiz UI design system integration.',
-            ).p(),
-            const Gap(24),
-            AppCard(
+            AppSurface(
+              padding: const EdgeInsets.all(AppSpacing.md),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Architecture Principles').h4(),
-                  const Gap(6),
-                  const Text('Clean Modular / Ports & Adapters').muted(),
-                  const Gap(12),
-                  Text('• Capability is the runtime application unit.').p(),
-                  Text('• Package is the physical implementation boundary.').p(),
-                  Text('• Navigation is declared by capabilities.').p(),
-                  Text('• GoRouter is an infrastructure adapter.').p(),
-                  Text('• UI components come from canonical NexaBiz UI package.').p(),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: AppStatusBadge(
+                          label: l10n.demoBadge,
+                          tone: AppStatusTone.success,
+                          animate: false,
+                        ),
+                      ),
+                      const Icon(AppIcons.check, color: AppColors.success),
+                    ],
+                  ),
+                  const SizedBox(height: AppSpacing.sm),
+                  Text(
+                    l10n.demoDescription,
+                    style: AppTypography.body(context),
+                  ),
                 ],
               ),
             ),
-            const Gap(24),
-            Row(
-              spacing: 12,
-              children: [
-                PrimaryButton(
-                  onPressed: () {},
-                  child: const Text('System Ready'),
+            const SizedBox(height: AppSpacing.lg),
+            AppSection(
+              title: l10n.demoArchPrinciples,
+              subtitle: l10n.demoArchPrinciplesSubtitle,
+              child: AppCard(
+                padding: const EdgeInsets.all(AppSpacing.md),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(l10n.demoArchPrinciple1, style: AppTypography.body(context)),
+                    const SizedBox(height: AppSpacing.xs),
+                    Text(l10n.demoArchPrinciple2, style: AppTypography.body(context)),
+                    const SizedBox(height: AppSpacing.xs),
+                    Text(l10n.demoArchPrinciple3, style: AppTypography.body(context)),
+                    const SizedBox(height: AppSpacing.xs),
+                    Text(l10n.demoArchPrinciple4, style: AppTypography.body(context)),
+                    const SizedBox(height: AppSpacing.xs),
+                    Text(l10n.demoArchPrinciple5, style: AppTypography.body(context)),
+                  ],
                 ),
-                OutlineButton(
-                  onPressed: () {},
-                  child: const Text('Documentation'),
+              ),
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            Row(
+              children: [
+                Expanded(
+                  child: AppButton(
+                    label: l10n.actionSystemReady,
+                    variant: AppButtonVariant.filled,
+                    onPressed: () {},
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.sm),
+                Expanded(
+                  child: AppButton(
+                    label: l10n.actionDocumentation,
+                    variant: AppButtonVariant.outlined,
+                    onPressed: () {},
+                  ),
                 ),
               ],
             ),

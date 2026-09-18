@@ -131,4 +131,3 @@ class AppTablePage extends StatelessWidget {
     return table;
   }
 }
-
