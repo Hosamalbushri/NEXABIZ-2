@@ -44,10 +44,16 @@ class AppButton extends StatelessWidget {
         ? Icon(icon, size: 18)
         : null;
 
-    final childWidget = Text(
-      label,
-      textAlign: TextAlign.center,
-      overflow: TextOverflow.ellipsis,
+    final childWidget = FittedBox(
+      fit: BoxFit.scaleDown,
+      alignment: Alignment.center,
+      child: Text(
+        label,
+        textAlign: TextAlign.center,
+        maxLines: 1,
+        softWrap: false,
+        overflow: TextOverflow.ellipsis,
+      ),
     );
 
     final VoidCallback? handler = enabled ? onPressed : null;
@@ -59,6 +65,7 @@ class AppButton extends StatelessWidget {
       AppButtonVariant.filled => shadcn.PrimaryButton(
         onPressed: handler,
         density: buttonDensity,
+        alignment: Alignment.center,
         leading: leadingWidget,
         trailing: trailingWidget,
         child: childWidget,
@@ -67,6 +74,7 @@ class AppButton extends StatelessWidget {
       AppButtonVariant.tonal => shadcn.SecondaryButton(
         onPressed: handler,
         density: buttonDensity,
+        alignment: Alignment.center,
         leading: leadingWidget,
         trailing: trailingWidget,
         child: childWidget,
@@ -74,6 +82,7 @@ class AppButton extends StatelessWidget {
       AppButtonVariant.outlined => shadcn.OutlineButton(
         onPressed: handler,
         density: buttonDensity,
+        alignment: Alignment.center,
         leading: leadingWidget,
         trailing: trailingWidget,
         child: childWidget,
@@ -81,6 +90,7 @@ class AppButton extends StatelessWidget {
       AppButtonVariant.text => shadcn.GhostButton(
         onPressed: handler,
         density: buttonDensity,
+        alignment: Alignment.center,
         leading: leadingWidget,
         trailing: trailingWidget,
         child: childWidget,
@@ -88,6 +98,7 @@ class AppButton extends StatelessWidget {
       AppButtonVariant.destructive => shadcn.DestructiveButton(
         onPressed: handler,
         density: buttonDensity,
+        alignment: Alignment.center,
         leading: leadingWidget,
         trailing: trailingWidget,
         child: childWidget,
@@ -98,10 +109,20 @@ class AppButton extends StatelessWidget {
         ? AppDimensions.buttonHeightCompact
         : AppDimensions.buttonHeight;
 
+    final constrainedButton = ConstrainedBox(
+      constraints: BoxConstraints(
+        minHeight: isCompact ? 36.0 : 44.0,
+      ),
+      child: height > 0 ? SizedBox(height: height, child: button) : button,
+    );
+
     if (expand) {
-      return SizedBox(width: double.infinity, height: height, child: button);
+      return SizedBox(
+        width: double.infinity,
+        child: constrainedButton,
+      );
     }
 
-    return SizedBox(height: height, child: button);
+    return constrainedButton;
   }
 }

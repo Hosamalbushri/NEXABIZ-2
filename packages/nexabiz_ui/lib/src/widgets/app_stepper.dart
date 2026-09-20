@@ -164,53 +164,156 @@ class _AppStepperState extends State<AppStepper> {
     }
   }
 
+  Widget _buildStepHeader(BuildContext context, int activeStep) {
+    final theme = shadcn.Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 20),
+      child: Row(
+        children: List.generate(widget.steps.length, (index) {
+          final item = widget.steps[index];
+          final isCompleted = index < activeStep;
+          final isActive = index == activeStep;
+          final isLast = index == widget.steps.length - 1;
+
+          final circleColor = isCompleted || isActive
+              ? colorScheme.primary
+              : colorScheme.muted.withValues(alpha: 0.4);
+
+          final textColor = isCompleted || isActive
+              ? colorScheme.foreground
+              : colorScheme.mutedForeground;
+
+          return Expanded(
+            child: Row(
+              children: [
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  width: 28,
+                  height: 28,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: isCompleted
+                        ? colorScheme.primary
+                        : (isActive
+                            ? colorScheme.primary.withValues(alpha: 0.15)
+                            : colorScheme.muted.withValues(alpha: 0.2)),
+                    border: Border.all(
+                      color: circleColor,
+                      width: isActive ? 2.0 : 1.0,
+                    ),
+                  ),
+                  child: Center(
+                    child: isCompleted
+                        ? Icon(
+                            shadcn.LucideIcons.check,
+                            size: 14,
+                            color: colorScheme.primaryForeground,
+                          )
+                        : Text(
+                            '${index + 1}',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              color: isActive
+                                  ? colorScheme.primary
+                                  : colorScheme.mutedForeground,
+                            ),
+                          ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: DefaultTextStyle(
+                    style: theme.typography.small.copyWith(
+                      fontWeight: isActive ? FontWeight.bold : FontWeight.w500,
+                      color: textColor,
+                      fontSize: 12.5,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    child: item.title,
+                  ),
+                ),
+                if (!isLast) ...[
+                  Container(
+                    width: 16,
+                    height: 2,
+                    margin: const EdgeInsets.symmetric(horizontal: 4),
+                    color: index < activeStep
+                        ? colorScheme.primary
+                        : colorScheme.border.withValues(alpha: 0.4),
+                  ),
+                ],
+              ],
+            ),
+          );
+        }),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final shadcnSteps = <shadcn.Step>[];
+    return ListenableBuilder(
+      listenable: _controller,
+      builder: (context, _) {
+        final currentIdx = _controller.value.currentStep;
 
-    for (int i = 0; i < widget.steps.length; i++) {
-      final item = widget.steps[i];
-      final isLast = i == widget.steps.length - 1;
+        final shadcnSteps = <shadcn.Step>[];
+        for (int i = 0; i < widget.steps.length; i++) {
+          final item = widget.steps[i];
+          final isLast = i == widget.steps.length - 1;
 
-      shadcnSteps.add(
-        shadcn.Step(
-          title: item.title,
-          icon: item.icon,
-          contentBuilder: (ctx) {
-            final content = item.contentBuilder(ctx);
-            return shadcn.StepContainer(
-              actions: [
-                if (i > 0)
-                  shadcn.OutlineButton(
-                    onPressed: _handlePrevious,
-                    child: Text(widget.previousLabel),
-                  ),
-                if (!isLast)
-                  shadcn.PrimaryButton(
-                    onPressed: _handleNext,
-                    child: Text(widget.nextLabel),
-                  )
-                else
-                  shadcn.PrimaryButton(
-                    onPressed: widget.isSubmitting ? null : _handleNext,
-                    child: widget.isSubmitting
-                        ? const shadcn.CircularProgressIndicator()
-                        : Text(widget.completeLabel),
-                  ),
-              ],
-              child: content,
-            );
-          },
-        ),
-      );
-    }
+          shadcnSteps.add(
+            shadcn.Step(
+              title: item.title,
+              icon: item.icon,
+              contentBuilder: (ctx) {
+                final content = item.contentBuilder(ctx);
+                return shadcn.StepContainer(
+                  actions: [
+                    if (i > 0)
+                      shadcn.OutlineButton(
+                        onPressed: _handlePrevious,
+                        child: Text(widget.previousLabel),
+                      ),
+                    if (!isLast)
+                      shadcn.PrimaryButton(
+                        onPressed: _handleNext,
+                        child: Text(widget.nextLabel),
+                      )
+                    else
+                      shadcn.PrimaryButton(
+                        onPressed: widget.isSubmitting ? null : _handleNext,
+                        child: widget.isSubmitting
+                            ? const shadcn.CircularProgressIndicator()
+                            : Text(widget.completeLabel),
+                      ),
+                  ],
+                  child: content,
+                );
+              },
+            ),
+          );
+        }
 
-    return shadcn.Stepper(
-      controller: _controller,
-      steps: shadcnSteps,
-      direction: widget.direction,
-      variant: widget.variant,
-      size: widget.size,
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildStepHeader(context, currentIdx),
+            shadcn.Stepper(
+              controller: _controller,
+              steps: shadcnSteps,
+              direction: widget.direction,
+              variant: widget.variant,
+              size: widget.size,
+            ),
+          ],
+        );
+      },
     );
   }
 }

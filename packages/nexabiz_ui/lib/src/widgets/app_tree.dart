@@ -3,8 +3,8 @@ import 'package:shadcn_flutter/shadcn_flutter.dart' as shadcn;
 
 /// Canonical generic hierarchical Tree component for NexaBiz ERP.
 ///
-/// Wraps [shadcn.Tree] to provide standardized layout constraints,
-/// generic node rendering, branch line visual connections, container border styling,
+/// Wraps tree node hierarchies to provide standardized layout constraints,
+/// generic recursive node rendering, branch line visual connections, container border styling,
 /// level depth detection, and action callbacks (`onAddRoot`, `onAddChild`, `onEdit`, `onDelete`).
 class AppTree<T> extends StatelessWidget {
   /// Creates a canonical [AppTree] widget.
@@ -31,6 +31,7 @@ class AppTree<T> extends StatelessWidget {
     this.onAddChild,
     this.onEdit,
     this.onDelete,
+    this.indentWidth = 20.0,
   });
 
   /// The root-level tree nodes to render.
@@ -97,6 +98,9 @@ class AppTree<T> extends StatelessWidget {
   /// Callback invoked when deleting [node].
   final void Function(shadcn.TreeItemNode<T> node)? onDelete;
 
+  /// Width in pixels per depth level indentation.
+  final double indentWidth;
+
   /// Computes the zero-based hierarchy depth level of a [targetNode] within [roots].
   static int computeNodeLevel<T>(
     shadcn.TreeItemNode<T> targetNode,
@@ -116,25 +120,81 @@ class AppTree<T> extends StatelessWidget {
     return findDepth(roots, 0) ?? 0;
   }
 
+  Widget _buildRecursiveNode(
+    BuildContext context,
+    shadcn.TreeNode<T> treeNode,
+    int level,
+  ) {
+    if (treeNode is! shadcn.TreeItemNode<T>) {
+      return const SizedBox.shrink();
+    }
+
+    final isExpanded = treeNode.expanded;
+    final hasChildren = treeNode.children.isNotEmpty;
+
+    final theme = shadcn.Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Padding(
+          padding: EdgeInsets.only(
+            left: isRtl ? 0 : level * indentWidth,
+            right: isRtl ? level * indentWidth : 0,
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              if (level > 0 && branchLine != shadcn.BranchLine.none) ...[
+                Container(
+                  width: 12,
+                  height: 24,
+                  alignment: Alignment.center,
+                  child: CustomPaint(
+                    size: const Size(12, 24),
+                    painter: _TreeBranchPainter(
+                      color: colorScheme.border.withValues(alpha: 0.6),
+                      isRtl: isRtl,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 4),
+              ],
+              Expanded(child: builder(context, treeNode)),
+            ],
+          ),
+        ),
+        if (hasChildren && isExpanded)
+          ...treeNode.children.map(
+            (child) => _buildRecursiveNode(context, child, level + 1),
+          ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    Widget treeWidget = shadcn.Tree<T>(
-      nodes: nodes,
-      builder: builder,
-      shrinkWrap: shrinkWrap,
-      controller: controller,
-      branchLine: branchLine,
-      padding: padding,
-      expandIcon: expandIcon,
-      allowMultiSelect: allowMultiSelect,
-      focusNode: focusNode,
-      onSelectionChanged: onSelectionChanged,
-      recursiveSelection: recursiveSelection,
+    Widget treeContent = Padding(
+      padding: padding ?? EdgeInsets.zero,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: shrinkWrap ? MainAxisSize.min : MainAxisSize.max,
+        children: nodes.map((n) => _buildRecursiveNode(context, n, 0)).toList(),
+      ),
     );
 
+    if (!shrinkWrap) {
+      treeContent = SingleChildScrollView(
+        controller: controller,
+        child: treeContent,
+      );
+    }
+
     if (width != null || height != null || constraints != null) {
-      BoxConstraints effectiveConstraints =
-          constraints ?? const BoxConstraints();
+      BoxConstraints effectiveConstraints = constraints ?? const BoxConstraints();
       if (width != null) {
         effectiveConstraints = effectiveConstraints.copyWith(
           minWidth: width,
@@ -147,9 +207,9 @@ class AppTree<T> extends StatelessWidget {
           maxHeight: height,
         );
       }
-      treeWidget = ConstrainedBox(
+      treeContent = ConstrainedBox(
         constraints: effectiveConstraints,
-        child: treeWidget,
+        child: treeContent,
       );
     }
 
@@ -200,13 +260,43 @@ class AppTree<T> extends StatelessWidget {
                   ],
                 ),
               ),
-            treeWidget,
+            treeContent,
           ],
         ),
       );
     }
 
-    return treeWidget;
+    return treeContent;
+  }
+}
+
+class _TreeBranchPainter extends CustomPainter {
+  const _TreeBranchPainter({required this.color, required this.isRtl});
+
+  final Color color;
+  final bool isRtl;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.0;
+
+    final path = Path();
+    final startX = isRtl ? size.width : 0.0;
+    final endX = isRtl ? 0.0 : size.width;
+
+    path.moveTo(startX, 0);
+    path.lineTo(startX, size.height / 2);
+    path.lineTo(endX, size.height / 2);
+
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant _TreeBranchPainter oldDelegate) {
+    return oldDelegate.color != color || oldDelegate.isRtl != isRtl;
   }
 }
 

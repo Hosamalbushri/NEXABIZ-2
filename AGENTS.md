@@ -35,6 +35,10 @@ ARCHITECTURE DECISION REQUIRED
 | **Text / Labels / Localization** | [`docs/architecture/04_LOCALIZATION_CONTRACT.md`](file:///home/hosam/StudioProjects/nexabiz/docs/architecture/04_LOCALIZATION_CONTRACT.md) |
 | **Tests / Change Process / Guardrails** | [`docs/architecture/05_TESTING_AND_CHANGE_CONTRACT.md`](file:///home/hosam/StudioProjects/nexabiz/docs/architecture/05_TESTING_AND_CHANGE_CONTRACT.md) |
 
+## Mandatory Working Rules
+
+Before changing a subsystem, read the relevant file in [`docs/rules/README.md`](docs/rules/README.md) and its linked architecture contract. The rules are operational instructions; `docs/architecture/00_PROJECT_CONSTITUTION.md` and contracts `01–05` retain the precedence stated below. Follow the documented capability, navigation, localization, UI, and module boundaries, then run the required validation and audit the diff.
+
 ---
 
 ## 2. Fundamental Principle

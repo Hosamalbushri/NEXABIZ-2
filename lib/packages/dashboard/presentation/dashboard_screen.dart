@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:go_router/go_router.dart';
 import 'package:nexabiz_ui/nexabiz_ui.dart';
 
 import '../../../l10n/app_localizations.dart';
@@ -27,10 +28,74 @@ class DashboardScreen extends StatelessWidget {
     return AppDashboardPage(
       title: l10n.dashboardTitle,
       subtitle: l10n.dashboardSubtitle,
+      headerActions: [
+        AppIconButton(
+          variant: AppIconButtonVariant.ghost,
+          icon: AppIcons.layers,
+          tooltip: l10n.quickActionMobilePlayground,
+          onPressed: () => context.push('/playground'),
+        ),
+      ],
       statsGrid: const _DashboardKpiGrid(),
       carousel: const _DashboardCarouselSection(),
+      quickActions: const _DashboardPlaygroundBanner(),
       content: const _SystemStatusBanner(),
       recentActivity: const _RecentActivitySection(),
+    );
+  }
+}
+
+class _DashboardPlaygroundBanner extends StatelessWidget {
+  const _DashboardPlaygroundBanner();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return AppCard(
+      padding: EdgeInsets.zero,
+      child: AppListTile(
+        onTap: () => context.push('/playground'),
+        leading: DecoratedBox(
+          decoration: BoxDecoration(
+            color: AppColors.primaryBlue.withValues(alpha: 0.12),
+            borderRadius: BorderRadius.circular(AppRadii.md),
+          ),
+          child: const Padding(
+            padding: EdgeInsets.all(AppSpacing.xs),
+            child: Icon(
+              AppIcons.layers,
+              color: AppColors.primaryBlue,
+              size: 24,
+            ),
+          ),
+        ),
+        title: Wrap(
+          crossAxisAlignment: WrapCrossAlignment.center,
+          spacing: AppSpacing.xs,
+          runSpacing: AppSpacing.xxs,
+          children: [
+            Text(
+              l10n.quickActionMobilePlayground,
+              style: AppTypography.bodyBold(context),
+            ),
+            AppStatusBadge(
+              label: l10n.dashboardMobilePlaygroundBadge,
+              tone: AppStatusTone.info,
+              animate: false,
+            ),
+          ],
+        ),
+        subtitle: Text(
+          l10n.quickActionMobilePlaygroundDesc,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+        ),
+        trailing: const Icon(
+          AppIcons.chevronRight,
+          size: 18,
+          color: AppColors.primaryBlue,
+        ),
+      ),
     );
   }
 }
@@ -84,7 +149,7 @@ class _DashboardCarouselSection extends StatelessWidget {
           ),
           AppCarousel<_DashboardHighlightItem>(
             height: 172,
-            autoplay: true,
+            autoplay: false,
             autoplaySpeed: const Duration(seconds: 5),
             items: highlights,
             itemBuilder: (context, item, index) {

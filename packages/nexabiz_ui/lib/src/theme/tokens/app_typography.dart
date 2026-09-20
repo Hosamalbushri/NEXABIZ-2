@@ -302,6 +302,7 @@ class AppTypography {
         fontFamily: fontFamilyName,
         fontWeight: FontWeight.w600,
         fontSize: 15,
+        fontFeatures: const [FontFeature.tabularFigures()],
       );
 
   static TextStyle currencyValue(BuildContext context) =>
@@ -309,5 +310,6 @@ class AppTypography {
         fontFamily: fontFamilyName,
         fontWeight: FontWeight.w700,
         fontSize: 15,
+        fontFeatures: const [FontFeature.tabularFigures()],
       );
 }

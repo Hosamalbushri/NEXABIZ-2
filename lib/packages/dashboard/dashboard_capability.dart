@@ -3,6 +3,7 @@ import '../../core/capabilities/nexabiz_capability.dart';
 import '../../core/navigation/nexabiz_navigation_contribution.dart';
 import '../../core/navigation/nexabiz_route_definition.dart';
 import '../../app/router/nexabiz_flutter_route_definition.dart';
+import '../../core/navigation/nexabiz_route_access_requirement.dart';
 import '../../core/navigation/nexabiz_route_id.dart';
 import 'presentation/dashboard_screen.dart';
 
@@ -18,6 +19,11 @@ class _DashboardNavContribution implements NexaBizNavigationContribution {
     NexaBizFlutterRouteDefinition(
       routeId: rootRouteId,
       path: '/dashboard',
+      accessRequirement: const NexaBizRouteAccessRequirement(
+        requiresReadySetup: true,
+        requiresActiveSession: true,
+        requiresCompanyScope: true,
+      ),
       pageBuilder: (context) => const DashboardScreen(),
     ),
   ];

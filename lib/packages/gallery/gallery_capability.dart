@@ -4,12 +4,17 @@ import '../../core/capabilities/nexabiz_capability.dart';
 import '../../core/navigation/nexabiz_navigation_contribution.dart';
 import '../../core/navigation/nexabiz_route_definition.dart';
 import '../../app/router/nexabiz_flutter_route_definition.dart';
+import '../../core/navigation/nexabiz_route_access_requirement.dart';
 import '../../core/navigation/nexabiz_route_id.dart';
 
 class _GalleryNavigationContribution implements NexaBizNavigationContribution {
   static const NexaBizRouteId _rootRouteId = NexaBizRouteId(
     namespace: 'gallery',
     routeName: 'root',
+  );
+  static const NexaBizRouteId _playgroundRouteId = NexaBizRouteId(
+    namespace: 'gallery',
+    routeName: 'playground',
   );
 
   @override
@@ -20,7 +25,22 @@ class _GalleryNavigationContribution implements NexaBizNavigationContribution {
     NexaBizFlutterRouteDefinition(
       routeId: _rootRouteId,
       path: '/gallery',
+      accessRequirement: const NexaBizRouteAccessRequirement(
+        requiresReadySetup: true,
+        requiresActiveSession: true,
+        requiresCompanyScope: true,
+      ),
       pageBuilder: (context) => const ComponentGalleryPage(),
+    ),
+    NexaBizFlutterRouteDefinition(
+      routeId: _playgroundRouteId,
+      path: '/playground',
+      accessRequirement: const NexaBizRouteAccessRequirement(
+        requiresReadySetup: true,
+        requiresActiveSession: true,
+        requiresCompanyScope: true,
+      ),
+      pageBuilder: (context) => const MobileUiPlaygroundPage(),
     ),
   ];
 }

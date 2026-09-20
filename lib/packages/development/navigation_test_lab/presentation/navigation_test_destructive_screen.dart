@@ -17,9 +17,9 @@ class NavigationTestDestructiveScreen extends StatelessWidget {
       header: AppPageHeader(
         title: l10n.navLabDestructiveTitle,
         subtitle: l10n.navLabDestructiveSubtitle,
-        actions: const [
+        actions: [
           AppStatusBadge(
-            label: 'Destructive Demos',
+            label: l10n.navLabDestructiveBadge,
             tone: AppStatusTone.error,
             animate: false,
           ),
@@ -62,8 +62,8 @@ class NavigationTestDestructiveScreen extends StatelessWidget {
                   leading: const Icon(AppIcons.refresh, color: AppColors.error),
                   title: Text(l10n.navLabReplaceA11),
                   subtitle: Text(l10n.navLabReplaceA11Subtitle),
-                  trailing: const AppStatusBadge(
-                    label: 'REPLACE',
+                  trailing: AppStatusBadge(
+                    label: l10n.navLabReplaceBadge,
                     tone: AppStatusTone.error,
                     animate: false,
                   ),
@@ -73,11 +73,14 @@ class NavigationTestDestructiveScreen extends StatelessWidget {
                 ),
                 const AppDivider(),
                 AppListTile(
-                  leading: const Icon(AppIcons.dashboard, color: AppColors.error),
+                  leading: const Icon(
+                    AppIcons.dashboard,
+                    color: AppColors.error,
+                  ),
                   title: Text(l10n.navLabResetLab),
                   subtitle: Text(l10n.navLabResetLabSubtitle),
-                  trailing: const AppStatusBadge(
-                    label: 'RESET',
+                  trailing: AppStatusBadge(
+                    label: l10n.navLabResetBadge,
                     tone: AppStatusTone.error,
                     animate: false,
                   ),
@@ -90,8 +93,8 @@ class NavigationTestDestructiveScreen extends StatelessWidget {
                   leading: const Icon(AppIcons.check, color: AppColors.success),
                   title: Text(l10n.navLabPreserveA11),
                   subtitle: Text(l10n.navLabPreserveA11Subtitle),
-                  trailing: const AppStatusBadge(
-                    label: 'PUSH',
+                  trailing: AppStatusBadge(
+                    label: l10n.navLabPushBadge,
                     tone: AppStatusTone.success,
                     animate: false,
                   ),

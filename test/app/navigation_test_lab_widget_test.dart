@@ -1,20 +1,20 @@
+import '../support/bootstrap_test_helper.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nexabiz/app/app.dart';
-import 'package:nexabiz/app/bootstrap/app_bootstrap.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('Navigation Test Lab Widget & Stack Tests', () {
-    testWidgets('Dashboard renders and navigates to deep Branch A routes', (tester) async {
-      final bootstrap = await AppBootstrap.initialize(initialLocation: '/dev/navigation');
+    testWidgets('Dashboard renders and navigates to deep Branch A routes', (
+      tester,
+    ) async {
+      final bootstrap = await bootstrapForTest(
+        initialLocation: '/dev/navigation',
+      );
       addTearDown(() => bootstrap.router.dispose());
 
-      await tester.pumpWidget(
-        NexaBizApp(
-          router: bootstrap.router,
-        ),
-      );
+      await tester.pumpWidget(NexaBizApp(router: bootstrap.router));
       await tester.pumpAndSettle();
 
       // 1. Verify Navigation Test Lab Dashboard
@@ -26,7 +26,10 @@ void main() {
       await tester.pumpAndSettle();
 
       // 3. Verify Node A Root
-      expect(find.text('Branch A Root'), findsNWidgets(2)); // Header + Telemetry
+      expect(
+        find.text('Branch A Root'),
+        findsNWidgets(2),
+      ); // Header + Telemetry
       expect(find.text('Stack Depth'), findsOneWidget);
 
       // 4. Push to Node A1
@@ -62,15 +65,15 @@ void main() {
       expect(find.text('Navigation Test Lab'), findsOneWidget);
     });
 
-    testWidgets('Parameterized routes parse item IDs correctly', (tester) async {
-      final bootstrap = await AppBootstrap.initialize(initialLocation: '/dev/navigation/param/100');
+    testWidgets('Parameterized routes parse item IDs correctly', (
+      tester,
+    ) async {
+      final bootstrap = await bootstrapForTest(
+        initialLocation: '/dev/navigation/param/100',
+      );
       addTearDown(() => bootstrap.router.dispose());
 
-      await tester.pumpWidget(
-        NexaBizApp(
-          router: bootstrap.router,
-        ),
-      );
+      await tester.pumpWidget(NexaBizApp(router: bootstrap.router));
       await tester.pumpAndSettle();
 
       expect(find.text('Parameter Test (Item #100)'), findsOneWidget);

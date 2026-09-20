@@ -9,6 +9,7 @@ import 'package:nexabiz/core/capabilities/nexabiz_capability.dart';
 import 'package:nexabiz/core/capabilities/nexabiz_capability_registry.dart';
 import 'package:nexabiz/core/navigation/nexabiz_navigation_contribution.dart';
 import 'package:nexabiz/core/navigation/nexabiz_navigation_registry.dart';
+import 'package:nexabiz/core/navigation/nexabiz_route_access_requirement.dart';
 import 'package:nexabiz/core/navigation/nexabiz_route_definition.dart';
 import 'package:nexabiz/core/navigation/nexabiz_route_id.dart';
 
@@ -52,6 +53,11 @@ NexaBizFlutterRouteDefinition _route(String name) =>
     NexaBizFlutterRouteDefinition(
       routeId: NexaBizRouteId(namespace: 'test', routeName: name),
       path: '/$name',
+      accessRequirement: const NexaBizRouteAccessRequirement(
+        requiresReadySetup: false,
+        requiresActiveSession: false,
+        requiresCompanyScope: false,
+      ),
       pageBuilder: (context) => Text('Page $name'),
     );
 

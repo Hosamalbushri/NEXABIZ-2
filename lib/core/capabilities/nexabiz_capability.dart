@@ -8,6 +8,8 @@ import 'capability_metadata.dart';
 ///
 /// This contract MUST remain framework-neutral.
 /// It MUST NOT import Flutter UI, GoRouter, Riverpod, or shadcn_flutter.
+/// Capabilities that declare setup or permission metadata additionally implement
+/// NexaBizCapabilityWithRuntimeContributions; other capabilities need no new members.
 abstract interface class NexaBizCapability {
   /// Unique runtime capability identifier (e.g. 'demo', 'financial').
   String get capabilityId;

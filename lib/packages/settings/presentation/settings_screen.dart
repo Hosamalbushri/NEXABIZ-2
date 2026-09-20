@@ -3,11 +3,14 @@ import 'package:go_router/go_router.dart';
 import 'package:nexabiz_ui/nexabiz_ui.dart';
 
 import '../../../app/localization/app_locale_controller.dart';
+import '../../../core/session/core_session_controller.dart';
 import '../../../l10n/app_localizations.dart';
 
 /// Settings & Configuration screen built strictly using canonical `nexabiz_ui` primitives.
 class SettingsScreen extends StatelessWidget {
-  const SettingsScreen({super.key});
+  const SettingsScreen({super.key, this.sessionController});
+
+  final CoreSessionController? sessionController;
 
   void _showLanguageSelector(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -54,6 +57,8 @@ class SettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final session = sessionController?.currentSession;
+
     return AppDashboardPage(
       title: l10n.settingsTitle,
       subtitle: l10n.settingsSubtitle,
@@ -150,8 +155,34 @@ class SettingsScreen extends StatelessWidget {
                         AppIcons.bank,
                         color: AppColors.primaryBlue,
                       ),
-                      title: Text(l10n.settingsCompanyProfile),
-                      subtitle: Text(l10n.settingsCompanyProfileSubtitle),
+                      title: Text(
+                        session?.companyName ?? l10n.settingsCompanyProfile,
+                      ),
+                      subtitle: Text(
+                        session?.companyCode != null
+                            ? '${session!.companyCode} • ${l10n.companySelectionCurrentRole(session.role ?? "")}'
+                            : l10n.settingsCompanyProfileSubtitle,
+                      ),
+                      trailing: session?.hasActiveCompany == true
+                          ? AppStatusBadge(
+                              label: l10n.statusPrimary,
+                              tone: AppStatusTone.success,
+                            )
+                          : null,
+                    ),
+                    const AppDivider(),
+                    AppListTile(
+                      leading: const Icon(
+                        AppIcons.layers,
+                        color: AppColors.accentPurple,
+                      ),
+                      title: Text(l10n.companySelectionTitle),
+                      subtitle: Text(l10n.companySelectionSubtitle),
+                      trailing: const Icon(
+                        AppIcons.chevronRight,
+                        size: 16,
+                      ),
+                      onTap: () => context.push('/company-selection'),
                     ),
                     const AppDivider(),
                     AppListTile(

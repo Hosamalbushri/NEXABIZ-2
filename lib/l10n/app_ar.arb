@@ -1,13 +1,18 @@
 {
   "@@locale": "ar",
   "appName": "نيكسابيز ERP",
+  "splashTitle": "نيكسابيز ERP",
+  "splashSubtitle": "جاري تهيئة منصة الأعمال الآمنة...",
   "navDashboard": "لوحة التحكم",
   "navServices": "الخدمات",
   "navReports": "التقارير",
   "navSettings": "الإعدادات",
-
   "quickActionsTitle": "إجراءات سريعة",
   "quickActionsSubtitle": "تنفيذ العمليات التجارية وأدوات المطور الشائعة",
+  "quickActionMobilePlayground": "مختبر واجهات الجوال",
+  "quickActionMobilePlaygroundDesc": "نماذج وتجارب واجهات الجوال لتخطيط الموارد",
+  "dashboardMobilePlaygroundCta": "استعراض",
+  "dashboardMobilePlaygroundBadge": "UI-01",
   "quickActionComponentGallery": "معرض المكونات",
   "quickActionComponentGalleryDesc": "معرض واجهة المستخدم ومساحة المكونات",
   "quickActionNewInvoice": "فاتورة جديدة",
@@ -16,7 +21,6 @@
   "quickActionNewCustomerDesc": "تسجيل حساب عميل",
   "quickActionAddProduct": "إضافة منتج",
   "quickActionAddProductDesc": "إدخال عنصر مخزون",
-
   "exitDialogTitle": "الخروج من التطبيق",
   "exitDialogMessage": "هل أنت تأكد من رغبتك في الخروج من نيكسابيز ERP؟",
   "actionExit": "خروج",
@@ -26,7 +30,6 @@
   "actionClearLog": "مسح السجل",
   "actionSystemReady": "النظام جاهز",
   "actionDocumentation": "الوثائق",
-
   "dashboardTitle": "لوحة تحكم نيكسابيز",
   "dashboardSubtitle": "مرحباً بعودتك إلى نيكسابيز ERP",
   "dashboardEnterpriseHighlights": "أبرز إنجازات المؤسسة",
@@ -45,7 +48,6 @@
   "statusStandby": "استعداد",
   "statusSynced": "متزامن",
   "statusPrimary": "رئيسي",
-
   "kpiTotalSales": "إجمالي المبيعات",
   "kpiTotalSalesSubtitle": "+12.5% هذا الشهر",
   "kpiPurchases": "المشتريات",
@@ -54,7 +56,6 @@
   "kpiReceivablesSubtitle": "4 فواتير معلقة",
   "kpiStockValuation": "تقييم المخزون",
   "kpiStockValuationSubtitle": "1,240 صنف مخزون",
-
   "recentActivityTitle": "النشاط الحديث",
   "recentActivityItem1Title": "فاتورة مبيعات #INV-2026-0042",
   "recentActivityItem1Subtitle": "العميل: شركة أكما للتجارة • $3,450.00",
@@ -65,12 +66,12 @@
   "recentActivityItem3Title": "سند قبض #RCV-1021",
   "recentActivityItem3Subtitle": "تم استلام الدفعة للفاتورة #INV-2026-0019",
   "recentActivityItem3Time": "منذ 3 ساعات",
-
   "servicesTitle": "مركز الخدمات",
   "servicesSubtitle": "إمكانيات الأعمال ومُشغّلات الخدمات المتاحة",
   "servicesDevSection": "النظام وأدوات المطور",
   "servicesDevSectionSubtitle": "نظام تصميم واجهة المستخدم ومساحة المكونات",
   "servicesComponentGallerySubtitle": "مساحة تفاعلية لمكونات shadcn_flutter",
+  "servicesMobilePlaygroundSubtitle": "استكشاف أنماط تصميم الجوال وسيناريوهات تخطيط الموارد",
   "servicesFinancialSection": "المالية والمحاسبة",
   "servicesFinancialSectionSubtitle": "أدوات الإدارة المالية الأساسية",
   "servicesGeneralLedger": "دفتر الأستاذ العام",
@@ -91,7 +92,6 @@
   "servicesPurchasingPOSubtitle": "أوامر الشراء والموردين",
   "servicesLogisticsShipping": "اللوجستيات والشحن",
   "servicesLogisticsShippingSubtitle": "تتبع الشحنات والإرسال",
-
   "reportsTitle": "مركز التقارير",
   "reportsSubtitle": "التقارير المالية، التشغيلية، والتحليلية",
   "reportsEngineStatus": "حالة المحرك",
@@ -105,7 +105,6 @@
   "reportsProfitLossSubtitle": "الإيرادات مقابل المصروفات",
   "reportsGLAudit": "تدقيق دفتر الأستاذ العام",
   "reportsGLAuditSubtitle": "التحقق من القيود",
-
   "settingsTitle": "الإعدادات والتكوين",
   "settingsSubtitle": "تفضيلات التطبيق وإدارة ملف المؤسسة",
   "settingsDevToolsSection": "أدوات المطور ونظام التصميم",
@@ -133,7 +132,6 @@
   "settingsSecurityControlsSubtitle": "إدارة أدوار المستخدمين وصلاحيات الإمكانيات",
   "settingsOfflineSync": "المزامنة والتخزين المحلي",
   "settingsOfflineSyncSubtitle": "جميع قواعد البيانات المحلية محدثة",
-
   "demoTitle": "إمكانية العرض التوضيحي لنيكسابيز",
   "demoSubtitle": "تم التحقق من تسجيل الإمكانية والبنية النظيفة مع تكامل shadcn_flutter",
   "demoBadge": "تم التحقق من بنية الإمكانية",
@@ -145,7 +143,6 @@
   "demoArchPrinciple3": "• يتم الإعلان عن التنقل بواسطة الإمكانيات.",
   "demoArchPrinciple4": "• GoRouter هو محول بنية تحتية.",
   "demoArchPrinciple5": "• مكونات الواجهة تأتي من حزمة nexabiz_ui الرسمية.",
-
   "navLabTitle": "مختبر اختبار التنقل",
   "navLabSubtitle": "بيئة اختبار وتصليد التنقل للإنتاج",
   "navLabBadge": "مختبر التطوير",
@@ -198,5 +195,171 @@
   "navLabResetLab": "إعادة تعيين: context.go(\"/dev/navigation\")",
   "navLabResetLabSubtitle": "يعيد تعيين التكدس إلى جذر مختبر الاختبار (تدميري)",
   "navLabPreserveA11": "حفظ: context.push(\"/dev/navigation/a/a1/a1-1\")",
-  "navLabPreserveA11Subtitle": "يدفع العقدة A1.1 فوق التكدس الحالي (يحفظ التكدس)"
+  "navLabPreserveA11Subtitle": "يدفع العقدة A1.1 فوق التكدس الحالي (يحفظ التكدس)",
+  "navLabNodeSubtitle": "مختبر اختبار التنقل — الفرع {branch} (العمق {depth})",
+  "@navLabNodeSubtitle": {
+    "placeholders": {
+      "branch": {
+        "type": "String"
+      },
+      "depth": {
+        "type": "String"
+      }
+    }
+  },
+  "navLabBranchBadge": "الفرع {branch}",
+  "@navLabBranchBadge": {
+    "placeholders": {
+      "branch": {
+        "type": "String"
+      }
+    }
+  },
+  "navLabPushPath": "PUSH {path}",
+  "@navLabPushPath": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "navLabPushBadge": "PUSH",
+  "navLabParamRouteBadge": "مسار معلمات",
+  "navLabDestructiveBadge": "عروض استبدال التكدس",
+  "navLabReplaceBadge": "REPLACE",
+  "navLabResetBadge": "RESET",
+  "navLabNodeTitle": "العقدة {code}",
+  "@navLabNodeTitle": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "navLabNodeSiblingTitle": "العقدة {code} (شقيقة)",
+  "@navLabNodeSiblingTitle": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "navLabNodeDeepestTitle": "العقدة {code} (الأعمق)",
+  "@navLabNodeDeepestTitle": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "navLabBranchRootTitle": "جذر الفرع {branch}",
+  "@navLabBranchRootTitle": {
+    "placeholders": {
+      "branch": {
+        "type": "String"
+      }
+    }
+  },
+  "navLabTargetRouterValue": "موجّه GoRouter للإنتاج",
+  "navLabRootScopeValue": "نطاق الخروج AppExitPopScope",
+  "navLabStackStrategyValue": "PUSH (يحفظ تكدس المسارات)",
+  "navLabBranchAPath": "المسار: /dev/navigation/a -> A1 -> A1.1 -> A1.1.1",
+  "navLabBranchBPath": "المسار: /dev/navigation/b -> B1 -> B1.2 / B2.1",
+  "navLabBranchCPath": "المسار: /dev/navigation/c -> C1 -> C1.1 -> C1.1.1",
+  "navLabParamPath": "المسار: /dev/navigation/param/100 و200",
+  "navLabDestructiveComparison": "مقارنة REPLACE (context.go) الصريح مع PUSH",
+  "navLabFourLevels": "4 مستويات",
+  "navLabThreeLevels": "3 مستويات",
+  "navLabParamTestBadge": "اختبار المعلمات",
+  "navLabDemoOnlyBadge": "للعرض فقط",
+  "navLabEventPushPath": "PUSH -> {path}",
+  "@navLabEventPushPath": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "navLabInstructionDeepPush": "1. التنقل العميق: افتح الفرع A -> A1 -> A1.1 -> A1.1.1. اضغط رجوع Android أربع مرات وتحقق من عودة كل عقدة أب دون نافذة خروج.",
+  "navLabInstructionSiblings": "2. العقد الشقيقة: افتح A1 -> A1.1 -> رجوع -> A1.2 -> رجوع. تحقق من استعادة العقدة A1.",
+  "navLabInstructionOverlay": "3. الطبقة المتراكبة: افتح نافذة الاختبار أو ورقته من أي عقدة، ثم اضغط رجوع Android. تحقق من إغلاق الطبقة وبقاء المسار نشطًا.",
+  "navLabInstructionRootExit": "4. الخروج من الجذر: ارجع إلى جذر التطبيق (/dashboard)، ثم اضغط رجوع Android. تحقق من ظهور نافذة الخروج.",
+  "@navLabParamTitle": {
+    "placeholders": {
+      "itemId": {
+        "type": "String"
+      }
+    }
+  },
+  "navLabNestedRootTitle": "اختبار التنقل المتشعب",
+  "navLabNestedDetailsTitle": "التفاصيل المتشعبة",
+  "navLabNestedAuditTitle": "تدقيق المسار المتشعب",
+  "navLabNestedSettingsTitle": "إعدادات المسار المتشعب",
+  "navLabNestedAdvancedTitle": "إعدادات متقدمة للمسار المتشعب",
+  "navLabNestedSubtitle": "تحقق من المسارات المتشعبة والروابط المباشرة والرجوع وتبديل اللغة",
+  "navLabNestedActionsTitle": "إجراءات اختبار التنقل",
+  "navLabNestedOpenDetails": "افتح التفاصيل",
+  "navLabNestedOpenAudit": "افتح التدقيق",
+  "navLabNestedOpenSettings": "افتح الإعدادات",
+  "navLabNestedOpenAdvanced": "افتح الإعدادات المتقدمة",
+  "navLabNestedToggleLanguage": "بدّل اللغة",
+  "systemSetupTitle": "إعداد النظام",
+  "systemSetupSubtitle": "صفحة تأسيسية لتهيئة النظام. إجراءات الإعداد غير متاحة بعد.",
+  "systemSetupStatusFoundationOnly": "متطلبات الإعداد المخطط لها",
+  "systemSetupRequirementCompany": "الشركة",
+  "systemSetupRequirementAdminUser": "المستخدم المسؤول",
+  "identityTitle": "الهوية",
+  "identitySubtitle": "صفحة تأسيسية للهوية والجلسات المحلية. تسجيل الدخول وإدارة المستخدمين غير متاحين بعد.",
+  "identityStatusFoundationOnly": "مسؤوليات الهوية المخطط لها",
+  "identityResponsibilityLocalSession": "الجلسة المحلية",
+  "identityResponsibilityAdminUser": "المستخدم المسؤول",
+  "identityResponsibilityCompanyMembership": "عضوية الشركة",
+  "identityResponsibilityCompanySwitchEndsSession": "يُنهي تبديل الشركة الجلسة الحالية",
+  "companyTitle": "الشركة",
+  "companySubtitle": "صفحة تأسيسية للشركة النشطة والعضوية ونطاق المستأجر. إدارة الشركات غير متاحة بعد.",
+  "companyStatusFoundationOnly": "مسؤوليات الشركة المخطط لها",
+  "companyResponsibilityActiveCompany": "سياق الشركة النشطة",
+  "companyResponsibilityMembership": "عضوية الشركة",
+  "companyResponsibilityTenantScope": "نطاق المستأجر",
+  "companyResponsibilitySwitchEndsSession": "يجب أن ينهي تبديل الشركة مستقبلًا الجلسة الحالية",
+  "permissionsTitle": "الصلاحيات",
+  "permissionsSubtitle": "صفحة تأسيسية لكتالوج الصلاحيات ونية التفويض. تطبيق السياسات غير متاح بعد.",
+  "permissionsStatusFoundationOnly": "تعريفات صلاحيات فقط",
+  "permissionsResponsibilityCatalog": "كتالوج الصلاحيات",
+  "permissionsResponsibilityRouteIntent": "نية الوصول إلى المسارات",
+  "permissionsResponsibilityOperationIntent": "نية صلاحيات العمليات",
+  "permissionsResponsibilityNoRuntimeGrants": "لا توجد أدوار أو منح تشغيلية بعد",
+  "setupCompanyCode": "رمز الشركة",
+  "setupCompanyName": "اسم الشركة",
+  "setupAdminName": "اسم المسؤول",
+  "setupAdminEmail": "البريد الإلكتروني للمسؤول",
+  "setupPassword": "كلمة المرور",
+  "setupConfirmPassword": "تأكيد كلمة المرور",
+  "setupCreate": "إنشاء الشركة والمسؤول",
+  "setupValidation": "أدخل رمز الشركة واسمها واسم المسؤول وبريدًا إلكترونيًا صالحًا وكلمة مرور من 12 حرفًا على الأقل.",
+  "setupPasswordMismatch": "كلمتا المرور غير متطابقتين.",
+  "setupAlreadyInitialized": "تم تهيئة هذا التثبيت بالفعل.",
+  "setupRecoveryRequired": "تحتاج بيانات النظام الأساسية غير المكتملة إلى استعادة قبل متابعة الإعداد.",
+  "setupStorageFailure": "تعذر حفظ الإعداد. حاول مجددًا.",
+  "setupCredentialFailure": "تعذر تجهيز كلمة المرور. حاول مجددًا.",
+  "loginTitle": "تسجيل الدخول",
+  "loginSubtitle": "أدخل بيانات الاعتماد الخاصة بك للوصول إلى مساحة عمل نيكسابيز",
+  "loginIdentifier": "البريد الإلكتروني أو اسم المستخدم",
+  "loginPassword": "كلمة المرور",
+  "loginSubmit": "دخول",
+  "loginValidation": "يرجى إدخال البريد الإلكتروني/اسم المستخدم وكلمة المرور.",
+  "loginInvalidCredentials": "اسم المستخدم أو كلمة المرور غير صحيحة.",
+  "loginUserInactive": "حساب المستخدم غير نشط. يرجى مراجعة مسؤول النظام.",
+  "loginNoCompanies": "لا توجد صلاحيات شركات نشطة لهذا المستخدم.",
+  "companySelectionTitle": "اختيار الشركة",
+  "companySelectionSubtitle": "اختر بيئة الشركة النشطة للمتابعة",
+  "companySelectionCurrentRole": "الدور: {role}",
+  "@companySelectionCurrentRole": {
+    "placeholders": {
+      "role": {
+        "type": "String"
+      }
+    }
+  },
+  "actionLogout": "تسجيل الخروج"
 }

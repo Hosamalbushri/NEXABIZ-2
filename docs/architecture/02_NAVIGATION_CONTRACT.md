@@ -26,7 +26,11 @@ The platform defines 4 primary stateful shell branches:
 
 All primary branches are rendered within `StatefulShellRoute.indexedStack` wrapped in `ApplicationShell` and `AppExitPopScope`.
 
-Secondary feature routes (such as `/gallery`, `/demo`, `/navigation_test_lab`) register as top-level `GoRoute` instances.
+Secondary feature route roots (such as `/gallery`, `/demo`, `/dev/navigation`, and `/navigation-test-lab`) register outside the primary shell. Nested children of those roots are registered beneath their parent `GoRoute`.
+
+### Nested route definitions
+
+`NexaBizRouteDefinition.parentRouteId` is optional. A route without it remains a root route; a route with it is a direct child of a route in the same capability contribution. The registry rejects missing or cross-capability parents, hierarchy cycles, and paths that are not one segment below the parent. Its `path` remains an absolute canonical URI for lookup and navigation. The router adapter derives a relative GoRouter child segment and builds the tree from registry metadata. It never registers feature paths by hand. The four primary shell branches remain unchanged; secondary route trees remain outside the shell when all four branches are present.
 
 ---
 
@@ -92,6 +96,7 @@ NEW ROUTE CHECKLIST
 [ ] Specify unique NexaBizRouteId (namespace + routeName).
 [ ] Specify unique URI path string.
 [ ] Register route inside owning capability's NexaBizNavigationContribution.
+[ ] For a nested route, set parentRouteId to a registered direct parent and keep the full absolute path canonical.
 [ ] For detail/sub-pages, use context.push() to preserve stack.
 [ ] Ensure App-Bar Back button uses context.pop().
 [ ] Verify System Back unwinds stack without terminating application.

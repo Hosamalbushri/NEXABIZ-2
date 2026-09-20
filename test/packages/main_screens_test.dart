@@ -81,6 +81,7 @@ void main() {
         expect(find.text('Application Preferences'), findsOneWidget);
         expect(find.text('Dark Mode'), findsOneWidget);
         expect(find.text('Company & Currency Profile'), findsOneWidget);
+        expect(find.text('Select Company'), findsOneWidget);
       },
     );
 

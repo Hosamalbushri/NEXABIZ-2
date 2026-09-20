@@ -94,14 +94,28 @@ class AppTextField extends StatelessWidget {
             }
           : null,
       placeholder: hint != null ? Text(hint!, style: hintTextStyle) : null,
+      padding: EdgeInsets.zero,
       border: const Border(),
+      features: const [],
     );
 
     final prefixWidget = prefixIcon is IconData
-        ? Icon(
-            prefixIcon as IconData,
-            size: 18,
-            color: enabled ? colorScheme.primary : colorScheme.mutedForeground,
+        ? Container(
+            width: 28,
+            height: 28,
+            decoration: BoxDecoration(
+              color: enabled
+                  ? colorScheme.primary.withValues(alpha: 0.1)
+                  : colorScheme.muted.withValues(alpha: 0.3),
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Center(
+              child: Icon(
+                prefixIcon as IconData,
+                size: 16,
+                color: enabled ? colorScheme.primary : colorScheme.mutedForeground,
+              ),
+            ),
           )
         : prefixIcon as Widget?;
 

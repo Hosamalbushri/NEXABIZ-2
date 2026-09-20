@@ -113,7 +113,46 @@ class AppFormSection extends StatelessWidget {
       ],
     );
 
-    return shadcn.Card(padding: padding, child: column);
+    return Padding(
+      padding: EdgeInsets.only(
+        top: topSpacing ?? 0,
+        bottom: bottomSpacing ?? 0,
+      ),
+      child: column,
+    );
+  }
+}
+
+/// Canonical NexaBiz Form Row Layout.
+///
+/// Places two or more form fields side-by-side in a single row with equal width
+/// allocation and standard ERP design spacing.
+class AppFormRow extends StatelessWidget {
+  const AppFormRow({
+    super.key,
+    required this.children,
+    this.spacing = AppSpacing.md,
+    this.crossAxisAlignment = CrossAxisAlignment.start,
+  });
+
+  final List<Widget> children;
+  final double spacing;
+  final CrossAxisAlignment crossAxisAlignment;
+
+  @override
+  Widget build(BuildContext context) {
+    if (children.isEmpty) return const SizedBox.shrink();
+    if (children.length == 1) return children.first;
+
+    return Row(
+      crossAxisAlignment: crossAxisAlignment,
+      children: [
+        for (int i = 0; i < children.length; i++) ...[
+          Expanded(child: children[i]),
+          if (i < children.length - 1) SizedBox(width: spacing),
+        ],
+      ],
+    );
   }
 }
 

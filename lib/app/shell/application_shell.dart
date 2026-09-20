@@ -102,6 +102,16 @@ class _ApplicationShellState extends State<ApplicationShell> {
       subtitle: l10n.quickActionsSubtitle,
       items: [
         AppQuickActionItem(
+          label: l10n.quickActionMobilePlayground,
+          description: l10n.quickActionMobilePlaygroundDesc,
+          icon: AppIcons.layers,
+          color: AppColors.primaryBlue,
+          onTap: () {
+            setState(() => _quickActionsOpen = false);
+            context.push('/playground');
+          },
+        ),
+        AppQuickActionItem(
           label: l10n.quickActionComponentGallery,
           description: l10n.quickActionComponentGalleryDesc,
           icon: AppIcons.grid,
@@ -153,11 +163,60 @@ class _ApplicationShellState extends State<ApplicationShell> {
   Widget build(BuildContext context) {
     final navItems = _getNavItems(context);
     final selectedIndex = _getSelectedIndex(navItems);
+    final l10n = AppLocalizations.of(context);
+
+    final sidebar = AppSidebar(
+      header: AppCompanySwitcher(
+        companyName: l10n.appName,
+        branchName: l10n.localeName == 'ar' ? 'الفرع الرئيسي' : 'Main Branch',
+        onTap: () => context.push('/company-selection'),
+      ),
+      groups: [
+        AppSidebarGroup(
+          title: l10n.appName,
+          items: [
+            for (var i = 0; i < navItems.length; i++)
+              AppSidebarItem(
+                key: ValueKey(navItems[i].routePath),
+                label: navItems[i].label,
+                icon: Icon(navItems[i].icon, size: 20.0),
+                selected: i == selectedIndex,
+                onTap: () => _onSelect(context, i, navItems),
+              ),
+          ],
+        ),
+      ],
+    );
+
+    final topHeader = AppTopHeader(
+      actions: [
+        AppIconButton(
+          variant: AppIconButtonVariant.ghost,
+          icon: AppIcons.layers,
+          tooltip: l10n.quickActionMobilePlayground,
+          onPressed: () => context.push('/playground'),
+        ),
+        AppIconButton(
+          variant: AppIconButtonVariant.ghost,
+          icon: AppIcons.sparkles,
+          tooltip: l10n.quickActionComponentGallery,
+          onPressed: () => context.push('/gallery'),
+        ),
+        AppIconButton(
+          variant: AppIconButtonVariant.ghost,
+          icon: AppIcons.grid,
+          tooltip: l10n.quickActionsTitle,
+          onPressed: () => _toggleQuickActions(context),
+        ),
+      ],
+    );
 
     return AppResponsiveScaffold(
       currentIndex: selectedIndex,
       onNavigationIndexChanged: (index) => _onSelect(context, index, navItems),
       extendBody: true,
+      sidebar: sidebar,
+      topHeader: topHeader,
       mobileBottomBar: AppCustomBottomNav(
         currentIndex: selectedIndex,
         items: navItems,

@@ -12,6 +12,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appName => 'NexaBiz ERP';
 
   @override
+  String get splashTitle => 'NexaBiz ERP';
+
+  @override
+  String get splashSubtitle => 'Initializing secure business platform...';
+
+  @override
   String get navDashboard => 'Dashboard';
 
   @override
@@ -29,6 +35,19 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get quickActionsSubtitle =>
       'Execute common business operations & developer tools';
+
+  @override
+  String get quickActionMobilePlayground => 'Mobile UI Playground';
+
+  @override
+  String get quickActionMobilePlaygroundDesc =>
+      'Audit patterns & mobile ERP scenarios';
+
+  @override
+  String get dashboardMobilePlaygroundCta => 'Explore';
+
+  @override
+  String get dashboardMobilePlaygroundBadge => 'UI-01';
 
   @override
   String get quickActionComponentGallery => 'Component Gallery';
@@ -213,6 +232,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get servicesComponentGallerySubtitle =>
       'Interactive shadcn_flutter playground';
+
+  @override
+  String get servicesMobilePlaygroundSubtitle =>
+      'Interactive ERP mobile scenarios & design audit';
 
   @override
   String get servicesFinancialSection => 'Financial & Accounting';
@@ -615,4 +638,327 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get navLabPreserveA11Subtitle =>
       'Pushes Node A1.1 onto existing stack (Stack Preserving)';
+
+  @override
+  String navLabNodeSubtitle(String branch, String depth) {
+    return 'Navigation Test Lab — Branch $branch (Depth $depth)';
+  }
+
+  @override
+  String navLabBranchBadge(String branch) {
+    return 'Branch $branch';
+  }
+
+  @override
+  String navLabPushPath(String path) {
+    return 'PUSH $path';
+  }
+
+  @override
+  String get navLabPushBadge => 'PUSH';
+
+  @override
+  String get navLabParamRouteBadge => 'Param Route';
+
+  @override
+  String get navLabDestructiveBadge => 'Destructive Demos';
+
+  @override
+  String get navLabReplaceBadge => 'REPLACE';
+
+  @override
+  String get navLabResetBadge => 'RESET';
+
+  @override
+  String navLabNodeTitle(String code) {
+    return 'Node $code';
+  }
+
+  @override
+  String navLabNodeSiblingTitle(String code) {
+    return 'Node $code (Sibling)';
+  }
+
+  @override
+  String navLabNodeDeepestTitle(String code) {
+    return 'Node $code (Deepest)';
+  }
+
+  @override
+  String navLabBranchRootTitle(String branch) {
+    return 'Branch $branch Root';
+  }
+
+  @override
+  String get navLabTargetRouterValue => 'Production GoRouter';
+
+  @override
+  String get navLabRootScopeValue => 'AppExitPopScope';
+
+  @override
+  String get navLabStackStrategyValue => 'PUSH (Stack Preserving)';
+
+  @override
+  String get navLabBranchAPath =>
+      'Path: /dev/navigation/a -> A1 -> A1.1 -> A1.1.1';
+
+  @override
+  String get navLabBranchBPath =>
+      'Path: /dev/navigation/b -> B1 -> B1.2 / B2.1';
+
+  @override
+  String get navLabBranchCPath =>
+      'Path: /dev/navigation/c -> C1 -> C1.1 -> C1.1.1';
+
+  @override
+  String get navLabParamPath => 'Path: /dev/navigation/param/100 & 200';
+
+  @override
+  String get navLabDestructiveComparison =>
+      'Explicit REPLACE (context.go) vs PUSH comparison';
+
+  @override
+  String get navLabFourLevels => '4 Levels';
+
+  @override
+  String get navLabThreeLevels => '3 Levels';
+
+  @override
+  String get navLabParamTestBadge => 'Param Test';
+
+  @override
+  String get navLabDemoOnlyBadge => 'Demo Only';
+
+  @override
+  String navLabEventPushPath(String path) {
+    return 'PUSH -> $path';
+  }
+
+  @override
+  String get navLabInstructionDeepPush =>
+      '1. Deep Push: Open Branch A -> A1 -> A1.1 -> A1.1.1. Press Android Back 4 times. Verify each parent node restores without exit dialog.';
+
+  @override
+  String get navLabInstructionSiblings =>
+      '2. Siblings: Open A1 -> A1.1 -> Back -> A1.2 -> Back. Verify Node A1 is perfectly restored.';
+
+  @override
+  String get navLabInstructionOverlay =>
+      '3. Overlay: On any node, tap \"Open Test Dialog\" or \"Open Test Sheet\". Press Android Back. Verify overlay closes and current route remains active.';
+
+  @override
+  String get navLabInstructionRootExit =>
+      '4. Root Exit: Pop back to true app root (/dashboard). Press Android Back. Verify \"Exit Application\" dialog appears.';
+
+  @override
+  String get navLabNestedRootTitle => 'Nested Navigation Test';
+
+  @override
+  String get navLabNestedDetailsTitle => 'Nested Details';
+
+  @override
+  String get navLabNestedAuditTitle => 'Nested Audit';
+
+  @override
+  String get navLabNestedSettingsTitle => 'Nested Settings';
+
+  @override
+  String get navLabNestedAdvancedTitle => 'Advanced Nested Settings';
+
+  @override
+  String get navLabNestedSubtitle =>
+      'Verify nested routes, direct links, Back, and language switching';
+
+  @override
+  String get navLabNestedActionsTitle => 'Navigation test actions';
+
+  @override
+  String get navLabNestedOpenDetails => 'Open details';
+
+  @override
+  String get navLabNestedOpenAudit => 'Open audit';
+
+  @override
+  String get navLabNestedOpenSettings => 'Open settings';
+
+  @override
+  String get navLabNestedOpenAdvanced => 'Open advanced settings';
+
+  @override
+  String get navLabNestedToggleLanguage => 'Switch language';
+
+  @override
+  String get systemSetupTitle => 'System Setup';
+
+  @override
+  String get systemSetupSubtitle =>
+      'Foundation page for configuring the system. Setup actions are not available yet.';
+
+  @override
+  String get systemSetupStatusFoundationOnly => 'Setup requirements planned';
+
+  @override
+  String get systemSetupRequirementCompany => 'Company';
+
+  @override
+  String get systemSetupRequirementAdminUser => 'Administrator user';
+
+  @override
+  String get identityTitle => 'Identity';
+
+  @override
+  String get identitySubtitle =>
+      'Foundation page for local identity and sessions. Sign-in and user management are not available yet.';
+
+  @override
+  String get identityStatusFoundationOnly =>
+      'Identity responsibilities planned';
+
+  @override
+  String get identityResponsibilityLocalSession => 'Local session';
+
+  @override
+  String get identityResponsibilityAdminUser => 'Administrator user';
+
+  @override
+  String get identityResponsibilityCompanyMembership => 'Company membership';
+
+  @override
+  String get identityResponsibilityCompanySwitchEndsSession =>
+      'A company switch ends the current session';
+
+  @override
+  String get companyTitle => 'Company';
+
+  @override
+  String get companySubtitle =>
+      'Foundation page for active company, membership, and tenant scope. Company management is not available yet.';
+
+  @override
+  String get companyStatusFoundationOnly => 'Company responsibilities planned';
+
+  @override
+  String get companyResponsibilityActiveCompany => 'Active company context';
+
+  @override
+  String get companyResponsibilityMembership => 'Company membership';
+
+  @override
+  String get companyResponsibilityTenantScope => 'Tenant scope';
+
+  @override
+  String get companyResponsibilitySwitchEndsSession =>
+      'A future company switch must end the current session';
+
+  @override
+  String get permissionsTitle => 'Permissions';
+
+  @override
+  String get permissionsSubtitle =>
+      'Foundation page for a permission catalog and authorization intent. Policy enforcement is not available yet.';
+
+  @override
+  String get permissionsStatusFoundationOnly => 'Permission definitions only';
+
+  @override
+  String get permissionsResponsibilityCatalog => 'Permission catalog';
+
+  @override
+  String get permissionsResponsibilityRouteIntent => 'Route access intent';
+
+  @override
+  String get permissionsResponsibilityOperationIntent =>
+      'Operation permission intent';
+
+  @override
+  String get permissionsResponsibilityNoRuntimeGrants =>
+      'No runtime roles or grants yet';
+
+  @override
+  String get setupCompanyCode => 'Company code';
+
+  @override
+  String get setupCompanyName => 'Company name';
+
+  @override
+  String get setupAdminName => 'Administrator name';
+
+  @override
+  String get setupAdminEmail => 'Administrator email';
+
+  @override
+  String get setupPassword => 'Password';
+
+  @override
+  String get setupConfirmPassword => 'Confirm password';
+
+  @override
+  String get setupCreate => 'Create company and administrator';
+
+  @override
+  String get setupValidation =>
+      'Enter a company code, company name, administrator name, valid email, and a password of at least 12 characters.';
+
+  @override
+  String get setupPasswordMismatch => 'Passwords do not match.';
+
+  @override
+  String get setupAlreadyInitialized =>
+      'This installation is already initialized.';
+
+  @override
+  String get setupRecoveryRequired =>
+      'Existing incomplete Core data needs recovery before setup can continue.';
+
+  @override
+  String get setupStorageFailure => 'Could not save setup. Try again.';
+
+  @override
+  String get setupCredentialFailure =>
+      'Could not prepare the password. Try again.';
+
+  @override
+  String get loginTitle => 'Sign In';
+
+  @override
+  String get loginSubtitle =>
+      'Enter your credentials to access your NexaBiz workspace';
+
+  @override
+  String get loginIdentifier => 'Email or Username';
+
+  @override
+  String get loginPassword => 'Password';
+
+  @override
+  String get loginSubmit => 'Sign In';
+
+  @override
+  String get loginValidation =>
+      'Please enter your email/username and password.';
+
+  @override
+  String get loginInvalidCredentials => 'Invalid email/username or password.';
+
+  @override
+  String get loginUserInactive =>
+      'User account is deactivated. Contact system administrator.';
+
+  @override
+  String get loginNoCompanies => 'User has no active company memberships.';
+
+  @override
+  String get companySelectionTitle => 'Select Company';
+
+  @override
+  String get companySelectionSubtitle =>
+      'Choose an active company workspace to continue';
+
+  @override
+  String companySelectionCurrentRole(String role) {
+    return 'Role: $role';
+  }
+
+  @override
+  String get actionLogout => 'Sign Out';
 }

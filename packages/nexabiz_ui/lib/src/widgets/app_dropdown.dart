@@ -52,13 +52,16 @@ class AppDropdown<T> extends StatelessWidget {
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                label!,
-                style: theme.typography.small.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: enabled
-                      ? theme.colorScheme.foreground
-                      : theme.colorScheme.mutedForeground,
+              Flexible(
+                child: Text(
+                  label!,
+                  style: theme.typography.small.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: enabled
+                        ? theme.colorScheme.foreground
+                        : theme.colorScheme.mutedForeground,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
               if (required) ...[
@@ -101,7 +104,12 @@ class AppDropdown<T> extends StatelessWidget {
                           item.icon!,
                           const SizedBox(width: 8),
                         ],
-                        Text(item.label),
+                        Flexible(
+                          child: Text(
+                            item.label,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
                       ],
                     ),
                   );

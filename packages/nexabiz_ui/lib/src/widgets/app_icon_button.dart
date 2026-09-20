@@ -119,24 +119,28 @@ class _AppIconButtonState extends State<AppIconButton> {
       AppIconButtonVariant.ghost => shadcn.GhostButton(
         onPressed: handler,
         density: shadcn.ButtonDensity.icon,
+        alignment: Alignment.center,
         shape: shadcn.ButtonShape.circle,
         child: badgedChild,
       ),
       AppIconButtonVariant.primary => shadcn.PrimaryButton(
         onPressed: handler,
         density: shadcn.ButtonDensity.icon,
+        alignment: Alignment.center,
         shape: shadcn.ButtonShape.circle,
         child: badgedChild,
       ),
       AppIconButtonVariant.destructive => shadcn.DestructiveButton(
         onPressed: handler,
         density: shadcn.ButtonDensity.icon,
+        alignment: Alignment.center,
         shape: shadcn.ButtonShape.circle,
         child: badgedChild,
       ),
       AppIconButtonVariant.outline => shadcn.OutlineButton(
         onPressed: handler,
         density: shadcn.ButtonDensity.icon,
+        alignment: Alignment.center,
         shape: shadcn.ButtonShape.circle,
         child: badgedChild,
       ),

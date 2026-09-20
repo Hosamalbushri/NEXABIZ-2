@@ -19,9 +19,9 @@ class NavigationTestParamScreen extends StatelessWidget {
       header: AppPageHeader(
         title: l10n.navLabParamTitle(itemId),
         subtitle: l10n.navLabParamSubtitle,
-        actions: const [
+        actions: [
           AppStatusBadge(
-            label: 'Param Route',
+            label: l10n.navLabParamRouteBadge,
             tone: AppStatusTone.info,
             animate: false,
           ),
@@ -58,25 +58,38 @@ class NavigationTestParamScreen extends StatelessWidget {
             child: Column(
               children: [
                 AppListTile(
-                  leading: const Icon(AppIcons.box, color: AppColors.primaryBlue),
+                  leading: const Icon(
+                    AppIcons.box,
+                    color: AppColors.primaryBlue,
+                  ),
                   title: Text(l10n.navLabNavigateToItem100),
-                  subtitle: const Text('PUSH /dev/navigation/param/100'),
+                  subtitle: Text(
+                    l10n.navLabPushPath('/dev/navigation/param/100'),
+                  ),
                   onTap: () {
                     context.push('/dev/navigation/param/100');
                   },
                 ),
                 const AppDivider(),
                 AppListTile(
-                  leading: const Icon(AppIcons.box, color: AppColors.secondaryTeal),
+                  leading: const Icon(
+                    AppIcons.box,
+                    color: AppColors.secondaryTeal,
+                  ),
                   title: Text(l10n.navLabNavigateToItem200),
-                  subtitle: const Text('PUSH /dev/navigation/param/200'),
+                  subtitle: Text(
+                    l10n.navLabPushPath('/dev/navigation/param/200'),
+                  ),
                   onTap: () {
                     context.push('/dev/navigation/param/200');
                   },
                 ),
                 const AppDivider(),
                 AppListTile(
-                  leading: const Icon(AppIcons.chevronLeft, color: AppColors.mutedTextLight),
+                  leading: const Icon(
+                    AppIcons.chevronLeft,
+                    color: AppColors.mutedTextLight,
+                  ),
                   title: Text(l10n.navLabBackPop),
                   subtitle: Text(l10n.navLabBackPopSubtitle),
                   onTap: () {

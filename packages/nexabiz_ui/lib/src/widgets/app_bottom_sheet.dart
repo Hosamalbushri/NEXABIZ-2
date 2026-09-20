@@ -1,8 +1,8 @@
-import 'dart:async';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart' as shadcn;
 
 import '../layout/app_breakpoints.dart';
+import '../theme/tokens/app_radii.dart';
 
 /// Item definition for [AppBottomSheet.showSelection].
 class AppBottomSheetSelectionItem<T> {
@@ -158,15 +158,22 @@ class AppBottomSheet extends StatelessWidget {
             behavior: HitTestBehavior.opaque,
             onTap: item.enabled ? () => close<T>(ctx, item.value) : null,
             child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 2.0),
               padding: const EdgeInsets.symmetric(
                 horizontal: 16.0,
                 vertical: 12.0,
               ),
               decoration: BoxDecoration(
                 color: isSelected
-                    ? theme.colorScheme.primary.withValues(alpha: 0.1)
+                    ? theme.colorScheme.primary.withValues(alpha: 0.12)
                     : const Color(0x00000000),
-                borderRadius: BorderRadius.circular(8.0),
+                borderRadius: BorderRadius.circular(12.0),
+                border: Border.all(
+                  color: isSelected
+                      ? theme.colorScheme.primary.withValues(alpha: 0.3)
+                      : Colors.transparent,
+                  width: 1.0,
+                ),
               ),
               child: Row(
                 children: [
@@ -188,7 +195,7 @@ class AppBottomSheet extends StatelessWidget {
                         Text(
                           item.label,
                           style: theme.typography.semiBold.copyWith(
-                            fontSize: 14,
+                            fontSize: 14.5,
                             color: item.enabled
                                 ? (isSelected
                                       ? theme.colorScheme.primary
@@ -201,7 +208,7 @@ class AppBottomSheet extends StatelessWidget {
                           Text(
                             item.subtitle!,
                             style: theme.typography.small.copyWith(
-                              fontSize: 12,
+                              fontSize: 12.5,
                               color: theme.colorScheme.mutedForeground,
                             ),
                           ),
@@ -210,12 +217,21 @@ class AppBottomSheet extends StatelessWidget {
                     ),
                   ),
                   if (item.trailing != null) item.trailing!,
-                  if (isSelected)
-                    Icon(
-                      shadcn.LucideIcons.check,
-                      size: 18,
-                      color: theme.colorScheme.primary,
+                  if (isSelected) ...[
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.primary,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        shadcn.LucideIcons.check,
+                        size: 14,
+                        color: theme.colorScheme.primaryForeground,
+                      ),
                     ),
+                  ],
                 ],
               ),
             ),
@@ -246,7 +262,10 @@ class AppBottomSheet extends StatelessWidget {
               : shadcn.LucideIcons.circleHelp),
       child: Text(
         message,
+        textAlign: TextAlign.center,
         style: shadcn.Theme.of(context).typography.normal.copyWith(
+          fontSize: 14.5,
+          height: 1.5,
           color: shadcn.Theme.of(context).colorScheme.mutedForeground,
         ),
       ),
@@ -273,6 +292,7 @@ class AppBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = shadcn.Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
     final safeBottom = MediaQuery.of(context).padding.bottom;
 
@@ -280,23 +300,51 @@ class AppBottomSheet extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        // Top Drag Handle Pill
+        Center(
+          child: Container(
+            margin: const EdgeInsets.only(top: 10, bottom: 6),
+            width: 38,
+            height: 4.5,
+            decoration: BoxDecoration(
+              color: theme.colorScheme.muted.withValues(alpha: 0.6),
+              borderRadius: BorderRadius.circular(3),
+            ),
+          ),
+        ),
+
         // Standardized Header
         if (title != null || icon != null)
           Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 16.0,
-              vertical: 12.0,
-            ),
+            padding: const EdgeInsets.fromLTRB(20.0, 10.0, 16.0, 14.0),
             decoration: BoxDecoration(
               border: Border(
-                bottom: BorderSide(color: theme.colorScheme.border),
+                bottom: BorderSide(
+                  color: theme.colorScheme.border.withValues(alpha: 0.6),
+                  width: 1.0,
+                ),
               ),
             ),
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 if (icon != null) ...[
-                  Icon(icon, size: 20, color: theme.colorScheme.primary),
-                  const SizedBox(width: 10),
+                  Container(
+                    width: 36,
+                    height: 36,
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.primary.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(AppRadius.md),
+                      border: Border.all(
+                        color: theme.colorScheme.primary.withValues(alpha: 0.24),
+                        width: 1.0,
+                      ),
+                    ),
+                    child: Center(
+                      child: Icon(icon, size: 18, color: theme.colorScheme.primary),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
                 ],
                 Expanded(
                   child: Column(
@@ -307,7 +355,9 @@ class AppBottomSheet extends StatelessWidget {
                         Text(
                           title!,
                           style: theme.typography.semiBold.copyWith(
-                            fontSize: 16,
+                            fontSize: 17,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: -0.3,
                             color: theme.colorScheme.foreground,
                           ),
                         ),
@@ -316,7 +366,7 @@ class AppBottomSheet extends StatelessWidget {
                         Text(
                           subtitle!,
                           style: theme.typography.small.copyWith(
-                            fontSize: 12,
+                            fontSize: 13,
                             color: theme.colorScheme.mutedForeground,
                           ),
                         ),
@@ -324,15 +374,35 @@ class AppBottomSheet extends StatelessWidget {
                     ],
                   ),
                 ),
-                shadcn.IconButton.ghost(
-                  icon: const Icon(shadcn.LucideIcons.x, size: 18),
-                  onPressed: () {
+                GestureDetector(
+                  onTap: () {
                     if (onClose != null) {
                       onClose!();
                     } else {
                       close<void>(context);
                     }
                   },
+                  child: Container(
+                    width: 36,
+                    height: 36,
+                    decoration: BoxDecoration(
+                      color: isDark
+                          ? theme.colorScheme.muted.withValues(alpha: 0.6)
+                          : theme.colorScheme.muted.withValues(alpha: 0.35),
+                      borderRadius: BorderRadius.circular(AppRadius.md),
+                      border: Border.all(
+                        color: theme.colorScheme.border.withValues(alpha: 0.8),
+                        width: 1.0,
+                      ),
+                    ),
+                    child: Center(
+                      child: Icon(
+                        shadcn.LucideIcons.x,
+                        size: 18,
+                        color: theme.colorScheme.foreground,
+                      ),
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -342,8 +412,8 @@ class AppBottomSheet extends StatelessWidget {
         if (errorText != null && errorText!.isNotEmpty)
           Container(
             padding: const EdgeInsets.symmetric(
-              horizontal: 16.0,
-              vertical: 8.0,
+              horizontal: 20.0,
+              vertical: 10.0,
             ),
             color: theme.colorScheme.destructive.withValues(alpha: 0.1),
             child: Row(
@@ -353,11 +423,12 @@ class AppBottomSheet extends StatelessWidget {
                   size: 16,
                   color: theme.colorScheme.destructive,
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: 10),
                 Expanded(
                   child: Text(
                     errorText!,
                     style: theme.typography.small.copyWith(
+                      fontSize: 13,
                       color: theme.colorScheme.destructive,
                     ),
                   ),
@@ -393,13 +464,19 @@ class AppBottomSheet extends StatelessWidget {
         if (actions != null && actions!.isNotEmpty)
           Container(
             padding: EdgeInsets.fromLTRB(
-              16.0,
-              12.0,
-              16.0,
-              12.0 + (bottomInset > 0 ? 0 : safeBottom),
+              20.0,
+              14.0,
+              20.0,
+              14.0 + (bottomInset > 0 ? 0 : safeBottom),
             ),
             decoration: BoxDecoration(
-              border: Border(top: BorderSide(color: theme.colorScheme.border)),
+              color: theme.colorScheme.muted.withValues(alpha: 0.15),
+              border: Border(
+                top: BorderSide(
+                  color: theme.colorScheme.border.withValues(alpha: 0.6),
+                  width: 1.0,
+                ),
+              ),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -417,8 +494,19 @@ class AppBottomSheet extends StatelessWidget {
           decoration: BoxDecoration(
             color: theme.colorScheme.popover,
             borderRadius: const BorderRadius.vertical(
-              top: Radius.circular(16.0),
+              top: Radius.circular(22.0),
             ),
+            border: Border.all(
+              color: theme.colorScheme.border.withValues(alpha: 0.6),
+              width: 1.0,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: isDark ? 0.4 : 0.15),
+                blurRadius: 32,
+                offset: const Offset(0, -8),
+              ),
+            ],
           ),
           child: SafeArea(
             top: false,

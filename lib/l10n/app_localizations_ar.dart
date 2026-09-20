@@ -12,6 +12,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get appName => 'نيكسابيز ERP';
 
   @override
+  String get splashTitle => 'نيكسابيز ERP';
+
+  @override
+  String get splashSubtitle => 'جاري تهيئة منصة الأعمال الآمنة...';
+
+  @override
   String get navDashboard => 'لوحة التحكم';
 
   @override
@@ -29,6 +35,19 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get quickActionsSubtitle =>
       'تنفيذ العمليات التجارية وأدوات المطور الشائعة';
+
+  @override
+  String get quickActionMobilePlayground => 'مختبر واجهات الجوال';
+
+  @override
+  String get quickActionMobilePlaygroundDesc =>
+      'نماذج وتجارب واجهات الجوال لتخطيط الموارد';
+
+  @override
+  String get dashboardMobilePlaygroundCta => 'استعراض';
+
+  @override
+  String get dashboardMobilePlaygroundBadge => 'UI-01';
 
   @override
   String get quickActionComponentGallery => 'معرض المكونات';
@@ -213,6 +232,10 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get servicesComponentGallerySubtitle =>
       'مساحة تفاعلية لمكونات shadcn_flutter';
+
+  @override
+  String get servicesMobilePlaygroundSubtitle =>
+      'استكشاف أنماط تصميم الجوال وسيناريوهات تخطيط الموارد';
 
   @override
   String get servicesFinancialSection => 'المالية والمحاسبة';
@@ -611,4 +634,323 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get navLabPreserveA11Subtitle =>
       'يدفع العقدة A1.1 فوق التكدس الحالي (يحفظ التكدس)';
+
+  @override
+  String navLabNodeSubtitle(String branch, String depth) {
+    return 'مختبر اختبار التنقل — الفرع $branch (العمق $depth)';
+  }
+
+  @override
+  String navLabBranchBadge(String branch) {
+    return 'الفرع $branch';
+  }
+
+  @override
+  String navLabPushPath(String path) {
+    return 'PUSH $path';
+  }
+
+  @override
+  String get navLabPushBadge => 'PUSH';
+
+  @override
+  String get navLabParamRouteBadge => 'مسار معلمات';
+
+  @override
+  String get navLabDestructiveBadge => 'عروض استبدال التكدس';
+
+  @override
+  String get navLabReplaceBadge => 'REPLACE';
+
+  @override
+  String get navLabResetBadge => 'RESET';
+
+  @override
+  String navLabNodeTitle(String code) {
+    return 'العقدة $code';
+  }
+
+  @override
+  String navLabNodeSiblingTitle(String code) {
+    return 'العقدة $code (شقيقة)';
+  }
+
+  @override
+  String navLabNodeDeepestTitle(String code) {
+    return 'العقدة $code (الأعمق)';
+  }
+
+  @override
+  String navLabBranchRootTitle(String branch) {
+    return 'جذر الفرع $branch';
+  }
+
+  @override
+  String get navLabTargetRouterValue => 'موجّه GoRouter للإنتاج';
+
+  @override
+  String get navLabRootScopeValue => 'نطاق الخروج AppExitPopScope';
+
+  @override
+  String get navLabStackStrategyValue => 'PUSH (يحفظ تكدس المسارات)';
+
+  @override
+  String get navLabBranchAPath =>
+      'المسار: /dev/navigation/a -> A1 -> A1.1 -> A1.1.1';
+
+  @override
+  String get navLabBranchBPath =>
+      'المسار: /dev/navigation/b -> B1 -> B1.2 / B2.1';
+
+  @override
+  String get navLabBranchCPath =>
+      'المسار: /dev/navigation/c -> C1 -> C1.1 -> C1.1.1';
+
+  @override
+  String get navLabParamPath => 'المسار: /dev/navigation/param/100 و200';
+
+  @override
+  String get navLabDestructiveComparison =>
+      'مقارنة REPLACE (context.go) الصريح مع PUSH';
+
+  @override
+  String get navLabFourLevels => '4 مستويات';
+
+  @override
+  String get navLabThreeLevels => '3 مستويات';
+
+  @override
+  String get navLabParamTestBadge => 'اختبار المعلمات';
+
+  @override
+  String get navLabDemoOnlyBadge => 'للعرض فقط';
+
+  @override
+  String navLabEventPushPath(String path) {
+    return 'PUSH -> $path';
+  }
+
+  @override
+  String get navLabInstructionDeepPush =>
+      '1. التنقل العميق: افتح الفرع A -> A1 -> A1.1 -> A1.1.1. اضغط رجوع Android أربع مرات وتحقق من عودة كل عقدة أب دون نافذة خروج.';
+
+  @override
+  String get navLabInstructionSiblings =>
+      '2. العقد الشقيقة: افتح A1 -> A1.1 -> رجوع -> A1.2 -> رجوع. تحقق من استعادة العقدة A1.';
+
+  @override
+  String get navLabInstructionOverlay =>
+      '3. الطبقة المتراكبة: افتح نافذة الاختبار أو ورقته من أي عقدة، ثم اضغط رجوع Android. تحقق من إغلاق الطبقة وبقاء المسار نشطًا.';
+
+  @override
+  String get navLabInstructionRootExit =>
+      '4. الخروج من الجذر: ارجع إلى جذر التطبيق (/dashboard)، ثم اضغط رجوع Android. تحقق من ظهور نافذة الخروج.';
+
+  @override
+  String get navLabNestedRootTitle => 'اختبار التنقل المتشعب';
+
+  @override
+  String get navLabNestedDetailsTitle => 'التفاصيل المتشعبة';
+
+  @override
+  String get navLabNestedAuditTitle => 'تدقيق المسار المتشعب';
+
+  @override
+  String get navLabNestedSettingsTitle => 'إعدادات المسار المتشعب';
+
+  @override
+  String get navLabNestedAdvancedTitle => 'إعدادات متقدمة للمسار المتشعب';
+
+  @override
+  String get navLabNestedSubtitle =>
+      'تحقق من المسارات المتشعبة والروابط المباشرة والرجوع وتبديل اللغة';
+
+  @override
+  String get navLabNestedActionsTitle => 'إجراءات اختبار التنقل';
+
+  @override
+  String get navLabNestedOpenDetails => 'افتح التفاصيل';
+
+  @override
+  String get navLabNestedOpenAudit => 'افتح التدقيق';
+
+  @override
+  String get navLabNestedOpenSettings => 'افتح الإعدادات';
+
+  @override
+  String get navLabNestedOpenAdvanced => 'افتح الإعدادات المتقدمة';
+
+  @override
+  String get navLabNestedToggleLanguage => 'بدّل اللغة';
+
+  @override
+  String get systemSetupTitle => 'إعداد النظام';
+
+  @override
+  String get systemSetupSubtitle =>
+      'صفحة تأسيسية لتهيئة النظام. إجراءات الإعداد غير متاحة بعد.';
+
+  @override
+  String get systemSetupStatusFoundationOnly => 'متطلبات الإعداد المخطط لها';
+
+  @override
+  String get systemSetupRequirementCompany => 'الشركة';
+
+  @override
+  String get systemSetupRequirementAdminUser => 'المستخدم المسؤول';
+
+  @override
+  String get identityTitle => 'الهوية';
+
+  @override
+  String get identitySubtitle =>
+      'صفحة تأسيسية للهوية والجلسات المحلية. تسجيل الدخول وإدارة المستخدمين غير متاحين بعد.';
+
+  @override
+  String get identityStatusFoundationOnly => 'مسؤوليات الهوية المخطط لها';
+
+  @override
+  String get identityResponsibilityLocalSession => 'الجلسة المحلية';
+
+  @override
+  String get identityResponsibilityAdminUser => 'المستخدم المسؤول';
+
+  @override
+  String get identityResponsibilityCompanyMembership => 'عضوية الشركة';
+
+  @override
+  String get identityResponsibilityCompanySwitchEndsSession =>
+      'يُنهي تبديل الشركة الجلسة الحالية';
+
+  @override
+  String get companyTitle => 'الشركة';
+
+  @override
+  String get companySubtitle =>
+      'صفحة تأسيسية للشركة النشطة والعضوية ونطاق المستأجر. إدارة الشركات غير متاحة بعد.';
+
+  @override
+  String get companyStatusFoundationOnly => 'مسؤوليات الشركة المخطط لها';
+
+  @override
+  String get companyResponsibilityActiveCompany => 'سياق الشركة النشطة';
+
+  @override
+  String get companyResponsibilityMembership => 'عضوية الشركة';
+
+  @override
+  String get companyResponsibilityTenantScope => 'نطاق المستأجر';
+
+  @override
+  String get companyResponsibilitySwitchEndsSession =>
+      'يجب أن ينهي تبديل الشركة مستقبلًا الجلسة الحالية';
+
+  @override
+  String get permissionsTitle => 'الصلاحيات';
+
+  @override
+  String get permissionsSubtitle =>
+      'صفحة تأسيسية لكتالوج الصلاحيات ونية التفويض. تطبيق السياسات غير متاح بعد.';
+
+  @override
+  String get permissionsStatusFoundationOnly => 'تعريفات صلاحيات فقط';
+
+  @override
+  String get permissionsResponsibilityCatalog => 'كتالوج الصلاحيات';
+
+  @override
+  String get permissionsResponsibilityRouteIntent => 'نية الوصول إلى المسارات';
+
+  @override
+  String get permissionsResponsibilityOperationIntent => 'نية صلاحيات العمليات';
+
+  @override
+  String get permissionsResponsibilityNoRuntimeGrants =>
+      'لا توجد أدوار أو منح تشغيلية بعد';
+
+  @override
+  String get setupCompanyCode => 'رمز الشركة';
+
+  @override
+  String get setupCompanyName => 'اسم الشركة';
+
+  @override
+  String get setupAdminName => 'اسم المسؤول';
+
+  @override
+  String get setupAdminEmail => 'البريد الإلكتروني للمسؤول';
+
+  @override
+  String get setupPassword => 'كلمة المرور';
+
+  @override
+  String get setupConfirmPassword => 'تأكيد كلمة المرور';
+
+  @override
+  String get setupCreate => 'إنشاء الشركة والمسؤول';
+
+  @override
+  String get setupValidation =>
+      'أدخل رمز الشركة واسمها واسم المسؤول وبريدًا إلكترونيًا صالحًا وكلمة مرور من 12 حرفًا على الأقل.';
+
+  @override
+  String get setupPasswordMismatch => 'كلمتا المرور غير متطابقتين.';
+
+  @override
+  String get setupAlreadyInitialized => 'تم تهيئة هذا التثبيت بالفعل.';
+
+  @override
+  String get setupRecoveryRequired =>
+      'تحتاج بيانات النظام الأساسية غير المكتملة إلى استعادة قبل متابعة الإعداد.';
+
+  @override
+  String get setupStorageFailure => 'تعذر حفظ الإعداد. حاول مجددًا.';
+
+  @override
+  String get setupCredentialFailure => 'تعذر تجهيز كلمة المرور. حاول مجددًا.';
+
+  @override
+  String get loginTitle => 'تسجيل الدخول';
+
+  @override
+  String get loginSubtitle =>
+      'أدخل بيانات الاعتماد الخاصة بك للوصول إلى مساحة عمل نيكسابيز';
+
+  @override
+  String get loginIdentifier => 'البريد الإلكتروني أو اسم المستخدم';
+
+  @override
+  String get loginPassword => 'كلمة المرور';
+
+  @override
+  String get loginSubmit => 'دخول';
+
+  @override
+  String get loginValidation =>
+      'يرجى إدخال البريد الإلكتروني/اسم المستخدم وكلمة المرور.';
+
+  @override
+  String get loginInvalidCredentials =>
+      'اسم المستخدم أو كلمة المرور غير صحيحة.';
+
+  @override
+  String get loginUserInactive =>
+      'حساب المستخدم غير نشط. يرجى مراجعة مسؤول النظام.';
+
+  @override
+  String get loginNoCompanies => 'لا توجد صلاحيات شركات نشطة لهذا المستخدم.';
+
+  @override
+  String get companySelectionTitle => 'اختيار الشركة';
+
+  @override
+  String get companySelectionSubtitle => 'اختر بيئة الشركة النشطة للمتابعة';
+
+  @override
+  String companySelectionCurrentRole(String role) {
+    return 'الدور: $role';
+  }
+
+  @override
+  String get actionLogout => 'تسجيل الخروج';
 }

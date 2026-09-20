@@ -1,7 +1,7 @@
+import '../support/bootstrap_test_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nexabiz/app/app.dart';
-import 'package:nexabiz/app/bootstrap/app_bootstrap.dart';
 import 'package:nexabiz_ui/nexabiz_ui.dart';
 
 void main() {
@@ -9,9 +9,7 @@ void main() {
     testWidgets(
       'NAV-STACK-01: Root -> Child -> Back restores Root without exit dialog',
       (tester) async {
-        final bootstrap = await AppBootstrap.initialize(
-          initialLocation: '/services',
-        );
+        final bootstrap = await bootstrapForTest(initialLocation: '/services');
         addTearDown(bootstrap.router.dispose);
 
         await tester.pumpWidget(NexaBizApp(router: bootstrap.router));
@@ -38,9 +36,7 @@ void main() {
     testWidgets(
       'NAV-STACK-02 & NAV-STACK-03: Child Back pops stack, child Back MUST NOT exit',
       (tester) async {
-        final bootstrap = await AppBootstrap.initialize(
-          initialLocation: '/settings',
-        );
+        final bootstrap = await bootstrapForTest(initialLocation: '/settings');
         addTearDown(bootstrap.router.dispose);
 
         await tester.pumpWidget(NexaBizApp(router: bootstrap.router));
@@ -65,9 +61,7 @@ void main() {
     testWidgets(
       'NAV-STACK-04 & NAV-STACK-05: Root Back prompts exit confirmation, cancel leaves app active',
       (tester) async {
-        final bootstrap = await AppBootstrap.initialize(
-          initialLocation: '/dashboard',
-        );
+        final bootstrap = await bootstrapForTest(initialLocation: '/dashboard');
         addTearDown(bootstrap.router.dispose);
 
         await tester.pumpWidget(NexaBizApp(router: bootstrap.router));
@@ -99,9 +93,7 @@ void main() {
     testWidgets('NAV-STACK-06: Confirming exit closes confirmation overlay', (
       tester,
     ) async {
-      final bootstrap = await AppBootstrap.initialize(
-        initialLocation: '/dashboard',
-      );
+      final bootstrap = await bootstrapForTest(initialLocation: '/dashboard');
       addTearDown(bootstrap.router.dispose);
 
       await tester.pumpWidget(NexaBizApp(router: bootstrap.router));
@@ -122,9 +114,7 @@ void main() {
     testWidgets(
       'NAV-STACK-07: Overlay Back closes overlay without navigating underlying page',
       (tester) async {
-        final bootstrap = await AppBootstrap.initialize(
-          initialLocation: '/dashboard',
-        );
+        final bootstrap = await bootstrapForTest(initialLocation: '/dashboard');
         addTearDown(bootstrap.router.dispose);
 
         await tester.pumpWidget(NexaBizApp(router: bootstrap.router));
@@ -149,9 +139,7 @@ void main() {
     testWidgets('NAV-STACK-08: Branch switching preserves state across tabs', (
       tester,
     ) async {
-      final bootstrap = await AppBootstrap.initialize(
-        initialLocation: '/dashboard',
-      );
+      final bootstrap = await bootstrapForTest(initialLocation: '/dashboard');
       addTearDown(bootstrap.router.dispose);
 
       await tester.pumpWidget(NexaBizApp(router: bootstrap.router));
@@ -185,9 +173,7 @@ void main() {
     testWidgets(
       'NAV-STACK-09: RTL layout preserves logical navigation stack semantics',
       (tester) async {
-        final bootstrap = await AppBootstrap.initialize(
-          initialLocation: '/services',
-        );
+        final bootstrap = await bootstrapForTest(initialLocation: '/services');
         addTearDown(bootstrap.router.dispose);
 
         await tester.pumpWidget(
@@ -213,9 +199,7 @@ void main() {
       'NAV-STACK-REGRESSION: Step-by-step stack unwind sequence proof',
       (tester) async {
         final history = <String>[];
-        final bootstrap = await AppBootstrap.initialize(
-          initialLocation: '/services',
-        );
+        final bootstrap = await bootstrapForTest(initialLocation: '/services');
         addTearDown(bootstrap.router.dispose);
 
         bootstrap.router.routerDelegate.addListener(() {

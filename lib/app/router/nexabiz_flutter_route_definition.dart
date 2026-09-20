@@ -12,6 +12,8 @@ class NexaBizFlutterRouteDefinition extends NexaBizRouteDefinition {
   const NexaBizFlutterRouteDefinition({
     required super.routeId,
     required super.path,
+    super.parentRouteId,
+    super.accessRequirement,
     required this.pageBuilder,
   });
 }

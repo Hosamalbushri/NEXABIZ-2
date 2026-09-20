@@ -100,6 +100,52 @@ class NexaBizNavigationRegistry {
           'Capability "${capability.capabilityId}" declared rootRouteId "${rootId.value}" which was not found in its contributed routes.',
         );
       }
+      if (routesById[rootId.value]!.parentRouteId != null) {
+        throw StateError(
+          'Capability "${capability.capabilityId}" root route must not have a parent.',
+        );
+      }
+    }
+
+    // Validate the whole hierarchy before publishing any route indexes.
+    final visiting = <String>{};
+    final visited = <String>{};
+    void visit(NexaBizRouteDefinition route) {
+      final id = route.routeId.value;
+      if (visited.contains(id)) return;
+      if (!visiting.add(id)) {
+        throw StateError('Route hierarchy cycle detected at "$id".');
+      }
+      final parentId = route.parentRouteId;
+      if (parentId != null) {
+        parentId.validate();
+        final parent = routesById[parentId.value];
+        if (parent == null || parentId.namespace != route.routeId.namespace) {
+          throw StateError(
+            'Route "$id" has no valid parent "${parentId.value}" in its capability.',
+          );
+        }
+        visit(parent);
+      }
+      visiting.remove(id);
+      visited.add(id);
+    }
+
+    for (final route in routesList) {
+      visit(route);
+    }
+    for (final route in routesList) {
+      final parentId = route.parentRouteId;
+      if (parentId == null) continue;
+      final parentPath = routesById[parentId.value]!.path;
+      final childPrefix = parentPath == '/' ? '/' : '$parentPath/';
+      if (!route.path.startsWith(childPrefix) ||
+          route.path.substring(childPrefix.length).contains('/') ||
+          route.path == parentPath) {
+        throw StateError(
+          'Route "${route.routeId.value}" path must be a direct child of "$parentPath".',
+        );
+      }
     }
 
     // Commit only after every contribution has passed validation.

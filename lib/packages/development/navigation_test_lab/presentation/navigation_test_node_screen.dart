@@ -31,15 +31,15 @@ class NavigationTestNodeScreen extends StatelessWidget {
     return AppPage(
       header: AppPageHeader(
         title: nodeName,
-        subtitle: 'Navigation Test Lab — Branch $branch (Depth $depth)',
+        subtitle: l10n.navLabNodeSubtitle(branch, depth.toString()),
         actions: [
           AppStatusBadge(
-            label: 'Branch $branch',
+            label: l10n.navLabBranchBadge(branch),
             tone: branch == 'A'
                 ? AppStatusTone.info
                 : branch == 'B'
-                    ? AppStatusTone.success
-                    : AppStatusTone.warning,
+                ? AppStatusTone.success
+                : AppStatusTone.warning,
             animate: false,
           ),
         ],
@@ -63,7 +63,10 @@ class NavigationTestNodeScreen extends StatelessWidget {
                   const AppDivider(),
                   _TelemetryRow(label: l10n.navLabRoutePath, value: routePath),
                   const AppDivider(),
-                  _TelemetryRow(label: l10n.navLabParentRoute, value: parentPath),
+                  _TelemetryRow(
+                    label: l10n.navLabParentRoute,
+                    value: parentPath,
+                  ),
                   const AppDivider(),
                   _TelemetryRow(label: l10n.navLabStackDepth, value: '$depth'),
                   const AppDivider(),
@@ -82,11 +85,14 @@ class NavigationTestNodeScreen extends StatelessWidget {
                 children: [
                   for (final childNode in children) ...[
                     AppListTile(
-                      leading: const Icon(AppIcons.chevronRight, color: AppColors.primaryBlue),
+                      leading: const Icon(
+                        AppIcons.chevronRight,
+                        color: AppColors.primaryBlue,
+                      ),
                       title: Text(childNode.label),
-                      subtitle: Text('PUSH ${childNode.path}'),
-                      trailing: const AppStatusBadge(
-                        label: 'PUSH',
+                      subtitle: Text(l10n.navLabPushPath(childNode.path)),
+                      trailing: AppStatusBadge(
+                        label: l10n.navLabPushBadge,
                         tone: AppStatusTone.neutral,
                         animate: false,
                       ),
@@ -108,7 +114,10 @@ class NavigationTestNodeScreen extends StatelessWidget {
             child: Column(
               children: [
                 AppListTile(
-                  leading: const Icon(AppIcons.chevronLeft, color: AppColors.mutedTextLight),
+                  leading: const Icon(
+                    AppIcons.chevronLeft,
+                    color: AppColors.mutedTextLight,
+                  ),
                   title: Text(l10n.navLabBackPop),
                   subtitle: Text(l10n.navLabBackPopSubtitle),
                   onTap: () {
@@ -119,7 +128,10 @@ class NavigationTestNodeScreen extends StatelessWidget {
                 ),
                 const AppDivider(),
                 AppListTile(
-                  leading: const Icon(AppIcons.shield, color: AppColors.accentPurple),
+                  leading: const Icon(
+                    AppIcons.shield,
+                    color: AppColors.accentPurple,
+                  ),
                   title: Text(l10n.navLabOpenTestDialog),
                   subtitle: Text(l10n.navLabOpenTestDialogSubtitle),
                   onTap: () async {
@@ -135,7 +147,10 @@ class NavigationTestNodeScreen extends StatelessWidget {
                 ),
                 const AppDivider(),
                 AppListTile(
-                  leading: const Icon(AppIcons.plus, color: AppColors.secondaryTeal),
+                  leading: const Icon(
+                    AppIcons.plus,
+                    color: AppColors.secondaryTeal,
+                  ),
                   title: Text(l10n.navLabOpenTestSheet),
                   subtitle: Text(l10n.navLabOpenTestSheetSubtitle),
                   onTap: () async {

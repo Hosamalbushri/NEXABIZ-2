@@ -5,10 +5,16 @@ import 'package:shadcn_flutter/shadcn_flutter.dart' as shadcn;
 class AppRadii {
   const AppRadii._();
 
+  /// Zero radius for docked panels, enterprise frames, and data grids.
+  static const double zero = 0.0;
+
   static const double xs = 4.0;
   static const double sm = 8.0;
   static const double md = 12.0;
   static const double lg = 16.0;
+
+  /// XL radius (24.0). Deprecated for page headers and data containers;
+  /// reserved strictly for floating overlays or mobile modal sheets.
   static const double xl = 24.0;
   static const double pill = 999.0;
 
@@ -23,6 +29,12 @@ class AppRadii {
 
   /// Modal bottom sheet top corner radius.
   static const double sheet = xl;
+
+  /// Docked header / panel radius.
+  static const double header = zero;
+
+  /// BorderRadius objects for quick instantiation
+  static const BorderRadius radiusZero = BorderRadius.zero;
 
   /// BorderRadius objects for quick instantiation
   static final BorderRadius radiusXs = BorderRadius.circular(xs);
@@ -55,6 +67,7 @@ class AppRadii {
 
 /// Alias class for [AppRadii] for design token backwards compatibility.
 abstract class AppRadius {
+  static const double zero = AppRadii.zero;
   static const double xs = AppRadii.xs;
   static const double sm = AppRadii.sm;
   static const double md = AppRadii.md;
@@ -65,7 +78,9 @@ abstract class AppRadius {
   static const double control = AppRadii.control;
   static const double surface = AppRadii.surface;
   static const double dialog = AppRadii.dialog;
+  static const double header = AppRadii.header;
 
+  static const BorderRadius radiusZero = AppRadii.radiusZero;
   static final BorderRadius radiusXs = AppRadii.radiusXs;
   static final BorderRadius radiusSm = AppRadii.radiusSm;
   static final BorderRadius radiusMd = AppRadii.radiusMd;

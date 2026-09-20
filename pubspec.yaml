@@ -34,6 +34,10 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   shared_preferences: ^2.5.2
+  drift: ^2.34.3
+  cryptography: ^2.9.0
+  path_provider: ^2.1.6
+  path: ^1.9.1
 
   nexabiz_ui:
     path: packages/nexabiz_ui
@@ -56,6 +60,9 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
+  drift_dev: ^2.34.3
+  build_runner: ^2.15.0
+  sqlite3: ^3.5.2 # v1 fixtures and schema inspection in tests only
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

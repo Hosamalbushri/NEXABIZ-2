@@ -1,3 +1,5 @@
+import '../permissions/nexabiz_permission_intent.dart';
+import 'contributions/nexabiz_capability_runtime_contributions.dart';
 import 'nexabiz_capability.dart';
 
 /// Registry responsible for registering, validating, topologically sorting,
@@ -83,6 +85,54 @@ class NexaBizCapabilityRegistry {
           throw StateError(
             'Capability "$capId" depends on missing capability "$depId".',
           );
+        }
+      }
+    }
+
+    // Runtime contributions are declarations only. Validate identities and
+    // duplicate ownership without evaluating setup or permission decisions.
+    final providedSetupIds = <String>{};
+    final declaredPermissionIds = <String>{};
+    for (final entry in _registeredCapabilities.entries) {
+      final capability = entry.value;
+      if (capability is! NexaBizCapabilityWithRuntimeContributions) continue;
+      final setup = capability.setupContribution;
+      if (setup != null) {
+        final requiredIds = <String>{};
+        for (final requirement in setup.providedRequirements) {
+          requirement.validate();
+          if (!providedSetupIds.add(requirement.value)) {
+            throw StateError(
+              'Duplicate provided setup requirement "${requirement.value}".',
+            );
+          }
+        }
+        for (final requirement in setup.requiredRequirements) {
+          requirement.validate();
+          if (!requiredIds.add(requirement.value)) {
+            throw StateError(
+              'Capability "${entry.key}" repeats required setup requirement "${requirement.value}".',
+            );
+          }
+        }
+      }
+      final permissions = capability.permissionContribution;
+      if (permissions != null) {
+        final requiredIds = <String>{};
+        for (final id in permissions.declaredPermissionIds) {
+          _validatePermissionId(id, entry.key);
+          if (!declaredPermissionIds.add(id.value)) {
+            throw StateError('Duplicate declared permission ID "${id.value}".');
+          }
+        }
+        for (final requirement in permissions.requiredPermissions) {
+          final id = requirement.permissionId;
+          _validatePermissionId(id, entry.key);
+          if (!requiredIds.add(id.value)) {
+            throw StateError(
+              'Capability "${entry.key}" repeats required permission ID "${id.value}".',
+            );
+          }
         }
       }
     }
@@ -176,6 +226,19 @@ class NexaBizCapabilityRegistry {
   void _checkNotLocked() {
     if (_isLocked) {
       throw StateError('Capability registry is locked and cannot be mutated.');
+    }
+  }
+
+  static void _validatePermissionId(
+    NexaBizPermissionId id,
+    String capabilityId,
+  ) {
+    try {
+      NexaBizPermissionId(id.value);
+    } on ArgumentError {
+      throw StateError(
+        'Capability "$capabilityId" declares a noncanonical permission ID "${id.value}".',
+      );
     }
   }
 

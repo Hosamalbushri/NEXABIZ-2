@@ -3,10 +3,16 @@ import '../../core/capabilities/nexabiz_capability.dart';
 import '../../core/navigation/nexabiz_navigation_contribution.dart';
 import '../../core/navigation/nexabiz_route_definition.dart';
 import '../../app/router/nexabiz_flutter_route_definition.dart';
+import '../../core/navigation/nexabiz_route_access_requirement.dart';
 import '../../core/navigation/nexabiz_route_id.dart';
+import '../../core/session/core_session_controller.dart';
 import 'presentation/settings_screen.dart';
 
 class _SettingsNavContribution implements NexaBizNavigationContribution {
+  _SettingsNavContribution(this.sessionController);
+
+  final CoreSessionController? sessionController;
+
   @override
   final NexaBizRouteId rootRouteId = const NexaBizRouteId(
     namespace: 'settings',
@@ -18,13 +24,22 @@ class _SettingsNavContribution implements NexaBizNavigationContribution {
     NexaBizFlutterRouteDefinition(
       routeId: rootRouteId,
       path: '/settings',
-      pageBuilder: (context) => const SettingsScreen(),
+      accessRequirement: const NexaBizRouteAccessRequirement(
+        requiresReadySetup: true,
+        requiresActiveSession: true,
+        requiresCompanyScope: true,
+      ),
+      pageBuilder: (context) => SettingsScreen(sessionController: sessionController),
     ),
   ];
 }
 
 /// Settings application capability.
 class SettingsCapability implements NexaBizCapability {
+  const SettingsCapability({this.sessionController});
+
+  final CoreSessionController? sessionController;
+
   @override
   final String capabilityId = 'settings';
 
@@ -39,6 +54,6 @@ class SettingsCapability implements NexaBizCapability {
   final List<String> dependsOn = const [];
 
   @override
-  final NexaBizNavigationContribution navigationContribution =
-      _SettingsNavContribution();
+  NexaBizNavigationContribution get navigationContribution =>
+      _SettingsNavContribution(sessionController);
 }

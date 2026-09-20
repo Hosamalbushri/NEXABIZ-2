@@ -2,6 +2,8 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter/services.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart' as shadcn;
 
+import 'app_field_shell.dart';
+
 /// Canonical numeric input field primitive for NexaBiz ERP.
 ///
 /// Wraps `shadcn_flutter` [shadcn.TextField] with numeric formatters, spinner controls,
@@ -30,6 +32,7 @@ class AppNumberField extends StatelessWidget {
     this.suffix,
     this.focusNode,
     this.autofocus = false,
+    this.density = AppFieldDensity.standard,
   });
 
   final TextEditingController? controller;
@@ -53,11 +56,10 @@ class AppNumberField extends StatelessWidget {
   final Widget? suffix;
   final FocusNode? focusNode;
   final bool autofocus;
+  final AppFieldDensity density;
 
   @override
   Widget build(BuildContext context) {
-    final theme = shadcn.Theme.of(context);
-    final hasError = errorText != null && errorText!.isNotEmpty;
     final isInteractive = enabled && !readOnly;
 
     final formatters = <TextInputFormatter>[
@@ -82,87 +84,44 @@ class AppNumberField extends StatelessWidget {
         ),
     ];
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        if (label != null && label!.isNotEmpty) ...[
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                label!,
-                style: theme.typography.small.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: isInteractive
-                      ? theme.colorScheme.foreground
-                      : theme.colorScheme.mutedForeground,
-                ),
-              ),
-              if (required) ...[
-                const SizedBox(width: 4),
-                Text(
-                  '*',
-                  style: TextStyle(
-                    color: theme.colorScheme.destructive,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ],
-          ),
-          const SizedBox(height: 6),
-        ],
-        Row(
-          children: [
-            if (prefix != null) ...[prefix!, const SizedBox(width: 8)],
-            Expanded(
-              child: shadcn.TextField(
-                controller: controller,
-                initialValue: value?.toString(),
-                focusNode: focusNode,
-                autofocus: autofocus,
-                enabled: isInteractive,
-                readOnly: readOnly,
-                placeholder: placeholder ?? (hint != null ? Text(hint!) : null),
-                keyboardType: TextInputType.numberWithOptions(
-                  decimal: allowDecimals,
-                ),
-                inputFormatters: formatters,
-                features: features,
-                onChanged: (text) {
-                  if (onChanged == null) return;
-                  if (text.isEmpty) {
-                    onChanged!(null);
-                  } else {
-                    final parsed = num.tryParse(text);
-                    onChanged!(parsed);
-                  }
-                },
-              ),
-            ),
-            if (suffix != null) ...[const SizedBox(width: 8), suffix!],
-          ],
-        ),
-        if (hasError) ...[
-          const SizedBox(height: 4),
-          Text(
-            errorText!,
-            style: theme.typography.small.copyWith(
-              color: theme.colorScheme.destructive,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ] else if (helperText != null && helperText!.isNotEmpty) ...[
-          const SizedBox(height: 4),
-          Text(
-            helperText!,
-            style: theme.typography.small.copyWith(
-              color: theme.colorScheme.mutedForeground,
-            ),
-          ),
-        ],
-      ],
+    final childInput = shadcn.TextField(
+      controller: controller,
+      initialValue: value?.toString(),
+      focusNode: focusNode,
+      autofocus: autofocus,
+      enabled: isInteractive,
+      readOnly: readOnly,
+      placeholder: placeholder ?? (hint != null ? Text(hint!) : null),
+      keyboardType: TextInputType.numberWithOptions(
+        decimal: allowDecimals,
+      ),
+      inputFormatters: formatters,
+      features: features,
+      padding: EdgeInsets.zero,
+      border: const Border(),
+      onChanged: (text) {
+        if (onChanged == null) return;
+        if (text.isEmpty) {
+          onChanged!(null);
+        } else {
+          final parsed = num.tryParse(text);
+          onChanged!(parsed);
+        }
+      },
+    );
+
+    return AppFieldShell(
+      label: label,
+      required: required,
+      errorText: errorText,
+      helperText: helperText,
+      density: density,
+      enabled: enabled,
+      readOnly: readOnly,
+      prefix: prefix,
+      suffix: suffix,
+      focusNode: focusNode,
+      child: childInput,
     );
   }
 }

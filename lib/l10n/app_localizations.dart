@@ -104,6 +104,18 @@ abstract class AppLocalizations {
   /// **'NexaBiz ERP'**
   String get appName;
 
+  /// No description provided for @splashTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'NexaBiz ERP'**
+  String get splashTitle;
+
+  /// No description provided for @splashSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Initializing secure business platform...'**
+  String get splashSubtitle;
+
   /// No description provided for @navDashboard.
   ///
   /// In en, this message translates to:
@@ -139,6 +151,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Execute common business operations & developer tools'**
   String get quickActionsSubtitle;
+
+  /// No description provided for @quickActionMobilePlayground.
+  ///
+  /// In en, this message translates to:
+  /// **'Mobile UI Playground'**
+  String get quickActionMobilePlayground;
+
+  /// No description provided for @quickActionMobilePlaygroundDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Audit patterns & mobile ERP scenarios'**
+  String get quickActionMobilePlaygroundDesc;
+
+  /// No description provided for @dashboardMobilePlaygroundCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Explore'**
+  String get dashboardMobilePlaygroundCta;
+
+  /// No description provided for @dashboardMobilePlaygroundBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'UI-01'**
+  String get dashboardMobilePlaygroundBadge;
 
   /// No description provided for @quickActionComponentGallery.
   ///
@@ -487,6 +523,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Interactive shadcn_flutter playground'**
   String get servicesComponentGallerySubtitle;
+
+  /// No description provided for @servicesMobilePlaygroundSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Interactive ERP mobile scenarios & design audit'**
+  String get servicesMobilePlaygroundSubtitle;
 
   /// No description provided for @servicesFinancialSection.
   ///
@@ -1231,6 +1273,564 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Pushes Node A1.1 onto existing stack (Stack Preserving)'**
   String get navLabPreserveA11Subtitle;
+
+  /// No description provided for @navLabNodeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Navigation Test Lab — Branch {branch} (Depth {depth})'**
+  String navLabNodeSubtitle(String branch, String depth);
+
+  /// No description provided for @navLabBranchBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Branch {branch}'**
+  String navLabBranchBadge(String branch);
+
+  /// No description provided for @navLabPushPath.
+  ///
+  /// In en, this message translates to:
+  /// **'PUSH {path}'**
+  String navLabPushPath(String path);
+
+  /// No description provided for @navLabPushBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'PUSH'**
+  String get navLabPushBadge;
+
+  /// No description provided for @navLabParamRouteBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Param Route'**
+  String get navLabParamRouteBadge;
+
+  /// No description provided for @navLabDestructiveBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Destructive Demos'**
+  String get navLabDestructiveBadge;
+
+  /// No description provided for @navLabReplaceBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'REPLACE'**
+  String get navLabReplaceBadge;
+
+  /// No description provided for @navLabResetBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'RESET'**
+  String get navLabResetBadge;
+
+  /// No description provided for @navLabNodeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Node {code}'**
+  String navLabNodeTitle(String code);
+
+  /// No description provided for @navLabNodeSiblingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Node {code} (Sibling)'**
+  String navLabNodeSiblingTitle(String code);
+
+  /// No description provided for @navLabNodeDeepestTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Node {code} (Deepest)'**
+  String navLabNodeDeepestTitle(String code);
+
+  /// No description provided for @navLabBranchRootTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Branch {branch} Root'**
+  String navLabBranchRootTitle(String branch);
+
+  /// No description provided for @navLabTargetRouterValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Production GoRouter'**
+  String get navLabTargetRouterValue;
+
+  /// No description provided for @navLabRootScopeValue.
+  ///
+  /// In en, this message translates to:
+  /// **'AppExitPopScope'**
+  String get navLabRootScopeValue;
+
+  /// No description provided for @navLabStackStrategyValue.
+  ///
+  /// In en, this message translates to:
+  /// **'PUSH (Stack Preserving)'**
+  String get navLabStackStrategyValue;
+
+  /// No description provided for @navLabBranchAPath.
+  ///
+  /// In en, this message translates to:
+  /// **'Path: /dev/navigation/a -> A1 -> A1.1 -> A1.1.1'**
+  String get navLabBranchAPath;
+
+  /// No description provided for @navLabBranchBPath.
+  ///
+  /// In en, this message translates to:
+  /// **'Path: /dev/navigation/b -> B1 -> B1.2 / B2.1'**
+  String get navLabBranchBPath;
+
+  /// No description provided for @navLabBranchCPath.
+  ///
+  /// In en, this message translates to:
+  /// **'Path: /dev/navigation/c -> C1 -> C1.1 -> C1.1.1'**
+  String get navLabBranchCPath;
+
+  /// No description provided for @navLabParamPath.
+  ///
+  /// In en, this message translates to:
+  /// **'Path: /dev/navigation/param/100 & 200'**
+  String get navLabParamPath;
+
+  /// No description provided for @navLabDestructiveComparison.
+  ///
+  /// In en, this message translates to:
+  /// **'Explicit REPLACE (context.go) vs PUSH comparison'**
+  String get navLabDestructiveComparison;
+
+  /// No description provided for @navLabFourLevels.
+  ///
+  /// In en, this message translates to:
+  /// **'4 Levels'**
+  String get navLabFourLevels;
+
+  /// No description provided for @navLabThreeLevels.
+  ///
+  /// In en, this message translates to:
+  /// **'3 Levels'**
+  String get navLabThreeLevels;
+
+  /// No description provided for @navLabParamTestBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Param Test'**
+  String get navLabParamTestBadge;
+
+  /// No description provided for @navLabDemoOnlyBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Demo Only'**
+  String get navLabDemoOnlyBadge;
+
+  /// No description provided for @navLabEventPushPath.
+  ///
+  /// In en, this message translates to:
+  /// **'PUSH -> {path}'**
+  String navLabEventPushPath(String path);
+
+  /// No description provided for @navLabInstructionDeepPush.
+  ///
+  /// In en, this message translates to:
+  /// **'1. Deep Push: Open Branch A -> A1 -> A1.1 -> A1.1.1. Press Android Back 4 times. Verify each parent node restores without exit dialog.'**
+  String get navLabInstructionDeepPush;
+
+  /// No description provided for @navLabInstructionSiblings.
+  ///
+  /// In en, this message translates to:
+  /// **'2. Siblings: Open A1 -> A1.1 -> Back -> A1.2 -> Back. Verify Node A1 is perfectly restored.'**
+  String get navLabInstructionSiblings;
+
+  /// No description provided for @navLabInstructionOverlay.
+  ///
+  /// In en, this message translates to:
+  /// **'3. Overlay: On any node, tap \"Open Test Dialog\" or \"Open Test Sheet\". Press Android Back. Verify overlay closes and current route remains active.'**
+  String get navLabInstructionOverlay;
+
+  /// No description provided for @navLabInstructionRootExit.
+  ///
+  /// In en, this message translates to:
+  /// **'4. Root Exit: Pop back to true app root (/dashboard). Press Android Back. Verify \"Exit Application\" dialog appears.'**
+  String get navLabInstructionRootExit;
+
+  /// No description provided for @navLabNestedRootTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Nested Navigation Test'**
+  String get navLabNestedRootTitle;
+
+  /// No description provided for @navLabNestedDetailsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Nested Details'**
+  String get navLabNestedDetailsTitle;
+
+  /// No description provided for @navLabNestedAuditTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Nested Audit'**
+  String get navLabNestedAuditTitle;
+
+  /// No description provided for @navLabNestedSettingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Nested Settings'**
+  String get navLabNestedSettingsTitle;
+
+  /// No description provided for @navLabNestedAdvancedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Advanced Nested Settings'**
+  String get navLabNestedAdvancedTitle;
+
+  /// No description provided for @navLabNestedSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify nested routes, direct links, Back, and language switching'**
+  String get navLabNestedSubtitle;
+
+  /// No description provided for @navLabNestedActionsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Navigation test actions'**
+  String get navLabNestedActionsTitle;
+
+  /// No description provided for @navLabNestedOpenDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Open details'**
+  String get navLabNestedOpenDetails;
+
+  /// No description provided for @navLabNestedOpenAudit.
+  ///
+  /// In en, this message translates to:
+  /// **'Open audit'**
+  String get navLabNestedOpenAudit;
+
+  /// No description provided for @navLabNestedOpenSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Open settings'**
+  String get navLabNestedOpenSettings;
+
+  /// No description provided for @navLabNestedOpenAdvanced.
+  ///
+  /// In en, this message translates to:
+  /// **'Open advanced settings'**
+  String get navLabNestedOpenAdvanced;
+
+  /// No description provided for @navLabNestedToggleLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch language'**
+  String get navLabNestedToggleLanguage;
+
+  /// No description provided for @systemSetupTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'System Setup'**
+  String get systemSetupTitle;
+
+  /// No description provided for @systemSetupSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Foundation page for configuring the system. Setup actions are not available yet.'**
+  String get systemSetupSubtitle;
+
+  /// No description provided for @systemSetupStatusFoundationOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Setup requirements planned'**
+  String get systemSetupStatusFoundationOnly;
+
+  /// No description provided for @systemSetupRequirementCompany.
+  ///
+  /// In en, this message translates to:
+  /// **'Company'**
+  String get systemSetupRequirementCompany;
+
+  /// No description provided for @systemSetupRequirementAdminUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Administrator user'**
+  String get systemSetupRequirementAdminUser;
+
+  /// No description provided for @identityTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Identity'**
+  String get identityTitle;
+
+  /// No description provided for @identitySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Foundation page for local identity and sessions. Sign-in and user management are not available yet.'**
+  String get identitySubtitle;
+
+  /// No description provided for @identityStatusFoundationOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Identity responsibilities planned'**
+  String get identityStatusFoundationOnly;
+
+  /// No description provided for @identityResponsibilityLocalSession.
+  ///
+  /// In en, this message translates to:
+  /// **'Local session'**
+  String get identityResponsibilityLocalSession;
+
+  /// No description provided for @identityResponsibilityAdminUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Administrator user'**
+  String get identityResponsibilityAdminUser;
+
+  /// No description provided for @identityResponsibilityCompanyMembership.
+  ///
+  /// In en, this message translates to:
+  /// **'Company membership'**
+  String get identityResponsibilityCompanyMembership;
+
+  /// No description provided for @identityResponsibilityCompanySwitchEndsSession.
+  ///
+  /// In en, this message translates to:
+  /// **'A company switch ends the current session'**
+  String get identityResponsibilityCompanySwitchEndsSession;
+
+  /// No description provided for @companyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Company'**
+  String get companyTitle;
+
+  /// No description provided for @companySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Foundation page for active company, membership, and tenant scope. Company management is not available yet.'**
+  String get companySubtitle;
+
+  /// No description provided for @companyStatusFoundationOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Company responsibilities planned'**
+  String get companyStatusFoundationOnly;
+
+  /// No description provided for @companyResponsibilityActiveCompany.
+  ///
+  /// In en, this message translates to:
+  /// **'Active company context'**
+  String get companyResponsibilityActiveCompany;
+
+  /// No description provided for @companyResponsibilityMembership.
+  ///
+  /// In en, this message translates to:
+  /// **'Company membership'**
+  String get companyResponsibilityMembership;
+
+  /// No description provided for @companyResponsibilityTenantScope.
+  ///
+  /// In en, this message translates to:
+  /// **'Tenant scope'**
+  String get companyResponsibilityTenantScope;
+
+  /// No description provided for @companyResponsibilitySwitchEndsSession.
+  ///
+  /// In en, this message translates to:
+  /// **'A future company switch must end the current session'**
+  String get companyResponsibilitySwitchEndsSession;
+
+  /// No description provided for @permissionsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Permissions'**
+  String get permissionsTitle;
+
+  /// No description provided for @permissionsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Foundation page for a permission catalog and authorization intent. Policy enforcement is not available yet.'**
+  String get permissionsSubtitle;
+
+  /// No description provided for @permissionsStatusFoundationOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Permission definitions only'**
+  String get permissionsStatusFoundationOnly;
+
+  /// No description provided for @permissionsResponsibilityCatalog.
+  ///
+  /// In en, this message translates to:
+  /// **'Permission catalog'**
+  String get permissionsResponsibilityCatalog;
+
+  /// No description provided for @permissionsResponsibilityRouteIntent.
+  ///
+  /// In en, this message translates to:
+  /// **'Route access intent'**
+  String get permissionsResponsibilityRouteIntent;
+
+  /// No description provided for @permissionsResponsibilityOperationIntent.
+  ///
+  /// In en, this message translates to:
+  /// **'Operation permission intent'**
+  String get permissionsResponsibilityOperationIntent;
+
+  /// No description provided for @permissionsResponsibilityNoRuntimeGrants.
+  ///
+  /// In en, this message translates to:
+  /// **'No runtime roles or grants yet'**
+  String get permissionsResponsibilityNoRuntimeGrants;
+
+  /// No description provided for @setupCompanyCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Company code'**
+  String get setupCompanyCode;
+
+  /// No description provided for @setupCompanyName.
+  ///
+  /// In en, this message translates to:
+  /// **'Company name'**
+  String get setupCompanyName;
+
+  /// No description provided for @setupAdminName.
+  ///
+  /// In en, this message translates to:
+  /// **'Administrator name'**
+  String get setupAdminName;
+
+  /// No description provided for @setupAdminEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Administrator email'**
+  String get setupAdminEmail;
+
+  /// No description provided for @setupPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get setupPassword;
+
+  /// No description provided for @setupConfirmPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm password'**
+  String get setupConfirmPassword;
+
+  /// No description provided for @setupCreate.
+  ///
+  /// In en, this message translates to:
+  /// **'Create company and administrator'**
+  String get setupCreate;
+
+  /// No description provided for @setupValidation.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a company code, company name, administrator name, valid email, and a password of at least 12 characters.'**
+  String get setupValidation;
+
+  /// No description provided for @setupPasswordMismatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords do not match.'**
+  String get setupPasswordMismatch;
+
+  /// No description provided for @setupAlreadyInitialized.
+  ///
+  /// In en, this message translates to:
+  /// **'This installation is already initialized.'**
+  String get setupAlreadyInitialized;
+
+  /// No description provided for @setupRecoveryRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Existing incomplete Core data needs recovery before setup can continue.'**
+  String get setupRecoveryRequired;
+
+  /// No description provided for @setupStorageFailure.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save setup. Try again.'**
+  String get setupStorageFailure;
+
+  /// No description provided for @setupCredentialFailure.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not prepare the password. Try again.'**
+  String get setupCredentialFailure;
+
+  /// No description provided for @loginTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign In'**
+  String get loginTitle;
+
+  /// No description provided for @loginSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your credentials to access your NexaBiz workspace'**
+  String get loginSubtitle;
+
+  /// No description provided for @loginIdentifier.
+  ///
+  /// In en, this message translates to:
+  /// **'Email or Username'**
+  String get loginIdentifier;
+
+  /// No description provided for @loginPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get loginPassword;
+
+  /// No description provided for @loginSubmit.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign In'**
+  String get loginSubmit;
+
+  /// No description provided for @loginValidation.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your email/username and password.'**
+  String get loginValidation;
+
+  /// No description provided for @loginInvalidCredentials.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid email/username or password.'**
+  String get loginInvalidCredentials;
+
+  /// No description provided for @loginUserInactive.
+  ///
+  /// In en, this message translates to:
+  /// **'User account is deactivated. Contact system administrator.'**
+  String get loginUserInactive;
+
+  /// No description provided for @loginNoCompanies.
+  ///
+  /// In en, this message translates to:
+  /// **'User has no active company memberships.'**
+  String get loginNoCompanies;
+
+  /// No description provided for @companySelectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Company'**
+  String get companySelectionTitle;
+
+  /// No description provided for @companySelectionSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose an active company workspace to continue'**
+  String get companySelectionSubtitle;
+
+  /// No description provided for @companySelectionCurrentRole.
+  ///
+  /// In en, this message translates to:
+  /// **'Role: {role}'**
+  String companySelectionCurrentRole(String role);
+
+  /// No description provided for @actionLogout.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign Out'**
+  String get actionLogout;
 }
 
 class _AppLocalizationsDelegate

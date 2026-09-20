@@ -1,13 +1,18 @@
 {
   "@@locale": "en",
   "appName": "NexaBiz ERP",
+  "splashTitle": "NexaBiz ERP",
+  "splashSubtitle": "Initializing secure business platform...",
   "navDashboard": "Dashboard",
   "navServices": "Services",
   "navReports": "Reports",
   "navSettings": "Settings",
-
   "quickActionsTitle": "Quick Actions",
   "quickActionsSubtitle": "Execute common business operations & developer tools",
+  "quickActionMobilePlayground": "Mobile UI Playground",
+  "quickActionMobilePlaygroundDesc": "Audit patterns & mobile ERP scenarios",
+  "dashboardMobilePlaygroundCta": "Explore",
+  "dashboardMobilePlaygroundBadge": "UI-01",
   "quickActionComponentGallery": "Component Gallery",
   "quickActionComponentGalleryDesc": "UI gallery & component playground",
   "quickActionNewInvoice": "New Invoice",
@@ -16,7 +21,6 @@
   "quickActionNewCustomerDesc": "Register customer account",
   "quickActionAddProduct": "Add Product",
   "quickActionAddProductDesc": "Inventory item entry",
-
   "exitDialogTitle": "Exit Application",
   "exitDialogMessage": "Are you sure you want to exit NexaBiz ERP?",
   "actionExit": "Exit",
@@ -26,7 +30,6 @@
   "actionClearLog": "Clear Log",
   "actionSystemReady": "System Ready",
   "actionDocumentation": "Documentation",
-
   "dashboardTitle": "NexaBiz Dashboard",
   "dashboardSubtitle": "Welcome back to NexaBiz ERP",
   "dashboardEnterpriseHighlights": "Enterprise Highlights",
@@ -45,7 +48,6 @@
   "statusStandby": "Standby",
   "statusSynced": "Synced",
   "statusPrimary": "Primary",
-
   "kpiTotalSales": "Total Sales",
   "kpiTotalSalesSubtitle": "+12.5% this month",
   "kpiPurchases": "Purchases",
@@ -54,7 +56,6 @@
   "kpiReceivablesSubtitle": "4 pending invoices",
   "kpiStockValuation": "Stock Valuation",
   "kpiStockValuationSubtitle": "1,240 inventory items",
-
   "recentActivityTitle": "Recent Activity",
   "recentActivityItem1Title": "Sales Invoice #INV-2026-0042",
   "recentActivityItem1Subtitle": "Customer: Acma Trading Co. • $3,450.00",
@@ -65,12 +66,12 @@
   "recentActivityItem3Title": "Receipt Voucher #RCV-1021",
   "recentActivityItem3Subtitle": "Payment received for #INV-2026-0019",
   "recentActivityItem3Time": "3 hours ago",
-
   "servicesTitle": "Services Hub",
   "servicesSubtitle": "Available Business Capabilities & Service Launchers",
   "servicesDevSection": "System & Developer Tools",
   "servicesDevSectionSubtitle": "UI design system and component playground",
   "servicesComponentGallerySubtitle": "Interactive shadcn_flutter playground",
+  "servicesMobilePlaygroundSubtitle": "Interactive ERP mobile scenarios & design audit",
   "servicesFinancialSection": "Financial & Accounting",
   "servicesFinancialSectionSubtitle": "Core financial management tools",
   "servicesGeneralLedger": "General Ledger",
@@ -91,7 +92,6 @@
   "servicesPurchasingPOSubtitle": "Purchase orders & suppliers",
   "servicesLogisticsShipping": "Logistics & Shipping",
   "servicesLogisticsShippingSubtitle": "Shipment tracking & dispatch",
-
   "reportsTitle": "Reports Hub",
   "reportsSubtitle": "Financial, Operational, & Analytical Reports",
   "reportsEngineStatus": "Engine Status",
@@ -105,7 +105,6 @@
   "reportsProfitLossSubtitle": "Income vs Expense",
   "reportsGLAudit": "General Ledger Audit",
   "reportsGLAuditSubtitle": "Journal verification",
-
   "settingsTitle": "Settings & Configuration",
   "settingsSubtitle": "Application preferences and enterprise profile management",
   "settingsDevToolsSection": "Developer & Design System Tools",
@@ -133,7 +132,6 @@
   "settingsSecurityControlsSubtitle": "Manage user roles and capability permissions",
   "settingsOfflineSync": "Offline Sync & Storage",
   "settingsOfflineSyncSubtitle": "All local databases up to date",
-
   "demoTitle": "NexaBiz Demo Capability",
   "demoSubtitle": "Verified clean architecture capability registration & shadcn_flutter integration",
   "demoBadge": "Capability Architecture Verified",
@@ -145,7 +143,6 @@
   "demoArchPrinciple3": "• Navigation is declared by capabilities.",
   "demoArchPrinciple4": "• GoRouter is an infrastructure adapter.",
   "demoArchPrinciple5": "• UI components come from canonical NexaBiz UI package.",
-
   "navLabTitle": "Navigation Test Lab",
   "navLabSubtitle": "Production Navigation Hardening & Manual Deep-Stack Test Environment",
   "navLabBadge": "Dev Lab",
@@ -205,5 +202,164 @@
   "navLabResetLab": "RESET: context.go(\"/dev/navigation\")",
   "navLabResetLabSubtitle": "Resets stack to Test Lab Dashboard root (Destructive)",
   "navLabPreserveA11": "PRESERVE: context.push(\"/dev/navigation/a/a1/a1-1\")",
-  "navLabPreserveA11Subtitle": "Pushes Node A1.1 onto existing stack (Stack Preserving)"
+  "navLabPreserveA11Subtitle": "Pushes Node A1.1 onto existing stack (Stack Preserving)",
+  "navLabNodeSubtitle": "Navigation Test Lab — Branch {branch} (Depth {depth})",
+  "@navLabNodeSubtitle": {
+    "placeholders": {
+      "branch": {
+        "type": "String"
+      },
+      "depth": {
+        "type": "String"
+      }
+    }
+  },
+  "navLabBranchBadge": "Branch {branch}",
+  "@navLabBranchBadge": {
+    "placeholders": {
+      "branch": {
+        "type": "String"
+      }
+    }
+  },
+  "navLabPushPath": "PUSH {path}",
+  "@navLabPushPath": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "navLabPushBadge": "PUSH",
+  "navLabParamRouteBadge": "Param Route",
+  "navLabDestructiveBadge": "Destructive Demos",
+  "navLabReplaceBadge": "REPLACE",
+  "navLabResetBadge": "RESET",
+  "navLabNodeTitle": "Node {code}",
+  "@navLabNodeTitle": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "navLabNodeSiblingTitle": "Node {code} (Sibling)",
+  "@navLabNodeSiblingTitle": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "navLabNodeDeepestTitle": "Node {code} (Deepest)",
+  "@navLabNodeDeepestTitle": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "navLabBranchRootTitle": "Branch {branch} Root",
+  "@navLabBranchRootTitle": {
+    "placeholders": {
+      "branch": {
+        "type": "String"
+      }
+    }
+  },
+  "navLabTargetRouterValue": "Production GoRouter",
+  "navLabRootScopeValue": "AppExitPopScope",
+  "navLabStackStrategyValue": "PUSH (Stack Preserving)",
+  "navLabBranchAPath": "Path: /dev/navigation/a -> A1 -> A1.1 -> A1.1.1",
+  "navLabBranchBPath": "Path: /dev/navigation/b -> B1 -> B1.2 / B2.1",
+  "navLabBranchCPath": "Path: /dev/navigation/c -> C1 -> C1.1 -> C1.1.1",
+  "navLabParamPath": "Path: /dev/navigation/param/100 & 200",
+  "navLabDestructiveComparison": "Explicit REPLACE (context.go) vs PUSH comparison",
+  "navLabFourLevels": "4 Levels",
+  "navLabThreeLevels": "3 Levels",
+  "navLabParamTestBadge": "Param Test",
+  "navLabDemoOnlyBadge": "Demo Only",
+  "navLabEventPushPath": "PUSH -> {path}",
+  "@navLabEventPushPath": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "navLabInstructionDeepPush": "1. Deep Push: Open Branch A -> A1 -> A1.1 -> A1.1.1. Press Android Back 4 times. Verify each parent node restores without exit dialog.",
+  "navLabInstructionSiblings": "2. Siblings: Open A1 -> A1.1 -> Back -> A1.2 -> Back. Verify Node A1 is perfectly restored.",
+  "navLabInstructionOverlay": "3. Overlay: On any node, tap \"Open Test Dialog\" or \"Open Test Sheet\". Press Android Back. Verify overlay closes and current route remains active.",
+  "navLabInstructionRootExit": "4. Root Exit: Pop back to true app root (/dashboard). Press Android Back. Verify \"Exit Application\" dialog appears.",
+  "navLabNestedRootTitle": "Nested Navigation Test",
+  "navLabNestedDetailsTitle": "Nested Details",
+  "navLabNestedAuditTitle": "Nested Audit",
+  "navLabNestedSettingsTitle": "Nested Settings",
+  "navLabNestedAdvancedTitle": "Advanced Nested Settings",
+  "navLabNestedSubtitle": "Verify nested routes, direct links, Back, and language switching",
+  "navLabNestedActionsTitle": "Navigation test actions",
+  "navLabNestedOpenDetails": "Open details",
+  "navLabNestedOpenAudit": "Open audit",
+  "navLabNestedOpenSettings": "Open settings",
+  "navLabNestedOpenAdvanced": "Open advanced settings",
+  "navLabNestedToggleLanguage": "Switch language",
+  "systemSetupTitle": "System Setup",
+  "systemSetupSubtitle": "Foundation page for configuring the system. Setup actions are not available yet.",
+  "systemSetupStatusFoundationOnly": "Setup requirements planned",
+  "systemSetupRequirementCompany": "Company",
+  "systemSetupRequirementAdminUser": "Administrator user",
+  "identityTitle": "Identity",
+  "identitySubtitle": "Foundation page for local identity and sessions. Sign-in and user management are not available yet.",
+  "identityStatusFoundationOnly": "Identity responsibilities planned",
+  "identityResponsibilityLocalSession": "Local session",
+  "identityResponsibilityAdminUser": "Administrator user",
+  "identityResponsibilityCompanyMembership": "Company membership",
+  "identityResponsibilityCompanySwitchEndsSession": "A company switch ends the current session",
+  "companyTitle": "Company",
+  "companySubtitle": "Foundation page for active company, membership, and tenant scope. Company management is not available yet.",
+  "companyStatusFoundationOnly": "Company responsibilities planned",
+  "companyResponsibilityActiveCompany": "Active company context",
+  "companyResponsibilityMembership": "Company membership",
+  "companyResponsibilityTenantScope": "Tenant scope",
+  "companyResponsibilitySwitchEndsSession": "A future company switch must end the current session",
+  "permissionsTitle": "Permissions",
+  "permissionsSubtitle": "Foundation page for a permission catalog and authorization intent. Policy enforcement is not available yet.",
+  "permissionsStatusFoundationOnly": "Permission definitions only",
+  "permissionsResponsibilityCatalog": "Permission catalog",
+  "permissionsResponsibilityRouteIntent": "Route access intent",
+  "permissionsResponsibilityOperationIntent": "Operation permission intent",
+  "permissionsResponsibilityNoRuntimeGrants": "No runtime roles or grants yet",
+  "setupCompanyCode": "Company code",
+  "setupCompanyName": "Company name",
+  "setupAdminName": "Administrator name",
+  "setupAdminEmail": "Administrator email",
+  "setupPassword": "Password",
+  "setupConfirmPassword": "Confirm password",
+  "setupCreate": "Create company and administrator",
+  "setupValidation": "Enter a company code, company name, administrator name, valid email, and a password of at least 12 characters.",
+  "setupPasswordMismatch": "Passwords do not match.",
+  "setupAlreadyInitialized": "This installation is already initialized.",
+  "setupRecoveryRequired": "Existing incomplete Core data needs recovery before setup can continue.",
+  "setupStorageFailure": "Could not save setup. Try again.",
+  "setupCredentialFailure": "Could not prepare the password. Try again.",
+  "loginTitle": "Sign In",
+  "loginSubtitle": "Enter your credentials to access your NexaBiz workspace",
+  "loginIdentifier": "Email or Username",
+  "loginPassword": "Password",
+  "loginSubmit": "Sign In",
+  "loginValidation": "Please enter your email/username and password.",
+  "loginInvalidCredentials": "Invalid email/username or password.",
+  "loginUserInactive": "User account is deactivated. Contact system administrator.",
+  "loginNoCompanies": "User has no active company memberships.",
+  "companySelectionTitle": "Select Company",
+  "companySelectionSubtitle": "Choose an active company workspace to continue",
+  "companySelectionCurrentRole": "Role: {role}",
+  "@companySelectionCurrentRole": {
+    "placeholders": {
+      "role": {
+        "type": "String"
+      }
+    }
+  },
+  "actionLogout": "Sign Out"
 }

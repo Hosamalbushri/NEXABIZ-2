@@ -39,6 +39,32 @@ class _MockNavContribution implements NexaBizNavigationContribution {
 void main() {
   group('Navigation Architecture Guardrails (NAV-01..06)', () {
     test(
+      'feature code cannot construct routes outside the canonical adapter',
+      () {
+        final files = Directory('lib')
+            .listSync(recursive: true)
+            .whereType<File>()
+            .where((file) => file.path.endsWith('.dart'))
+            .where(
+              (file) => !file.path.endsWith(
+                'lib/app/router/nexabiz_router_adapter.dart',
+              ),
+            );
+        final routeConstructor = RegExp(
+          r'\b(?:GoRoute|ShellRoute|StatefulShellRoute)(?:\.indexedStack)?\s*\(',
+        );
+        for (final file in files) {
+          expect(
+            routeConstructor.hasMatch(file.readAsStringSync()),
+            isFalse,
+            reason:
+                'Routes must come from capability contributions: ${file.path}',
+          );
+        }
+      },
+    );
+
+    test(
       'NAV-01 & NAV-05: Navigation registry locks metadata and prevents post-lock mutation',
       () {
         final capRegistry = NexaBizCapabilityRegistry();
@@ -217,30 +243,35 @@ void main() {
       },
     );
 
-    test('NAV-07: Restrict system exit calls (no raw exit(0), SystemNavigator.pop only in AppExitPopScope)', () async {
-      final libDir = Directory('/home/hosam/StudioProjects/nexabiz/lib');
-      final dartFiles = libDir
-          .listSync(recursive: true)
-          .whereType<File>()
-          .where((f) => f.path.endsWith('.dart'))
-          .toList();
+    test(
+      'NAV-07: Restrict system exit calls (no raw exit(0), SystemNavigator.pop only in AppExitPopScope)',
+      () async {
+        final libDir = Directory('/home/hosam/StudioProjects/nexabiz/lib');
+        final dartFiles = libDir
+            .listSync(recursive: true)
+            .whereType<File>()
+            .where((f) => f.path.endsWith('.dart'))
+            .toList();
 
-      for (final file in dartFiles) {
-        final content = file.readAsStringSync();
-        expect(
-          content.contains('exit(0)') || content.contains('exit(1)'),
-          isFalse,
-          reason: 'Raw dart:io exit() calls are forbidden in application code: ${file.path}',
-        );
-
-        if (content.contains('SystemNavigator.pop')) {
+        for (final file in dartFiles) {
+          final content = file.readAsStringSync();
           expect(
-            file.path.endsWith('lib/app/shell/app_exit_scope.dart'),
-            isTrue,
-            reason: 'SystemNavigator.pop() is strictly restricted to lib/app/shell/app_exit_scope.dart: ${file.path}',
+            content.contains('exit(0)') || content.contains('exit(1)'),
+            isFalse,
+            reason:
+                'Raw dart:io exit() calls are forbidden in application code: ${file.path}',
           );
+
+          if (content.contains('SystemNavigator.pop')) {
+            expect(
+              file.path.endsWith('lib/app/shell/app_exit_scope.dart'),
+              isTrue,
+              reason:
+                  'SystemNavigator.pop() is strictly restricted to lib/app/shell/app_exit_scope.dart: ${file.path}',
+            );
+          }
         }
-      }
-    });
+      },
+    );
   });
 }

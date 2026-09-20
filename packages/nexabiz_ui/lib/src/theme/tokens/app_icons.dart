@@ -53,4 +53,5 @@ class AppIcons {
   static const IconData chevronDown = shadcn.LucideIcons.chevronDown;
   static const IconData chevronUp = shadcn.LucideIcons.chevronUp;
   static const IconData chevronLeft = shadcn.LucideIcons.chevronLeft;
+  static const IconData sparkles = shadcn.LucideIcons.sparkles;
 }

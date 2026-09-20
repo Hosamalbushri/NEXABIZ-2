@@ -23,6 +23,14 @@ class ServicesScreen extends StatelessWidget {
             child: AppModuleHubGrid(
               children: [
                 AppModuleHubTile(
+                  title: l10n.quickActionMobilePlayground,
+                  subtitle: l10n.servicesMobilePlaygroundSubtitle,
+                  icon: AppIcons.layers,
+                  onTap: () {
+                    context.push('/playground');
+                  },
+                ),
+                AppModuleHubTile(
                   title: l10n.quickActionComponentGallery,
                   subtitle: l10n.servicesComponentGallerySubtitle,
                   icon: AppIcons.grid,

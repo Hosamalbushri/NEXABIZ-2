@@ -60,13 +60,25 @@ class _NavigationTestLabDashboardState
             ),
             child: Column(
               children: [
-                _DashRow(label: l10n.navLabTelemetryLabRoot, value: '/dev/navigation'),
+                _DashRow(
+                  label: l10n.navLabTelemetryLabRoot,
+                  value: '/dev/navigation',
+                ),
                 const AppDivider(),
-                _DashRow(label: l10n.navLabTelemetryTargetRouter, value: 'Production GoRouter'),
+                _DashRow(
+                  label: l10n.navLabTelemetryTargetRouter,
+                  value: l10n.navLabTargetRouterValue,
+                ),
                 const AppDivider(),
-                _DashRow(label: l10n.navLabTelemetryRootScope, value: 'AppExitPopScope'),
+                _DashRow(
+                  label: l10n.navLabTelemetryRootScope,
+                  value: l10n.navLabRootScopeValue,
+                ),
                 const AppDivider(),
-                _DashRow(label: l10n.navLabTelemetryStackStrategy, value: 'PUSH (Stack Preserving)'),
+                _DashRow(
+                  label: l10n.navLabTelemetryStackStrategy,
+                  value: l10n.navLabStackStrategyValue,
+                ),
               ],
             ),
           ),
@@ -78,46 +90,65 @@ class _NavigationTestLabDashboardState
             child: Column(
               children: [
                 AppListTile(
-                  leading: const Icon(AppIcons.compass, color: AppColors.primaryBlue),
+                  leading: const Icon(
+                    AppIcons.layers,
+                    color: AppColors.primaryBlue,
+                  ),
+                  title: Text(l10n.navLabNestedRootTitle),
+                  subtitle: Text(l10n.navLabNestedSubtitle),
+                  onTap: () => context.push('/navigation-test-lab'),
+                ),
+                const AppDivider(),
+                AppListTile(
+                  leading: const Icon(
+                    AppIcons.compass,
+                    color: AppColors.primaryBlue,
+                  ),
                   title: Text(l10n.navLabBranchATitle),
-                  subtitle: const Text('Path: /dev/navigation/a -> A1 -> A1.1 -> A1.1.1'),
-                  trailing: const AppStatusBadge(
-                    label: '4 Levels',
+                  subtitle: Text(l10n.navLabBranchAPath),
+                  trailing: AppStatusBadge(
+                    label: l10n.navLabFourLevels,
                     tone: AppStatusTone.info,
                     animate: false,
                   ),
                   onTap: () {
-                    _logEvent('PUSH -> /dev/navigation/a');
+                    _logEvent(l10n.navLabEventPushPath('/dev/navigation/a'));
                     context.push('/dev/navigation/a');
                   },
                 ),
                 const AppDivider(),
                 AppListTile(
-                  leading: const Icon(AppIcons.compass, color: AppColors.secondaryTeal),
+                  leading: const Icon(
+                    AppIcons.compass,
+                    color: AppColors.secondaryTeal,
+                  ),
                   title: Text(l10n.navLabBranchBTitle),
-                  subtitle: const Text('Path: /dev/navigation/b -> B1 -> B1.2 / B2.1'),
-                  trailing: const AppStatusBadge(
-                    label: '3 Levels',
+                  subtitle: Text(l10n.navLabBranchBPath),
+                  trailing: AppStatusBadge(
+                    label: l10n.navLabThreeLevels,
                     tone: AppStatusTone.success,
                     animate: false,
                   ),
                   onTap: () {
-                    _logEvent('PUSH -> /dev/navigation/b');
+                    _logEvent(l10n.navLabEventPushPath('/dev/navigation/b'));
                     context.push('/dev/navigation/b');
                   },
                 ),
                 const AppDivider(),
                 AppListTile(
-                  leading: const Icon(AppIcons.compass, color: AppColors.accentPurple),
+                  leading: const Icon(
+                    AppIcons.compass,
+                    color: AppColors.accentPurple,
+                  ),
                   title: Text(l10n.navLabBranchCTitle),
-                  subtitle: const Text('Path: /dev/navigation/c -> C1 -> C1.1 -> C1.1.1'),
-                  trailing: const AppStatusBadge(
-                    label: '4 Levels',
+                  subtitle: Text(l10n.navLabBranchCPath),
+                  trailing: AppStatusBadge(
+                    label: l10n.navLabFourLevels,
                     tone: AppStatusTone.warning,
                     animate: false,
                   ),
                   onTap: () {
-                    _logEvent('PUSH -> /dev/navigation/c');
+                    _logEvent(l10n.navLabEventPushPath('/dev/navigation/c'));
                     context.push('/dev/navigation/c');
                   },
                 ),
@@ -125,14 +156,16 @@ class _NavigationTestLabDashboardState
                 AppListTile(
                   leading: const Icon(AppIcons.box, color: AppColors.warning),
                   title: Text(l10n.navLabBranchParamTitle),
-                  subtitle: const Text('Path: /dev/navigation/param/100 & 200'),
-                  trailing: const AppStatusBadge(
-                    label: 'Param Test',
+                  subtitle: Text(l10n.navLabParamPath),
+                  trailing: AppStatusBadge(
+                    label: l10n.navLabParamTestBadge,
                     tone: AppStatusTone.info,
                     animate: false,
                   ),
                   onTap: () {
-                    _logEvent('PUSH -> /dev/navigation/param/100');
+                    _logEvent(
+                      l10n.navLabEventPushPath('/dev/navigation/param/100'),
+                    );
                     context.push('/dev/navigation/param/100');
                   },
                 ),
@@ -140,14 +173,16 @@ class _NavigationTestLabDashboardState
                 AppListTile(
                   leading: const Icon(AppIcons.warning, color: AppColors.error),
                   title: Text(l10n.navLabBranchDestructiveTitle),
-                  subtitle: const Text('Explicit REPLACE (context.go) vs PUSH comparison'),
-                  trailing: const AppStatusBadge(
-                    label: 'Demo Only',
+                  subtitle: Text(l10n.navLabDestructiveComparison),
+                  trailing: AppStatusBadge(
+                    label: l10n.navLabDemoOnlyBadge,
                     tone: AppStatusTone.error,
                     animate: false,
                   ),
                   onTap: () {
-                    _logEvent('PUSH -> /dev/navigation/destructive');
+                    _logEvent(
+                      l10n.navLabEventPushPath('/dev/navigation/destructive'),
+                    );
                     context.push('/dev/navigation/destructive');
                   },
                 ),
@@ -166,27 +201,39 @@ class _NavigationTestLabDashboardState
                 borderRadius: AppRadii.radiusMd,
                 border: Border.all(color: AppColors.borderLight),
               ),
-              child: const Column(
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '1. Deep Push: Open Branch A -> A1 -> A1.1 -> A1.1.1. Press Android Back 4 times. Verify each parent node restores without exit dialog.',
-                    style: TextStyle(fontSize: 12, color: AppColors.mutedTextLight),
+                    l10n.navLabInstructionDeepPush,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: AppColors.mutedTextLight,
+                    ),
                   ),
                   SizedBox(height: AppSpacing.xs),
                   Text(
-                    '2. Siblings: Open A1 -> A1.1 -> Back -> A1.2 -> Back. Verify Node A1 is perfectly restored.',
-                    style: TextStyle(fontSize: 12, color: AppColors.mutedTextLight),
+                    l10n.navLabInstructionSiblings,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: AppColors.mutedTextLight,
+                    ),
                   ),
                   SizedBox(height: AppSpacing.xs),
                   Text(
-                    '3. Overlay: On any node, tap "Open Test Dialog" or "Open Test Sheet". Press Android Back. Verify overlay closes and current route remains active.',
-                    style: TextStyle(fontSize: 12, color: AppColors.mutedTextLight),
+                    l10n.navLabInstructionOverlay,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: AppColors.mutedTextLight,
+                    ),
                   ),
                   SizedBox(height: AppSpacing.xs),
                   Text(
-                    '4. Root Exit: Pop back to true app root (/dashboard). Press Android Back. Verify "Exit Application" dialog appears.',
-                    style: TextStyle(fontSize: 12, color: AppColors.mutedTextLight),
+                    l10n.navLabInstructionRootExit,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: AppColors.mutedTextLight,
+                    ),
                   ),
                 ],
               ),
@@ -228,7 +275,9 @@ class _NavigationTestLabDashboardState
                   const SizedBox(height: AppSpacing.xs),
                   if (_eventLogs.isEmpty)
                     Padding(
-                      padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
+                      padding: const EdgeInsets.symmetric(
+                        vertical: AppSpacing.sm,
+                      ),
                       child: Text(
                         l10n.navLabNoEventsLogged,
                         style: const TextStyle(
