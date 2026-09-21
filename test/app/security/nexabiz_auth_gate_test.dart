@@ -273,5 +273,171 @@ void main() {
       await sessionController.dispose();
       await store.close();
     });
+
+    testWidgets(
+      'protected route + null sessionController -> access denied',
+      (tester) async {
+        final navRegistry = _buildNavigationRegistry();
+        final adapter = NexaBizGoRouterAdapter(navRegistry);
+        final readiness = NexaBizSetupReadiness(
+          state: NexaBizSetupState.ready,
+          completed: NexaBizSetupReadiness.requiredCoreRequirements,
+        );
+
+        final router = adapter.createRouter(
+          initialLocation: '/settings',
+          readiness: readiness,
+          sessionController: null,
+        );
+        addTearDown(router.dispose);
+
+        await tester.pumpWidget(NexaBizApp(router: router));
+        await tester.pumpAndSettle();
+
+        expect(router.state.uri.path, equals('/login'));
+      },
+    );
+
+    testWidgets(
+      'public login route + null sessionController -> remains accessible',
+      (tester) async {
+        final navRegistry = _buildNavigationRegistry();
+        final adapter = NexaBizGoRouterAdapter(navRegistry);
+        final readiness = NexaBizSetupReadiness(
+          state: NexaBizSetupState.ready,
+          completed: NexaBizSetupReadiness.requiredCoreRequirements,
+        );
+
+        final router = adapter.createRouter(
+          initialLocation: '/login',
+          readiness: readiness,
+          sessionController: null,
+        );
+        addTearDown(router.dispose);
+
+        await tester.pumpWidget(NexaBizApp(router: router));
+        await tester.pumpAndSettle();
+
+        expect(router.state.uri.path, equals('/login'));
+        expect(find.text('Test Screen'), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'protected company route + null sessionController -> access denied',
+      (tester) async {
+        final navRegistry = _buildNavigationRegistry();
+        final adapter = NexaBizGoRouterAdapter(navRegistry);
+        final readiness = NexaBizSetupReadiness(
+          state: NexaBizSetupState.ready,
+          completed: NexaBizSetupReadiness.requiredCoreRequirements,
+        );
+
+        final router = adapter.createRouter(
+          initialLocation: '/dashboard',
+          readiness: readiness,
+          sessionController: null,
+        );
+        addTearDown(router.dispose);
+
+        await tester.pumpWidget(NexaBizApp(router: router));
+        await tester.pumpAndSettle();
+
+        expect(router.state.uri.path, equals('/login'));
+      },
+    );
+
+    testWidgets(
+      'valid active session -> protected route remains accessible',
+      (tester) async {
+        late final CoreSessionController sessionController;
+        await tester.runAsync(() async {
+          final store = await DriftCoreInstallationStore.open(dbPath);
+          addTearDown(store.close);
+
+          final initializer = InitializeNexaBizCore(store);
+          await initializer(
+            const CoreInitializationInput(
+              companyCode: 'COMP01',
+              companyName: 'Test Company',
+              adminName: 'Admin User',
+              adminEmail: 'admin@nexabiz.test',
+              password: 'Password123!',
+            ),
+          );
+
+          sessionController = CoreSessionController(
+            authenticateLocalUser: AuthenticateLocalUser(queryStore: store),
+            queryStore: store,
+          );
+          addTearDown(sessionController.dispose);
+
+          final loginRes = await sessionController.login(
+            const CoreAuthenticationInput(
+              identifier: 'admin@nexabiz.test',
+              password: 'Password123!',
+            ),
+          );
+          expect(loginRes.isSuccess, isTrue);
+        });
+
+        expect(sessionController.currentSession.isActive, isTrue);
+        expect(sessionController.currentSession.companyId, isNotNull);
+
+        final navRegistry = _buildNavigationRegistry();
+        final adapter = NexaBizGoRouterAdapter(navRegistry);
+        final readiness = NexaBizSetupReadiness(
+          state: NexaBizSetupState.ready,
+          completed: NexaBizSetupReadiness.requiredCoreRequirements,
+        );
+
+        final router = adapter.createRouter(
+          initialLocation: '/dashboard',
+          readiness: readiness,
+          sessionController: sessionController,
+        );
+        addTearDown(router.dispose);
+
+        await tester.pumpWidget(NexaBizApp(router: router));
+        await tester.pump();
+
+        expect(router.state.uri.path, equals('/dashboard'));
+        expect(find.text('Test Screen'), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'no active session -> protected route redirects to login',
+      (tester) async {
+        final store = await DriftCoreInstallationStore.open(dbPath);
+        addTearDown(store.close);
+
+        final sessionController = CoreSessionController(
+          authenticateLocalUser: AuthenticateLocalUser(queryStore: store),
+          queryStore: store,
+        );
+        addTearDown(sessionController.dispose);
+        expect(sessionController.currentSession.isActive, isFalse);
+
+        final navRegistry = _buildNavigationRegistry();
+        final adapter = NexaBizGoRouterAdapter(navRegistry);
+        final readiness = NexaBizSetupReadiness(
+          state: NexaBizSetupState.ready,
+          completed: NexaBizSetupReadiness.requiredCoreRequirements,
+        );
+
+        final router = adapter.createRouter(
+          initialLocation: '/dashboard',
+          readiness: readiness,
+          sessionController: sessionController,
+        );
+        addTearDown(router.dispose);
+
+        await tester.pumpWidget(NexaBizApp(router: router));
+        await tester.pumpAndSettle();
+
+        expect(router.state.uri.path, equals('/login'));
+      },
+    );
   });
 }

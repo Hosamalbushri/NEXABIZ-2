@@ -32,7 +32,22 @@ final class NexaBizPermissionId {
 }
 
 /// Unknown means no configured decision; it is distinct from explicit denial.
-enum NexaBizPermissionDecision { allow, deny, unknown }
+/// Invariant: An 'unknown' decision is NOT AUTHORIZED (Fail-Closed principle).
+enum NexaBizPermissionDecision {
+  allow,
+  deny,
+  unknown;
+
+  /// True ONLY when explicitly allowed.
+  bool get isAllowed => this == NexaBizPermissionDecision.allow;
+
+  /// True when explicitly denied.
+  bool get isDenied => this == NexaBizPermissionDecision.deny;
+
+  /// True when the decision is unconfigured or unknown.
+  /// Under Fail-Closed semantics, unknown is never authorized.
+  bool get isUnknown => this == NexaBizPermissionDecision.unknown;
+}
 
 /// Intent to check one permission; no roles, grants, or evaluation are defined.
 final class NexaBizPermissionRequirement {

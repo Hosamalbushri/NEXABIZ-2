@@ -351,6 +351,25 @@
   "loginInvalidCredentials": "اسم المستخدم أو كلمة المرور غير صحيحة.",
   "loginUserInactive": "حساب المستخدم غير نشط. يرجى مراجعة مسؤول النظام.",
   "loginNoCompanies": "لا توجد صلاحيات شركات نشطة لهذا المستخدم.",
+  "loginLockedOut": "تم قفل الحساب مؤقتًا بسبب تكرار محاولات تسجيل الدخول غير الصحيحة. يرجى المحاولة لاحقًا.",
+  "loginLockedOutMinutes": "تم قفل الحساب مؤقتًا بسبب تكرار محاولات تسجيل الدخول غير الصحيحة. يرجى المحاولة بعد {minutes} دقيقة.",
+  "@loginLockedOutMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "loginLockedOutSeconds": "تم قفل الحساب مؤقتًا بسبب تكرار محاولات تسجيل الدخول غير الصحيحة. يرجى المحاولة بعد {seconds} ثانية.",
+  "@loginLockedOutSeconds": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "loginStorageFailure": "تعذر تسجيل الدخول حاليًا. يرجى المحاولة لاحقًا.",
+  "loginRetry": "إعادة المحاولة",
   "companySelectionTitle": "اختيار الشركة",
   "companySelectionSubtitle": "اختر بيئة الشركة النشطة للمتابعة",
   "companySelectionCurrentRole": "الدور: {role}",
@@ -361,5 +380,8 @@
       }
     }
   },
-  "actionLogout": "تسجيل الخروج"
+  "actionLogout": "تسجيل الخروج",
+  "unauthorizedTitle": "تم رفض الوصول",
+  "unauthorizedMessage": "ليس لديك الصلاحية الكافية للوصول إلى هذه الصفحة.",
+  "actionBackToDashboard": "العودة للرئيسية"
 }

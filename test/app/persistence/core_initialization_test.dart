@@ -26,7 +26,14 @@ void main() {
 
   test('legacy tenant/admin transaction becomes four linked Core rows', () async {
     final store = await DriftCoreInstallationStore.open(databasePath);
+    expect(store.readiness.value.state, NexaBizSetupState.uninitialized);
+    final notifications = <NexaBizSetupState>[];
+    store.readiness.addListener(
+      () => notifications.add(store.readiness.value.state),
+    );
     expect((await InitializeNexaBizCore(store)(input)).isReady, isTrue);
+    expect(store.readiness.value.isReady, isTrue);
+    expect(notifications, [NexaBizSetupState.ready]);
     final db = store.database;
     final companies = await db.select(db.coreCompanies).get();
     final users = await db.select(db.coreUsers).get();
@@ -72,6 +79,7 @@ void main() {
     await store.close();
     final reopened = await DriftCoreInstallationStore.open(databasePath);
     expect((await reopened.readReadiness()).isReady, isTrue);
+    expect(reopened.readiness.value.isReady, isTrue);
     expect(
       await reopened.database.select(reopened.database.coreCredentials).get(),
       hasLength(1),
@@ -107,6 +115,8 @@ void main() {
 
   test('credential write failure rolls back company and user', () async {
     final store = await DriftCoreInstallationStore.open(databasePath);
+    var notifications = 0;
+    store.readiness.addListener(() => notifications++);
     await store.database.customStatement('''
       CREATE TRIGGER fail_credential BEFORE INSERT ON core_credentials
       BEGIN SELECT RAISE(FAIL, 'injected failure'); END
@@ -122,6 +132,8 @@ void main() {
       ),
     );
     final db = store.database;
+    expect(store.readiness.value.state, NexaBizSetupState.uninitialized);
+    expect(notifications, 0);
     expect(await db.select(db.coreCompanies).get(), isEmpty);
     expect(await db.select(db.coreUsers).get(), isEmpty);
     expect(await db.select(db.coreCompanyMemberships).get(), isEmpty);
@@ -212,7 +224,7 @@ void main() {
     );
     await store.close();
     final migrated = raw.sqlite3.open(databasePath);
-    expect(migrated.select('PRAGMA user_version').single['user_version'], 3);
+    expect(migrated.select('PRAGMA user_version').single['user_version'], 5);
     migrated.close();
   });
 

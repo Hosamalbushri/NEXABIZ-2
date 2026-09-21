@@ -43,3 +43,10 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Packages build artifacts
+packages/**/build/
+
+# Temporary migration artifacts
+lib.tar.xz
+untitled2/

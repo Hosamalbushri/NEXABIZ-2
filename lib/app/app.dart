@@ -3,18 +3,30 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nexabiz_ui/nexabiz_ui.dart';
 
+import '../core/authorization/nexabiz_permission_evaluator.dart';
+import '../core/session/core_session_controller.dart';
 import '../l10n/app_localizations.dart';
+import 'authorization/app_permission_scope.dart';
 import 'localization/app_locale_controller.dart';
 
 /// Primary root widget for the NexaBiz application.
 class NexaBizApp extends StatelessWidget {
   final GoRouter router;
+  final NexaBizPermissionEvaluator? permissionEvaluator;
+  final CoreSessionController? sessionController;
+  final Listenable? authorizationInvalidationSignal;
 
-  const NexaBizApp({super.key, required this.router});
+  const NexaBizApp({
+    super.key,
+    required this.router,
+    this.permissionEvaluator,
+    this.sessionController,
+    this.authorizationInvalidationSignal,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder(
+    Widget app = ValueListenableBuilder(
       valueListenable: AppThemeController.themeModeNotifier,
       builder: (context, themeMode, _) {
         return ValueListenableBuilder(
@@ -38,5 +50,16 @@ class NexaBizApp extends StatelessWidget {
         );
       },
     );
+
+    if (permissionEvaluator != null && sessionController != null) {
+      app = AppPermissionScope(
+        permissionEvaluator: permissionEvaluator!,
+        sessionController: sessionController!,
+        invalidationSignal: authorizationInvalidationSignal,
+        child: app,
+      );
+    }
+
+    return app;
   }
 }

@@ -941,6 +941,27 @@ class AppLocalizationsAr extends AppLocalizations {
   String get loginNoCompanies => 'لا توجد صلاحيات شركات نشطة لهذا المستخدم.';
 
   @override
+  String get loginLockedOut =>
+      'تم قفل الحساب مؤقتًا بسبب تكرار محاولات تسجيل الدخول غير الصحيحة. يرجى المحاولة لاحقًا.';
+
+  @override
+  String loginLockedOutMinutes(int minutes) {
+    return 'تم قفل الحساب مؤقتًا بسبب تكرار محاولات تسجيل الدخول غير الصحيحة. يرجى المحاولة بعد $minutes دقيقة.';
+  }
+
+  @override
+  String loginLockedOutSeconds(int seconds) {
+    return 'تم قفل الحساب مؤقتًا بسبب تكرار محاولات تسجيل الدخول غير الصحيحة. يرجى المحاولة بعد $seconds ثانية.';
+  }
+
+  @override
+  String get loginStorageFailure =>
+      'تعذر تسجيل الدخول حاليًا. يرجى المحاولة لاحقًا.';
+
+  @override
+  String get loginRetry => 'إعادة المحاولة';
+
+  @override
   String get companySelectionTitle => 'اختيار الشركة';
 
   @override
@@ -953,4 +974,14 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get actionLogout => 'تسجيل الخروج';
+
+  @override
+  String get unauthorizedTitle => 'تم رفض الوصول';
+
+  @override
+  String get unauthorizedMessage =>
+      'ليس لديك الصلاحية الكافية للوصول إلى هذه الصفحة.';
+
+  @override
+  String get actionBackToDashboard => 'العودة للرئيسية';
 }

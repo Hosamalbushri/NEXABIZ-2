@@ -351,6 +351,25 @@
   "loginInvalidCredentials": "Invalid email/username or password.",
   "loginUserInactive": "User account is deactivated. Contact system administrator.",
   "loginNoCompanies": "User has no active company memberships.",
+  "loginLockedOut": "Too many failed login attempts. Account is temporarily locked. Please try again later.",
+  "loginLockedOutMinutes": "Too many failed login attempts. Account is temporarily locked. Please try again in {minutes} minute(s).",
+  "@loginLockedOutMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "loginLockedOutSeconds": "Too many failed login attempts. Account is temporarily locked. Please try again in {seconds} second(s).",
+  "@loginLockedOutSeconds": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "loginStorageFailure": "Unable to sign in at this time. Please try again later.",
+  "loginRetry": "Try Again",
   "companySelectionTitle": "Select Company",
   "companySelectionSubtitle": "Choose an active company workspace to continue",
   "companySelectionCurrentRole": "Role: {role}",
@@ -361,5 +380,8 @@
       }
     }
   },
-  "actionLogout": "Sign Out"
+  "actionLogout": "Sign Out",
+  "unauthorizedTitle": "Access Denied",
+  "unauthorizedMessage": "You do not have permission to access this page.",
+  "actionBackToDashboard": "Back to Dashboard"
 }

@@ -948,6 +948,27 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loginNoCompanies => 'User has no active company memberships.';
 
   @override
+  String get loginLockedOut =>
+      'Too many failed login attempts. Account is temporarily locked. Please try again later.';
+
+  @override
+  String loginLockedOutMinutes(int minutes) {
+    return 'Too many failed login attempts. Account is temporarily locked. Please try again in $minutes minute(s).';
+  }
+
+  @override
+  String loginLockedOutSeconds(int seconds) {
+    return 'Too many failed login attempts. Account is temporarily locked. Please try again in $seconds second(s).';
+  }
+
+  @override
+  String get loginStorageFailure =>
+      'Unable to sign in at this time. Please try again later.';
+
+  @override
+  String get loginRetry => 'Try Again';
+
+  @override
   String get companySelectionTitle => 'Select Company';
 
   @override
@@ -961,4 +982,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get actionLogout => 'Sign Out';
+
+  @override
+  String get unauthorizedTitle => 'Access Denied';
+
+  @override
+  String get unauthorizedMessage =>
+      'You do not have permission to access this page.';
+
+  @override
+  String get actionBackToDashboard => 'Back to Dashboard';
 }

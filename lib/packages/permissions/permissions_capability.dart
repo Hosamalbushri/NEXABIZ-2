@@ -9,12 +9,17 @@ import '../../core/navigation/nexabiz_route_definition.dart';
 import '../../core/navigation/nexabiz_route_id.dart';
 import '../../core/permissions/nexabiz_permission_intent.dart';
 import 'presentation/permissions_screen.dart';
+import 'presentation/unauthorized_screen.dart';
 
 class _PermissionsNavigationContribution
     implements NexaBizNavigationContribution {
   static const _home = NexaBizRouteId(
     namespace: 'permissions',
     routeName: 'home',
+  );
+  static const _unauthorized = NexaBizRouteId(
+    namespace: 'permissions',
+    routeName: 'unauthorized',
   );
 
   @override
@@ -31,6 +36,16 @@ class _PermissionsNavigationContribution
         requiresCompanyScope: true,
       ),
       pageBuilder: (context) => const PermissionsScreen(),
+    ),
+    NexaBizFlutterRouteDefinition(
+      routeId: _unauthorized,
+      path: '/unauthorized',
+      accessRequirement: const NexaBizRouteAccessRequirement(
+        requiresReadySetup: false,
+        requiresActiveSession: false,
+        requiresCompanyScope: false,
+      ),
+      pageBuilder: (context) => const UnauthorizedScreen(),
     ),
   ];
 }

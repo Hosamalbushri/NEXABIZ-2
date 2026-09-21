@@ -21,6 +21,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordController = TextEditingController();
 
   CoreAuthenticationStatus? _authStatus;
+  DateTime? _lockoutExpiresAt;
   bool _invalidInput = false;
   bool _isLoading = false;
 
@@ -42,6 +43,7 @@ class _LoginScreenState extends State<LoginScreen> {
       setState(() {
         _invalidInput = true;
         _authStatus = null;
+        _lockoutExpiresAt = null;
       });
       return;
     }
@@ -50,14 +52,12 @@ class _LoginScreenState extends State<LoginScreen> {
       _isLoading = true;
       _invalidInput = false;
       _authStatus = null;
+      _lockoutExpiresAt = null;
     });
 
     try {
       final result = await controller.login(
-        CoreAuthenticationInput(
-          identifier: identifier,
-          password: password,
-        ),
+        CoreAuthenticationInput(identifier: identifier, password: password),
       );
 
       if (!mounted) return;
@@ -73,12 +73,14 @@ class _LoginScreenState extends State<LoginScreen> {
       } else {
         setState(() {
           _authStatus = result.status;
+          _lockoutExpiresAt = result.lockoutExpiresAt;
         });
       }
     } catch (_) {
       if (mounted) {
         setState(() {
-          _authStatus = CoreAuthenticationStatus.invalidCredentials;
+          _authStatus = CoreAuthenticationStatus.storageFailure;
+          _lockoutExpiresAt = null;
         });
       }
     } finally {
@@ -88,6 +90,22 @@ class _LoginScreenState extends State<LoginScreen> {
         });
       }
     }
+  }
+
+  String _resolveLockoutMessage(AppLocalizations l10n) {
+    final expiresAt = _lockoutExpiresAt;
+    if (expiresAt != null) {
+      final now = DateTime.now().toUtc();
+      final remaining = expiresAt.toUtc().difference(now);
+      if (remaining.inMinutes >= 1) {
+        final minutes =
+            remaining.inMinutes + (remaining.inSeconds % 60 > 0 ? 1 : 0);
+        return l10n.loginLockedOutMinutes(minutes);
+      } else if (remaining.inSeconds > 0) {
+        return l10n.loginLockedOutSeconds(remaining.inSeconds);
+      }
+    }
+    return l10n.loginLockedOut;
   }
 
   @override
@@ -102,6 +120,8 @@ class _LoginScreenState extends State<LoginScreen> {
             CoreAuthenticationStatus.userInactive => l10n.loginUserInactive,
             CoreAuthenticationStatus.noActiveMemberships =>
               l10n.loginNoCompanies,
+            CoreAuthenticationStatus.lockedOut => _resolveLockoutMessage(l10n),
+            CoreAuthenticationStatus.storageFailure => l10n.loginStorageFailure,
             _ => null,
           };
 
@@ -112,6 +132,14 @@ class _LoginScreenState extends State<LoginScreen> {
       submitLabel: l10n.loginSubmit,
       isLoading: _isLoading,
       errorText: errorText,
+      onRetry: errorText != null
+          ? () => setState(() {
+              _authStatus = null;
+              _invalidInput = false;
+              _lockoutExpiresAt = null;
+            })
+          : null,
+      retryLabel: l10n.loginRetry,
       onSubmit: _handleLogin,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,

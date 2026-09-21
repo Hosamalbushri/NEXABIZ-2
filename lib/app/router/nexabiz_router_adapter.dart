@@ -1,9 +1,12 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/authorization/nexabiz_authorization_context.dart';
+import '../../core/authorization/nexabiz_permission_evaluator.dart';
 import '../../core/navigation/nexabiz_navigation_registry.dart';
 import '../../core/navigation/nexabiz_route_access_requirement.dart';
 import '../../core/navigation/nexabiz_route_definition.dart';
+import '../../core/permissions/nexabiz_permission_intent.dart';
 import '../../core/session/core_session_controller.dart';
 import '../../core/setup/nexabiz_setup_readiness.dart';
 import '../shell/app_exit_scope.dart';
@@ -30,8 +33,11 @@ class NexaBizGoRouterAdapter {
   GoRouter createRouter({
     String initialLocation = '/splash',
     NexaBizSetupReadiness? readiness,
+    ValueListenable<NexaBizSetupReadiness>? readinessListenable,
     CoreSessionController? sessionController,
     Listenable? refreshListenable,
+    NexaBizPermissionEvaluator? permissionEvaluator,
+    Listenable? authorizationInvalidationListenable,
   }) {
     if (!_navigationRegistry.isLocked) {
       throw StateError(
@@ -146,12 +152,17 @@ class NexaBizGoRouterAdapter {
 
     return GoRouter(
       initialLocation: initialLocation,
-      refreshListenable: refreshListenable,
+      refreshListenable: Listenable.merge([
+        refreshListenable,
+        readinessListenable,
+        authorizationInvalidationListenable,
+      ]),
       routes: rootRoutes,
-      redirect: (context, state) {
+      redirect: (context, state) async {
         final path = state.uri.path;
-        final hasSetupController = readiness != null;
-        final isSetupReady = !hasSetupController || readiness.state == NexaBizSetupState.ready;
+        final currentReadiness = readinessListenable?.value ?? readiness;
+        final hasSetupController = currentReadiness != null;
+        final isSetupReady = !hasSetupController || currentReadiness.isReady;
 
         // 1. Core Setup Gate: If core is not ready, enforce /system-setup
         if (hasSetupController && !isSetupReady && path != '/system-setup') {
@@ -166,14 +177,21 @@ class NexaBizGoRouterAdapter {
         if (path == '/splash') {
           if (hasSetupController && !isSetupReady) return '/system-setup';
           final session = sessionController?.currentSession;
-          if (sessionController != null && session == null) return '/login';
-          if (session != null && session.companyId == null) {
-            return '/company-selection';
+          if (sessionController != null) {
+            if (session == null || !session.isActive) return '/login';
+            if (session.companyId == null) return '/company-selection';
+            return '/dashboard';
           }
-          return '/dashboard';
+          final hasLogin = registeredRoutes.any((r) => r.path == '/login');
+          return hasLogin ? '/login' : '/dashboard';
         }
 
-        // 4. Lookup target route access requirement
+        // 4. Access Denied (/unauthorized) Route - Loop Prevention
+        if (path == '/unauthorized') {
+          return null;
+        }
+
+        // 5. Lookup target route access requirement
         NexaBizRouteDefinition? matchedRoute;
         for (final route in registeredRoutes) {
           if (route.path == path) {
@@ -182,42 +200,109 @@ class NexaBizGoRouterAdapter {
           }
         }
 
-        final requirement = matchedRoute?.accessRequirement ??
-            const NexaBizRouteAccessRequirement(
-              requiresReadySetup: true,
-              requiresActiveSession: true,
-              requiresCompanyScope: true,
-            );
+        // If path is not registered, let router error handling (404) take over
+        if (matchedRoute == null) {
+          return null;
+        }
+
+        final requirement =
+            matchedRoute.accessRequirement ??
+            const NexaBizRouteAccessRequirement();
 
         // Fail-closed Guard: Ready Setup
-        if (hasSetupController && requirement.requiresReadySetup && !isSetupReady) {
+        if (hasSetupController &&
+            requirement.requiresReadySetup &&
+            !isSetupReady) {
           return '/system-setup';
         }
 
-        final hasSessionController = sessionController != null;
         final activeSession = sessionController?.currentSession;
         final hasActiveSession =
             activeSession != null && activeSession.isActive;
 
-        // Guard: Active Session requirement
-        if (hasSessionController &&
-            requirement.requiresActiveSession &&
-            !hasActiveSession) {
+        // Guard: Active Session requirement (Fail-Closed)
+        if (requirement.requiresActiveSession && !hasActiveSession) {
           return '/login';
         }
 
         // Guard: Prevent authenticated user from staying on /login
-        if (hasSessionController && path == '/login' && hasActiveSession) {
+        if (path == '/login' && hasActiveSession) {
           return activeSession.companyId != null
               ? '/dashboard'
               : '/company-selection';
         }
 
-        // Guard: Company Scope requirement
-        if (hasSessionController &&
-            requirement.requiresCompanyScope &&
-            activeSession?.companyId == null) {
-          return '/company-selection';
+        // Guard: Company Scope requirement (Fail-Closed)
+        if (requirement.requiresCompanyScope) {
+          if (!hasActiveSession) {
+            return '/login';
+          }
+          if (activeSession.companyId == null) {
+            return '/company-selection';
+          }
+        }
+
+        // Guard: Declarative Permission requirement (Defense-in-Depth)
+        final permissionRequirement = requirement.permission;
+        if (permissionRequirement != null) {
+          // 1. Session must be active (Authentication precedes Authorization)
+          if (!hasActiveSession) {
+            return '/login';
+          }
+
+          // 2. If company scope is required, ensure active company is selected
+          if (requirement.requiresCompanyScope &&
+              activeSession.companyId == null) {
+            return '/company-selection';
+          }
+
+          // 3. Missing evaluator dependency -> Fail-Closed
+          if (permissionEvaluator == null) {
+            return '/unauthorized';
+          }
+
+          // 4. Construct trusted authorization context from active session
+          final NexaBizAuthorizationContext authContext;
+          try {
+            authContext = NexaBizAuthorizationContext.fromSession(
+              activeSession,
+            );
+          } catch (_) {
+            return '/unauthorized';
+          }
+
+          // 5. Concurrency snapshot: record session state at evaluation start
+          final sessionAtStart = activeSession;
+
+          // 6. Asynchronous permission evaluation
+          final NexaBizPermissionDecision decision;
+          try {
+            decision = await permissionEvaluator.evaluate(
+              context: authContext,
+              permissionId: permissionRequirement.permissionId,
+            );
+          } catch (_) {
+            // Infrastructure / evaluator failure -> Fail-closed safely
+            return '/unauthorized';
+          }
+
+          // 7. Concurrency check: verify session identity was not altered during flight
+          final sessionAtEnd = sessionController?.currentSession;
+          if (sessionAtEnd == null ||
+              !sessionAtEnd.isActive ||
+              sessionAtEnd.sessionId != sessionAtStart.sessionId ||
+              sessionAtEnd.companyId != sessionAtStart.companyId) {
+            return sessionAtEnd != null && sessionAtEnd.isActive
+                ? (sessionAtEnd.companyId != null
+                      ? '/dashboard'
+                      : '/company-selection')
+                : '/login';
+          }
+
+          // 8. Enforce decision: ALLOW required; DENY and UNKNOWN yield Access Denied
+          if (!decision.isAllowed) {
+            return '/unauthorized';
+          }
         }
 
         return null;

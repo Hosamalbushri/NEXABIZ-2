@@ -1,3 +1,4 @@
+import '../authorization/nexabiz_permission_catalog.dart';
 import '../permissions/nexabiz_permission_intent.dart';
 import 'contributions/nexabiz_capability_runtime_contributions.dart';
 import 'nexabiz_capability.dart';
@@ -12,6 +13,7 @@ class NexaBizCapabilityRegistry {
   static final RegExp _canonicalId = RegExp(r'^[a-z][a-z0-9_]*$');
   final Map<String, NexaBizCapability> _registeredCapabilities = {};
   List<NexaBizCapability> _sortedCapabilities = [];
+  NexaBizPermissionCatalog? _permissionCatalog;
   bool _isLocked = false;
 
   /// Whether the registry has been validated, sorted, and locked.
@@ -120,7 +122,7 @@ class NexaBizCapabilityRegistry {
       if (permissions != null) {
         final requiredIds = <String>{};
         for (final id in permissions.declaredPermissionIds) {
-          _validatePermissionId(id, entry.key);
+          _validatePermissionId(id, entry.key, isDeclaration: true);
           if (!declaredPermissionIds.add(id.value)) {
             throw StateError('Duplicate declared permission ID "${id.value}".');
           }
@@ -192,7 +194,18 @@ class NexaBizCapabilityRegistry {
     }
 
     _sortedCapabilities = List.unmodifiable(sortedResult);
+    _permissionCatalog = NexaBizImmutablePermissionCatalog(
+      Set.unmodifiable(declaredPermissionIds.map(NexaBizPermissionId.new)),
+    );
     _isLocked = true;
+  }
+
+  /// Read-only permission catalog of all declared permissions in locked capabilities.
+  ///
+  /// Throws [StateError] if registry is not locked.
+  NexaBizPermissionCatalog get permissionCatalog {
+    _checkIsLocked();
+    return _permissionCatalog!;
   }
 
   /// Get read-only list of capabilities in topological order.
@@ -231,13 +244,19 @@ class NexaBizCapabilityRegistry {
 
   static void _validatePermissionId(
     NexaBizPermissionId id,
-    String capabilityId,
-  ) {
+    String capabilityId, {
+    bool isDeclaration = false,
+  }) {
     try {
       NexaBizPermissionId(id.value);
     } on ArgumentError {
       throw StateError(
         'Capability "$capabilityId" declares a noncanonical permission ID "${id.value}".',
+      );
+    }
+    if (isDeclaration && !id.value.startsWith('$capabilityId.')) {
+      throw StateError(
+        'Capability "$capabilityId" cannot declare permission "${id.value}" outside its namespace.',
       );
     }
   }

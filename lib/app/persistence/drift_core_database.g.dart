@@ -1803,6 +1803,1473 @@ class CoreCredentialsCompanion extends UpdateCompanion<CoreCredentialRow> {
   }
 }
 
+class $CoreLoginAttemptsTable extends CoreLoginAttempts
+    with TableInfo<$CoreLoginAttemptsTable, CoreLoginAttemptRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CoreLoginAttemptsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _identifierHashMeta = const VerificationMeta(
+    'identifierHash',
+  );
+  @override
+  late final GeneratedColumn<String> identifierHash = GeneratedColumn<String>(
+    'identifier_hash',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _attemptCountMeta = const VerificationMeta(
+    'attemptCount',
+  );
+  @override
+  late final GeneratedColumn<int> attemptCount = GeneratedColumn<int>(
+    'attempt_count',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _lockedUntilMeta = const VerificationMeta(
+    'lockedUntil',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lockedUntil = GeneratedColumn<DateTime>(
+    'locked_until',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _lastAttemptAtMeta = const VerificationMeta(
+    'lastAttemptAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastAttemptAt =
+      GeneratedColumn<DateTime>(
+        'last_attempt_at',
+        aliasedName,
+        false,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: true,
+      );
+  @override
+  List<GeneratedColumn> get $columns => [
+    identifierHash,
+    attemptCount,
+    lockedUntil,
+    lastAttemptAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'core_login_attempts';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<CoreLoginAttemptRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('identifier_hash')) {
+      context.handle(
+        _identifierHashMeta,
+        identifierHash.isAcceptableOrUnknown(
+          data['identifier_hash']!,
+          _identifierHashMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_identifierHashMeta);
+    }
+    if (data.containsKey('attempt_count')) {
+      context.handle(
+        _attemptCountMeta,
+        attemptCount.isAcceptableOrUnknown(
+          data['attempt_count']!,
+          _attemptCountMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_attemptCountMeta);
+    }
+    if (data.containsKey('locked_until')) {
+      context.handle(
+        _lockedUntilMeta,
+        lockedUntil.isAcceptableOrUnknown(
+          data['locked_until']!,
+          _lockedUntilMeta,
+        ),
+      );
+    }
+    if (data.containsKey('last_attempt_at')) {
+      context.handle(
+        _lastAttemptAtMeta,
+        lastAttemptAt.isAcceptableOrUnknown(
+          data['last_attempt_at']!,
+          _lastAttemptAtMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_lastAttemptAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {identifierHash};
+  @override
+  CoreLoginAttemptRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CoreLoginAttemptRow(
+      identifierHash: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}identifier_hash'],
+      )!,
+      attemptCount: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}attempt_count'],
+      )!,
+      lockedUntil: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}locked_until'],
+      ),
+      lastAttemptAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_attempt_at'],
+      )!,
+    );
+  }
+
+  @override
+  $CoreLoginAttemptsTable createAlias(String alias) {
+    return $CoreLoginAttemptsTable(attachedDatabase, alias);
+  }
+}
+
+class CoreLoginAttemptRow extends DataClass
+    implements Insertable<CoreLoginAttemptRow> {
+  final String identifierHash;
+  final int attemptCount;
+  final DateTime? lockedUntil;
+  final DateTime lastAttemptAt;
+  const CoreLoginAttemptRow({
+    required this.identifierHash,
+    required this.attemptCount,
+    this.lockedUntil,
+    required this.lastAttemptAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['identifier_hash'] = Variable<String>(identifierHash);
+    map['attempt_count'] = Variable<int>(attemptCount);
+    if (!nullToAbsent || lockedUntil != null) {
+      map['locked_until'] = Variable<DateTime>(lockedUntil);
+    }
+    map['last_attempt_at'] = Variable<DateTime>(lastAttemptAt);
+    return map;
+  }
+
+  CoreLoginAttemptsCompanion toCompanion(bool nullToAbsent) {
+    return CoreLoginAttemptsCompanion(
+      identifierHash: Value(identifierHash),
+      attemptCount: Value(attemptCount),
+      lockedUntil: lockedUntil == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lockedUntil),
+      lastAttemptAt: Value(lastAttemptAt),
+    );
+  }
+
+  factory CoreLoginAttemptRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CoreLoginAttemptRow(
+      identifierHash: serializer.fromJson<String>(json['identifierHash']),
+      attemptCount: serializer.fromJson<int>(json['attemptCount']),
+      lockedUntil: serializer.fromJson<DateTime?>(json['lockedUntil']),
+      lastAttemptAt: serializer.fromJson<DateTime>(json['lastAttemptAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'identifierHash': serializer.toJson<String>(identifierHash),
+      'attemptCount': serializer.toJson<int>(attemptCount),
+      'lockedUntil': serializer.toJson<DateTime?>(lockedUntil),
+      'lastAttemptAt': serializer.toJson<DateTime>(lastAttemptAt),
+    };
+  }
+
+  CoreLoginAttemptRow copyWith({
+    String? identifierHash,
+    int? attemptCount,
+    Value<DateTime?> lockedUntil = const Value.absent(),
+    DateTime? lastAttemptAt,
+  }) => CoreLoginAttemptRow(
+    identifierHash: identifierHash ?? this.identifierHash,
+    attemptCount: attemptCount ?? this.attemptCount,
+    lockedUntil: lockedUntil.present ? lockedUntil.value : this.lockedUntil,
+    lastAttemptAt: lastAttemptAt ?? this.lastAttemptAt,
+  );
+  CoreLoginAttemptRow copyWithCompanion(CoreLoginAttemptsCompanion data) {
+    return CoreLoginAttemptRow(
+      identifierHash: data.identifierHash.present
+          ? data.identifierHash.value
+          : this.identifierHash,
+      attemptCount: data.attemptCount.present
+          ? data.attemptCount.value
+          : this.attemptCount,
+      lockedUntil: data.lockedUntil.present
+          ? data.lockedUntil.value
+          : this.lockedUntil,
+      lastAttemptAt: data.lastAttemptAt.present
+          ? data.lastAttemptAt.value
+          : this.lastAttemptAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CoreLoginAttemptRow(')
+          ..write('identifierHash: $identifierHash, ')
+          ..write('attemptCount: $attemptCount, ')
+          ..write('lockedUntil: $lockedUntil, ')
+          ..write('lastAttemptAt: $lastAttemptAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(identifierHash, attemptCount, lockedUntil, lastAttemptAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CoreLoginAttemptRow &&
+          other.identifierHash == this.identifierHash &&
+          other.attemptCount == this.attemptCount &&
+          other.lockedUntil == this.lockedUntil &&
+          other.lastAttemptAt == this.lastAttemptAt);
+}
+
+class CoreLoginAttemptsCompanion extends UpdateCompanion<CoreLoginAttemptRow> {
+  final Value<String> identifierHash;
+  final Value<int> attemptCount;
+  final Value<DateTime?> lockedUntil;
+  final Value<DateTime> lastAttemptAt;
+  final Value<int> rowid;
+  const CoreLoginAttemptsCompanion({
+    this.identifierHash = const Value.absent(),
+    this.attemptCount = const Value.absent(),
+    this.lockedUntil = const Value.absent(),
+    this.lastAttemptAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  CoreLoginAttemptsCompanion.insert({
+    required String identifierHash,
+    required int attemptCount,
+    this.lockedUntil = const Value.absent(),
+    required DateTime lastAttemptAt,
+    this.rowid = const Value.absent(),
+  }) : identifierHash = Value(identifierHash),
+       attemptCount = Value(attemptCount),
+       lastAttemptAt = Value(lastAttemptAt);
+  static Insertable<CoreLoginAttemptRow> custom({
+    Expression<String>? identifierHash,
+    Expression<int>? attemptCount,
+    Expression<DateTime>? lockedUntil,
+    Expression<DateTime>? lastAttemptAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (identifierHash != null) 'identifier_hash': identifierHash,
+      if (attemptCount != null) 'attempt_count': attemptCount,
+      if (lockedUntil != null) 'locked_until': lockedUntil,
+      if (lastAttemptAt != null) 'last_attempt_at': lastAttemptAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  CoreLoginAttemptsCompanion copyWith({
+    Value<String>? identifierHash,
+    Value<int>? attemptCount,
+    Value<DateTime?>? lockedUntil,
+    Value<DateTime>? lastAttemptAt,
+    Value<int>? rowid,
+  }) {
+    return CoreLoginAttemptsCompanion(
+      identifierHash: identifierHash ?? this.identifierHash,
+      attemptCount: attemptCount ?? this.attemptCount,
+      lockedUntil: lockedUntil ?? this.lockedUntil,
+      lastAttemptAt: lastAttemptAt ?? this.lastAttemptAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (identifierHash.present) {
+      map['identifier_hash'] = Variable<String>(identifierHash.value);
+    }
+    if (attemptCount.present) {
+      map['attempt_count'] = Variable<int>(attemptCount.value);
+    }
+    if (lockedUntil.present) {
+      map['locked_until'] = Variable<DateTime>(lockedUntil.value);
+    }
+    if (lastAttemptAt.present) {
+      map['last_attempt_at'] = Variable<DateTime>(lastAttemptAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CoreLoginAttemptsCompanion(')
+          ..write('identifierHash: $identifierHash, ')
+          ..write('attemptCount: $attemptCount, ')
+          ..write('lockedUntil: $lockedUntil, ')
+          ..write('lastAttemptAt: $lastAttemptAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $CoreRolesTable extends CoreRoles
+    with TableInfo<$CoreRolesTable, CoreRoleRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CoreRolesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _scopeMeta = const VerificationMeta('scope');
+  @override
+  late final GeneratedColumn<String> scope = GeneratedColumn<String>(
+    'scope',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _companyIdMeta = const VerificationMeta(
+    'companyId',
+  );
+  @override
+  late final GeneratedColumn<String> companyId = GeneratedColumn<String>(
+    'company_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES core_companies (id)',
+    ),
+  );
+  static const VerificationMeta _roleKeyMeta = const VerificationMeta(
+    'roleKey',
+  );
+  @override
+  late final GeneratedColumn<String> roleKey = GeneratedColumn<String>(
+    'role_key',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _descriptionMeta = const VerificationMeta(
+    'description',
+  );
+  @override
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+    'description',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _isBuiltinMeta = const VerificationMeta(
+    'isBuiltin',
+  );
+  @override
+  late final GeneratedColumn<bool> isBuiltin = GeneratedColumn<bool>(
+    'is_builtin',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_builtin" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    scope,
+    companyId,
+    roleKey,
+    name,
+    description,
+    isBuiltin,
+    createdAt,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'core_roles';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<CoreRoleRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('scope')) {
+      context.handle(
+        _scopeMeta,
+        scope.isAcceptableOrUnknown(data['scope']!, _scopeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_scopeMeta);
+    }
+    if (data.containsKey('company_id')) {
+      context.handle(
+        _companyIdMeta,
+        companyId.isAcceptableOrUnknown(data['company_id']!, _companyIdMeta),
+      );
+    }
+    if (data.containsKey('role_key')) {
+      context.handle(
+        _roleKeyMeta,
+        roleKey.isAcceptableOrUnknown(data['role_key']!, _roleKeyMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_roleKeyMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    }
+    if (data.containsKey('description')) {
+      context.handle(
+        _descriptionMeta,
+        description.isAcceptableOrUnknown(
+          data['description']!,
+          _descriptionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('is_builtin')) {
+      context.handle(
+        _isBuiltinMeta,
+        isBuiltin.isAcceptableOrUnknown(data['is_builtin']!, _isBuiltinMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  CoreRoleRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CoreRoleRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      scope: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}scope'],
+      )!,
+      companyId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}company_id'],
+      ),
+      roleKey: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}role_key'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      ),
+      description: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}description'],
+      ),
+      isBuiltin: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_builtin'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $CoreRolesTable createAlias(String alias) {
+    return $CoreRolesTable(attachedDatabase, alias);
+  }
+}
+
+class CoreRoleRow extends DataClass implements Insertable<CoreRoleRow> {
+  final String id;
+  final String scope;
+  final String? companyId;
+  final String roleKey;
+  final String? name;
+  final String? description;
+  final bool isBuiltin;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  const CoreRoleRow({
+    required this.id,
+    required this.scope,
+    this.companyId,
+    required this.roleKey,
+    this.name,
+    this.description,
+    required this.isBuiltin,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['scope'] = Variable<String>(scope);
+    if (!nullToAbsent || companyId != null) {
+      map['company_id'] = Variable<String>(companyId);
+    }
+    map['role_key'] = Variable<String>(roleKey);
+    if (!nullToAbsent || name != null) {
+      map['name'] = Variable<String>(name);
+    }
+    if (!nullToAbsent || description != null) {
+      map['description'] = Variable<String>(description);
+    }
+    map['is_builtin'] = Variable<bool>(isBuiltin);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    return map;
+  }
+
+  CoreRolesCompanion toCompanion(bool nullToAbsent) {
+    return CoreRolesCompanion(
+      id: Value(id),
+      scope: Value(scope),
+      companyId: companyId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(companyId),
+      roleKey: Value(roleKey),
+      name: name == null && nullToAbsent ? const Value.absent() : Value(name),
+      description: description == null && nullToAbsent
+          ? const Value.absent()
+          : Value(description),
+      isBuiltin: Value(isBuiltin),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory CoreRoleRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CoreRoleRow(
+      id: serializer.fromJson<String>(json['id']),
+      scope: serializer.fromJson<String>(json['scope']),
+      companyId: serializer.fromJson<String?>(json['companyId']),
+      roleKey: serializer.fromJson<String>(json['roleKey']),
+      name: serializer.fromJson<String?>(json['name']),
+      description: serializer.fromJson<String?>(json['description']),
+      isBuiltin: serializer.fromJson<bool>(json['isBuiltin']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'scope': serializer.toJson<String>(scope),
+      'companyId': serializer.toJson<String?>(companyId),
+      'roleKey': serializer.toJson<String>(roleKey),
+      'name': serializer.toJson<String?>(name),
+      'description': serializer.toJson<String?>(description),
+      'isBuiltin': serializer.toJson<bool>(isBuiltin),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+    };
+  }
+
+  CoreRoleRow copyWith({
+    String? id,
+    String? scope,
+    Value<String?> companyId = const Value.absent(),
+    String? roleKey,
+    Value<String?> name = const Value.absent(),
+    Value<String?> description = const Value.absent(),
+    bool? isBuiltin,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) => CoreRoleRow(
+    id: id ?? this.id,
+    scope: scope ?? this.scope,
+    companyId: companyId.present ? companyId.value : this.companyId,
+    roleKey: roleKey ?? this.roleKey,
+    name: name.present ? name.value : this.name,
+    description: description.present ? description.value : this.description,
+    isBuiltin: isBuiltin ?? this.isBuiltin,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  CoreRoleRow copyWithCompanion(CoreRolesCompanion data) {
+    return CoreRoleRow(
+      id: data.id.present ? data.id.value : this.id,
+      scope: data.scope.present ? data.scope.value : this.scope,
+      companyId: data.companyId.present ? data.companyId.value : this.companyId,
+      roleKey: data.roleKey.present ? data.roleKey.value : this.roleKey,
+      name: data.name.present ? data.name.value : this.name,
+      description: data.description.present
+          ? data.description.value
+          : this.description,
+      isBuiltin: data.isBuiltin.present ? data.isBuiltin.value : this.isBuiltin,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CoreRoleRow(')
+          ..write('id: $id, ')
+          ..write('scope: $scope, ')
+          ..write('companyId: $companyId, ')
+          ..write('roleKey: $roleKey, ')
+          ..write('name: $name, ')
+          ..write('description: $description, ')
+          ..write('isBuiltin: $isBuiltin, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    scope,
+    companyId,
+    roleKey,
+    name,
+    description,
+    isBuiltin,
+    createdAt,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CoreRoleRow &&
+          other.id == this.id &&
+          other.scope == this.scope &&
+          other.companyId == this.companyId &&
+          other.roleKey == this.roleKey &&
+          other.name == this.name &&
+          other.description == this.description &&
+          other.isBuiltin == this.isBuiltin &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class CoreRolesCompanion extends UpdateCompanion<CoreRoleRow> {
+  final Value<String> id;
+  final Value<String> scope;
+  final Value<String?> companyId;
+  final Value<String> roleKey;
+  final Value<String?> name;
+  final Value<String?> description;
+  final Value<bool> isBuiltin;
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
+  final Value<int> rowid;
+  const CoreRolesCompanion({
+    this.id = const Value.absent(),
+    this.scope = const Value.absent(),
+    this.companyId = const Value.absent(),
+    this.roleKey = const Value.absent(),
+    this.name = const Value.absent(),
+    this.description = const Value.absent(),
+    this.isBuiltin = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  CoreRolesCompanion.insert({
+    required String id,
+    required String scope,
+    this.companyId = const Value.absent(),
+    required String roleKey,
+    this.name = const Value.absent(),
+    this.description = const Value.absent(),
+    this.isBuiltin = const Value.absent(),
+    required DateTime createdAt,
+    required DateTime updatedAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       scope = Value(scope),
+       roleKey = Value(roleKey),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt);
+  static Insertable<CoreRoleRow> custom({
+    Expression<String>? id,
+    Expression<String>? scope,
+    Expression<String>? companyId,
+    Expression<String>? roleKey,
+    Expression<String>? name,
+    Expression<String>? description,
+    Expression<bool>? isBuiltin,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (scope != null) 'scope': scope,
+      if (companyId != null) 'company_id': companyId,
+      if (roleKey != null) 'role_key': roleKey,
+      if (name != null) 'name': name,
+      if (description != null) 'description': description,
+      if (isBuiltin != null) 'is_builtin': isBuiltin,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  CoreRolesCompanion copyWith({
+    Value<String>? id,
+    Value<String>? scope,
+    Value<String?>? companyId,
+    Value<String>? roleKey,
+    Value<String?>? name,
+    Value<String?>? description,
+    Value<bool>? isBuiltin,
+    Value<DateTime>? createdAt,
+    Value<DateTime>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return CoreRolesCompanion(
+      id: id ?? this.id,
+      scope: scope ?? this.scope,
+      companyId: companyId ?? this.companyId,
+      roleKey: roleKey ?? this.roleKey,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      isBuiltin: isBuiltin ?? this.isBuiltin,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (scope.present) {
+      map['scope'] = Variable<String>(scope.value);
+    }
+    if (companyId.present) {
+      map['company_id'] = Variable<String>(companyId.value);
+    }
+    if (roleKey.present) {
+      map['role_key'] = Variable<String>(roleKey.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
+    }
+    if (isBuiltin.present) {
+      map['is_builtin'] = Variable<bool>(isBuiltin.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CoreRolesCompanion(')
+          ..write('id: $id, ')
+          ..write('scope: $scope, ')
+          ..write('companyId: $companyId, ')
+          ..write('roleKey: $roleKey, ')
+          ..write('name: $name, ')
+          ..write('description: $description, ')
+          ..write('isBuiltin: $isBuiltin, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $CoreMembershipRolesTable extends CoreMembershipRoles
+    with TableInfo<$CoreMembershipRolesTable, CoreMembershipRoleRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CoreMembershipRolesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _membershipIdMeta = const VerificationMeta(
+    'membershipId',
+  );
+  @override
+  late final GeneratedColumn<String> membershipId = GeneratedColumn<String>(
+    'membership_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES core_company_memberships (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _roleIdMeta = const VerificationMeta('roleId');
+  @override
+  late final GeneratedColumn<String> roleId = GeneratedColumn<String>(
+    'role_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES core_roles (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [membershipId, roleId, createdAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'core_membership_roles';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<CoreMembershipRoleRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('membership_id')) {
+      context.handle(
+        _membershipIdMeta,
+        membershipId.isAcceptableOrUnknown(
+          data['membership_id']!,
+          _membershipIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_membershipIdMeta);
+    }
+    if (data.containsKey('role_id')) {
+      context.handle(
+        _roleIdMeta,
+        roleId.isAcceptableOrUnknown(data['role_id']!, _roleIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_roleIdMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {membershipId, roleId};
+  @override
+  CoreMembershipRoleRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CoreMembershipRoleRow(
+      membershipId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}membership_id'],
+      )!,
+      roleId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}role_id'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  $CoreMembershipRolesTable createAlias(String alias) {
+    return $CoreMembershipRolesTable(attachedDatabase, alias);
+  }
+}
+
+class CoreMembershipRoleRow extends DataClass
+    implements Insertable<CoreMembershipRoleRow> {
+  final String membershipId;
+  final String roleId;
+  final DateTime createdAt;
+  const CoreMembershipRoleRow({
+    required this.membershipId,
+    required this.roleId,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['membership_id'] = Variable<String>(membershipId);
+    map['role_id'] = Variable<String>(roleId);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  CoreMembershipRolesCompanion toCompanion(bool nullToAbsent) {
+    return CoreMembershipRolesCompanion(
+      membershipId: Value(membershipId),
+      roleId: Value(roleId),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory CoreMembershipRoleRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CoreMembershipRoleRow(
+      membershipId: serializer.fromJson<String>(json['membershipId']),
+      roleId: serializer.fromJson<String>(json['roleId']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'membershipId': serializer.toJson<String>(membershipId),
+      'roleId': serializer.toJson<String>(roleId),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  CoreMembershipRoleRow copyWith({
+    String? membershipId,
+    String? roleId,
+    DateTime? createdAt,
+  }) => CoreMembershipRoleRow(
+    membershipId: membershipId ?? this.membershipId,
+    roleId: roleId ?? this.roleId,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  CoreMembershipRoleRow copyWithCompanion(CoreMembershipRolesCompanion data) {
+    return CoreMembershipRoleRow(
+      membershipId: data.membershipId.present
+          ? data.membershipId.value
+          : this.membershipId,
+      roleId: data.roleId.present ? data.roleId.value : this.roleId,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CoreMembershipRoleRow(')
+          ..write('membershipId: $membershipId, ')
+          ..write('roleId: $roleId, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(membershipId, roleId, createdAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CoreMembershipRoleRow &&
+          other.membershipId == this.membershipId &&
+          other.roleId == this.roleId &&
+          other.createdAt == this.createdAt);
+}
+
+class CoreMembershipRolesCompanion
+    extends UpdateCompanion<CoreMembershipRoleRow> {
+  final Value<String> membershipId;
+  final Value<String> roleId;
+  final Value<DateTime> createdAt;
+  final Value<int> rowid;
+  const CoreMembershipRolesCompanion({
+    this.membershipId = const Value.absent(),
+    this.roleId = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  CoreMembershipRolesCompanion.insert({
+    required String membershipId,
+    required String roleId,
+    required DateTime createdAt,
+    this.rowid = const Value.absent(),
+  }) : membershipId = Value(membershipId),
+       roleId = Value(roleId),
+       createdAt = Value(createdAt);
+  static Insertable<CoreMembershipRoleRow> custom({
+    Expression<String>? membershipId,
+    Expression<String>? roleId,
+    Expression<DateTime>? createdAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (membershipId != null) 'membership_id': membershipId,
+      if (roleId != null) 'role_id': roleId,
+      if (createdAt != null) 'created_at': createdAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  CoreMembershipRolesCompanion copyWith({
+    Value<String>? membershipId,
+    Value<String>? roleId,
+    Value<DateTime>? createdAt,
+    Value<int>? rowid,
+  }) {
+    return CoreMembershipRolesCompanion(
+      membershipId: membershipId ?? this.membershipId,
+      roleId: roleId ?? this.roleId,
+      createdAt: createdAt ?? this.createdAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (membershipId.present) {
+      map['membership_id'] = Variable<String>(membershipId.value);
+    }
+    if (roleId.present) {
+      map['role_id'] = Variable<String>(roleId.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CoreMembershipRolesCompanion(')
+          ..write('membershipId: $membershipId, ')
+          ..write('roleId: $roleId, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $CoreRolePermissionsTable extends CoreRolePermissions
+    with TableInfo<$CoreRolePermissionsTable, CoreRolePermissionRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CoreRolePermissionsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _roleIdMeta = const VerificationMeta('roleId');
+  @override
+  late final GeneratedColumn<String> roleId = GeneratedColumn<String>(
+    'role_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES core_roles (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _permissionIdMeta = const VerificationMeta(
+    'permissionId',
+  );
+  @override
+  late final GeneratedColumn<String> permissionId = GeneratedColumn<String>(
+    'permission_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [roleId, permissionId, createdAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'core_role_permissions';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<CoreRolePermissionRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('role_id')) {
+      context.handle(
+        _roleIdMeta,
+        roleId.isAcceptableOrUnknown(data['role_id']!, _roleIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_roleIdMeta);
+    }
+    if (data.containsKey('permission_id')) {
+      context.handle(
+        _permissionIdMeta,
+        permissionId.isAcceptableOrUnknown(
+          data['permission_id']!,
+          _permissionIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_permissionIdMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {roleId, permissionId};
+  @override
+  CoreRolePermissionRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CoreRolePermissionRow(
+      roleId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}role_id'],
+      )!,
+      permissionId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}permission_id'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  $CoreRolePermissionsTable createAlias(String alias) {
+    return $CoreRolePermissionsTable(attachedDatabase, alias);
+  }
+}
+
+class CoreRolePermissionRow extends DataClass
+    implements Insertable<CoreRolePermissionRow> {
+  final String roleId;
+  final String permissionId;
+  final DateTime createdAt;
+  const CoreRolePermissionRow({
+    required this.roleId,
+    required this.permissionId,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['role_id'] = Variable<String>(roleId);
+    map['permission_id'] = Variable<String>(permissionId);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  CoreRolePermissionsCompanion toCompanion(bool nullToAbsent) {
+    return CoreRolePermissionsCompanion(
+      roleId: Value(roleId),
+      permissionId: Value(permissionId),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory CoreRolePermissionRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CoreRolePermissionRow(
+      roleId: serializer.fromJson<String>(json['roleId']),
+      permissionId: serializer.fromJson<String>(json['permissionId']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'roleId': serializer.toJson<String>(roleId),
+      'permissionId': serializer.toJson<String>(permissionId),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  CoreRolePermissionRow copyWith({
+    String? roleId,
+    String? permissionId,
+    DateTime? createdAt,
+  }) => CoreRolePermissionRow(
+    roleId: roleId ?? this.roleId,
+    permissionId: permissionId ?? this.permissionId,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  CoreRolePermissionRow copyWithCompanion(CoreRolePermissionsCompanion data) {
+    return CoreRolePermissionRow(
+      roleId: data.roleId.present ? data.roleId.value : this.roleId,
+      permissionId: data.permissionId.present
+          ? data.permissionId.value
+          : this.permissionId,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CoreRolePermissionRow(')
+          ..write('roleId: $roleId, ')
+          ..write('permissionId: $permissionId, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(roleId, permissionId, createdAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CoreRolePermissionRow &&
+          other.roleId == this.roleId &&
+          other.permissionId == this.permissionId &&
+          other.createdAt == this.createdAt);
+}
+
+class CoreRolePermissionsCompanion
+    extends UpdateCompanion<CoreRolePermissionRow> {
+  final Value<String> roleId;
+  final Value<String> permissionId;
+  final Value<DateTime> createdAt;
+  final Value<int> rowid;
+  const CoreRolePermissionsCompanion({
+    this.roleId = const Value.absent(),
+    this.permissionId = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  CoreRolePermissionsCompanion.insert({
+    required String roleId,
+    required String permissionId,
+    required DateTime createdAt,
+    this.rowid = const Value.absent(),
+  }) : roleId = Value(roleId),
+       permissionId = Value(permissionId),
+       createdAt = Value(createdAt);
+  static Insertable<CoreRolePermissionRow> custom({
+    Expression<String>? roleId,
+    Expression<String>? permissionId,
+    Expression<DateTime>? createdAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (roleId != null) 'role_id': roleId,
+      if (permissionId != null) 'permission_id': permissionId,
+      if (createdAt != null) 'created_at': createdAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  CoreRolePermissionsCompanion copyWith({
+    Value<String>? roleId,
+    Value<String>? permissionId,
+    Value<DateTime>? createdAt,
+    Value<int>? rowid,
+  }) {
+    return CoreRolePermissionsCompanion(
+      roleId: roleId ?? this.roleId,
+      permissionId: permissionId ?? this.permissionId,
+      createdAt: createdAt ?? this.createdAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (roleId.present) {
+      map['role_id'] = Variable<String>(roleId.value);
+    }
+    if (permissionId.present) {
+      map['permission_id'] = Variable<String>(permissionId.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CoreRolePermissionsCompanion(')
+          ..write('roleId: $roleId, ')
+          ..write('permissionId: $permissionId, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $SchemaMigrationsTable extends SchemaMigrations
     with TableInfo<$SchemaMigrationsTable, CoreSchemaMigrationRow> {
   @override
@@ -2031,6 +3498,13 @@ abstract class _$DriftCoreDatabase extends GeneratedDatabase {
   late final $CoreCredentialsTable coreCredentials = $CoreCredentialsTable(
     this,
   );
+  late final $CoreLoginAttemptsTable coreLoginAttempts =
+      $CoreLoginAttemptsTable(this);
+  late final $CoreRolesTable coreRoles = $CoreRolesTable(this);
+  late final $CoreMembershipRolesTable coreMembershipRoles =
+      $CoreMembershipRolesTable(this);
+  late final $CoreRolePermissionsTable coreRolePermissions =
+      $CoreRolePermissionsTable(this);
   late final $SchemaMigrationsTable schemaMigrations = $SchemaMigrationsTable(
     this,
   );
@@ -2043,8 +3517,36 @@ abstract class _$DriftCoreDatabase extends GeneratedDatabase {
     coreUsers,
     coreCompanyMemberships,
     coreCredentials,
+    coreLoginAttempts,
+    coreRoles,
+    coreMembershipRoles,
+    coreRolePermissions,
     schemaMigrations,
   ];
+  @override
+  StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'core_company_memberships',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('core_membership_roles', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'core_roles',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('core_membership_roles', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'core_roles',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('core_role_permissions', kind: UpdateKind.delete)],
+    ),
+  ]);
 }
 
 typedef $$CoreCompaniesTableCreateCompanionBuilder =
@@ -2101,6 +3603,24 @@ final class $$CoreCompaniesTableReferences
     final cache = $_typedResult.readTableOrNull(
       _coreCompanyMembershipsRefsTable($_db),
     );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$CoreRolesTable, List<CoreRoleRow>>
+  _coreRolesRefsTable(_$DriftCoreDatabase db) => MultiTypedResultKey.fromTable(
+    db.coreRoles,
+    aliasName: 'core_companies__id__core_roles__company_id',
+  );
+
+  $$CoreRolesTableProcessedTableManager get coreRolesRefs {
+    final manager = $$CoreRolesTableTableManager(
+      $_db,
+      $_db.coreRoles,
+    ).filter((f) => f.companyId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_coreRolesRefsTable($_db));
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -2169,6 +3689,31 @@ class $$CoreCompaniesTableFilterComposer
                     $removeJoinBuilderFromRootComposer,
               ),
         );
+    return f(composer);
+  }
+
+  Expression<bool> coreRolesRefs(
+    Expression<bool> Function($$CoreRolesTableFilterComposer f) f,
+  ) {
+    final $$CoreRolesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.coreRoles,
+      getReferencedColumn: (t) => t.companyId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CoreRolesTableFilterComposer(
+            $db: $db,
+            $table: $db.coreRoles,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
     return f(composer);
   }
 }
@@ -2265,6 +3810,31 @@ class $$CoreCompaniesTableAnnotationComposer
         );
     return f(composer);
   }
+
+  Expression<T> coreRolesRefs<T extends Object>(
+    Expression<T> Function($$CoreRolesTableAnnotationComposer a) f,
+  ) {
+    final $$CoreRolesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.coreRoles,
+      getReferencedColumn: (t) => t.companyId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CoreRolesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.coreRoles,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$CoreCompaniesTableTableManager
@@ -2280,7 +3850,10 @@ class $$CoreCompaniesTableTableManager
           $$CoreCompaniesTableUpdateCompanionBuilder,
           (CoreCompanyRow, $$CoreCompaniesTableReferences),
           CoreCompanyRow,
-          PrefetchHooks Function({bool coreCompanyMembershipsRefs})
+          PrefetchHooks Function({
+            bool coreCompanyMembershipsRefs,
+            bool coreRolesRefs,
+          })
         > {
   $$CoreCompaniesTableTableManager(
     _$DriftCoreDatabase db,
@@ -2339,38 +3912,63 @@ class $$CoreCompaniesTableTableManager
                 ),
               )
               .toList(),
-          prefetchHooksCallback: ({coreCompanyMembershipsRefs = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [
-                if (coreCompanyMembershipsRefs) db.coreCompanyMemberships,
-              ],
-              addJoins: null,
-              getPrefetchedDataCallback: (items) async {
-                return [
-                  if (coreCompanyMembershipsRefs)
-                    await $_getPrefetchedData<
-                      CoreCompanyRow,
-                      $CoreCompaniesTable,
-                      CoreCompanyMembershipRow
-                    >(
-                      currentTable: table,
-                      referencedTable: $$CoreCompaniesTableReferences
-                          ._coreCompanyMembershipsRefsTable(db),
-                      managerFromTypedResult: (p0) =>
-                          $$CoreCompaniesTableReferences(
-                            db,
-                            table,
-                            p0,
-                          ).coreCompanyMembershipsRefs,
-                      referencedItemsForCurrentItem: (item, referencedItems) =>
-                          referencedItems.where((e) => e.companyId == item.id),
-                      typedResults: items,
-                    ),
-                ];
+          prefetchHooksCallback:
+              ({coreCompanyMembershipsRefs = false, coreRolesRefs = false}) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (coreCompanyMembershipsRefs) db.coreCompanyMemberships,
+                    if (coreRolesRefs) db.coreRoles,
+                  ],
+                  addJoins: null,
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (coreCompanyMembershipsRefs)
+                        await $_getPrefetchedData<
+                          CoreCompanyRow,
+                          $CoreCompaniesTable,
+                          CoreCompanyMembershipRow
+                        >(
+                          currentTable: table,
+                          referencedTable: $$CoreCompaniesTableReferences
+                              ._coreCompanyMembershipsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$CoreCompaniesTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).coreCompanyMembershipsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.companyId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (coreRolesRefs)
+                        await $_getPrefetchedData<
+                          CoreCompanyRow,
+                          $CoreCompaniesTable,
+                          CoreRoleRow
+                        >(
+                          currentTable: table,
+                          referencedTable: $$CoreCompaniesTableReferences
+                              ._coreRolesRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$CoreCompaniesTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).coreRolesRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.companyId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
               },
-            );
-          },
         ),
       );
 }
@@ -2387,7 +3985,10 @@ typedef $$CoreCompaniesTableProcessedTableManager =
       $$CoreCompaniesTableUpdateCompanionBuilder,
       (CoreCompanyRow, $$CoreCompaniesTableReferences),
       CoreCompanyRow,
-      PrefetchHooks Function({bool coreCompanyMembershipsRefs})
+      PrefetchHooks Function({
+        bool coreCompanyMembershipsRefs,
+        bool coreRolesRefs,
+      })
     >;
 typedef $$CoreUsersTableCreateCompanionBuilder =
     CoreUsersCompanion Function({
@@ -2895,6 +4496,32 @@ final class $$CoreCompanyMembershipsTableReferences
       manager.$state.copyWith(prefetchedData: [item]),
     );
   }
+
+  static MultiTypedResultKey<
+    $CoreMembershipRolesTable,
+    List<CoreMembershipRoleRow>
+  >
+  _coreMembershipRolesRefsTable(
+    _$DriftCoreDatabase db,
+  ) => MultiTypedResultKey.fromTable(
+    db.coreMembershipRoles,
+    aliasName:
+        'core_company_memberships__id__core_membership_roles__membership_id',
+  );
+
+  $$CoreMembershipRolesTableProcessedTableManager get coreMembershipRolesRefs {
+    final manager = $$CoreMembershipRolesTableTableManager(
+      $_db,
+      $_db.coreMembershipRoles,
+    ).filter((f) => f.membershipId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _coreMembershipRolesRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
 }
 
 class $$CoreCompanyMembershipsTableFilterComposer
@@ -2975,6 +4602,31 @@ class $$CoreCompanyMembershipsTableFilterComposer
           ),
     );
     return composer;
+  }
+
+  Expression<bool> coreMembershipRolesRefs(
+    Expression<bool> Function($$CoreMembershipRolesTableFilterComposer f) f,
+  ) {
+    final $$CoreMembershipRolesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.coreMembershipRoles,
+      getReferencedColumn: (t) => t.membershipId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CoreMembershipRolesTableFilterComposer(
+            $db: $db,
+            $table: $db.coreMembershipRoles,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
   }
 }
 
@@ -3128,6 +4780,32 @@ class $$CoreCompanyMembershipsTableAnnotationComposer
     );
     return composer;
   }
+
+  Expression<T> coreMembershipRolesRefs<T extends Object>(
+    Expression<T> Function($$CoreMembershipRolesTableAnnotationComposer a) f,
+  ) {
+    final $$CoreMembershipRolesTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.coreMembershipRoles,
+          getReferencedColumn: (t) => t.membershipId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$CoreMembershipRolesTableAnnotationComposer(
+                $db: $db,
+                $table: $db.coreMembershipRoles,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
 }
 
 class $$CoreCompanyMembershipsTableTableManager
@@ -3143,7 +4821,11 @@ class $$CoreCompanyMembershipsTableTableManager
           $$CoreCompanyMembershipsTableUpdateCompanionBuilder,
           (CoreCompanyMembershipRow, $$CoreCompanyMembershipsTableReferences),
           CoreCompanyMembershipRow,
-          PrefetchHooks Function({bool userId, bool companyId})
+          PrefetchHooks Function({
+            bool userId,
+            bool companyId,
+            bool coreMembershipRolesRefs,
+          })
         > {
   $$CoreCompanyMembershipsTableTableManager(
     _$DriftCoreDatabase db,
@@ -3218,64 +4900,94 @@ class $$CoreCompanyMembershipsTableTableManager
                 ),
               )
               .toList(),
-          prefetchHooksCallback: ({userId = false, companyId = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [],
-              addJoins:
-                  <
-                    T extends TableManagerState<
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic
-                    >
-                  >(state) {
-                    if (userId) {
-                      state =
-                          state.withJoin(
-                                currentTable: table,
-                                currentColumn: table.userId,
-                                referencedTable:
-                                    $$CoreCompanyMembershipsTableReferences
-                                        ._userIdTable(db),
-                                referencedColumn:
-                                    $$CoreCompanyMembershipsTableReferences
-                                        ._userIdTable(db)
-                                        .id,
-                              )
-                              as T;
-                    }
-                    if (companyId) {
-                      state =
-                          state.withJoin(
-                                currentTable: table,
-                                currentColumn: table.companyId,
-                                referencedTable:
-                                    $$CoreCompanyMembershipsTableReferences
-                                        ._companyIdTable(db),
-                                referencedColumn:
-                                    $$CoreCompanyMembershipsTableReferences
-                                        ._companyIdTable(db)
-                                        .id,
-                              )
-                              as T;
-                    }
+          prefetchHooksCallback:
+              ({
+                userId = false,
+                companyId = false,
+                coreMembershipRolesRefs = false,
+              }) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (coreMembershipRolesRefs) db.coreMembershipRoles,
+                  ],
+                  addJoins:
+                      <
+                        T extends TableManagerState<
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic
+                        >
+                      >(state) {
+                        if (userId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.userId,
+                                    referencedTable:
+                                        $$CoreCompanyMembershipsTableReferences
+                                            ._userIdTable(db),
+                                    referencedColumn:
+                                        $$CoreCompanyMembershipsTableReferences
+                                            ._userIdTable(db)
+                                            .id,
+                                  )
+                                  as T;
+                        }
+                        if (companyId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.companyId,
+                                    referencedTable:
+                                        $$CoreCompanyMembershipsTableReferences
+                                            ._companyIdTable(db),
+                                    referencedColumn:
+                                        $$CoreCompanyMembershipsTableReferences
+                                            ._companyIdTable(db)
+                                            .id,
+                                  )
+                                  as T;
+                        }
 
-                    return state;
+                        return state;
+                      },
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (coreMembershipRolesRefs)
+                        await $_getPrefetchedData<
+                          CoreCompanyMembershipRow,
+                          $CoreCompanyMembershipsTable,
+                          CoreMembershipRoleRow
+                        >(
+                          currentTable: table,
+                          referencedTable:
+                              $$CoreCompanyMembershipsTableReferences
+                                  ._coreMembershipRolesRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$CoreCompanyMembershipsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).coreMembershipRolesRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.membershipId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
                   },
-              getPrefetchedDataCallback: (items) async {
-                return [];
+                );
               },
-            );
-          },
         ),
       );
 }
@@ -3292,7 +5004,11 @@ typedef $$CoreCompanyMembershipsTableProcessedTableManager =
       $$CoreCompanyMembershipsTableUpdateCompanionBuilder,
       (CoreCompanyMembershipRow, $$CoreCompanyMembershipsTableReferences),
       CoreCompanyMembershipRow,
-      PrefetchHooks Function({bool userId, bool companyId})
+      PrefetchHooks Function({
+        bool userId,
+        bool companyId,
+        bool coreMembershipRolesRefs,
+      })
     >;
 typedef $$CoreCredentialsTableCreateCompanionBuilder =
     CoreCredentialsCompanion Function({
@@ -3683,6 +5399,1520 @@ typedef $$CoreCredentialsTableProcessedTableManager =
       CoreCredentialRow,
       PrefetchHooks Function({bool userId})
     >;
+typedef $$CoreLoginAttemptsTableCreateCompanionBuilder =
+    CoreLoginAttemptsCompanion Function({
+      required String identifierHash,
+      required int attemptCount,
+      Value<DateTime?> lockedUntil,
+      required DateTime lastAttemptAt,
+      Value<int> rowid,
+    });
+typedef $$CoreLoginAttemptsTableUpdateCompanionBuilder =
+    CoreLoginAttemptsCompanion Function({
+      Value<String> identifierHash,
+      Value<int> attemptCount,
+      Value<DateTime?> lockedUntil,
+      Value<DateTime> lastAttemptAt,
+      Value<int> rowid,
+    });
+
+class $$CoreLoginAttemptsTableFilterComposer
+    extends Composer<_$DriftCoreDatabase, $CoreLoginAttemptsTable> {
+  $$CoreLoginAttemptsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get identifierHash => $composableBuilder(
+    column: $table.identifierHash,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get attemptCount => $composableBuilder(
+    column: $table.attemptCount,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lockedUntil => $composableBuilder(
+    column: $table.lockedUntil,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastAttemptAt => $composableBuilder(
+    column: $table.lastAttemptAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$CoreLoginAttemptsTableOrderingComposer
+    extends Composer<_$DriftCoreDatabase, $CoreLoginAttemptsTable> {
+  $$CoreLoginAttemptsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get identifierHash => $composableBuilder(
+    column: $table.identifierHash,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get attemptCount => $composableBuilder(
+    column: $table.attemptCount,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lockedUntil => $composableBuilder(
+    column: $table.lockedUntil,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastAttemptAt => $composableBuilder(
+    column: $table.lastAttemptAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$CoreLoginAttemptsTableAnnotationComposer
+    extends Composer<_$DriftCoreDatabase, $CoreLoginAttemptsTable> {
+  $$CoreLoginAttemptsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get identifierHash => $composableBuilder(
+    column: $table.identifierHash,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get attemptCount => $composableBuilder(
+    column: $table.attemptCount,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get lockedUntil => $composableBuilder(
+    column: $table.lockedUntil,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get lastAttemptAt => $composableBuilder(
+    column: $table.lastAttemptAt,
+    builder: (column) => column,
+  );
+}
+
+class $$CoreLoginAttemptsTableTableManager
+    extends
+        RootTableManager<
+          _$DriftCoreDatabase,
+          $CoreLoginAttemptsTable,
+          CoreLoginAttemptRow,
+          $$CoreLoginAttemptsTableFilterComposer,
+          $$CoreLoginAttemptsTableOrderingComposer,
+          $$CoreLoginAttemptsTableAnnotationComposer,
+          $$CoreLoginAttemptsTableCreateCompanionBuilder,
+          $$CoreLoginAttemptsTableUpdateCompanionBuilder,
+          (
+            CoreLoginAttemptRow,
+            BaseReferences<
+              _$DriftCoreDatabase,
+              $CoreLoginAttemptsTable,
+              CoreLoginAttemptRow
+            >,
+          ),
+          CoreLoginAttemptRow,
+          PrefetchHooks Function()
+        > {
+  $$CoreLoginAttemptsTableTableManager(
+    _$DriftCoreDatabase db,
+    $CoreLoginAttemptsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$CoreLoginAttemptsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$CoreLoginAttemptsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$CoreLoginAttemptsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> identifierHash = const Value.absent(),
+                Value<int> attemptCount = const Value.absent(),
+                Value<DateTime?> lockedUntil = const Value.absent(),
+                Value<DateTime> lastAttemptAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => CoreLoginAttemptsCompanion(
+                identifierHash: identifierHash,
+                attemptCount: attemptCount,
+                lockedUntil: lockedUntil,
+                lastAttemptAt: lastAttemptAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String identifierHash,
+                required int attemptCount,
+                Value<DateTime?> lockedUntil = const Value.absent(),
+                required DateTime lastAttemptAt,
+                Value<int> rowid = const Value.absent(),
+              }) => CoreLoginAttemptsCompanion.insert(
+                identifierHash: identifierHash,
+                attemptCount: attemptCount,
+                lockedUntil: lockedUntil,
+                lastAttemptAt: lastAttemptAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$CoreLoginAttemptsTable, CoreLoginAttemptRow>(
+                    table,
+                  ),
+                  BaseReferences<
+                    _$DriftCoreDatabase,
+                    $CoreLoginAttemptsTable,
+                    CoreLoginAttemptRow
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$CoreLoginAttemptsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$DriftCoreDatabase,
+      $CoreLoginAttemptsTable,
+      CoreLoginAttemptRow,
+      $$CoreLoginAttemptsTableFilterComposer,
+      $$CoreLoginAttemptsTableOrderingComposer,
+      $$CoreLoginAttemptsTableAnnotationComposer,
+      $$CoreLoginAttemptsTableCreateCompanionBuilder,
+      $$CoreLoginAttemptsTableUpdateCompanionBuilder,
+      (
+        CoreLoginAttemptRow,
+        BaseReferences<
+          _$DriftCoreDatabase,
+          $CoreLoginAttemptsTable,
+          CoreLoginAttemptRow
+        >,
+      ),
+      CoreLoginAttemptRow,
+      PrefetchHooks Function()
+    >;
+typedef $$CoreRolesTableCreateCompanionBuilder =
+    CoreRolesCompanion Function({
+      required String id,
+      required String scope,
+      Value<String?> companyId,
+      required String roleKey,
+      Value<String?> name,
+      Value<String?> description,
+      Value<bool> isBuiltin,
+      required DateTime createdAt,
+      required DateTime updatedAt,
+      Value<int> rowid,
+    });
+typedef $$CoreRolesTableUpdateCompanionBuilder =
+    CoreRolesCompanion Function({
+      Value<String> id,
+      Value<String> scope,
+      Value<String?> companyId,
+      Value<String> roleKey,
+      Value<String?> name,
+      Value<String?> description,
+      Value<bool> isBuiltin,
+      Value<DateTime> createdAt,
+      Value<DateTime> updatedAt,
+      Value<int> rowid,
+    });
+
+final class $$CoreRolesTableReferences
+    extends BaseReferences<_$DriftCoreDatabase, $CoreRolesTable, CoreRoleRow> {
+  $$CoreRolesTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $CoreCompaniesTable _companyIdTable(_$DriftCoreDatabase db) => db
+      .coreCompanies
+      .createAlias('core_roles__company_id__core_companies__id');
+
+  $$CoreCompaniesTableProcessedTableManager? get companyId {
+    final $_column = $_itemColumn<String>('company_id');
+    if ($_column == null) return null;
+    final manager = $$CoreCompaniesTableTableManager(
+      $_db,
+      $_db.coreCompanies,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_companyIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static MultiTypedResultKey<
+    $CoreMembershipRolesTable,
+    List<CoreMembershipRoleRow>
+  >
+  _coreMembershipRolesRefsTable(_$DriftCoreDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.coreMembershipRoles,
+        aliasName: 'core_roles__id__core_membership_roles__role_id',
+      );
+
+  $$CoreMembershipRolesTableProcessedTableManager get coreMembershipRolesRefs {
+    final manager = $$CoreMembershipRolesTableTableManager(
+      $_db,
+      $_db.coreMembershipRoles,
+    ).filter((f) => f.roleId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _coreMembershipRolesRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<
+    $CoreRolePermissionsTable,
+    List<CoreRolePermissionRow>
+  >
+  _coreRolePermissionsRefsTable(_$DriftCoreDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.coreRolePermissions,
+        aliasName: 'core_roles__id__core_role_permissions__role_id',
+      );
+
+  $$CoreRolePermissionsTableProcessedTableManager get coreRolePermissionsRefs {
+    final manager = $$CoreRolePermissionsTableTableManager(
+      $_db,
+      $_db.coreRolePermissions,
+    ).filter((f) => f.roleId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _coreRolePermissionsRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$CoreRolesTableFilterComposer
+    extends Composer<_$DriftCoreDatabase, $CoreRolesTable> {
+  $$CoreRolesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get scope => $composableBuilder(
+    column: $table.scope,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get roleKey => $composableBuilder(
+    column: $table.roleKey,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isBuiltin => $composableBuilder(
+    column: $table.isBuiltin,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$CoreCompaniesTableFilterComposer get companyId {
+    final $$CoreCompaniesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.companyId,
+      referencedTable: $db.coreCompanies,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CoreCompaniesTableFilterComposer(
+            $db: $db,
+            $table: $db.coreCompanies,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  Expression<bool> coreMembershipRolesRefs(
+    Expression<bool> Function($$CoreMembershipRolesTableFilterComposer f) f,
+  ) {
+    final $$CoreMembershipRolesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.coreMembershipRoles,
+      getReferencedColumn: (t) => t.roleId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CoreMembershipRolesTableFilterComposer(
+            $db: $db,
+            $table: $db.coreMembershipRoles,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> coreRolePermissionsRefs(
+    Expression<bool> Function($$CoreRolePermissionsTableFilterComposer f) f,
+  ) {
+    final $$CoreRolePermissionsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.coreRolePermissions,
+      getReferencedColumn: (t) => t.roleId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CoreRolePermissionsTableFilterComposer(
+            $db: $db,
+            $table: $db.coreRolePermissions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$CoreRolesTableOrderingComposer
+    extends Composer<_$DriftCoreDatabase, $CoreRolesTable> {
+  $$CoreRolesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get scope => $composableBuilder(
+    column: $table.scope,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get roleKey => $composableBuilder(
+    column: $table.roleKey,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isBuiltin => $composableBuilder(
+    column: $table.isBuiltin,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$CoreCompaniesTableOrderingComposer get companyId {
+    final $$CoreCompaniesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.companyId,
+      referencedTable: $db.coreCompanies,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CoreCompaniesTableOrderingComposer(
+            $db: $db,
+            $table: $db.coreCompanies,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$CoreRolesTableAnnotationComposer
+    extends Composer<_$DriftCoreDatabase, $CoreRolesTable> {
+  $$CoreRolesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get scope =>
+      $composableBuilder(column: $table.scope, builder: (column) => column);
+
+  GeneratedColumn<String> get roleKey =>
+      $composableBuilder(column: $table.roleKey, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isBuiltin =>
+      $composableBuilder(column: $table.isBuiltin, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  $$CoreCompaniesTableAnnotationComposer get companyId {
+    final $$CoreCompaniesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.companyId,
+      referencedTable: $db.coreCompanies,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CoreCompaniesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.coreCompanies,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  Expression<T> coreMembershipRolesRefs<T extends Object>(
+    Expression<T> Function($$CoreMembershipRolesTableAnnotationComposer a) f,
+  ) {
+    final $$CoreMembershipRolesTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.coreMembershipRoles,
+          getReferencedColumn: (t) => t.roleId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$CoreMembershipRolesTableAnnotationComposer(
+                $db: $db,
+                $table: $db.coreMembershipRoles,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+
+  Expression<T> coreRolePermissionsRefs<T extends Object>(
+    Expression<T> Function($$CoreRolePermissionsTableAnnotationComposer a) f,
+  ) {
+    final $$CoreRolePermissionsTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.coreRolePermissions,
+          getReferencedColumn: (t) => t.roleId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$CoreRolePermissionsTableAnnotationComposer(
+                $db: $db,
+                $table: $db.coreRolePermissions,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+}
+
+class $$CoreRolesTableTableManager
+    extends
+        RootTableManager<
+          _$DriftCoreDatabase,
+          $CoreRolesTable,
+          CoreRoleRow,
+          $$CoreRolesTableFilterComposer,
+          $$CoreRolesTableOrderingComposer,
+          $$CoreRolesTableAnnotationComposer,
+          $$CoreRolesTableCreateCompanionBuilder,
+          $$CoreRolesTableUpdateCompanionBuilder,
+          (CoreRoleRow, $$CoreRolesTableReferences),
+          CoreRoleRow,
+          PrefetchHooks Function({
+            bool companyId,
+            bool coreMembershipRolesRefs,
+            bool coreRolePermissionsRefs,
+          })
+        > {
+  $$CoreRolesTableTableManager(_$DriftCoreDatabase db, $CoreRolesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$CoreRolesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$CoreRolesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$CoreRolesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> scope = const Value.absent(),
+                Value<String?> companyId = const Value.absent(),
+                Value<String> roleKey = const Value.absent(),
+                Value<String?> name = const Value.absent(),
+                Value<String?> description = const Value.absent(),
+                Value<bool> isBuiltin = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => CoreRolesCompanion(
+                id: id,
+                scope: scope,
+                companyId: companyId,
+                roleKey: roleKey,
+                name: name,
+                description: description,
+                isBuiltin: isBuiltin,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String scope,
+                Value<String?> companyId = const Value.absent(),
+                required String roleKey,
+                Value<String?> name = const Value.absent(),
+                Value<String?> description = const Value.absent(),
+                Value<bool> isBuiltin = const Value.absent(),
+                required DateTime createdAt,
+                required DateTime updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => CoreRolesCompanion.insert(
+                id: id,
+                scope: scope,
+                companyId: companyId,
+                roleKey: roleKey,
+                name: name,
+                description: description,
+                isBuiltin: isBuiltin,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$CoreRolesTable, CoreRoleRow>(table),
+                  $$CoreRolesTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback:
+              ({
+                companyId = false,
+                coreMembershipRolesRefs = false,
+                coreRolePermissionsRefs = false,
+              }) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (coreMembershipRolesRefs) db.coreMembershipRoles,
+                    if (coreRolePermissionsRefs) db.coreRolePermissions,
+                  ],
+                  addJoins:
+                      <
+                        T extends TableManagerState<
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic
+                        >
+                      >(state) {
+                        if (companyId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.companyId,
+                                    referencedTable: $$CoreRolesTableReferences
+                                        ._companyIdTable(db),
+                                    referencedColumn: $$CoreRolesTableReferences
+                                        ._companyIdTable(db)
+                                        .id,
+                                  )
+                                  as T;
+                        }
+
+                        return state;
+                      },
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (coreMembershipRolesRefs)
+                        await $_getPrefetchedData<
+                          CoreRoleRow,
+                          $CoreRolesTable,
+                          CoreMembershipRoleRow
+                        >(
+                          currentTable: table,
+                          referencedTable: $$CoreRolesTableReferences
+                              ._coreMembershipRolesRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$CoreRolesTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).coreMembershipRolesRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.roleId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (coreRolePermissionsRefs)
+                        await $_getPrefetchedData<
+                          CoreRoleRow,
+                          $CoreRolesTable,
+                          CoreRolePermissionRow
+                        >(
+                          currentTable: table,
+                          referencedTable: $$CoreRolesTableReferences
+                              ._coreRolePermissionsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$CoreRolesTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).coreRolePermissionsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.roleId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
+              },
+        ),
+      );
+}
+
+typedef $$CoreRolesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$DriftCoreDatabase,
+      $CoreRolesTable,
+      CoreRoleRow,
+      $$CoreRolesTableFilterComposer,
+      $$CoreRolesTableOrderingComposer,
+      $$CoreRolesTableAnnotationComposer,
+      $$CoreRolesTableCreateCompanionBuilder,
+      $$CoreRolesTableUpdateCompanionBuilder,
+      (CoreRoleRow, $$CoreRolesTableReferences),
+      CoreRoleRow,
+      PrefetchHooks Function({
+        bool companyId,
+        bool coreMembershipRolesRefs,
+        bool coreRolePermissionsRefs,
+      })
+    >;
+typedef $$CoreMembershipRolesTableCreateCompanionBuilder =
+    CoreMembershipRolesCompanion Function({
+      required String membershipId,
+      required String roleId,
+      required DateTime createdAt,
+      Value<int> rowid,
+    });
+typedef $$CoreMembershipRolesTableUpdateCompanionBuilder =
+    CoreMembershipRolesCompanion Function({
+      Value<String> membershipId,
+      Value<String> roleId,
+      Value<DateTime> createdAt,
+      Value<int> rowid,
+    });
+
+final class $$CoreMembershipRolesTableReferences
+    extends
+        BaseReferences<
+          _$DriftCoreDatabase,
+          $CoreMembershipRolesTable,
+          CoreMembershipRoleRow
+        > {
+  $$CoreMembershipRolesTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $CoreCompanyMembershipsTable _membershipIdTable(
+    _$DriftCoreDatabase db,
+  ) => db.coreCompanyMemberships.createAlias(
+    'core_membership_roles__membership_id__core_company_memberships__id',
+  );
+
+  $$CoreCompanyMembershipsTableProcessedTableManager get membershipId {
+    final $_column = $_itemColumn<String>('membership_id')!;
+
+    final manager = $$CoreCompanyMembershipsTableTableManager(
+      $_db,
+      $_db.coreCompanyMemberships,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_membershipIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $CoreRolesTable _roleIdTable(_$DriftCoreDatabase db) => db.coreRoles
+      .createAlias('core_membership_roles__role_id__core_roles__id');
+
+  $$CoreRolesTableProcessedTableManager get roleId {
+    final $_column = $_itemColumn<String>('role_id')!;
+
+    final manager = $$CoreRolesTableTableManager(
+      $_db,
+      $_db.coreRoles,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_roleIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$CoreMembershipRolesTableFilterComposer
+    extends Composer<_$DriftCoreDatabase, $CoreMembershipRolesTable> {
+  $$CoreMembershipRolesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$CoreCompanyMembershipsTableFilterComposer get membershipId {
+    final $$CoreCompanyMembershipsTableFilterComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.membershipId,
+          referencedTable: $db.coreCompanyMemberships,
+          getReferencedColumn: (t) => t.id,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$CoreCompanyMembershipsTableFilterComposer(
+                $db: $db,
+                $table: $db.coreCompanyMemberships,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return composer;
+  }
+
+  $$CoreRolesTableFilterComposer get roleId {
+    final $$CoreRolesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.roleId,
+      referencedTable: $db.coreRoles,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CoreRolesTableFilterComposer(
+            $db: $db,
+            $table: $db.coreRoles,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$CoreMembershipRolesTableOrderingComposer
+    extends Composer<_$DriftCoreDatabase, $CoreMembershipRolesTable> {
+  $$CoreMembershipRolesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$CoreCompanyMembershipsTableOrderingComposer get membershipId {
+    final $$CoreCompanyMembershipsTableOrderingComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.membershipId,
+          referencedTable: $db.coreCompanyMemberships,
+          getReferencedColumn: (t) => t.id,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$CoreCompanyMembershipsTableOrderingComposer(
+                $db: $db,
+                $table: $db.coreCompanyMemberships,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return composer;
+  }
+
+  $$CoreRolesTableOrderingComposer get roleId {
+    final $$CoreRolesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.roleId,
+      referencedTable: $db.coreRoles,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CoreRolesTableOrderingComposer(
+            $db: $db,
+            $table: $db.coreRoles,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$CoreMembershipRolesTableAnnotationComposer
+    extends Composer<_$DriftCoreDatabase, $CoreMembershipRolesTable> {
+  $$CoreMembershipRolesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  $$CoreCompanyMembershipsTableAnnotationComposer get membershipId {
+    final $$CoreCompanyMembershipsTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.membershipId,
+          referencedTable: $db.coreCompanyMemberships,
+          getReferencedColumn: (t) => t.id,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$CoreCompanyMembershipsTableAnnotationComposer(
+                $db: $db,
+                $table: $db.coreCompanyMemberships,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return composer;
+  }
+
+  $$CoreRolesTableAnnotationComposer get roleId {
+    final $$CoreRolesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.roleId,
+      referencedTable: $db.coreRoles,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CoreRolesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.coreRoles,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$CoreMembershipRolesTableTableManager
+    extends
+        RootTableManager<
+          _$DriftCoreDatabase,
+          $CoreMembershipRolesTable,
+          CoreMembershipRoleRow,
+          $$CoreMembershipRolesTableFilterComposer,
+          $$CoreMembershipRolesTableOrderingComposer,
+          $$CoreMembershipRolesTableAnnotationComposer,
+          $$CoreMembershipRolesTableCreateCompanionBuilder,
+          $$CoreMembershipRolesTableUpdateCompanionBuilder,
+          (CoreMembershipRoleRow, $$CoreMembershipRolesTableReferences),
+          CoreMembershipRoleRow,
+          PrefetchHooks Function({bool membershipId, bool roleId})
+        > {
+  $$CoreMembershipRolesTableTableManager(
+    _$DriftCoreDatabase db,
+    $CoreMembershipRolesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$CoreMembershipRolesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$CoreMembershipRolesTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$CoreMembershipRolesTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> membershipId = const Value.absent(),
+                Value<String> roleId = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => CoreMembershipRolesCompanion(
+                membershipId: membershipId,
+                roleId: roleId,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String membershipId,
+                required String roleId,
+                required DateTime createdAt,
+                Value<int> rowid = const Value.absent(),
+              }) => CoreMembershipRolesCompanion.insert(
+                membershipId: membershipId,
+                roleId: roleId,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$CoreMembershipRolesTable, CoreMembershipRoleRow>(
+                    table,
+                  ),
+                  $$CoreMembershipRolesTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({membershipId = false, roleId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (membershipId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.membershipId,
+                                referencedTable:
+                                    $$CoreMembershipRolesTableReferences
+                                        ._membershipIdTable(db),
+                                referencedColumn:
+                                    $$CoreMembershipRolesTableReferences
+                                        ._membershipIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+                    if (roleId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.roleId,
+                                referencedTable:
+                                    $$CoreMembershipRolesTableReferences
+                                        ._roleIdTable(db),
+                                referencedColumn:
+                                    $$CoreMembershipRolesTableReferences
+                                        ._roleIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$CoreMembershipRolesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$DriftCoreDatabase,
+      $CoreMembershipRolesTable,
+      CoreMembershipRoleRow,
+      $$CoreMembershipRolesTableFilterComposer,
+      $$CoreMembershipRolesTableOrderingComposer,
+      $$CoreMembershipRolesTableAnnotationComposer,
+      $$CoreMembershipRolesTableCreateCompanionBuilder,
+      $$CoreMembershipRolesTableUpdateCompanionBuilder,
+      (CoreMembershipRoleRow, $$CoreMembershipRolesTableReferences),
+      CoreMembershipRoleRow,
+      PrefetchHooks Function({bool membershipId, bool roleId})
+    >;
+typedef $$CoreRolePermissionsTableCreateCompanionBuilder =
+    CoreRolePermissionsCompanion Function({
+      required String roleId,
+      required String permissionId,
+      required DateTime createdAt,
+      Value<int> rowid,
+    });
+typedef $$CoreRolePermissionsTableUpdateCompanionBuilder =
+    CoreRolePermissionsCompanion Function({
+      Value<String> roleId,
+      Value<String> permissionId,
+      Value<DateTime> createdAt,
+      Value<int> rowid,
+    });
+
+final class $$CoreRolePermissionsTableReferences
+    extends
+        BaseReferences<
+          _$DriftCoreDatabase,
+          $CoreRolePermissionsTable,
+          CoreRolePermissionRow
+        > {
+  $$CoreRolePermissionsTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $CoreRolesTable _roleIdTable(_$DriftCoreDatabase db) => db.coreRoles
+      .createAlias('core_role_permissions__role_id__core_roles__id');
+
+  $$CoreRolesTableProcessedTableManager get roleId {
+    final $_column = $_itemColumn<String>('role_id')!;
+
+    final manager = $$CoreRolesTableTableManager(
+      $_db,
+      $_db.coreRoles,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_roleIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$CoreRolePermissionsTableFilterComposer
+    extends Composer<_$DriftCoreDatabase, $CoreRolePermissionsTable> {
+  $$CoreRolePermissionsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get permissionId => $composableBuilder(
+    column: $table.permissionId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$CoreRolesTableFilterComposer get roleId {
+    final $$CoreRolesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.roleId,
+      referencedTable: $db.coreRoles,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CoreRolesTableFilterComposer(
+            $db: $db,
+            $table: $db.coreRoles,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$CoreRolePermissionsTableOrderingComposer
+    extends Composer<_$DriftCoreDatabase, $CoreRolePermissionsTable> {
+  $$CoreRolePermissionsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get permissionId => $composableBuilder(
+    column: $table.permissionId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$CoreRolesTableOrderingComposer get roleId {
+    final $$CoreRolesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.roleId,
+      referencedTable: $db.coreRoles,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CoreRolesTableOrderingComposer(
+            $db: $db,
+            $table: $db.coreRoles,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$CoreRolePermissionsTableAnnotationComposer
+    extends Composer<_$DriftCoreDatabase, $CoreRolePermissionsTable> {
+  $$CoreRolePermissionsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get permissionId => $composableBuilder(
+    column: $table.permissionId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  $$CoreRolesTableAnnotationComposer get roleId {
+    final $$CoreRolesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.roleId,
+      referencedTable: $db.coreRoles,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CoreRolesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.coreRoles,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$CoreRolePermissionsTableTableManager
+    extends
+        RootTableManager<
+          _$DriftCoreDatabase,
+          $CoreRolePermissionsTable,
+          CoreRolePermissionRow,
+          $$CoreRolePermissionsTableFilterComposer,
+          $$CoreRolePermissionsTableOrderingComposer,
+          $$CoreRolePermissionsTableAnnotationComposer,
+          $$CoreRolePermissionsTableCreateCompanionBuilder,
+          $$CoreRolePermissionsTableUpdateCompanionBuilder,
+          (CoreRolePermissionRow, $$CoreRolePermissionsTableReferences),
+          CoreRolePermissionRow,
+          PrefetchHooks Function({bool roleId})
+        > {
+  $$CoreRolePermissionsTableTableManager(
+    _$DriftCoreDatabase db,
+    $CoreRolePermissionsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$CoreRolePermissionsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$CoreRolePermissionsTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$CoreRolePermissionsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> roleId = const Value.absent(),
+                Value<String> permissionId = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => CoreRolePermissionsCompanion(
+                roleId: roleId,
+                permissionId: permissionId,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String roleId,
+                required String permissionId,
+                required DateTime createdAt,
+                Value<int> rowid = const Value.absent(),
+              }) => CoreRolePermissionsCompanion.insert(
+                roleId: roleId,
+                permissionId: permissionId,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$CoreRolePermissionsTable, CoreRolePermissionRow>(
+                    table,
+                  ),
+                  $$CoreRolePermissionsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({roleId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (roleId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.roleId,
+                                referencedTable:
+                                    $$CoreRolePermissionsTableReferences
+                                        ._roleIdTable(db),
+                                referencedColumn:
+                                    $$CoreRolePermissionsTableReferences
+                                        ._roleIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$CoreRolePermissionsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$DriftCoreDatabase,
+      $CoreRolePermissionsTable,
+      CoreRolePermissionRow,
+      $$CoreRolePermissionsTableFilterComposer,
+      $$CoreRolePermissionsTableOrderingComposer,
+      $$CoreRolePermissionsTableAnnotationComposer,
+      $$CoreRolePermissionsTableCreateCompanionBuilder,
+      $$CoreRolePermissionsTableUpdateCompanionBuilder,
+      (CoreRolePermissionRow, $$CoreRolePermissionsTableReferences),
+      CoreRolePermissionRow,
+      PrefetchHooks Function({bool roleId})
+    >;
 typedef $$SchemaMigrationsTableCreateCompanionBuilder =
     SchemaMigrationsCompanion Function({
       required String owner,
@@ -3862,6 +7092,14 @@ class $DriftCoreDatabaseManager {
       );
   $$CoreCredentialsTableTableManager get coreCredentials =>
       $$CoreCredentialsTableTableManager(_db, _db.coreCredentials);
+  $$CoreLoginAttemptsTableTableManager get coreLoginAttempts =>
+      $$CoreLoginAttemptsTableTableManager(_db, _db.coreLoginAttempts);
+  $$CoreRolesTableTableManager get coreRoles =>
+      $$CoreRolesTableTableManager(_db, _db.coreRoles);
+  $$CoreMembershipRolesTableTableManager get coreMembershipRoles =>
+      $$CoreMembershipRolesTableTableManager(_db, _db.coreMembershipRoles);
+  $$CoreRolePermissionsTableTableManager get coreRolePermissions =>
+      $$CoreRolePermissionsTableTableManager(_db, _db.coreRolePermissions);
   $$SchemaMigrationsTableTableManager get schemaMigrations =>
       $$SchemaMigrationsTableTableManager(_db, _db.schemaMigrations);
 }

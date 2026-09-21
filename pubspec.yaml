@@ -63,6 +63,20 @@ dev_dependencies:
   drift_dev: ^2.34.3
   build_runner: ^2.15.0
   sqlite3: ^3.5.2 # v1 fixtures and schema inspection in tests only
+  flutter_launcher_icons: ^0.14.4
+
+flutter_launcher_icons:
+  android: "ic_launcher"
+  ios: true
+  web:
+    generate: true
+    image_path: assets/branding/app_icon/nexabiz_legacy_icon_1024.png
+    background_color: "#1565C0"
+    theme_color: "#1565C0"
+  image_path: assets/branding/app_icon/nexabiz_legacy_icon_1024.png
+  adaptive_icon_background: assets/branding/app_icon/nexabiz_adaptive_background_1024.png
+  adaptive_icon_foreground: assets/branding/app_icon/nexabiz_adaptive_foreground_1024.png
+  remove_alpha_ios: true
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -78,6 +92,7 @@ flutter:
 
   assets:
     - assets/fonts/Cairo/
+    - assets/branding/app_icon/
 
   fonts:
     - family: Cairo

@@ -1,3 +1,4 @@
+import '../authorization/nexabiz_membership_id.dart';
 import '../company/nexabiz_company_scope.dart';
 import '../identity/authenticate_local_user.dart';
 
@@ -38,6 +39,7 @@ final class NexaBizSession {
     : state = NexaBizSessionState.noSession,
       userId = null,
       companyId = null,
+      membershipId = null,
       userName = null,
       userEmail = null,
       companyName = null,
@@ -49,6 +51,7 @@ final class NexaBizSession {
   const NexaBizSession.active({
     required NexaBizUserId this.userId,
     required this.companyId,
+    this.membershipId,
     this.userName,
     this.userEmail,
     this.companyName,
@@ -61,6 +64,7 @@ final class NexaBizSession {
   const NexaBizSession.locked({
     required NexaBizUserId this.userId,
     required this.companyId,
+    this.membershipId,
     this.userName,
     this.userEmail,
     this.companyName,
@@ -73,6 +77,7 @@ final class NexaBizSession {
   final NexaBizSessionState state;
   final NexaBizUserId? userId;
   final NexaBizCompanyId? companyId;
+  final NexaBizMembershipId? membershipId;
   final String? userName;
   final String? userEmail;
   final String? companyName;
@@ -93,10 +98,12 @@ final class NexaBizSession {
           state == other.state &&
           userId == other.userId &&
           companyId == other.companyId &&
+          membershipId == other.membershipId &&
           sessionId == other.sessionId;
 
   @override
-  int get hashCode => Object.hash(state, userId, companyId, sessionId);
+  int get hashCode =>
+      Object.hash(state, userId, companyId, membershipId, sessionId);
 
   @override
   String toString() => 'NexaBizSession($state, identities=<redacted>)';

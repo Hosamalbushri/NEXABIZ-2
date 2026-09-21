@@ -1,6 +1,5 @@
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:go_router/go_router.dart';
 import 'package:nexabiz_ui/nexabiz_ui.dart';
 
 import '../../../core/setup/initialize_nexabiz_core.dart';
@@ -78,8 +77,7 @@ class _SystemSetupScreenState extends State<SystemSetupScreen> {
       if (mounted) {
         _password.clear();
         _confirmation.clear();
-        // First-run completion is a root transition; it requires authentication next.
-        context.go('/login');
+        // The committed readiness notification drives the canonical redirect.
       }
     } on CoreInitializationException catch (error) {
       if (mounted) setState(() => _failure = error.failure);

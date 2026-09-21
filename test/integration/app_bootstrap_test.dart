@@ -1,6 +1,7 @@
 import '../support/bootstrap_test_helper.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nexabiz/app/app.dart';
+import 'package:nexabiz/app/authorization/app_permission_scope.dart';
 import 'package:nexabiz/core/identity/authenticate_local_user.dart';
 import 'package:nexabiz/core/navigation/nexabiz_route_id.dart';
 import 'package:nexabiz/core/setup/initialize_nexabiz_core.dart';
@@ -68,7 +69,9 @@ void main() {
         addTearDown(bootstrap.router.dispose);
 
         // Initialize Core database & authenticate session to pass Security Gate
-        final initializer = InitializeNexaBizCore(bootstrap.coreInstallationStore);
+        final initializer = InitializeNexaBizCore(
+          bootstrap.coreInstallationStore,
+        );
         await initializer(
           const CoreInitializationInput(
             companyCode: 'COMP01',
@@ -93,6 +96,53 @@ void main() {
 
         expect(find.text('NexaBiz Dashboard'), findsOneWidget);
         expect(find.text('Welcome back to NexaBiz ERP'), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'NexaBizApp mounts AppPermissionScope with identical canonical bootstrap instances',
+      (tester) async {
+        final bootstrap = await bootstrapForTest(
+          initialLocation: '/dashboard',
+          authenticated: false,
+        );
+        addTearDown(bootstrap.router.dispose);
+
+        await tester.pumpWidget(
+          NexaBizApp(
+            router: bootstrap.router,
+            permissionEvaluator: bootstrap.permissionEvaluator,
+            sessionController: bootstrap.sessionController,
+            authorizationInvalidationSignal:
+                bootstrap.authorizationInvalidationSignal,
+          ),
+        );
+        await tester.pump();
+
+        final element = tester.element(find.byType(AppPermissionScope));
+        final scope = AppPermissionScope.of(element);
+
+        expect(
+          identical(scope.permissionEvaluator, bootstrap.permissionEvaluator),
+          isTrue,
+          reason:
+              'Scope evaluator must be identical to canonical bootstrap instance',
+        );
+        expect(
+          identical(scope.sessionController, bootstrap.sessionController),
+          isTrue,
+          reason:
+              'Scope sessionController must be identical to canonical bootstrap instance',
+        );
+        expect(
+          identical(
+            scope.invalidationSignal,
+            bootstrap.authorizationInvalidationSignal,
+          ),
+          isTrue,
+          reason:
+              'Scope invalidationSignal must be identical to canonical bootstrap instance',
+        );
       },
     );
   });

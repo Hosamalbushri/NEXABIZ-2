@@ -1808,6 +1808,36 @@ abstract class AppLocalizations {
   /// **'User has no active company memberships.'**
   String get loginNoCompanies;
 
+  /// No description provided for @loginLockedOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many failed login attempts. Account is temporarily locked. Please try again later.'**
+  String get loginLockedOut;
+
+  /// No description provided for @loginLockedOutMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many failed login attempts. Account is temporarily locked. Please try again in {minutes} minute(s).'**
+  String loginLockedOutMinutes(int minutes);
+
+  /// No description provided for @loginLockedOutSeconds.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many failed login attempts. Account is temporarily locked. Please try again in {seconds} second(s).'**
+  String loginLockedOutSeconds(int seconds);
+
+  /// No description provided for @loginStorageFailure.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to sign in at this time. Please try again later.'**
+  String get loginStorageFailure;
+
+  /// No description provided for @loginRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Try Again'**
+  String get loginRetry;
+
   /// No description provided for @companySelectionTitle.
   ///
   /// In en, this message translates to:
@@ -1831,6 +1861,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sign Out'**
   String get actionLogout;
+
+  /// No description provided for @unauthorizedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Access Denied'**
+  String get unauthorizedTitle;
+
+  /// No description provided for @unauthorizedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'You do not have permission to access this page.'**
+  String get unauthorizedMessage;
+
+  /// No description provided for @actionBackToDashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to Dashboard'**
+  String get actionBackToDashboard;
 }
 
 class _AppLocalizationsDelegate

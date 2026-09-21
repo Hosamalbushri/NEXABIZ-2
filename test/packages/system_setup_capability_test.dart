@@ -1,3 +1,4 @@
+import 'dart:async';
 import '../support/bootstrap_test_helper.dart';
 import 'dart:convert';
 import 'dart:io';
@@ -10,6 +11,8 @@ import 'package:nexabiz/app/localization/app_locale_controller.dart';
 import 'package:nexabiz/core/capabilities/contributions/nexabiz_capability_runtime_contributions.dart';
 import 'package:nexabiz/core/navigation/nexabiz_route_id.dart';
 import 'package:nexabiz/packages/system_setup/system_setup_capability.dart';
+import 'package:nexabiz/core/setup/nexabiz_setup_readiness.dart';
+import 'package:nexabiz/packages/identity/presentation/login_screen.dart';
 import 'package:nexabiz/packages/system_setup/presentation/system_setup_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:nexabiz_ui/nexabiz_ui.dart';
@@ -38,6 +41,7 @@ void main() {
     () async {
       final bootstrap = await bootstrapForTest(
         initialLocation: '/system-setup',
+        authenticated: false,
       );
       addTearDown(bootstrap.router.dispose);
       expect(
@@ -85,7 +89,10 @@ void main() {
   ) async {
     SharedPreferences.setMockInitialValues({});
     await AppLocaleController.setLocale(const Locale('en'));
-    final bootstrap = await bootstrapForTest(initialLocation: '/system-setup');
+    final bootstrap = await bootstrapForTest(
+      initialLocation: '/system-setup',
+      authenticated: false,
+    );
     addTearDown(bootstrap.router.dispose);
     await tester.pumpWidget(NexaBizApp(router: bootstrap.router));
     await tester.pumpAndSettle();
@@ -118,7 +125,10 @@ void main() {
   ) async {
     SharedPreferences.setMockInitialValues({});
     await AppLocaleController.setLocale(const Locale('en'));
-    final bootstrap = await bootstrapForTest(initialLocation: '/system-setup');
+    final bootstrap = await bootstrapForTest(
+      initialLocation: '/system-setup',
+      authenticated: false,
+    );
     addTearDown(bootstrap.router.dispose);
     await tester.pumpWidget(NexaBizApp(router: bootstrap.router));
     await tester.pumpAndSettle();
@@ -143,46 +153,76 @@ void main() {
   });
 
   testWidgets(
-    'successful submit creates Core once and enters dashboard without a session',
+    'uninitialized setup commits ready and automatically redirects to login',
     (tester) async {
       SharedPreferences.setMockInitialValues({});
       await AppLocaleController.setLocale(const Locale('en'));
       final bootstrap = await bootstrapForTest(
         initialLocation: '/system-setup',
+        authenticated: false,
       );
       addTearDown(bootstrap.router.dispose);
       await tester.pumpWidget(NexaBizApp(router: bootstrap.router));
       await tester.pumpAndSettle();
+      expect(bootstrap.coreReadiness.state, NexaBizSetupState.uninitialized);
+      expect(bootstrap.router.state.uri.path, '/system-setup');
       await tester.enterText(find.byType(AppTextField).at(0), 'ACME');
       await tester.enterText(find.byType(AppTextField).at(1), 'Acme Company');
       await tester.enterText(find.byType(AppTextField).at(2), 'Owner');
-      await tester.enterText(find.byType(AppTextField).at(3), 'owner@example.com');
-      await tester.enterText(find.byType(AppTextField).at(4), 'correct horse battery staple');
-      await tester.enterText(find.byType(AppTextField).at(5), 'correct horse battery staple');
+      await tester.enterText(
+        find.byType(AppTextField).at(3),
+        'owner@example.com',
+      );
+      await tester.enterText(
+        find.byType(AppTextField).at(4),
+        'correct horse battery staple',
+      );
+      await tester.enterText(
+        find.byType(AppTextField).at(5),
+        'correct horse battery staple',
+      );
       await tester.ensureVisible(find.text('Create company and administrator'));
       await tester.pumpAndSettle();
       await tester.runAsync(() async {
+        final ready = Completer<void>();
+        void onReadinessChanged() {
+          if (bootstrap.coreReadiness.isReady && !ready.isCompleted) {
+            ready.complete();
+          }
+        }
+
+        bootstrap.setupReadiness.addListener(onReadinessChanged);
+        addTearDown(
+          () => bootstrap.setupReadiness.removeListener(onReadinessChanged),
+        );
         await tester.tap(find.text('Create company and administrator'));
         await tester.pump();
-        for (var i = 0; i < 100; i++) {
-          if ((await bootstrap.coreInstallationStore.readReadiness()).isReady) {
-            break;
-          }
-          await Future<void>.delayed(const Duration(milliseconds: 100));
-        }
+        await ready.future.timeout(const Duration(seconds: 30));
       });
       await tester.pumpAndSettle();
-      expect((await bootstrap.coreInstallationStore.readReadiness()).isReady, isTrue);
+      expect(
+        (await bootstrap.coreInstallationStore.readReadiness()).isReady,
+        isTrue,
+      );
       expect(find.text('Could not save setup. Try again.'), findsNothing);
-      expect(find.text('Enter a company code, company name, administrator name, valid email, and a password of at least 12 characters.'), findsNothing);
+      expect(
+        find.text(
+          'Enter a company code, company name, administrator name, valid email, and a password of at least 12 characters.',
+        ),
+        findsNothing,
+      );
       expect(
         bootstrap.router.routeInformationProvider.value.uri.path,
-        '/dashboard',
+        '/login',
       );
       expect(
         (await bootstrap.coreInstallationStore.readReadiness()).isReady,
         isTrue,
       );
+      expect(bootstrap.coreReadiness.state, NexaBizSetupState.ready);
+      expect(bootstrap.sessionController.currentSession.isActive, isFalse);
+      expect(find.byType(LoginScreen), findsOneWidget);
+      expect(find.byType(SystemSetupScreen), findsNothing);
       final db = (bootstrap.coreInstallationStore as DriftCoreInstallationStore)
           .database;
       expect(await db.select(db.coreCompanies).get(), hasLength(1));

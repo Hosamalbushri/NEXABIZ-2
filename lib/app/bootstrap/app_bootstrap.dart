@@ -1,15 +1,19 @@
+import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
+import '../../core/authorization/nexabiz_permission_evaluator.dart';
+import '../../core/authorization/nexabiz_runtime_permission_evaluator.dart';
 import '../../core/capabilities/nexabiz_capability_registry.dart';
 import '../../core/identity/authenticate_local_user.dart';
 import '../../core/navigation/nexabiz_navigation_registry.dart';
 import '../../core/session/core_session_controller.dart';
+import '../../core/session/core_session_listenable.dart';
 import '../../core/setup/initialize_nexabiz_core.dart';
 import '../../core/setup/nexabiz_core_installation_store.dart';
 import '../../core/setup/nexabiz_setup_readiness.dart';
-import '../../core/session/core_session_listenable.dart';
+import '../authorization/nexabiz_authorization_invalidation_signal.dart';
 import '../persistence/drift_core_installation_store.dart';
 import '../router/nexabiz_router_adapter.dart';
 import 'nexabiz_capability_manifest.dart';
@@ -20,16 +24,21 @@ class AppBootstrapResult {
   final NexaBizNavigationRegistry navigationRegistry;
   final GoRouter router;
   final NexaBizCoreInstallationStore coreInstallationStore;
-  final NexaBizSetupReadiness coreReadiness;
+  final ValueListenable<NexaBizSetupReadiness> setupReadiness;
+  NexaBizSetupReadiness get coreReadiness => setupReadiness.value;
   final CoreSessionController sessionController;
+  final NexaBizPermissionEvaluator? permissionEvaluator;
+  final NexaBizAuthorizationInvalidationSignal? authorizationInvalidationSignal;
 
   const AppBootstrapResult({
     required this.capabilityRegistry,
     required this.navigationRegistry,
     required this.router,
     required this.coreInstallationStore,
-    required this.coreReadiness,
+    required this.setupReadiness,
     required this.sessionController,
+    this.permissionEvaluator,
+    this.authorizationInvalidationSignal,
   });
 }
 
@@ -48,10 +57,12 @@ abstract final class AppBootstrap {
       resolvedDatabasePath,
     );
     try {
-      final coreReadiness = await coreInstallationStore.readReadiness();
+      final setupReadiness = coreInstallationStore.readiness;
 
       final sessionController = CoreSessionController(
-        authenticateLocalUser: AuthenticateLocalUser(queryStore: coreInstallationStore),
+        authenticateLocalUser: AuthenticateLocalUser(
+          queryStore: coreInstallationStore,
+        ),
         queryStore: coreInstallationStore,
       );
 
@@ -60,7 +71,7 @@ abstract final class AppBootstrap {
       capabilityRegistry.registerAll(
         NexaBizCapabilityManifest.capabilitiesFor(
           initializer: InitializeNexaBizCore(coreInstallationStore),
-          readiness: coreReadiness,
+          readiness: setupReadiness.value,
           sessionController: sessionController,
         ),
       );
@@ -73,12 +84,24 @@ abstract final class AppBootstrap {
       navigationRegistry.collectAndLock(capabilityRegistry);
 
       // 4. Adapt Navigation Registry to GoRouter with Security Gate
+      // 4. Build Runtime Permission Evaluator & Invalidation Signal
+      final permissionEvaluator = NexaBizRuntimePermissionEvaluator(
+        permissionCatalog: capabilityRegistry.permissionCatalog,
+        queryStore: coreInstallationStore,
+        sessionSource: sessionController,
+      );
+      final authorizationInvalidationSignal =
+          NexaBizAuthorizationInvalidationSignal();
+
+      // 5. Adapt Navigation Registry to GoRouter with Security Gate
       final routerAdapter = NexaBizGoRouterAdapter(navigationRegistry);
       final router = routerAdapter.createRouter(
         initialLocation: initialLocation ?? '/splash',
-        readiness: coreReadiness,
+        readinessListenable: setupReadiness,
         sessionController: sessionController,
         refreshListenable: CoreSessionListenable(sessionController),
+        permissionEvaluator: permissionEvaluator,
+        authorizationInvalidationListenable: authorizationInvalidationSignal,
       );
 
       return AppBootstrapResult(
@@ -86,8 +109,10 @@ abstract final class AppBootstrap {
         navigationRegistry: navigationRegistry,
         router: router,
         coreInstallationStore: coreInstallationStore,
-        coreReadiness: coreReadiness,
+        setupReadiness: setupReadiness,
         sessionController: sessionController,
+        permissionEvaluator: permissionEvaluator,
+        authorizationInvalidationSignal: authorizationInvalidationSignal,
       );
     } catch (_) {
       await coreInstallationStore.close();
