@@ -22,7 +22,9 @@ class _StepperScenarioState extends State<StepperScenario> {
   bool _isSubmitting = false;
 
   // Form Controllers
-  final _companyNameController = TextEditingController(text: 'شركة الأمل للتجارة');
+  final _companyNameController = TextEditingController(
+    text: 'شركة الأمل للتجارة',
+  );
   final _crNumberController = TextEditingController(text: '1010892019');
   final _taxNumberController = TextEditingController(text: '310928102900003');
   String _selectedCurrency = 'SAR';
@@ -72,7 +74,9 @@ class _StepperScenarioState extends State<StepperScenario> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              isAr ? 'الخطوة الأولى: المعلومات الأساسية للمؤسسة' : 'Step 1: Basic Enterprise Information',
+              isAr
+                  ? 'الخطوة الأولى: المعلومات الأساسية للمؤسسة'
+                  : 'Step 1: Basic Enterprise Information',
               style: theme.typography.p.copyWith(
                 fontWeight: FontWeight.w600,
                 fontSize: 14,
@@ -114,7 +118,9 @@ class _StepperScenarioState extends State<StepperScenario> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              isAr ? 'الخطوة الثانية: العملة وبداية السنة المالية' : 'Step 2: Currency & Fiscal Period',
+              isAr
+                  ? 'الخطوة الثانية: العملة وبداية السنة المالية'
+                  : 'Step 2: Currency & Fiscal Period',
               style: theme.typography.p.copyWith(
                 fontWeight: FontWeight.w600,
                 fontSize: 14,
@@ -141,7 +147,9 @@ class _StepperScenarioState extends State<StepperScenario> {
                   items: [
                     AppDropdownItem(
                       value: '01-01',
-                      label: isAr ? '١ يناير (تقويم ميلادي)' : 'Jan 1st (Gregorian)',
+                      label: isAr
+                          ? '١ يناير (تقويم ميلادي)'
+                          : 'Jan 1st (Gregorian)',
                     ),
                     AppDropdownItem(
                       value: '01-07',
@@ -166,7 +174,9 @@ class _StepperScenarioState extends State<StepperScenario> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              isAr ? 'الخطوة الثالثة: مراجعة البيانات والتأكيد' : 'Step 3: Review & Final Confirmation',
+              isAr
+                  ? 'الخطوة الثالثة: مراجعة البيانات والتأكيد'
+                  : 'Step 3: Review & Final Confirmation',
               style: theme.typography.p.copyWith(
                 fontWeight: FontWeight.w600,
                 fontSize: 14,
@@ -178,22 +188,33 @@ class _StepperScenarioState extends State<StepperScenario> {
               decoration: BoxDecoration(
                 color: colorScheme.muted.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(theme.radiusMd),
-                border: Border.all(color: colorScheme.border.withValues(alpha: 0.4)),
+                border: Border.all(
+                  color: colorScheme.border.withValues(alpha: 0.4),
+                ),
               ),
               child: Column(
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(isAr ? 'اسم المنشأة:' : 'Company:', style: const TextStyle(fontWeight: FontWeight.w500)),
-                      Text(_companyNameController.text, style: const TextStyle(fontWeight: FontWeight.bold)),
+                      Text(
+                        isAr ? 'اسم المنشأة:' : 'Company:',
+                        style: const TextStyle(fontWeight: FontWeight.w500),
+                      ),
+                      Text(
+                        _companyNameController.text,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 6),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(isAr ? 'السجل التجاري:' : 'CR Number:', style: const TextStyle(fontWeight: FontWeight.w500)),
+                      Text(
+                        isAr ? 'السجل التجاري:' : 'CR Number:',
+                        style: const TextStyle(fontWeight: FontWeight.w500),
+                      ),
                       Text(_crNumberController.text),
                     ],
                   ),
@@ -201,8 +222,17 @@ class _StepperScenarioState extends State<StepperScenario> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(isAr ? 'العملة الرئيسية:' : 'Base Currency:', style: const TextStyle(fontWeight: FontWeight.w500)),
-                      Text(_selectedCurrency, style: TextStyle(color: colorScheme.primary, fontWeight: FontWeight.bold)),
+                      Text(
+                        isAr ? 'العملة الرئيسية:' : 'Base Currency:',
+                        style: const TextStyle(fontWeight: FontWeight.w500),
+                      ),
+                      Text(
+                        _selectedCurrency,
+                        style: TextStyle(
+                          color: colorScheme.primary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ],
                   ),
                 ],
@@ -210,7 +240,9 @@ class _StepperScenarioState extends State<StepperScenario> {
             ),
             const SizedBox(height: AppSpacing.md),
             AppSwitch(
-              label: isAr ? 'الموافقة على شروط تفعيل النظام والتكافؤ المالي' : 'Agree to system activation terms & compliance',
+              label: isAr
+                  ? 'الموافقة على شروط تفعيل النظام والتكافؤ المالي'
+                  : 'Agree to system activation terms & compliance',
               value: _agreeTerms,
               onChanged: (val) => setState(() => _agreeTerms = val),
             ),
@@ -236,7 +268,9 @@ class _StepperScenarioState extends State<StepperScenario> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                isAr ? 'معالج التهيئة متعدد الخطوات (AppStepper)' : 'Multi-Step Onboarding Stepper Flow',
+                isAr
+                    ? 'معالج التهيئة متعدد الخطوات (AppStepper)'
+                    : 'Multi-Step Onboarding Stepper Flow',
                 style: theme.typography.h4.copyWith(
                   fontFamily: AppTypography.fontFamilyName,
                   fontWeight: FontWeight.w700,

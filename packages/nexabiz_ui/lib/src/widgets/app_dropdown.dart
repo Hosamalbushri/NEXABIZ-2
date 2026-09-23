@@ -42,7 +42,8 @@ class AppDropdown<T> extends StatelessWidget {
     final theme = shadcn.Theme.of(context);
     final hasError = errorText != null && errorText!.isNotEmpty;
     final isRtl = Directionality.of(context) == TextDirection.rtl;
-    final effectiveHint = hint ?? (isRtl ? 'اختر الخيار...' : 'Select option...');
+    final effectiveHint =
+        hint ?? (isRtl ? 'اختر الخيار...' : 'Select option...');
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

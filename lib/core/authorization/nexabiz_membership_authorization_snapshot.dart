@@ -47,7 +47,9 @@ final class NexaBizMembershipAuthorizationSnapshot {
 
   /// Effective permissions if eligible for authorization; otherwise empty set (fail-closed).
   Set<NexaBizPermissionId> get effectivePermissions =>
-      isEligibleForAuthorization ? permissionIds : const <NexaBizPermissionId>{};
+      isEligibleForAuthorization
+      ? permissionIds
+      : const <NexaBizPermissionId>{};
 
   @override
   bool operator ==(Object other) =>
@@ -64,15 +66,15 @@ final class NexaBizMembershipAuthorizationSnapshot {
 
   @override
   int get hashCode => Object.hash(
-        membershipId,
-        companyId,
-        userId,
-        membershipStatus,
-        companyStatus,
-        userStatus,
-        Object.hashAll(roleIds),
-        Object.hashAll(permissionIds),
-      );
+    membershipId,
+    companyId,
+    userId,
+    membershipStatus,
+    companyStatus,
+    userStatus,
+    Object.hashAll(roleIds),
+    Object.hashAll(permissionIds),
+  );
 
   @override
   String toString() =>

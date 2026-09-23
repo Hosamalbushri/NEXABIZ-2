@@ -33,6 +33,44 @@ void main() {
     password: 'secure_password_123',
   );
 
+  Future<void> addSecondActiveOwner(DriftCoreInstallationStore store) async {
+    final db = store.database;
+    final company = (await db.select(db.coreCompanies).get()).single;
+    final ownerRole = (await (db.select(
+      db.coreRoles,
+    )..where((table) => table.roleKey.equals('company.owner'))).getSingle());
+    final now = DateTime.now().toUtc();
+    await db
+        .into(db.coreUsers)
+        .insert(
+          CoreUsersCompanion.insert(
+            id: 'second-owner-user',
+            email: const Value('second-owner@example.test'),
+            name: const Value('Second Owner'),
+            status: const Value('active'),
+            createdAt: Value(now),
+            updatedAt: Value(now),
+          ),
+        );
+    await db
+        .into(db.coreCompanyMemberships)
+        .insert(
+          CoreCompanyMembershipsCompanion.insert(
+            id: 'second-owner-membership',
+            userId: 'second-owner-user',
+            companyId: company.id,
+            role: 'member',
+            status: 'active',
+            createdAt: Value(now),
+            updatedAt: Value(now),
+          ),
+        );
+    await store.assignRoleToMembership(
+      membershipId: 'second-owner-membership',
+      roleId: ownerRole.id,
+    );
+  }
+
   group('Relational RBAC Persistence & Constraints', () {
     test('1. Fresh DB creates all RBAC tables and triggers', () async {
       final store = await DriftCoreInstallationStore.open(databasePath);
@@ -76,7 +114,9 @@ void main() {
       final store = await DriftCoreInstallationStore.open(databasePath);
       await InitializeNexaBizCore(store)(setupInput);
 
-      final company = (await store.database.select(store.database.coreCompanies).get()).single;
+      final company =
+          (await store.database.select(store.database.coreCompanies).get())
+              .single;
 
       // Valid company role
       final companyRoleId = await store.createRole(
@@ -130,7 +170,9 @@ void main() {
     test('4. Invariant: system role with company_id throws', () async {
       final store = await DriftCoreInstallationStore.open(databasePath);
       await InitializeNexaBizCore(store)(setupInput);
-      final company = (await store.database.select(store.database.coreCompanies).get()).single;
+      final company =
+          (await store.database.select(store.database.coreCompanies).get())
+              .single;
 
       // Throws at Dart validation level
       expect(
@@ -157,8 +199,14 @@ void main() {
     test('5. Membership can have multiple roles', () async {
       final store = await DriftCoreInstallationStore.open(databasePath);
       await InitializeNexaBizCore(store)(setupInput);
-      final company = (await store.database.select(store.database.coreCompanies).get()).single;
-      final membership = (await store.database.select(store.database.coreCompanyMemberships).get()).single;
+      final company =
+          (await store.database.select(store.database.coreCompanies).get())
+              .single;
+      final membership =
+          (await store.database
+                  .select(store.database.coreCompanyMemberships)
+                  .get())
+              .single;
 
       final role2Id = await store.createRole(
         roleId: NexaBizRoleId('company.accountant'),
@@ -170,7 +218,9 @@ void main() {
         roleId: role2Id,
       );
 
-      final snapshot = await store.readMembershipAuthorizationSnapshot(membership.id);
+      final snapshot = await store.readMembershipAuthorizationSnapshot(
+        membership.id,
+      );
       expect(snapshot, isNotNull);
       expect(snapshot!.roleIds, {
         NexaBizRoleId('company.owner'),
@@ -182,10 +232,14 @@ void main() {
     test('6. Duplicate membership-role mapping throws', () async {
       final store = await DriftCoreInstallationStore.open(databasePath);
       await InitializeNexaBizCore(store)(setupInput);
-      final membership = (await store.database.select(store.database.coreCompanyMemberships).get()).single;
-      final ownerRole = (await (store.database.select(store.database.coreRoles)
-            ..where((t) => t.roleKey.equals('company.owner')))
-          .getSingle());
+      final membership =
+          (await store.database
+                  .select(store.database.coreCompanyMemberships)
+                  .get())
+              .single;
+      final ownerRole = (await (store.database.select(
+        store.database.coreRoles,
+      )..where((t) => t.roleKey.equals('company.owner'))).getSingle());
 
       // company.owner was already assigned to membership in initialize()
       expect(
@@ -201,9 +255,9 @@ void main() {
     test('7. Duplicate role-permission mapping throws', () async {
       final store = await DriftCoreInstallationStore.open(databasePath);
       await InitializeNexaBizCore(store)(setupInput);
-      final ownerRole = (await (store.database.select(store.database.coreRoles)
-            ..where((t) => t.roleKey.equals('company.owner')))
-          .getSingle());
+      final ownerRole = (await (store.database.select(
+        store.database.coreRoles,
+      )..where((t) => t.roleKey.equals('company.owner'))).getSingle());
 
       // 'company.details.view' was already granted in initialize()
       // 'company.profile.view' was already granted in initialize()
@@ -220,7 +274,11 @@ void main() {
     test('8. Unknown role assignment throws (FK)', () async {
       final store = await DriftCoreInstallationStore.open(databasePath);
       await InitializeNexaBizCore(store)(setupInput);
-      final membership = (await store.database.select(store.database.coreCompanyMemberships).get()).single;
+      final membership =
+          (await store.database
+                  .select(store.database.coreCompanyMemberships)
+                  .get())
+              .single;
 
       expect(
         () => store.assignRoleToMembership(
@@ -235,9 +293,9 @@ void main() {
     test('9. Unknown membership assignment throws (FK)', () async {
       final store = await DriftCoreInstallationStore.open(databasePath);
       await InitializeNexaBizCore(store)(setupInput);
-      final ownerRole = (await (store.database.select(store.database.coreRoles)
-            ..where((t) => t.roleKey.equals('company.owner')))
-          .getSingle());
+      final ownerRole = (await (store.database.select(
+        store.database.coreRoles,
+      )..where((t) => t.roleKey.equals('company.owner'))).getSingle());
 
       expect(
         () => store.assignRoleToMembership(
@@ -256,41 +314,49 @@ void main() {
 
       final comp1 = (await db.select(db.coreCompanies).get()).single;
       final mem1 = (await db.select(db.coreCompanyMemberships).get()).single;
-      final role1 = (await (db.select(db.coreRoles)..where((t) => t.companyId.equals(comp1.id))).getSingle());
+      final role1 = (await (db.select(
+        db.coreRoles,
+      )..where((t) => t.companyId.equals(comp1.id))).getSingle());
 
       // Create Company 2 and Membership 2
       final now = DateTime.now().toUtc();
-      await db.into(db.coreCompanies).insert(
-        CoreCompaniesCompanion.insert(
-          id: 'comp-2',
-          code: const Value('COMP2'),
-          name: const Value('Company Two'),
-          status: const Value('active'),
-          createdAt: Value(now),
-          updatedAt: Value(now),
-        ),
-      );
-      await db.into(db.coreUsers).insert(
-        CoreUsersCompanion.insert(
-          id: 'user-2',
-          email: const Value('user2@example.test'),
-          name: const Value('User Two'),
-          status: const Value('active'),
-          createdAt: Value(now),
-          updatedAt: Value(now),
-        ),
-      );
-      await db.into(db.coreCompanyMemberships).insert(
-        CoreCompanyMembershipsCompanion.insert(
-          id: 'mem-2',
-          userId: 'user-2',
-          companyId: 'comp-2',
-          role: 'owner',
-          status: 'active',
-          createdAt: Value(now),
-          updatedAt: Value(now),
-        ),
-      );
+      await db
+          .into(db.coreCompanies)
+          .insert(
+            CoreCompaniesCompanion.insert(
+              id: 'comp-2',
+              code: const Value('COMP2'),
+              name: const Value('Company Two'),
+              status: const Value('active'),
+              createdAt: Value(now),
+              updatedAt: Value(now),
+            ),
+          );
+      await db
+          .into(db.coreUsers)
+          .insert(
+            CoreUsersCompanion.insert(
+              id: 'user-2',
+              email: const Value('user2@example.test'),
+              name: const Value('User Two'),
+              status: const Value('active'),
+              createdAt: Value(now),
+              updatedAt: Value(now),
+            ),
+          );
+      await db
+          .into(db.coreCompanyMemberships)
+          .insert(
+            CoreCompanyMembershipsCompanion.insert(
+              id: 'mem-2',
+              userId: 'user-2',
+              companyId: 'comp-2',
+              role: 'owner',
+              status: 'active',
+              createdAt: Value(now),
+              updatedAt: Value(now),
+            ),
+          );
 
       final role2Id = await store.createRole(
         roleId: NexaBizRoleId('company.supervisor'),
@@ -318,118 +384,172 @@ void main() {
       await store.close();
     });
 
-    test('11. Scope isolation throws: Company membership cannot receive system role', () async {
-      final store = await DriftCoreInstallationStore.open(databasePath);
-      await InitializeNexaBizCore(store)(setupInput);
-      final membership = (await store.database.select(store.database.coreCompanyMemberships).get()).single;
+    test(
+      '11. Scope isolation throws: Company membership cannot receive system role',
+      () async {
+        final store = await DriftCoreInstallationStore.open(databasePath);
+        await InitializeNexaBizCore(store)(setupInput);
+        final membership =
+            (await store.database
+                    .select(store.database.coreCompanyMemberships)
+                    .get())
+                .single;
 
-      final sysRoleId = await store.createRole(
-        roleId: NexaBizRoleId('system.admin'),
-        companyId: null,
-      );
+        final sysRoleId = await store.createRole(
+          roleId: NexaBizRoleId('system.admin'),
+          companyId: null,
+        );
 
-      expect(
-        () => store.assignRoleToMembership(
+        expect(
+          () => store.assignRoleToMembership(
+            membershipId: membership.id,
+            roleId: sysRoleId,
+          ),
+          throwsA(isA<Exception>()),
+        );
+        await store.close();
+      },
+    );
+
+    test(
+      '12. Role permissions deduplication across multiple assigned roles',
+      () async {
+        final store = await DriftCoreInstallationStore.open(databasePath);
+        await InitializeNexaBizCore(store)(setupInput);
+        final db = store.database;
+        final company = (await db.select(db.coreCompanies).get()).single;
+        final membership =
+            (await db.select(db.coreCompanyMemberships).get()).single;
+
+        // Role 1 (roleA) has Perm A ('company.details.view') and Perm B ('company.details.edit')
+        final roleA = await store.createRole(
+          roleId: NexaBizRoleId('company.role_a'),
+          companyId: company.id,
+        );
+        await store.grantPermissionToRole(
+          roleId: roleA,
+          permissionId: NexaBizPermissionId('company.details.view'),
+        );
+        await store.grantPermissionToRole(
+          roleId: roleA,
+          permissionId: NexaBizPermissionId('company.details.edit'),
+        );
+
+        // Role 2 (roleB) has Perm B ('company.details.edit') and Perm C ('identity.user.manage')
+        final roleB = await store.createRole(
+          roleId: NexaBizRoleId('company.role_b'),
+          companyId: company.id,
+        );
+        await store.grantPermissionToRole(
+          roleId: roleB,
+          permissionId: NexaBizPermissionId('company.details.edit'),
+        );
+        await store.grantPermissionToRole(
+          roleId: roleB,
+          permissionId: NexaBizPermissionId('identity.user.manage'),
+        );
+
+        // Assign both roles
+        await store.assignRoleToMembership(
           membershipId: membership.id,
-          roleId: sysRoleId,
-        ),
-        throwsA(isA<Exception>()),
-      );
-      await store.close();
-    });
+          roleId: roleA,
+        );
+        await store.assignRoleToMembership(
+          membershipId: membership.id,
+          roleId: roleB,
+        );
 
-    test('12. Role permissions deduplication across multiple assigned roles', () async {
+        final snapshot = await store.readMembershipAuthorizationSnapshot(
+          membership.id,
+        );
+        expect(snapshot, isNotNull);
+
+        // Contains both roles + built-in owner
+        expect(
+          snapshot!.roleIds,
+          containsAll([
+            NexaBizRoleId('company.role_a'),
+            NexaBizRoleId('company.role_b'),
+          ]),
+        );
+
+        // Verify Perm B is deduplicated in the set
+        expect(
+          snapshot.permissionIds,
+          containsAll([
+            NexaBizPermissionId('company.details.view'),
+            NexaBizPermissionId('company.details.edit'),
+            NexaBizPermissionId('identity.user.manage'),
+          ]),
+        );
+        await store.close();
+      },
+    );
+
+    test('13. Role removal updates effective permissions', () async {
       final store = await DriftCoreInstallationStore.open(databasePath);
       await InitializeNexaBizCore(store)(setupInput);
+      await addSecondActiveOwner(store);
       final db = store.database;
       final company = (await db.select(db.coreCompanies).get()).single;
-      final membership = (await db.select(db.coreCompanyMemberships).get()).single;
+      final membership =
+          (await db.select(db.coreCompanyMemberships).get()).first;
 
-      // Role 1 (roleA) has Perm A ('company.details.view') and Perm B ('company.details.edit')
+      // Remove the built-in owner role first to test with isolated roles
+      final ownerRole = (await (db.select(
+        db.coreRoles,
+      )..where((t) => t.roleKey.equals('company.owner'))).getSingle());
+      await store.removeRoleFromMembership(
+        membershipId: membership.id,
+        roleId: ownerRole.id,
+      );
+
       final roleA = await store.createRole(
-        roleId: NexaBizRoleId('company.role_a'),
+        roleId: NexaBizRoleId('company.a'),
         companyId: company.id,
       );
+      final roleB = await store.createRole(
+        roleId: NexaBizRoleId('company.b'),
+        companyId: company.id,
+      );
+
       await store.grantPermissionToRole(
         roleId: roleA,
         permissionId: NexaBizPermissionId('company.details.view'),
-      );
-      await store.grantPermissionToRole(
-        roleId: roleA,
-        permissionId: NexaBizPermissionId('company.details.edit'),
-      );
-
-      // Role 2 (roleB) has Perm B ('company.details.edit') and Perm C ('identity.user.manage')
-      final roleB = await store.createRole(
-        roleId: NexaBizRoleId('company.role_b'),
-        companyId: company.id,
-      );
-      await store.grantPermissionToRole(
-        roleId: roleB,
-        permissionId: NexaBizPermissionId('company.details.edit'),
       );
       await store.grantPermissionToRole(
         roleId: roleB,
         permissionId: NexaBizPermissionId('identity.user.manage'),
       );
 
-      // Assign both roles
-      await store.assignRoleToMembership(membershipId: membership.id, roleId: roleA);
-      await store.assignRoleToMembership(membershipId: membership.id, roleId: roleB);
-
-      final snapshot = await store.readMembershipAuthorizationSnapshot(membership.id);
-      expect(snapshot, isNotNull);
-
-      // Contains both roles + built-in owner
-      expect(snapshot!.roleIds, containsAll([
-        NexaBizRoleId('company.role_a'),
-        NexaBizRoleId('company.role_b'),
-      ]));
-
-      // Verify Perm B is deduplicated in the set
-      expect(
-        snapshot.permissionIds,
-        containsAll([
-          NexaBizPermissionId('company.details.view'),
-          NexaBizPermissionId('company.details.edit'),
-          NexaBizPermissionId('identity.user.manage'),
-        ]),
+      await store.assignRoleToMembership(
+        membershipId: membership.id,
+        roleId: roleA,
       );
-      await store.close();
-    });
+      await store.assignRoleToMembership(
+        membershipId: membership.id,
+        roleId: roleB,
+      );
 
-    test('13. Role removal updates effective permissions', () async {
-      final store = await DriftCoreInstallationStore.open(databasePath);
-      await InitializeNexaBizCore(store)(setupInput);
-      final db = store.database;
-      final company = (await db.select(db.coreCompanies).get()).single;
-      final membership = (await db.select(db.coreCompanyMemberships).get()).single;
-
-      // Remove the built-in owner role first to test with isolated roles
-      final ownerRole = (await (db.select(db.coreRoles)..where((t) => t.roleKey.equals('company.owner'))).getSingle());
-      await store.removeRoleFromMembership(membershipId: membership.id, roleId: ownerRole.id);
-
-      final roleA = await store.createRole(roleId: NexaBizRoleId('company.a'), companyId: company.id);
-      final roleB = await store.createRole(roleId: NexaBizRoleId('company.b'), companyId: company.id);
-
-      await store.grantPermissionToRole(roleId: roleA, permissionId: NexaBizPermissionId('company.details.view'));
-      await store.grantPermissionToRole(roleId: roleB, permissionId: NexaBizPermissionId('identity.user.manage'));
-
-      await store.assignRoleToMembership(membershipId: membership.id, roleId: roleA);
-      await store.assignRoleToMembership(membershipId: membership.id, roleId: roleB);
-
-      var snapshot = await store.readMembershipAuthorizationSnapshot(membership.id);
+      var snapshot = await store.readMembershipAuthorizationSnapshot(
+        membership.id,
+      );
       expect(snapshot!.permissionIds, {
         NexaBizPermissionId('company.details.view'),
         NexaBizPermissionId('identity.user.manage'),
       });
 
       // Remove role B
-      await store.removeRoleFromMembership(membershipId: membership.id, roleId: roleB);
+      await store.removeRoleFromMembership(
+        membershipId: membership.id,
+        roleId: roleB,
+      );
 
       snapshot = await store.readMembershipAuthorizationSnapshot(membership.id);
       expect(snapshot!.roleIds, {NexaBizRoleId('company.a')});
-      expect(snapshot.permissionIds, {NexaBizPermissionId('company.details.view')});
+      expect(snapshot.permissionIds, {
+        NexaBizPermissionId('company.details.view'),
+      });
 
       await store.close();
     });
@@ -437,29 +557,55 @@ void main() {
     test('14. Permission revocation updates effective permissions', () async {
       final store = await DriftCoreInstallationStore.open(databasePath);
       await InitializeNexaBizCore(store)(setupInput);
+      await addSecondActiveOwner(store);
       final db = store.database;
       final company = (await db.select(db.coreCompanies).get()).single;
-      final membership = (await db.select(db.coreCompanyMemberships).get()).single;
+      final membership =
+          (await db.select(db.coreCompanyMemberships).get()).first;
 
-      final ownerRole = (await (db.select(db.coreRoles)..where((t) => t.roleKey.equals('company.owner'))).getSingle());
-      await store.removeRoleFromMembership(membershipId: membership.id, roleId: ownerRole.id);
+      final ownerRole = (await (db.select(
+        db.coreRoles,
+      )..where((t) => t.roleKey.equals('company.owner'))).getSingle());
+      await store.removeRoleFromMembership(
+        membershipId: membership.id,
+        roleId: ownerRole.id,
+      );
 
-      final role = await store.createRole(roleId: NexaBizRoleId('company.editor'), companyId: company.id);
-      await store.grantPermissionToRole(roleId: role, permissionId: NexaBizPermissionId('company.details.view'));
-      await store.grantPermissionToRole(roleId: role, permissionId: NexaBizPermissionId('company.details.edit'));
-      await store.assignRoleToMembership(membershipId: membership.id, roleId: role);
+      final role = await store.createRole(
+        roleId: NexaBizRoleId('company.editor'),
+        companyId: company.id,
+      );
+      await store.grantPermissionToRole(
+        roleId: role,
+        permissionId: NexaBizPermissionId('company.details.view'),
+      );
+      await store.grantPermissionToRole(
+        roleId: role,
+        permissionId: NexaBizPermissionId('company.details.edit'),
+      );
+      await store.assignRoleToMembership(
+        membershipId: membership.id,
+        roleId: role,
+      );
 
-      var snapshot = await store.readMembershipAuthorizationSnapshot(membership.id);
+      var snapshot = await store.readMembershipAuthorizationSnapshot(
+        membership.id,
+      );
       expect(snapshot!.permissionIds, {
         NexaBizPermissionId('company.details.view'),
         NexaBizPermissionId('company.details.edit'),
       });
 
       // Revoke company.details.edit
-      await store.revokePermissionFromRole(roleId: role, permissionId: NexaBizPermissionId('company.details.edit'));
+      await store.revokePermissionFromRole(
+        roleId: role,
+        permissionId: NexaBizPermissionId('company.details.edit'),
+      );
 
       snapshot = await store.readMembershipAuthorizationSnapshot(membership.id);
-      expect(snapshot!.permissionIds, {NexaBizPermissionId('company.details.view')});
+      expect(snapshot!.permissionIds, {
+        NexaBizPermissionId('company.details.view'),
+      });
 
       await store.close();
     });
@@ -468,14 +614,19 @@ void main() {
       final store = await DriftCoreInstallationStore.open(databasePath);
       await InitializeNexaBizCore(store)(setupInput);
       final db = store.database;
-      final membership = (await db.select(db.coreCompanyMemberships).get()).single;
+      final membership =
+          (await db.select(db.coreCompanyMemberships).get()).single;
 
       // Deactivate membership
-      await (db.update(db.coreCompanyMemberships)..where((t) => t.id.equals(membership.id))).write(
+      await (db.update(
+        db.coreCompanyMemberships,
+      )..where((t) => t.id.equals(membership.id))).write(
         const CoreCompanyMembershipsCompanion(status: Value('revoked')),
       );
 
-      final snapshot = await store.readMembershipAuthorizationSnapshot(membership.id);
+      final snapshot = await store.readMembershipAuthorizationSnapshot(
+        membership.id,
+      );
       expect(snapshot, isNotNull);
       expect(snapshot!.isEligibleForAuthorization, isFalse);
       expect(snapshot.isActive, isFalse);
@@ -494,14 +645,16 @@ void main() {
       await InitializeNexaBizCore(store)(setupInput);
       final db = store.database;
       final company = (await db.select(db.coreCompanies).get()).single;
-      final membership = (await db.select(db.coreCompanyMemberships).get()).single;
+      final membership =
+          (await db.select(db.coreCompanyMemberships).get()).single;
 
       // Suspend company
-      await (db.update(db.coreCompanies)..where((t) => t.id.equals(company.id))).write(
-        const CoreCompaniesCompanion(status: Value('suspended')),
-      );
+      await (db.update(db.coreCompanies)..where((t) => t.id.equals(company.id)))
+          .write(const CoreCompaniesCompanion(status: Value('suspended')));
 
-      final snapshot = await store.readMembershipAuthorizationSnapshot(membership.id);
+      final snapshot = await store.readMembershipAuthorizationSnapshot(
+        membership.id,
+      );
       expect(snapshot, isNotNull);
       expect(snapshot!.isEligibleForAuthorization, isFalse);
       expect(snapshot.isActive, isFalse);
@@ -516,14 +669,17 @@ void main() {
       await InitializeNexaBizCore(store)(setupInput);
       final db = store.database;
       final user = (await db.select(db.coreUsers).get()).single;
-      final membership = (await db.select(db.coreCompanyMemberships).get()).single;
+      final membership =
+          (await db.select(db.coreCompanyMemberships).get()).single;
 
       // Disable user
       await (db.update(db.coreUsers)..where((t) => t.id.equals(user.id))).write(
         const CoreUsersCompanion(status: Value('disabled')),
       );
 
-      final snapshot = await store.readMembershipAuthorizationSnapshot(membership.id);
+      final snapshot = await store.readMembershipAuthorizationSnapshot(
+        membership.id,
+      );
       expect(snapshot, isNotNull);
       expect(snapshot!.isEligibleForAuthorization, isFalse);
       expect(snapshot.isActive, isFalse);
@@ -533,89 +689,135 @@ void main() {
       await store.close();
     });
 
-    test('18. Atomic query returns consistent snapshot or null for unknown membership', () async {
-      final store = await DriftCoreInstallationStore.open(databasePath);
-      await InitializeNexaBizCore(store)(setupInput);
+    test(
+      '18. Atomic query returns consistent snapshot or null for unknown membership',
+      () async {
+        final store = await DriftCoreInstallationStore.open(databasePath);
+        await InitializeNexaBizCore(store)(setupInput);
 
-      final unknown = await store.readMembershipAuthorizationSnapshot('unknown-id');
-      expect(unknown, isNull);
+        final unknown = await store.readMembershipAuthorizationSnapshot(
+          'unknown-id',
+        );
+        expect(unknown, isNull);
 
-      final membership = (await store.database.select(store.database.coreCompanyMemberships).get()).single;
-      final snapshot = await store.readMembershipAuthorizationSnapshot(membership.id);
-      expect(snapshot, isNotNull);
-      expect(snapshot!.membershipId.value, membership.id);
-      expect(snapshot.companyId.value, membership.companyId);
-      expect(snapshot.userId.value, membership.userId);
+        final membership =
+            (await store.database
+                    .select(store.database.coreCompanyMemberships)
+                    .get())
+                .single;
+        final snapshot = await store.readMembershipAuthorizationSnapshot(
+          membership.id,
+        );
+        expect(snapshot, isNotNull);
+        expect(snapshot!.membershipId.value, membership.id);
+        expect(snapshot.companyId.value, membership.companyId);
+        expect(snapshot.userId.value, membership.userId);
 
-      await store.close();
-    });
+        await store.close();
+      },
+    );
 
-    test('19. Closed permissions: membership with no roles or role with no permissions', () async {
-      final store = await DriftCoreInstallationStore.open(databasePath);
-      await InitializeNexaBizCore(store)(setupInput);
-      final db = store.database;
-      final company = (await db.select(db.coreCompanies).get()).single;
-      final membership = (await db.select(db.coreCompanyMemberships).get()).single;
+    test(
+      '19. Closed permissions: membership with no roles or role with no permissions',
+      () async {
+        final store = await DriftCoreInstallationStore.open(databasePath);
+        await InitializeNexaBizCore(store)(setupInput);
+        await addSecondActiveOwner(store);
+        final db = store.database;
+        final company = (await db.select(db.coreCompanies).get()).single;
+        final membership =
+            (await db.select(db.coreCompanyMemberships).get()).first;
 
-      // 1. Remove all roles from membership
-      final ownerRole = (await (db.select(db.coreRoles)..where((t) => t.roleKey.equals('company.owner'))).getSingle());
-      await store.removeRoleFromMembership(membershipId: membership.id, roleId: ownerRole.id);
+        // 1. Remove all roles from membership
+        final ownerRole = (await (db.select(
+          db.coreRoles,
+        )..where((t) => t.roleKey.equals('company.owner'))).getSingle());
+        await store.removeRoleFromMembership(
+          membershipId: membership.id,
+          roleId: ownerRole.id,
+        );
 
-      var snapshot = await store.readMembershipAuthorizationSnapshot(membership.id);
-      expect(snapshot!.roleIds, isEmpty);
-      expect(snapshot.permissionIds, isEmpty);
-      expect(snapshot.effectiveRoles, isEmpty);
-      expect(snapshot.effectivePermissions, isEmpty);
+        var snapshot = await store.readMembershipAuthorizationSnapshot(
+          membership.id,
+        );
+        expect(snapshot!.roleIds, isEmpty);
+        expect(snapshot.permissionIds, isEmpty);
+        expect(snapshot.effectiveRoles, isEmpty);
+        expect(snapshot.effectivePermissions, isEmpty);
 
-      // 2. Assign role with no permissions
-      final emptyRole = await store.createRole(roleId: NexaBizRoleId('company.empty'), companyId: company.id);
-      await store.assignRoleToMembership(membershipId: membership.id, roleId: emptyRole);
+        // 2. Assign role with no permissions
+        final emptyRole = await store.createRole(
+          roleId: NexaBizRoleId('company.empty'),
+          companyId: company.id,
+        );
+        await store.assignRoleToMembership(
+          membershipId: membership.id,
+          roleId: emptyRole,
+        );
 
-      snapshot = await store.readMembershipAuthorizationSnapshot(membership.id);
-      expect(snapshot!.roleIds, {NexaBizRoleId('company.empty')});
-      expect(snapshot.permissionIds, isEmpty);
-      expect(snapshot.effectivePermissions, isEmpty);
+        snapshot = await store.readMembershipAuthorizationSnapshot(
+          membership.id,
+        );
+        expect(snapshot!.roleIds, {NexaBizRoleId('company.empty')});
+        expect(snapshot.permissionIds, isEmpty);
+        expect(snapshot.effectivePermissions, isEmpty);
 
-      await store.close();
-    });
+        await store.close();
+      },
+    );
 
-    test('20. Built-in roles: Initial setup creates company.owner role with declared permissions', () async {
-      final store = await DriftCoreInstallationStore.open(databasePath);
-      final readiness = await InitializeNexaBizCore(store)(setupInput);
-      expect(readiness.isReady, isTrue);
+    test(
+      '20. Built-in roles: Initial setup creates company.owner role with declared permissions',
+      () async {
+        final store = await DriftCoreInstallationStore.open(databasePath);
+        final readiness = await InitializeNexaBizCore(store)(setupInput);
+        expect(readiness.isReady, isTrue);
 
-      final db = store.database;
-      final roles = await db.select(db.coreRoles).get();
-      expect(roles, hasLength(1));
-      expect(roles.single.roleKey, 'company.owner');
-      expect(roles.single.scope, 'company');
-      expect(roles.single.isBuiltin, isTrue);
+        final db = store.database;
+        final roles = await db.select(db.coreRoles).get();
+        expect(roles, hasLength(1));
+        expect(roles.single.roleKey, 'company.owner');
+        expect(roles.single.scope, 'company');
+        expect(roles.single.isBuiltin, isTrue);
 
-      final membershipRoles = await db.select(db.coreMembershipRoles).get();
-      expect(membershipRoles, hasLength(1));
-      expect(membershipRoles.single.roleId, roles.single.id);
+        final membershipRoles = await db.select(db.coreMembershipRoles).get();
+        expect(membershipRoles, hasLength(1));
+        expect(membershipRoles.single.roleId, roles.single.id);
 
-      final rolePermissions = await db.select(db.coreRolePermissions).get();
-      expect(rolePermissions.map((rp) => rp.permissionId).toSet(), kInitialCompanyOwnerPermissions);
+        final rolePermissions = await db.select(db.coreRolePermissions).get();
+        expect(
+          rolePermissions.map((rp) => rp.permissionId).toSet(),
+          kInitialCompanyOwnerPermissions,
+        );
 
-      final membership = (await db.select(db.coreCompanyMemberships).get()).single;
-      final snapshot = await store.readMembershipAuthorizationSnapshot(membership.id);
-      expect(snapshot, isNotNull);
-      expect(snapshot!.isEligibleForAuthorization, isTrue);
-      expect(snapshot.effectiveRoles, {NexaBizRoleId('company.owner')});
-      expect(
-        snapshot.effectivePermissions,
-        kInitialCompanyOwnerPermissions.map(NexaBizPermissionId.new).toSet(),
-      );
+        final membership =
+            (await db.select(db.coreCompanyMemberships).get()).single;
+        final snapshot = await store.readMembershipAuthorizationSnapshot(
+          membership.id,
+        );
+        expect(snapshot, isNotNull);
+        expect(snapshot!.isEligibleForAuthorization, isTrue);
+        expect(snapshot.effectiveRoles, {NexaBizRoleId('company.owner')});
+        expect(
+          snapshot.effectivePermissions,
+          kInitialCompanyOwnerPermissions.map(NexaBizPermissionId.new).toSet(),
+        );
 
-      await store.close();
-    });
+        await store.close();
+      },
+    );
 
     test('21. DB reopen / restart preserves all RBAC mappings', () async {
       final store = await DriftCoreInstallationStore.open(databasePath);
       await InitializeNexaBizCore(store)(setupInput);
-      final company = (await store.database.select(store.database.coreCompanies).get()).single;
-      final membership = (await store.database.select(store.database.coreCompanyMemberships).get()).single;
+      final company =
+          (await store.database.select(store.database.coreCompanies).get())
+              .single;
+      final membership =
+          (await store.database
+                  .select(store.database.coreCompanyMemberships)
+                  .get())
+              .single;
 
       final roleId = await store.createRole(
         roleId: NexaBizRoleId('company.manager'),
@@ -625,12 +827,17 @@ void main() {
         roleId: roleId,
         permissionId: NexaBizPermissionId('permissions.policy.review'),
       );
-      await store.assignRoleToMembership(membershipId: membership.id, roleId: roleId);
+      await store.assignRoleToMembership(
+        membershipId: membership.id,
+        roleId: roleId,
+      );
       await store.close();
 
       // Reopen from disk
       final reopenedStore = await DriftCoreInstallationStore.open(databasePath);
-      final snapshot = await reopenedStore.readMembershipAuthorizationSnapshot(membership.id);
+      final snapshot = await reopenedStore.readMembershipAuthorizationSnapshot(
+        membership.id,
+      );
       expect(snapshot, isNotNull);
       expect(snapshot!.isEligibleForAuthorization, isTrue);
       expect(snapshot.roleIds, {

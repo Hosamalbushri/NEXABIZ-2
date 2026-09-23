@@ -992,4 +992,380 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get actionBackToDashboard => 'Back to Dashboard';
+
+  @override
+  String get authAppSubtitle => 'Smart ERP & Accounting System';
+
+  @override
+  String get authFooterNote => 'NexaBiz ERP • Secured Enterprise Local Edition';
+
+  @override
+  String get authAdminPageTitle => 'Roles & Access Control';
+
+  @override
+  String get authAdminPageSubtitle =>
+      'Configure company roles, permissions, and member assignments';
+
+  @override
+  String get authAdminRolesTitle => 'Roles';
+
+  @override
+  String get authAdminRoleDetailsTitle => 'Role Details';
+
+  @override
+  String get authAdminCreateRoleTitle => 'Create Role';
+
+  @override
+  String get authAdminEditRoleTitle => 'Edit Role';
+
+  @override
+  String get authAdminDeleteRoleTitle => 'Delete Role';
+
+  @override
+  String get authAdminPermissionsTitle => 'Permissions';
+
+  @override
+  String get authAdminAssignedMembersTitle => 'Assigned Members';
+
+  @override
+  String get authAdminAssignMemberTitle => 'Assign Member';
+
+  @override
+  String get authAdminRoleTypeBuiltIn => 'Built-in';
+
+  @override
+  String get authAdminRoleTypeCustom => 'Custom';
+
+  @override
+  String get authAdminRoleBuiltInBadge => 'Built-in Role';
+
+  @override
+  String get authAdminRoleCustomBadge => 'Custom Role';
+
+  @override
+  String get authAdminRoleBuiltInHelp =>
+      'Built-in roles are system-defined. Their identifier, permissions, and definition cannot be modified or deleted, but active members can be assigned or unassigned.';
+
+  @override
+  String get authAdminRoleDisplayNameLabel => 'Role Name';
+
+  @override
+  String get authAdminRoleDisplayNamePlaceholder => 'e.g. Sales Manager';
+
+  @override
+  String get authAdminRoleKeyLabel => 'Role Identifier';
+
+  @override
+  String get authAdminRoleKeyPlaceholder => 'e.g. company.sales_manager';
+
+  @override
+  String get authAdminRoleKeyHelpText =>
+      'A unique, lowercase identifier (e.g. company.role_name). Cannot be modified after creation.';
+
+  @override
+  String get authAdminRoleDescriptionLabel => 'Description';
+
+  @override
+  String get authAdminRoleDescriptionPlaceholder =>
+      'Describe the purpose and responsibilities of this role';
+
+  @override
+  String get authAdminRoleDescriptionOptional => 'Optional';
+
+  @override
+  String get authAdminActionSave => 'Save';
+
+  @override
+  String get authAdminActionCreate => 'Create Role';
+
+  @override
+  String get authAdminActionUpdate => 'Save Changes';
+
+  @override
+  String get authAdminActionDelete => 'Delete Role';
+
+  @override
+  String get authAdminActionAssign => 'Assign';
+
+  @override
+  String get authAdminActionRemove => 'Remove';
+
+  @override
+  String get authAdminActionUnassign => 'Unassign';
+
+  @override
+  String get authAdminSearchRolesPlaceholder => 'Search roles...';
+
+  @override
+  String get authAdminSearchPermissionsPlaceholder => 'Search permissions...';
+
+  @override
+  String get authAdminSearchMembersPlaceholder => 'Search members...';
+
+  @override
+  String get authAdminFilterAllRoles => 'All Roles';
+
+  @override
+  String get authAdminFilterBuiltInRoles => 'Built-in Roles';
+
+  @override
+  String get authAdminFilterCustomRoles => 'Custom Roles';
+
+  @override
+  String get authAdminEmptyRoles => 'No roles found.';
+
+  @override
+  String get authAdminEmptyRolesSearch => 'No roles matching your search.';
+
+  @override
+  String get authAdminEmptyAssignedMembers =>
+      'No members currently assigned to this role.';
+
+  @override
+  String get authAdminEmptyAssignableMembers =>
+      'No assignable members available.';
+
+  @override
+  String get authAdminEmptyAssignableMembersSearch =>
+      'No members matching your search.';
+
+  @override
+  String get authAdminEmptyPermissionsSearch =>
+      'No permissions matching your search.';
+
+  @override
+  String get authAdminMemberStatusActive => 'Active';
+
+  @override
+  String get authAdminMemberStatusInactive => 'Inactive';
+
+  @override
+  String get authAdminMemberEligible => 'Eligible';
+
+  @override
+  String get authAdminMemberIneligible => 'Ineligible';
+
+  @override
+  String get authAdminAvailableMembersSection => 'Available Members';
+
+  @override
+  String authAdminDeleteRoleConfirm(String roleName) {
+    return 'Are you sure you want to delete role \"$roleName\"?';
+  }
+
+  @override
+  String get authAdminDeleteRoleConfirmMessage =>
+      'This action is permanent and cannot be undone.';
+
+  @override
+  String authAdminUnassignMemberConfirm(String memberName, String roleName) {
+    return 'Remove \"$memberName\" from role \"$roleName\"?';
+  }
+
+  @override
+  String authAdminPermissionCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count permissions',
+      one: '1 permission',
+      zero: 'No permissions',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String authAdminMemberCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count members',
+      one: '1 member',
+      zero: 'No members',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get authAdminGroupCompany => 'Company Workspace';
+
+  @override
+  String get authAdminGroupIdentity => 'Identity & Users';
+
+  @override
+  String get authAdminGroupAuthorization => 'Access Control & Roles';
+
+  @override
+  String get authAdminGroupOther => 'Other Permissions';
+
+  @override
+  String get authAdminPermCompanyProfileViewTitle => 'View company profile';
+
+  @override
+  String get authAdminPermCompanyProfileViewDesc =>
+      'View company basic details, code, and organization profile.';
+
+  @override
+  String get authAdminPermCompanyProfileManageTitle => 'Manage company profile';
+
+  @override
+  String get authAdminPermCompanyProfileManageDesc =>
+      'Update company profile information, settings, and business details.';
+
+  @override
+  String get authAdminPermCompanyMembershipViewTitle =>
+      'View company memberships';
+
+  @override
+  String get authAdminPermCompanyMembershipViewDesc =>
+      'Inspect users and members associated with this company workspace.';
+
+  @override
+  String get authAdminPermIdentitySessionViewTitle => 'View active sessions';
+
+  @override
+  String get authAdminPermIdentitySessionViewDesc =>
+      'Inspect active authentication sessions, login status, and devices.';
+
+  @override
+  String get authAdminPermIdentityUserManageTitle => 'Manage users';
+
+  @override
+  String get authAdminPermIdentityUserManageDesc =>
+      'Manage user credentials, account status, and authentication security.';
+
+  @override
+  String get authAdminPermCatalogViewTitle => 'View permission catalog';
+
+  @override
+  String get authAdminPermCatalogViewDesc =>
+      'View all declared capabilities and system permissions available for configuration.';
+
+  @override
+  String get authAdminPermPolicyReviewTitle => 'Review authorization policy';
+
+  @override
+  String get authAdminPermPolicyReviewDesc =>
+      'Read roles, role permissions, and membership assignments without modification.';
+
+  @override
+  String get authAdminPermRoleManageTitle => 'Manage custom roles';
+
+  @override
+  String get authAdminPermRoleManageDesc =>
+      'Create, rename, describe, and delete custom company roles.';
+
+  @override
+  String get authAdminPermPolicyManageTitle => 'Manage role permissions';
+
+  @override
+  String get authAdminPermPolicyManageDesc =>
+      'Grant and revoke specific permissions for custom company roles.';
+
+  @override
+  String get authAdminPermAssignmentManageTitle => 'Manage role assignments';
+
+  @override
+  String get authAdminPermAssignmentManageDesc =>
+      'Assign and remove company roles for active company members.';
+
+  @override
+  String authAdminUnknownPermissionDesc(String permissionId) {
+    return 'System-declared capability permission ($permissionId).';
+  }
+
+  @override
+  String get authAdminErrorRoleNotFound =>
+      'Role not found in the current company.';
+
+  @override
+  String get authAdminErrorMembershipNotFound =>
+      'Company membership not found.';
+
+  @override
+  String get authAdminErrorCrossCompany =>
+      'Security violation: tenant mismatch detected.';
+
+  @override
+  String get authAdminErrorBuiltInCreate =>
+      'Cannot create a role with built-in prefix or identifier.';
+
+  @override
+  String get authAdminErrorBuiltInUpdate =>
+      'Built-in roles cannot be renamed or modified.';
+
+  @override
+  String get authAdminErrorBuiltInDelete =>
+      'Built-in system roles cannot be deleted.';
+
+  @override
+  String get authAdminErrorBuiltInPermissions =>
+      'Permissions for built-in roles cannot be modified.';
+
+  @override
+  String get authAdminErrorLastOwnerProtected =>
+      'Cannot remove the last active company owner. Assign another active owner first.';
+
+  @override
+  String get authAdminErrorUndeclaredPermission =>
+      'The requested permission is not declared in the system catalog.';
+
+  @override
+  String get authAdminErrorDuplicateRoleKey =>
+      'A role with this identifier already exists in this company.';
+
+  @override
+  String get authAdminErrorDuplicateRoleDisplayName =>
+      'A role with this name already exists in this company.';
+
+  @override
+  String get authAdminErrorRoleHasAssignments =>
+      'Cannot delete role because members are currently assigned to it.';
+
+  @override
+  String get authAdminErrorMembershipInactive =>
+      'Cannot assign role: member is currently inactive.';
+
+  @override
+  String get authAdminErrorUserInactive =>
+      'Cannot assign role: user account is currently inactive.';
+
+  @override
+  String get authAdminErrorCompanyInactive =>
+      'Cannot perform operation: company workspace is inactive.';
+
+  @override
+  String get authAdminErrorRoleNameEmpty => 'Role name cannot be empty.';
+
+  @override
+  String authAdminErrorRoleNameTooLong(int max) {
+    return 'Role name cannot exceed $max characters.';
+  }
+
+  @override
+  String get authAdminErrorRoleKeyInvalid =>
+      'Invalid role identifier format. Use lowercase letters, numbers, and underscores (e.g. company.sales_rep).';
+
+  @override
+  String get authAdminErrorPermissionDenied =>
+      'You do not have permission to perform this administration action.';
+
+  @override
+  String get authAdminErrorGeneric =>
+      'An unexpected error occurred. Please try again.';
+
+  @override
+  String get authAdminPendingApplying => 'Applying changes...';
+
+  @override
+  String get authAdminCommittedSuccess => 'Changes saved successfully.';
+
+  @override
+  String get authAdminNoRoleSelected => 'Select a role to view its details.';
+
+  @override
+  String get authAdminLoadMore => 'Load More';
+
+  @override
+  String get authAdminRolePermissionGranted => 'Granted';
 }

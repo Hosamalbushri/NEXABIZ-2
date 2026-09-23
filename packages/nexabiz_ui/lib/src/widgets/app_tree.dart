@@ -194,7 +194,8 @@ class AppTree<T> extends StatelessWidget {
     }
 
     if (width != null || height != null || constraints != null) {
-      BoxConstraints effectiveConstraints = constraints ?? const BoxConstraints();
+      BoxConstraints effectiveConstraints =
+          constraints ?? const BoxConstraints();
       if (width != null) {
         effectiveConstraints = effectiveConstraints.copyWith(
           minWidth: width,

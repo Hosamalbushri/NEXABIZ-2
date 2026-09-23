@@ -2205,6 +2205,17 @@ class $CoreRolesTable extends CoreRoles
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _normalizedNameMeta = const VerificationMeta(
+    'normalizedName',
+  );
+  @override
+  late final GeneratedColumn<String> normalizedName = GeneratedColumn<String>(
+    'normalized_name',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _descriptionMeta = const VerificationMeta(
     'description',
   );
@@ -2260,6 +2271,7 @@ class $CoreRolesTable extends CoreRoles
     companyId,
     roleKey,
     name,
+    normalizedName,
     description,
     isBuiltin,
     createdAt,
@@ -2308,6 +2320,15 @@ class $CoreRolesTable extends CoreRoles
       context.handle(
         _nameMeta,
         name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    }
+    if (data.containsKey('normalized_name')) {
+      context.handle(
+        _normalizedNameMeta,
+        normalizedName.isAcceptableOrUnknown(
+          data['normalized_name']!,
+          _normalizedNameMeta,
+        ),
       );
     }
     if (data.containsKey('description')) {
@@ -2370,6 +2391,10 @@ class $CoreRolesTable extends CoreRoles
         DriftSqlType.string,
         data['${effectivePrefix}name'],
       ),
+      normalizedName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}normalized_name'],
+      ),
       description: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}description'],
@@ -2401,6 +2426,7 @@ class CoreRoleRow extends DataClass implements Insertable<CoreRoleRow> {
   final String? companyId;
   final String roleKey;
   final String? name;
+  final String? normalizedName;
   final String? description;
   final bool isBuiltin;
   final DateTime createdAt;
@@ -2411,6 +2437,7 @@ class CoreRoleRow extends DataClass implements Insertable<CoreRoleRow> {
     this.companyId,
     required this.roleKey,
     this.name,
+    this.normalizedName,
     this.description,
     required this.isBuiltin,
     required this.createdAt,
@@ -2427,6 +2454,9 @@ class CoreRoleRow extends DataClass implements Insertable<CoreRoleRow> {
     map['role_key'] = Variable<String>(roleKey);
     if (!nullToAbsent || name != null) {
       map['name'] = Variable<String>(name);
+    }
+    if (!nullToAbsent || normalizedName != null) {
+      map['normalized_name'] = Variable<String>(normalizedName);
     }
     if (!nullToAbsent || description != null) {
       map['description'] = Variable<String>(description);
@@ -2446,6 +2476,9 @@ class CoreRoleRow extends DataClass implements Insertable<CoreRoleRow> {
           : Value(companyId),
       roleKey: Value(roleKey),
       name: name == null && nullToAbsent ? const Value.absent() : Value(name),
+      normalizedName: normalizedName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(normalizedName),
       description: description == null && nullToAbsent
           ? const Value.absent()
           : Value(description),
@@ -2466,6 +2499,7 @@ class CoreRoleRow extends DataClass implements Insertable<CoreRoleRow> {
       companyId: serializer.fromJson<String?>(json['companyId']),
       roleKey: serializer.fromJson<String>(json['roleKey']),
       name: serializer.fromJson<String?>(json['name']),
+      normalizedName: serializer.fromJson<String?>(json['normalizedName']),
       description: serializer.fromJson<String?>(json['description']),
       isBuiltin: serializer.fromJson<bool>(json['isBuiltin']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
@@ -2481,6 +2515,7 @@ class CoreRoleRow extends DataClass implements Insertable<CoreRoleRow> {
       'companyId': serializer.toJson<String?>(companyId),
       'roleKey': serializer.toJson<String>(roleKey),
       'name': serializer.toJson<String?>(name),
+      'normalizedName': serializer.toJson<String?>(normalizedName),
       'description': serializer.toJson<String?>(description),
       'isBuiltin': serializer.toJson<bool>(isBuiltin),
       'createdAt': serializer.toJson<DateTime>(createdAt),
@@ -2494,6 +2529,7 @@ class CoreRoleRow extends DataClass implements Insertable<CoreRoleRow> {
     Value<String?> companyId = const Value.absent(),
     String? roleKey,
     Value<String?> name = const Value.absent(),
+    Value<String?> normalizedName = const Value.absent(),
     Value<String?> description = const Value.absent(),
     bool? isBuiltin,
     DateTime? createdAt,
@@ -2504,6 +2540,9 @@ class CoreRoleRow extends DataClass implements Insertable<CoreRoleRow> {
     companyId: companyId.present ? companyId.value : this.companyId,
     roleKey: roleKey ?? this.roleKey,
     name: name.present ? name.value : this.name,
+    normalizedName: normalizedName.present
+        ? normalizedName.value
+        : this.normalizedName,
     description: description.present ? description.value : this.description,
     isBuiltin: isBuiltin ?? this.isBuiltin,
     createdAt: createdAt ?? this.createdAt,
@@ -2516,6 +2555,9 @@ class CoreRoleRow extends DataClass implements Insertable<CoreRoleRow> {
       companyId: data.companyId.present ? data.companyId.value : this.companyId,
       roleKey: data.roleKey.present ? data.roleKey.value : this.roleKey,
       name: data.name.present ? data.name.value : this.name,
+      normalizedName: data.normalizedName.present
+          ? data.normalizedName.value
+          : this.normalizedName,
       description: data.description.present
           ? data.description.value
           : this.description,
@@ -2533,6 +2575,7 @@ class CoreRoleRow extends DataClass implements Insertable<CoreRoleRow> {
           ..write('companyId: $companyId, ')
           ..write('roleKey: $roleKey, ')
           ..write('name: $name, ')
+          ..write('normalizedName: $normalizedName, ')
           ..write('description: $description, ')
           ..write('isBuiltin: $isBuiltin, ')
           ..write('createdAt: $createdAt, ')
@@ -2548,6 +2591,7 @@ class CoreRoleRow extends DataClass implements Insertable<CoreRoleRow> {
     companyId,
     roleKey,
     name,
+    normalizedName,
     description,
     isBuiltin,
     createdAt,
@@ -2562,6 +2606,7 @@ class CoreRoleRow extends DataClass implements Insertable<CoreRoleRow> {
           other.companyId == this.companyId &&
           other.roleKey == this.roleKey &&
           other.name == this.name &&
+          other.normalizedName == this.normalizedName &&
           other.description == this.description &&
           other.isBuiltin == this.isBuiltin &&
           other.createdAt == this.createdAt &&
@@ -2574,6 +2619,7 @@ class CoreRolesCompanion extends UpdateCompanion<CoreRoleRow> {
   final Value<String?> companyId;
   final Value<String> roleKey;
   final Value<String?> name;
+  final Value<String?> normalizedName;
   final Value<String?> description;
   final Value<bool> isBuiltin;
   final Value<DateTime> createdAt;
@@ -2585,6 +2631,7 @@ class CoreRolesCompanion extends UpdateCompanion<CoreRoleRow> {
     this.companyId = const Value.absent(),
     this.roleKey = const Value.absent(),
     this.name = const Value.absent(),
+    this.normalizedName = const Value.absent(),
     this.description = const Value.absent(),
     this.isBuiltin = const Value.absent(),
     this.createdAt = const Value.absent(),
@@ -2597,6 +2644,7 @@ class CoreRolesCompanion extends UpdateCompanion<CoreRoleRow> {
     this.companyId = const Value.absent(),
     required String roleKey,
     this.name = const Value.absent(),
+    this.normalizedName = const Value.absent(),
     this.description = const Value.absent(),
     this.isBuiltin = const Value.absent(),
     required DateTime createdAt,
@@ -2613,6 +2661,7 @@ class CoreRolesCompanion extends UpdateCompanion<CoreRoleRow> {
     Expression<String>? companyId,
     Expression<String>? roleKey,
     Expression<String>? name,
+    Expression<String>? normalizedName,
     Expression<String>? description,
     Expression<bool>? isBuiltin,
     Expression<DateTime>? createdAt,
@@ -2625,6 +2674,7 @@ class CoreRolesCompanion extends UpdateCompanion<CoreRoleRow> {
       if (companyId != null) 'company_id': companyId,
       if (roleKey != null) 'role_key': roleKey,
       if (name != null) 'name': name,
+      if (normalizedName != null) 'normalized_name': normalizedName,
       if (description != null) 'description': description,
       if (isBuiltin != null) 'is_builtin': isBuiltin,
       if (createdAt != null) 'created_at': createdAt,
@@ -2639,6 +2689,7 @@ class CoreRolesCompanion extends UpdateCompanion<CoreRoleRow> {
     Value<String?>? companyId,
     Value<String>? roleKey,
     Value<String?>? name,
+    Value<String?>? normalizedName,
     Value<String?>? description,
     Value<bool>? isBuiltin,
     Value<DateTime>? createdAt,
@@ -2651,6 +2702,7 @@ class CoreRolesCompanion extends UpdateCompanion<CoreRoleRow> {
       companyId: companyId ?? this.companyId,
       roleKey: roleKey ?? this.roleKey,
       name: name ?? this.name,
+      normalizedName: normalizedName ?? this.normalizedName,
       description: description ?? this.description,
       isBuiltin: isBuiltin ?? this.isBuiltin,
       createdAt: createdAt ?? this.createdAt,
@@ -2676,6 +2728,9 @@ class CoreRolesCompanion extends UpdateCompanion<CoreRoleRow> {
     }
     if (name.present) {
       map['name'] = Variable<String>(name.value);
+    }
+    if (normalizedName.present) {
+      map['normalized_name'] = Variable<String>(normalizedName.value);
     }
     if (description.present) {
       map['description'] = Variable<String>(description.value);
@@ -2703,6 +2758,7 @@ class CoreRolesCompanion extends UpdateCompanion<CoreRoleRow> {
           ..write('companyId: $companyId, ')
           ..write('roleKey: $roleKey, ')
           ..write('name: $name, ')
+          ..write('normalizedName: $normalizedName, ')
           ..write('description: $description, ')
           ..write('isBuiltin: $isBuiltin, ')
           ..write('createdAt: $createdAt, ')
@@ -5619,6 +5675,7 @@ typedef $$CoreRolesTableCreateCompanionBuilder =
       Value<String?> companyId,
       required String roleKey,
       Value<String?> name,
+      Value<String?> normalizedName,
       Value<String?> description,
       Value<bool> isBuiltin,
       required DateTime createdAt,
@@ -5632,6 +5689,7 @@ typedef $$CoreRolesTableUpdateCompanionBuilder =
       Value<String?> companyId,
       Value<String> roleKey,
       Value<String?> name,
+      Value<String?> normalizedName,
       Value<String?> description,
       Value<bool> isBuiltin,
       Value<DateTime> createdAt,
@@ -5736,6 +5794,11 @@ class $$CoreRolesTableFilterComposer
 
   ColumnFilters<String> get name => $composableBuilder(
     column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get normalizedName => $composableBuilder(
+    column: $table.normalizedName,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -5862,6 +5925,11 @@ class $$CoreRolesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get normalizedName => $composableBuilder(
+    column: $table.normalizedName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get description => $composableBuilder(
     column: $table.description,
     builder: (column) => ColumnOrderings(column),
@@ -5926,6 +5994,11 @@ class $$CoreRolesTableAnnotationComposer
 
   GeneratedColumn<String> get name =>
       $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get normalizedName => $composableBuilder(
+    column: $table.normalizedName,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<String> get description => $composableBuilder(
     column: $table.description,
@@ -6054,6 +6127,7 @@ class $$CoreRolesTableTableManager
                 Value<String?> companyId = const Value.absent(),
                 Value<String> roleKey = const Value.absent(),
                 Value<String?> name = const Value.absent(),
+                Value<String?> normalizedName = const Value.absent(),
                 Value<String?> description = const Value.absent(),
                 Value<bool> isBuiltin = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
@@ -6065,6 +6139,7 @@ class $$CoreRolesTableTableManager
                 companyId: companyId,
                 roleKey: roleKey,
                 name: name,
+                normalizedName: normalizedName,
                 description: description,
                 isBuiltin: isBuiltin,
                 createdAt: createdAt,
@@ -6078,6 +6153,7 @@ class $$CoreRolesTableTableManager
                 Value<String?> companyId = const Value.absent(),
                 required String roleKey,
                 Value<String?> name = const Value.absent(),
+                Value<String?> normalizedName = const Value.absent(),
                 Value<String?> description = const Value.absent(),
                 Value<bool> isBuiltin = const Value.absent(),
                 required DateTime createdAt,
@@ -6089,6 +6165,7 @@ class $$CoreRolesTableTableManager
                 companyId: companyId,
                 roleKey: roleKey,
                 name: name,
+                normalizedName: normalizedName,
                 description: description,
                 isBuiltin: isBuiltin,
                 createdAt: createdAt,

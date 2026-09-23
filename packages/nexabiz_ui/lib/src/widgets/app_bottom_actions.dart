@@ -49,8 +49,8 @@ class AppBottomActions extends StatelessWidget {
     final mediaQuery = MediaQuery.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    final bg = backgroundColor ??
-        (isDark ? colorScheme.card : colorScheme.background);
+    final bg =
+        backgroundColor ?? (isDark ? colorScheme.card : colorScheme.background);
     final border = showBorder
         ? Border(
             top: BorderSide(
@@ -68,13 +68,11 @@ class AppBottomActions extends StatelessWidget {
       padding: (padding as EdgeInsets).add(
         EdgeInsets.only(bottom: effectiveBottomInset),
       ),
-      decoration: BoxDecoration(
-        color: bg,
-        border: border,
-      ),
+      decoration: BoxDecoration(color: bg, border: border),
       child: LayoutBuilder(
         builder: (context, constraints) {
-          final isNarrow = mediaQuery.size.width <= 360 || constraints.maxWidth < 280;
+          final isNarrow =
+              mediaQuery.size.width <= 360 || constraints.maxWidth < 280;
 
           if (isNarrow) {
             return Column(

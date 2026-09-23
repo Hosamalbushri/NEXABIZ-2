@@ -35,15 +35,14 @@ final class NexaBizRoleId {
   String get roleName => value.substring(value.indexOf('.') + 1);
 
   NexaBizRoleScope get scope => switch (namespace) {
-        'system' => NexaBizRoleScope.system,
-        'company' => NexaBizRoleScope.company,
-        _ => throw StateError('Unrecognized role scope namespace: "$namespace".'),
-      };
+    'system' => NexaBizRoleScope.system,
+    'company' => NexaBizRoleScope.company,
+    _ => throw StateError('Unrecognized role scope namespace: "$namespace".'),
+  };
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is NexaBizRoleId && value == other.value;
+      identical(this, other) || other is NexaBizRoleId && value == other.value;
 
   @override
   int get hashCode => value.hashCode;
@@ -51,4 +50,3 @@ final class NexaBizRoleId {
   @override
   String toString() => value;
 }
-

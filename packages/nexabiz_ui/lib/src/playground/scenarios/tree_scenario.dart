@@ -164,7 +164,11 @@ class _TreeScenarioState extends State<TreeScenario> {
     }
   }
 
-  bool _insertNode(List<AccountNodeData> list, String parentCode, AccountNodeData newNode) {
+  bool _insertNode(
+    List<AccountNodeData> list,
+    String parentCode,
+    AccountNodeData newNode,
+  ) {
     for (final node in list) {
       if (node.code == parentCode) {
         node.isParent = true;
@@ -196,20 +200,23 @@ class _TreeScenarioState extends State<TreeScenario> {
     return false;
   }
 
-
   List<AppDropdownItem<String>> _getParentDropdownItems() {
     final items = <AppDropdownItem<String>>[];
     void collect(List<AccountNodeData> list) {
       for (final node in list) {
         if (node.isParent) {
-          items.add(AppDropdownItem(
-            value: node.code,
-            label: '${node.code} - ${widget.isArabic ? node.titleAr : node.titleEn}',
-          ));
+          items.add(
+            AppDropdownItem(
+              value: node.code,
+              label:
+                  '${node.code} - ${widget.isArabic ? node.titleAr : node.titleEn}',
+            ),
+          );
           collect(node.children);
         }
       }
     }
+
     collect(_accountsTree);
     return items;
   }
@@ -245,6 +252,7 @@ class _TreeScenarioState extends State<TreeScenario> {
           }
         }
       }
+
       for (final root in _accountsTree) {
         addAll(root);
       }
@@ -295,7 +303,11 @@ class _TreeScenarioState extends State<TreeScenario> {
               level: parentLvl != -1 ? parentLvl + 1 : 1,
             );
 
-            final inserted = _insertNode(_accountsTree, parentCode, createdNode);
+            final inserted = _insertNode(
+              _accountsTree,
+              parentCode,
+              createdNode,
+            );
             if (!inserted) {
               _accountsTree.add(createdNode);
             }
@@ -440,16 +452,25 @@ class _TreeScenarioState extends State<TreeScenario> {
                   if (_selectedCode != null) ...[
                     const Spacer(),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: colorScheme.primary.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(6),
-                        border: Border.all(color: colorScheme.primary.withValues(alpha: 0.3)),
+                        border: Border.all(
+                          color: colorScheme.primary.withValues(alpha: 0.3),
+                        ),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(shadcn.LucideIcons.circleCheck, size: 12, color: colorScheme.primary),
+                          Icon(
+                            shadcn.LucideIcons.circleCheck,
+                            size: 12,
+                            color: colorScheme.primary,
+                          ),
                           const SizedBox(width: 4),
                           Text(
                             '${isAr ? "المُحدد:" : "Selected:"} $_selectedCode',
@@ -504,7 +525,10 @@ class _TreeScenarioState extends State<TreeScenario> {
                   },
                   behavior: HitTestBehavior.opaque,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: levelBg,
                       borderRadius: BorderRadius.circular(6),
@@ -525,8 +549,8 @@ class _TreeScenarioState extends State<TreeScenario> {
                                 isExpanded
                                     ? shadcn.LucideIcons.chevronDown
                                     : (isAr
-                                        ? shadcn.LucideIcons.chevronLeft
-                                        : shadcn.LucideIcons.chevronRight),
+                                          ? shadcn.LucideIcons.chevronLeft
+                                          : shadcn.LucideIcons.chevronRight),
                                 size: 16,
                                 color: colorScheme.primary,
                               ),
@@ -540,7 +564,9 @@ class _TreeScenarioState extends State<TreeScenario> {
                             title: Text(
                               isAr ? item.titleAr : item.titleEn,
                               style: TextStyle(
-                                fontWeight: item.isParent ? FontWeight.bold : FontWeight.w500,
+                                fontWeight: item.isParent
+                                    ? FontWeight.bold
+                                    : FontWeight.w500,
                                 color: isSelected
                                     ? colorScheme.primary
                                     : colorScheme.foreground,
@@ -552,16 +578,21 @@ class _TreeScenarioState extends State<TreeScenario> {
                               color: isSelected
                                   ? colorScheme.primary
                                   : (item.isParent
-                                      ? colorScheme.primary
-                                      : colorScheme.mutedForeground),
+                                        ? colorScheme.primary
+                                        : colorScheme.mutedForeground),
                             ),
                             level: item.level,
                             badges: [
                               if (item.balance != null)
                                 Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 6,
+                                    vertical: 2,
+                                  ),
                                   decoration: BoxDecoration(
-                                    color: colorScheme.primary.withValues(alpha: 0.1),
+                                    color: colorScheme.primary.withValues(
+                                      alpha: 0.1,
+                                    ),
                                     borderRadius: BorderRadius.circular(4),
                                   ),
                                   child: Text(
@@ -579,10 +610,14 @@ class _TreeScenarioState extends State<TreeScenario> {
                               style: TextStyle(
                                 fontSize: 12,
                                 fontFamily: AppTypography.fontFamilyName,
-                                fontWeight: item.isParent ? FontWeight.bold : FontWeight.normal,
+                                fontWeight: item.isParent
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
                               ),
                             ),
-                            onAddChild: () => _openAddTreeNodeSheet(defaultParentCode: item.code),
+                            onAddChild: () => _openAddTreeNodeSheet(
+                              defaultParentCode: item.code,
+                            ),
                             onDelete: () => _handleDeleteNode(item),
                           ),
                         ),
@@ -658,13 +693,17 @@ class _AppTreeCreationFormState extends State<AppTreeCreationForm> {
     }
 
     final isParentNode = _accountType == 'parent';
-    final formattedBalance = !isParentNode && bal.isNotEmpty ? '$bal ر.س' : null;
+    final formattedBalance = !isParentNode && bal.isNotEmpty
+        ? '$bal ر.س'
+        : null;
 
     final newAcc = AccountNodeData(
       code: code,
       titleAr: nameAr,
       titleEn: nameEn.isNotEmpty ? nameEn : nameAr,
-      icon: isParentNode ? shadcn.LucideIcons.folderOpen : shadcn.LucideIcons.fileText,
+      icon: isParentNode
+          ? shadcn.LucideIcons.folderOpen
+          : shadcn.LucideIcons.fileText,
       isParent: isParentNode,
       balance: formattedBalance,
     );
@@ -717,7 +756,9 @@ class _AppTreeCreationFormState extends State<AppTreeCreationForm> {
                   hint: isAr ? 'مثال: بنك الراجحي' : 'e.g. Al-Rajhi Bank',
                 ),
                 AppTextField(
-                  label: isAr ? 'اسم الحساب (إنجليزي)' : 'Account Name (English)',
+                  label: isAr
+                      ? 'اسم الحساب (إنجليزي)'
+                      : 'Account Name (English)',
                   controller: _nameEnController,
                   hint: 'e.g. Al Rajhi Bank',
                 ),
@@ -748,11 +789,15 @@ class _AppTreeCreationFormState extends State<AppTreeCreationForm> {
                   items: [
                     AppDropdownItem(
                       value: 'asset',
-                      label: isAr ? 'الميزانية - الأصول' : 'Balance Sheet - Assets',
+                      label: isAr
+                          ? 'الميزانية - الأصول'
+                          : 'Balance Sheet - Assets',
                     ),
                     AppDropdownItem(
                       value: 'liability',
-                      label: isAr ? 'الميزانية - الالتزامات' : 'Balance Sheet - Liabilities',
+                      label: isAr
+                          ? 'الميزانية - الالتزامات'
+                          : 'Balance Sheet - Liabilities',
                     ),
                   ],
                   onChanged: (val) {
@@ -764,7 +809,9 @@ class _AppTreeCreationFormState extends State<AppTreeCreationForm> {
             if (_accountType == 'sub') ...[
               const SizedBox(height: AppSpacing.xs),
               AppTextField(
-                label: isAr ? 'الرصيد الافتتاحي (ر.س)' : 'Opening Balance (SAR)',
+                label: isAr
+                    ? 'الرصيد الافتتاحي (ر.س)'
+                    : 'Opening Balance (SAR)',
                 controller: _balanceController,
                 hint: '0.00',
               ),
@@ -777,7 +824,9 @@ class _AppTreeCreationFormState extends State<AppTreeCreationForm> {
             ),
             const SizedBox(height: AppSpacing.md),
             AppButton(
-              label: isAr ? 'حفظ العقدة وإضافتها للدليل' : 'Save & Insert Account Node',
+              label: isAr
+                  ? 'حفظ العقدة وإضافتها للدليل'
+                  : 'Save & Insert Account Node',
               icon: shadcn.LucideIcons.check,
               onPressed: _submitForm,
             ),

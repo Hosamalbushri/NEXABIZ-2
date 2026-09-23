@@ -22,6 +22,7 @@ class AppMasterDetailPage extends StatelessWidget {
     this.headerActions,
     this.masterWidth = 360.0,
     this.showDetailOnCompact = false,
+    this.collapseOnMedium = false,
     this.maxWidth = AppLayoutTokens.maxPageWidth,
   });
 
@@ -34,6 +35,7 @@ class AppMasterDetailPage extends StatelessWidget {
   final Widget detail;
   final double masterWidth;
   final bool showDetailOnCompact;
+  final bool collapseOnMedium;
   final double maxWidth;
 
   @override
@@ -49,7 +51,10 @@ class AppMasterDetailPage extends StatelessWidget {
       ),
       child: AppResponsive.builder(
         builder: (context, tier, constraints) {
-          if (tier == AppBreakpointTier.compact) {
+          final isCollapsed =
+              tier == AppBreakpointTier.compact ||
+              (collapseOnMedium && tier == AppBreakpointTier.medium);
+          if (isCollapsed) {
             return showDetailOnCompact ? detail : master;
           }
 

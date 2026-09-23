@@ -116,7 +116,7 @@ void main() {
     );
     await store.close();
     final db = raw.sqlite3.open(databasePath);
-    expect(db.select('PRAGMA user_version').single['user_version'], 5);
+    expect(db.select('PRAGMA user_version').single['user_version'], 6);
     expect(
       db
           .select(
@@ -141,7 +141,7 @@ void main() {
           .select('SELECT version FROM schema_migrations ORDER BY version')
           .map((r) => r['version'])
           .toList(),
-      [5],
+      [6],
     );
     db.close();
   });
@@ -196,7 +196,7 @@ void main() {
         }
         await store.close();
         final db = raw.sqlite3.open(databasePath);
-        expect(db.select('PRAGMA user_version').single['user_version'], 5);
+        expect(db.select('PRAGMA user_version').single['user_version'], 6);
         if (state.user) {
           expect(
             db
@@ -423,13 +423,13 @@ void main() {
         final db = store.database;
         await insertValid(db);
         // Update credential with reordered valid parameters
-        await (db.update(db.coreCredentials)
-              ..where((t) => t.userId.equals('user-1')))
-            .write(
-              const CoreCredentialsCompanion(
-                parameters: Value('p=1,t=2,m=19456,l=32,v=19'),
-              ),
-            );
+        await (db.update(
+          db.coreCredentials,
+        )..where((t) => t.userId.equals('user-1'))).write(
+          const CoreCredentialsCompanion(
+            parameters: Value('p=1,t=2,m=19456,l=32,v=19'),
+          ),
+        );
         final readiness = await store.readReadiness();
         expect(readiness.isReady, isTrue);
         expect(readiness.state, NexaBizSetupState.ready);
@@ -444,13 +444,13 @@ void main() {
         final db = store.database;
         await insertValid(db);
         // Valid parameters with different iteration / memory representation
-        await (db.update(db.coreCredentials)
-              ..where((t) => t.userId.equals('user-1')))
-            .write(
-              const CoreCredentialsCompanion(
-                parameters: Value('v=19,m=32768,t=3,p=1,l=32'),
-              ),
-            );
+        await (db.update(
+          db.coreCredentials,
+        )..where((t) => t.userId.equals('user-1'))).write(
+          const CoreCredentialsCompanion(
+            parameters: Value('v=19,m=32768,t=3,p=1,l=32'),
+          ),
+        );
         final readiness = await store.readReadiness();
         expect(readiness.isReady, isTrue);
         expect(readiness.state, NexaBizSetupState.ready);
@@ -475,11 +475,7 @@ void main() {
       await insertValid(db);
       await (db.update(db.coreCredentials)
             ..where((t) => t.userId.equals('user-1')))
-          .write(
-            const CoreCredentialsCompanion(
-              kind: Value('pin'),
-            ),
-          );
+          .write(const CoreCredentialsCompanion(kind: Value('pin')));
       final readiness = await store.readReadiness();
       expect(readiness.isReady, isFalse);
       expect(readiness.state, NexaBizSetupState.inProgress);
@@ -492,11 +488,7 @@ void main() {
       await insertValid(db);
       await (db.update(db.coreCredentials)
             ..where((t) => t.userId.equals('user-1')))
-          .write(
-            const CoreCredentialsCompanion(
-              algorithm: Value('pbkdf2'),
-            ),
-          );
+          .write(const CoreCredentialsCompanion(algorithm: Value('pbkdf2')));
       final readiness = await store.readReadiness();
       expect(readiness.isReady, isFalse);
       expect(readiness.state, NexaBizSetupState.inProgress);
@@ -510,13 +502,13 @@ void main() {
         final db = store.database;
         await insertValid(db);
         // Malformed parameters string
-        await (db.update(db.coreCredentials)
-              ..where((t) => t.userId.equals('user-1')))
-            .write(
-              const CoreCredentialsCompanion(
-                parameters: Value('malformed_parameter_string_without_delimiters'),
-              ),
-            );
+        await (db.update(
+          db.coreCredentials,
+        )..where((t) => t.userId.equals('user-1'))).write(
+          const CoreCredentialsCompanion(
+            parameters: Value('malformed_parameter_string_without_delimiters'),
+          ),
+        );
 
         // Structural readiness is ready (does not corrupt or reset setup)
         final readiness = await store.readReadiness();
@@ -544,17 +536,19 @@ void main() {
         final store = await DriftCoreInstallationStore.open(databasePath);
         final db = store.database;
         await insertValid(db);
-        await (db.update(db.coreCredentials)
-              ..where((t) => t.userId.equals('user-1')))
-            .write(
-              const CoreCredentialsCompanion(
-                parameters: Value('p=1,t=2,m=19456,l=32,v=19'),
-              ),
-            );
+        await (db.update(
+          db.coreCredentials,
+        )..where((t) => t.userId.equals('user-1'))).write(
+          const CoreCredentialsCompanion(
+            parameters: Value('p=1,t=2,m=19456,l=32,v=19'),
+          ),
+        );
         await store.close();
 
         // Simulate app restart / reopen from disk
-        final reopenedStore = await DriftCoreInstallationStore.open(databasePath);
+        final reopenedStore = await DriftCoreInstallationStore.open(
+          databasePath,
+        );
         final readiness = await reopenedStore.readReadiness();
         expect(readiness.isReady, isTrue);
 
@@ -564,14 +558,18 @@ void main() {
           _GateTestCapability(
             _GateTestContribution([
               NexaBizFlutterRouteDefinition(
-                routeId:
-                    const NexaBizRouteId(namespace: 'gate_test', routeName: 'login'),
+                routeId: const NexaBizRouteId(
+                  namespace: 'gate_test',
+                  routeName: 'login',
+                ),
                 path: '/login',
                 pageBuilder: (c) => const SizedBox(),
               ),
               NexaBizFlutterRouteDefinition(
-                routeId:
-                    const NexaBizRouteId(namespace: 'gate_test', routeName: 'setup'),
+                routeId: const NexaBizRouteId(
+                  namespace: 'gate_test',
+                  routeName: 'setup',
+                ),
                 path: '/system-setup',
                 pageBuilder: (c) => const SizedBox(),
               ),
@@ -580,10 +578,9 @@ void main() {
         );
         caps.validateAndLock();
         final nav = NexaBizNavigationRegistry()..collectAndLock(caps);
-        final router = NexaBizGoRouterAdapter(nav).createRouter(
-          initialLocation: '/login',
-          readiness: readiness,
-        );
+        final router = NexaBizGoRouterAdapter(
+          nav,
+        ).createRouter(initialLocation: '/login', readiness: readiness);
         addTearDown(router.dispose);
 
         // Match for /login location does NOT redirect to /system-setup

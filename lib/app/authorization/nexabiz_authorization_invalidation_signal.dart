@@ -26,4 +26,3 @@ final class NexaBizAuthorizationInvalidationSignal extends ChangeNotifier {
     notifyListeners();
   }
 }
-

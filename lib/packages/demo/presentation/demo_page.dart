@@ -50,15 +50,30 @@ class DemoPage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(l10n.demoArchPrinciple1, style: AppTypography.body(context)),
+                    Text(
+                      l10n.demoArchPrinciple1,
+                      style: AppTypography.body(context),
+                    ),
                     const SizedBox(height: AppSpacing.xs),
-                    Text(l10n.demoArchPrinciple2, style: AppTypography.body(context)),
+                    Text(
+                      l10n.demoArchPrinciple2,
+                      style: AppTypography.body(context),
+                    ),
                     const SizedBox(height: AppSpacing.xs),
-                    Text(l10n.demoArchPrinciple3, style: AppTypography.body(context)),
+                    Text(
+                      l10n.demoArchPrinciple3,
+                      style: AppTypography.body(context),
+                    ),
                     const SizedBox(height: AppSpacing.xs),
-                    Text(l10n.demoArchPrinciple4, style: AppTypography.body(context)),
+                    Text(
+                      l10n.demoArchPrinciple4,
+                      style: AppTypography.body(context),
+                    ),
                     const SizedBox(height: AppSpacing.xs),
-                    Text(l10n.demoArchPrinciple5, style: AppTypography.body(context)),
+                    Text(
+                      l10n.demoArchPrinciple5,
+                      style: AppTypography.body(context),
+                    ),
                   ],
                 ),
               ),

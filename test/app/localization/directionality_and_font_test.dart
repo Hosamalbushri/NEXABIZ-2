@@ -24,44 +24,45 @@ void main() {
       );
     }
 
-    testWidgets(
-      'AppCustomBottomNav nav items use Cairo font family',
-      (tester) async {
-        await tester.pumpWidget(
-          buildTestApp(
-            child: AppCustomBottomNav(
-              currentIndex: 0,
-              items: const [
-                AppNavItem(
-                  label: 'الرئيسية',
-                  icon: AppIcons.dashboard,
-                  routePath: '/',
-                ),
-                AppNavItem(
-                  label: 'الخدمات',
-                  icon: AppIcons.grid,
-                  routePath: '/services',
-                ),
-              ],
-              onTap: (_) {},
-            ),
+    testWidgets('AppCustomBottomNav nav items use Cairo font family', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        buildTestApp(
+          child: AppCustomBottomNav(
+            currentIndex: 0,
+            items: const [
+              AppNavItem(
+                label: 'الرئيسية',
+                icon: AppIcons.dashboard,
+                routePath: '/',
+              ),
+              AppNavItem(
+                label: 'الخدمات',
+                icon: AppIcons.grid,
+                routePath: '/services',
+              ),
+            ],
+            onTap: (_) {},
           ),
-        );
-        await tester.pumpAndSettle();
+        ),
+      );
+      await tester.pumpAndSettle();
 
-        final navTextFinder = find.text('الرئيسية');
-        expect(navTextFinder, findsOneWidget);
+      final navTextFinder = find.text('الرئيسية');
+      expect(navTextFinder, findsOneWidget);
 
-        final defaultStyle = tester.widget<AnimatedDefaultTextStyle>(
-          find.ancestor(
-            of: navTextFinder,
-            matching: find.byType(AnimatedDefaultTextStyle),
-          ).first,
-        );
+      final defaultStyle = tester.widget<AnimatedDefaultTextStyle>(
+        find
+            .ancestor(
+              of: navTextFinder,
+              matching: find.byType(AnimatedDefaultTextStyle),
+            )
+            .first,
+      );
 
-        expect(defaultStyle.style.fontFamily, equals('Cairo'));
-      },
-    );
+      expect(defaultStyle.style.fontFamily, equals('Cairo'));
+    });
 
     testWidgets(
       'AppCustomAppBar uses directional back icon (chevronRight in RTL, chevronLeft in LTR)',
@@ -102,24 +103,23 @@ void main() {
       },
     );
 
-    testWidgets(
-      'AppPageHeader breadcrumb chevron respects directionality',
-      (tester) async {
-        await tester.pumpWidget(
-          buildTestApp(
-            locale: const Locale('ar'),
-            child: const AppPageHeader(
-              title: 'تفاصيل',
-              breadcrumbs: ['الرئيسية', 'الخدمات', 'تفاصيل'],
-            ),
+    testWidgets('AppPageHeader breadcrumb chevron respects directionality', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        buildTestApp(
+          locale: const Locale('ar'),
+          child: const AppPageHeader(
+            title: 'تفاصيل',
+            breadcrumbs: ['الرئيسية', 'الخدمات', 'تفاصيل'],
           ),
-        );
-        await tester.pumpAndSettle();
+        ),
+      );
+      await tester.pumpAndSettle();
 
-        expect(find.byType(AppPageHeader), findsOneWidget);
-        expect(tester.takeException(), isNull);
-      },
-    );
+      expect(find.byType(AppPageHeader), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
 
     testWidgets(
       'AppCarousel control positions and icon directionality respond to RTL',

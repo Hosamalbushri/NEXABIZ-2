@@ -13,7 +13,8 @@ abstract interface class NexaBizPermissionCatalog {
 }
 
 /// Canonical immutable implementation of [NexaBizPermissionCatalog].
-final class NexaBizImmutablePermissionCatalog implements NexaBizPermissionCatalog {
+final class NexaBizImmutablePermissionCatalog
+    implements NexaBizPermissionCatalog {
   const NexaBizImmutablePermissionCatalog(this._declaredPermissions);
 
   final Set<NexaBizPermissionId> _declaredPermissions;
@@ -26,4 +27,3 @@ final class NexaBizImmutablePermissionCatalog implements NexaBizPermissionCatalo
   Set<NexaBizPermissionId> get declaredPermissions =>
       Set.unmodifiable(_declaredPermissions);
 }
-

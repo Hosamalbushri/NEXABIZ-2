@@ -18,7 +18,10 @@ class _CompanyNavigationContribution implements NexaBizNavigationContribution {
   final CoreSessionController? sessionController;
 
   static const _home = NexaBizRouteId(namespace: 'company', routeName: 'home');
-  static const _selection = NexaBizRouteId(namespace: 'company', routeName: 'selection');
+  static const _selection = NexaBizRouteId(
+    namespace: 'company',
+    routeName: 'selection',
+  );
 
   @override
   NexaBizRouteId get rootRouteId => _home;
@@ -43,7 +46,8 @@ class _CompanyNavigationContribution implements NexaBizNavigationContribution {
         requiresActiveSession: true,
         requiresCompanyScope: false,
       ),
-      pageBuilder: (context) => CompanySelectionScreen(sessionController: sessionController),
+      pageBuilder: (context) =>
+          CompanySelectionScreen(sessionController: sessionController),
     ),
   ];
 }

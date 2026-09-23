@@ -4,7 +4,7 @@ import 'package:shadcn_flutter/shadcn_flutter.dart' as shadcn;
 import 'app_field_shell.dart';
 
 /// Design-system text field primitive for NexaBiz ERP built natively on [shadcn.TextField].
-class AppTextField extends StatelessWidget {
+class AppTextField extends StatefulWidget {
   const AppTextField({
     super.key,
     this.controller,
@@ -15,6 +15,7 @@ class AppTextField extends StatelessWidget {
     this.errorText,
     this.helperText,
     this.prefixIcon,
+    this.showPrefixDivider = false,
     this.suffixIcon,
     this.onChanged,
     this.onSubmitted,
@@ -22,6 +23,7 @@ class AppTextField extends StatelessWidget {
     this.textInputAction,
     this.inputFormatters,
     this.obscureText = false,
+    this.showPasswordToggle = false,
     this.enabled = true,
     this.readOnly = false,
     this.maxLines = 1,
@@ -38,6 +40,7 @@ class AppTextField extends StatelessWidget {
   final String? errorText;
   final String? helperText;
   final dynamic prefixIcon;
+  final bool showPrefixDivider;
   final Widget? suffixIcon;
   final ValueChanged<String>? onChanged;
   final ValueChanged<String>? onSubmitted;
@@ -45,12 +48,34 @@ class AppTextField extends StatelessWidget {
   final TextInputAction? textInputAction;
   final List<TextInputFormatter>? inputFormatters;
   final bool obscureText;
+  final bool showPasswordToggle;
   final bool enabled;
   final bool readOnly;
   final int? maxLines;
   final int? minLines;
   final bool autofocus;
   final AppFieldDensity density;
+
+  @override
+  State<AppTextField> createState() => _AppTextFieldState();
+}
+
+class _AppTextFieldState extends State<AppTextField> {
+  late bool _obscureText;
+
+  @override
+  void initState() {
+    super.initState();
+    _obscureText = widget.obscureText;
+  }
+
+  @override
+  void didUpdateWidget(covariant AppTextField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.obscureText != widget.obscureText) {
+      _obscureText = widget.obscureText;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,74 +86,98 @@ class AppTextField extends StatelessWidget {
       color: colorScheme.mutedForeground,
     );
 
+    Widget? effectiveSuffix = widget.suffixIcon;
+    if (widget.showPasswordToggle && effectiveSuffix == null) {
+      effectiveSuffix = GestureDetector(
+        onTap: widget.enabled
+            ? () => setState(() => _obscureText = !_obscureText)
+            : null,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+          child: Icon(
+            _obscureText
+                ? Icons.visibility_outlined
+                : Icons.visibility_off_outlined,
+            size: 18,
+            color: colorScheme.mutedForeground,
+          ),
+        ),
+      );
+    }
+
     final childInput = shadcn.TextField(
-      controller: controller,
-      focusNode: focusNode,
-      enabled: enabled,
-      readOnly: readOnly,
-      autofocus: autofocus,
-      obscureText: obscureText,
-      maxLines: maxLines,
-      minLines: minLines,
-      keyboardType: keyboardType,
-      textInputAction: textInputAction,
-      inputFormatters: inputFormatters,
-      onChanged: onChanged != null
+      controller: widget.controller,
+      focusNode: widget.focusNode,
+      enabled: widget.enabled,
+      readOnly: widget.readOnly,
+      autofocus: widget.autofocus,
+      obscureText: _obscureText,
+      maxLines: widget.maxLines,
+      minLines: widget.minLines,
+      keyboardType: widget.keyboardType,
+      textInputAction: widget.textInputAction,
+      inputFormatters: widget.inputFormatters,
+      onChanged: widget.onChanged != null
           ? (value) {
               final binding = WidgetsBinding.instance;
               if (binding.buildOwner?.debugBuilding ?? false) {
-                binding.addPostFrameCallback((_) => onChanged!(value));
+                binding.addPostFrameCallback((_) => widget.onChanged!(value));
               } else {
-                onChanged!(value);
+                widget.onChanged!(value);
               }
             }
           : null,
-      onSubmitted: onSubmitted != null
+      onSubmitted: widget.onSubmitted != null
           ? (value) {
               final binding = WidgetsBinding.instance;
               if (binding.buildOwner?.debugBuilding ?? false) {
-                binding.addPostFrameCallback((_) => onSubmitted!(value));
+                binding.addPostFrameCallback((_) => widget.onSubmitted!(value));
               } else {
-                onSubmitted!(value);
+                widget.onSubmitted!(value);
               }
             }
           : null,
-      placeholder: hint != null ? Text(hint!, style: hintTextStyle) : null,
+      placeholder: widget.hint != null
+          ? Text(widget.hint!, style: hintTextStyle)
+          : null,
       padding: EdgeInsets.zero,
       border: const Border(),
       features: const [],
     );
 
-    final prefixWidget = prefixIcon is IconData
+    final prefixWidget = widget.prefixIcon is IconData
         ? Container(
-            width: 28,
-            height: 28,
+            width: 30,
+            height: 30,
             decoration: BoxDecoration(
-              color: enabled
+              color: widget.enabled
                   ? colorScheme.primary.withValues(alpha: 0.1)
                   : colorScheme.muted.withValues(alpha: 0.3),
-              borderRadius: BorderRadius.circular(6),
+              borderRadius: BorderRadius.circular(8),
             ),
             child: Center(
               child: Icon(
-                prefixIcon as IconData,
+                widget.prefixIcon as IconData,
                 size: 16,
-                color: enabled ? colorScheme.primary : colorScheme.mutedForeground,
+                color: widget.enabled
+                    ? colorScheme.primary
+                    : colorScheme.mutedForeground,
               ),
             ),
           )
-        : prefixIcon as Widget?;
+        : widget.prefixIcon as Widget?;
 
     return AppFieldShell(
-      label: label,
-      required: required,
-      errorText: errorText,
-      helperText: helperText,
-      density: density,
-      enabled: enabled,
-      readOnly: readOnly,
+      label: widget.label,
+      required: widget.required,
+      errorText: widget.errorText,
+      helperText: widget.helperText,
+      density: widget.density,
+      enabled: widget.enabled,
+      readOnly: widget.readOnly,
       prefix: prefixWidget,
-      suffix: suffixIcon,
+      showPrefixDivider: widget.showPrefixDivider,
+      suffix: effectiveSuffix,
       child: childInput,
     );
   }

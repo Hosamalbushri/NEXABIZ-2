@@ -7,16 +7,14 @@ void main() {
   Widget buildTestableWidget(Widget child) {
     return shadcn.ShadcnApp(
       home: shadcn.Scaffold(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: child,
-        ),
+        child: Padding(padding: const EdgeInsets.all(16.0), child: child),
       ),
     );
   }
 
-  testWidgets('AppCarousel: internally created controller lifecycle',
-      (WidgetTester tester) async {
+  testWidgets('AppCarousel: internally created controller lifecycle', (
+    WidgetTester tester,
+  ) async {
     bool showCarousel = true;
 
     await tester.pumpWidget(
@@ -54,8 +52,9 @@ void main() {
     expect(find.text('Slide 1'), findsNothing);
   });
 
-  testWidgets('AppCarousel: caller-owned controller survives widget disposal',
-      (WidgetTester tester) async {
+  testWidgets('AppCarousel: caller-owned controller survives widget disposal', (
+    WidgetTester tester,
+  ) async {
     final controller = shadcn.CarouselController();
     bool showCarousel = true;
 
@@ -93,8 +92,10 @@ void main() {
     await tester.pumpAndSettle();
 
     // Verify caller-owned controller remains active and non-disposed
-    expect(() => controller.animateNext(const Duration(milliseconds: 100)),
-        returnsNormally);
+    expect(
+      () => controller.animateNext(const Duration(milliseconds: 100)),
+      returnsNormally,
+    );
 
     controller.dispose();
   });

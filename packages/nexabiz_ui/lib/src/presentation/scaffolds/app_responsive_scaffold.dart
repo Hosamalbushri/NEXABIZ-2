@@ -3,7 +3,6 @@ export 'package:flutter/material.dart' show FloatingActionButtonLocation;
 import '../../constants/app_constants.dart';
 import 'app_responsive.dart';
 
-
 /// Standardized responsive scaffold container with desktop content constraints,
 /// mobile bottom bar, and keyboard-aware bottom action bar support.
 class AppResponsiveScaffold extends StatelessWidget {

@@ -36,10 +36,10 @@ class ArchitectureExceptionRegistry {
       reason: 'Showcase gallery layout width query',
       targetPhase: 'Phase 04',
     ),
-
   ];
 
-  static List<ArchitectureException> get exceptions => List.unmodifiable(_exceptions);
+  static List<ArchitectureException> get exceptions =>
+      List.unmodifiable(_exceptions);
 
   /// Verifies if [filePath] is an authorized exception for [ruleId].
   static bool isAllowedException(String ruleId, String filePath) {
@@ -68,7 +68,8 @@ class ArchitectureExceptionRegistry {
     expect(
       newViolations,
       isEmpty,
-      reason: 'NEW ARCHITECTURAL REGRESSION DETECTED for [$ruleId]!\n'
+      reason:
+          'NEW ARCHITECTURAL REGRESSION DETECTED for [$ruleId]!\n'
           'The following files violate architecture guardrails and are NOT registered in ArchitectureExceptionRegistry:\n'
           '${newViolations.map((p) => '  - $p').join('\n')}\n'
           'Do NOT add broad exemptions. Migrate the file to canonical nexabiz_ui abstractions or register explicit Phase 04 exception with justification.\n',
@@ -79,7 +80,8 @@ class ArchitectureExceptionRegistry {
     expect(
       staleExceptions,
       isEmpty,
-      reason: 'STALE ARCHITECTURE EXCEPTION DETECTED for [$ruleId]!\n'
+      reason:
+          'STALE ARCHITECTURE EXCEPTION DETECTED for [$ruleId]!\n'
           'The following registered exceptions NO LONGER produce violations:\n'
           '${staleExceptions.map((p) => '  - $p').join('\n')}\n'
           'Please remove these stale entries from ArchitectureExceptionRegistry to shrink migration debt!\n',

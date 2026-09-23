@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nexabiz/app/bootstrap/app_bootstrap.dart';
 import 'package:nexabiz/core/identity/authenticate_local_user.dart';
@@ -28,25 +29,34 @@ Future<AppBootstrapResult> bootstrapForTest({
     });
 
     if (authenticated) {
-      final initializer = InitializeNexaBizCore(result.coreInstallationStore);
-      await initializer(
-        const CoreInitializationInput(
-          companyCode: 'COMP01',
-          companyName: 'Test Company',
-          adminName: 'Admin User',
-          adminEmail: 'admin@nexabiz.test',
-          password: 'Password123!',
-        ),
-      );
+      Future<void> runAuth() async {
+        final initializer = InitializeNexaBizCore(result.coreInstallationStore);
+        await initializer(
+          const CoreInitializationInput(
+            companyCode: 'COMP01',
+            companyName: 'Test Company',
+            adminName: 'Admin User',
+            adminEmail: 'admin@nexabiz.test',
+            password: 'Password123!',
+          ),
+        );
 
-      await result.sessionController.login(
-        const CoreAuthenticationInput(
-          identifier: 'admin@nexabiz.test',
-          password: 'Password123!',
-        ),
-      );
+        await result.sessionController.login(
+          const CoreAuthenticationInput(
+            identifier: 'admin@nexabiz.test',
+            password: 'Password123!',
+          ),
+        );
 
-      result.router.go(initialLocation);
+        result.router.go(initialLocation);
+      }
+
+      final binding = WidgetsBinding.instance;
+      if (binding is TestWidgetsFlutterBinding) {
+        await binding.runAsync(runAuth);
+      } else {
+        await runAuth();
+      }
     }
 
     return result;

@@ -46,7 +46,9 @@ class AppCompanySwitcher extends StatelessWidget {
       ),
       alignment: Alignment.center,
       child: Text(
-        companyName.isNotEmpty ? companyName.substring(0, 1).toUpperCase() : 'N',
+        companyName.isNotEmpty
+            ? companyName.substring(0, 1).toUpperCase()
+            : 'N',
         style: TextStyle(
           color: colorScheme.primaryForeground,
           fontWeight: FontWeight.w700,

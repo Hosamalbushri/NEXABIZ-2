@@ -18,10 +18,7 @@ void main() {
         textDirection: textDirection,
         child: NexaBizRootApp(
           home: Center(
-            child: SizedBox(
-              width: width,
-              child: child,
-            ),
+            child: SizedBox(width: width, child: child),
           ),
         ),
       ),

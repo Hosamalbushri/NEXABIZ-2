@@ -15,4 +15,3 @@ abstract interface class NexaBizPermissionEvaluator {
     required NexaBizPermissionId permissionId,
   });
 }
-

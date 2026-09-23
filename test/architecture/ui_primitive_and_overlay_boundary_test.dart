@@ -4,67 +4,76 @@ import 'architecture_exception_registry.dart';
 
 void main() {
   group('Guardrail 7, 8 & 9 — UI Primitive & Overlay Authority Boundary Tests', () {
-    test('Rule 7: Feature code MUST NOT directly import package:shadcn_flutter', () {
-      final appProductionFiles = _getAppProductionDartFiles();
-      final violatingFiles = <String>[];
+    test(
+      'Rule 7: Feature code MUST NOT directly import package:shadcn_flutter',
+      () {
+        final appProductionFiles = _getAppProductionDartFiles();
+        final violatingFiles = <String>[];
 
-      for (final file in appProductionFiles) {
-        final lines = file.readAsLinesSync();
-        for (final line in lines) {
-          if (line.contains('package:shadcn_flutter/shadcn_flutter.dart')) {
-            violatingFiles.add(file.path);
-            break;
+        for (final file in appProductionFiles) {
+          final lines = file.readAsLinesSync();
+          for (final line in lines) {
+            if (line.contains('package:shadcn_flutter/shadcn_flutter.dart')) {
+              violatingFiles.add(file.path);
+              break;
+            }
           }
         }
-      }
 
-      ArchitectureExceptionRegistry.assertExactViolations(
-        ruleId: 'RULE-03-DIRECT-SHADCN',
-        scannedViolatingFiles: violatingFiles,
-      );
-    });
+        ArchitectureExceptionRegistry.assertExactViolations(
+          ruleId: 'RULE-03-DIRECT-SHADCN',
+          scannedViolatingFiles: violatingFiles,
+        );
+      },
+    );
 
-    test('Rule 8: Presentation screens MUST NOT directly import flutter/material.dart for UI primitives', () {
-      final presentationFiles = _getAppPresentationDartFiles();
-      final violatingFiles = <String>[];
+    test(
+      'Rule 8: Presentation screens MUST NOT directly import flutter/material.dart for UI primitives',
+      () {
+        final presentationFiles = _getAppPresentationDartFiles();
+        final violatingFiles = <String>[];
 
-      for (final file in presentationFiles) {
-        final lines = file.readAsLinesSync();
-        for (final line in lines) {
-          if (line.contains("import 'package:flutter/material.dart'") ||
-              line.contains('import "package:flutter/material.dart"')) {
-            violatingFiles.add(file.path);
-            break;
+        for (final file in presentationFiles) {
+          final lines = file.readAsLinesSync();
+          for (final line in lines) {
+            if (line.contains("import 'package:flutter/material.dart'") ||
+                line.contains('import "package:flutter/material.dart"')) {
+              violatingFiles.add(file.path);
+              break;
+            }
           }
         }
-      }
 
-      ArchitectureExceptionRegistry.assertExactViolations(
-        ruleId: 'RULE-04-MATERIAL-PRESENTATION-IMPORT',
-        scannedViolatingFiles: violatingFiles,
-      );
-    });
+        ArchitectureExceptionRegistry.assertExactViolations(
+          ruleId: 'RULE-04-MATERIAL-PRESENTATION-IMPORT',
+          scannedViolatingFiles: violatingFiles,
+        );
+      },
+    );
 
-    test('Rule 9: Feature code MUST NOT bypass overlay authority with direct showDialog / showModalBottomSheet', () {
-      final appProductionFiles = _getAppProductionDartFiles();
-      final violatingFiles = <String>[];
+    test(
+      'Rule 9: Feature code MUST NOT bypass overlay authority with direct showDialog / showModalBottomSheet',
+      () {
+        final appProductionFiles = _getAppProductionDartFiles();
+        final violatingFiles = <String>[];
 
-      for (final file in appProductionFiles) {
-        final lines = file.readAsLinesSync();
-        for (final line in lines) {
-          if (RegExp(r'\bshowDialog\b').hasMatch(line) ||
-              RegExp(r'\bshowModalBottomSheet\b').hasMatch(line)) {
-            violatingFiles.add(file.path);
-            break;
+        for (final file in appProductionFiles) {
+          final lines = file.readAsLinesSync();
+          for (final line in lines) {
+            if (RegExp(r'\bshowDialog\b').hasMatch(line) ||
+                RegExp(r'\bshowModalBottomSheet\b').hasMatch(line)) {
+              violatingFiles.add(file.path);
+              break;
+            }
           }
         }
-      }
 
-      ArchitectureExceptionRegistry.assertExactViolations(
-        ruleId: 'RULE-05-OVERLAY-AUTHORITY-BYPASS',
-        scannedViolatingFiles: violatingFiles,
-      );
-    });
+        ArchitectureExceptionRegistry.assertExactViolations(
+          ruleId: 'RULE-05-OVERLAY-AUTHORITY-BYPASS',
+          scannedViolatingFiles: violatingFiles,
+        );
+      },
+    );
   });
 }
 
@@ -77,10 +86,9 @@ List<File> _getAppProductionDartFiles() {
 
   final packagesDir = Directory('packages');
   if (packagesDir.existsSync()) {
-    final featureDirs = packagesDir
-        .listSync()
-        .whereType<Directory>()
-        .where((d) => !d.path.replaceAll('\\', '/').endsWith('packages/nexabiz_ui'));
+    final featureDirs = packagesDir.listSync().whereType<Directory>().where(
+      (d) => !d.path.replaceAll('\\', '/').endsWith('packages/nexabiz_ui'),
+    );
     for (final dir in featureDirs) {
       files.addAll(_collectDartFiles(dir));
     }
@@ -98,9 +106,11 @@ List<File> _collectDartFiles(Directory dir) {
   return dir
       .listSync(recursive: true)
       .whereType<File>()
-      .where((f) =>
-          f.path.endsWith('.dart') &&
-          !f.path.endsWith('.g.dart') &&
-          !f.path.endsWith('.freezed.dart'))
+      .where(
+        (f) =>
+            f.path.endsWith('.dart') &&
+            !f.path.endsWith('.g.dart') &&
+            !f.path.endsWith('.freezed.dart'),
+      )
       .toList();
 }

@@ -1,4 +1,5 @@
 import '../../app/router/nexabiz_flutter_route_definition.dart';
+import '../../core/authorization/administration/nexabiz_authorization_administration_permissions.dart';
 import '../../core/capabilities/capability_metadata.dart';
 import '../../core/capabilities/contributions/nexabiz_capability_runtime_contributions.dart';
 import '../../core/capabilities/contributions/nexabiz_permission_contribution.dart';
@@ -9,6 +10,7 @@ import '../../core/navigation/nexabiz_route_definition.dart';
 import '../../core/navigation/nexabiz_route_id.dart';
 import '../../core/permissions/nexabiz_permission_intent.dart';
 import 'presentation/permissions_screen.dart';
+import 'presentation/roles_screen.dart';
 import 'presentation/unauthorized_screen.dart';
 
 class _PermissionsNavigationContribution
@@ -20,6 +22,10 @@ class _PermissionsNavigationContribution
   static const _unauthorized = NexaBizRouteId(
     namespace: 'permissions',
     routeName: 'unauthorized',
+  );
+  static const _roles = NexaBizRouteId(
+    namespace: 'permissions',
+    routeName: 'roles',
   );
 
   @override
@@ -47,6 +53,19 @@ class _PermissionsNavigationContribution
       ),
       pageBuilder: (context) => const UnauthorizedScreen(),
     ),
+    NexaBizFlutterRouteDefinition(
+      routeId: _roles,
+      path: '/permissions/roles',
+      accessRequirement: NexaBizRouteAccessRequirement(
+        requiresReadySetup: true,
+        requiresActiveSession: true,
+        requiresCompanyScope: true,
+        permission: NexaBizPermissionRequirement(
+          NexaBizAuthorizationAdministrationPermissions.policyReview,
+        ),
+      ),
+      pageBuilder: (context) => const RolesScreen(),
+    ),
   ];
 }
 
@@ -56,10 +75,8 @@ class _PermissionsPermissionContribution
   const _PermissionsPermissionContribution();
 
   @override
-  List<NexaBizPermissionId> get declaredPermissionIds => [
-    NexaBizPermissionId('permissions.catalog.view'),
-    NexaBizPermissionId('permissions.policy.review'),
-  ];
+  List<NexaBizPermissionId> get declaredPermissionIds =>
+      NexaBizAuthorizationAdministrationPermissions.declaredPermissionIds;
 
   @override
   List<NexaBizPermissionRequirement> get requiredPermissions => const [];

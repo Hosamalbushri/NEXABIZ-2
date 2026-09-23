@@ -68,15 +68,25 @@ class _SearchScenarioState extends State<SearchScenario> {
               Expanded(
                 child: AppTextField(
                   controller: _controller,
-                  hint: isAr ? 'بحث برقم السند، الطرف، أو الحساب...' : 'Search voucher, party, or account...',
-                  prefixIcon: Icon(shadcn.LucideIcons.search, size: 16, color: colorScheme.mutedForeground),
+                  hint: isAr
+                      ? 'بحث برقم السند، الطرف، أو الحساب...'
+                      : 'Search voucher, party, or account...',
+                  prefixIcon: Icon(
+                    shadcn.LucideIcons.search,
+                    size: 16,
+                    color: colorScheme.mutedForeground,
+                  ),
                   suffixIcon: _query.isNotEmpty
                       ? GestureDetector(
                           onTap: () {
                             _controller.clear();
                             setState(() => _query = '');
                           },
-                          child: Icon(shadcn.LucideIcons.x, size: 16, color: colorScheme.mutedForeground),
+                          child: Icon(
+                            shadcn.LucideIcons.x,
+                            size: 16,
+                            color: colorScheme.mutedForeground,
+                          ),
                         )
                       : null,
                   onChanged: (v) => setState(() => _query = v),
@@ -120,7 +130,10 @@ class _SearchScenarioState extends State<SearchScenario> {
                 return GestureDetector(
                   onTap: () => _applySearch(term),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.sm,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: colorScheme.muted,
                       borderRadius: AppRadii.radiusPill,
@@ -129,7 +142,11 @@ class _SearchScenarioState extends State<SearchScenario> {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(shadcn.LucideIcons.clock, size: 12, color: colorScheme.mutedForeground),
+                        Icon(
+                          shadcn.LucideIcons.clock,
+                          size: 12,
+                          color: colorScheme.mutedForeground,
+                        ),
                         const SizedBox(width: 4),
                         Text(
                           term,
@@ -152,11 +169,23 @@ class _SearchScenarioState extends State<SearchScenario> {
               ),
             ),
             const SizedBox(height: AppSpacing.xs),
-            _buildExploreRow(shadcn.LucideIcons.fileSpreadsheet, isAr ? 'سندات اليوم' : "Today's Vouchers", '3'),
+            _buildExploreRow(
+              shadcn.LucideIcons.fileSpreadsheet,
+              isAr ? 'سندات اليوم' : "Today's Vouchers",
+              '3',
+            ),
             const SizedBox(height: AppSpacing.xs),
-            _buildExploreRow(shadcn.LucideIcons.triangleAlert, isAr ? 'قيود غير متوازنة معلقة' : 'Pending Unbalanced', '0'),
+            _buildExploreRow(
+              shadcn.LucideIcons.triangleAlert,
+              isAr ? 'قيود غير متوازنة معلقة' : 'Pending Unbalanced',
+              '0',
+            ),
             const SizedBox(height: AppSpacing.xs),
-            _buildExploreRow(shadcn.LucideIcons.users, isAr ? 'حسابات العملاء النشطة' : 'Active Customer Accounts', '14'),
+            _buildExploreRow(
+              shadcn.LucideIcons.users,
+              isAr ? 'حسابات العملاء النشطة' : 'Active Customer Accounts',
+              '14',
+            ),
           ] else if (results.isEmpty) ...[
             // Empty search result
             AppEmptyState(
@@ -172,7 +201,9 @@ class _SearchScenarioState extends State<SearchScenario> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  isAr ? 'النتائج (${results.length})' : 'Results (${results.length})',
+                  isAr
+                      ? 'النتائج (${results.length})'
+                      : 'Results (${results.length})',
                   style: theme.typography.small.copyWith(
                     fontWeight: FontWeight.w600,
                     color: colorScheme.mutedForeground,
@@ -201,7 +232,11 @@ class _SearchScenarioState extends State<SearchScenario> {
                           borderRadius: BorderRadius.circular(AppRadii.sm),
                         ),
                         alignment: Alignment.center,
-                        child: Icon(shadcn.LucideIcons.fileText, size: 18, color: colorScheme.primary),
+                        child: Icon(
+                          shadcn.LucideIcons.fileText,
+                          size: 18,
+                          color: colorScheme.primary,
+                        ),
                       ),
                       const SizedBox(width: AppSpacing.sm),
                       Expanded(
@@ -252,8 +287,8 @@ class _SearchScenarioState extends State<SearchScenario> {
                             tone: item.status == DemoVoucherStatus.posted
                                 ? AppStatusTone.success
                                 : (item.status == DemoVoucherStatus.pending
-                                    ? AppStatusTone.warning
-                                    : AppStatusTone.neutral),
+                                      ? AppStatusTone.warning
+                                      : AppStatusTone.neutral),
                           ),
                         ],
                       ),
@@ -273,7 +308,10 @@ class _SearchScenarioState extends State<SearchScenario> {
     final colorScheme = theme.colorScheme;
 
     return AppCard(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.sm,
+      ),
       child: Row(
         children: [
           Icon(icon, size: 16, color: colorScheme.primary),
@@ -306,4 +344,3 @@ class _SearchScenarioState extends State<SearchScenario> {
     );
   }
 }
-

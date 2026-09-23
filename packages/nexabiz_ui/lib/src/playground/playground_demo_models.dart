@@ -8,18 +8,18 @@ enum DemoVoucherStatus {
   voided;
 
   String get labelEn => switch (this) {
-        DemoVoucherStatus.draft => 'Draft',
-        DemoVoucherStatus.pending => 'Pending Approval',
-        DemoVoucherStatus.posted => 'Posted',
-        DemoVoucherStatus.voided => 'Void',
-      };
+    DemoVoucherStatus.draft => 'Draft',
+    DemoVoucherStatus.pending => 'Pending Approval',
+    DemoVoucherStatus.posted => 'Posted',
+    DemoVoucherStatus.voided => 'Void',
+  };
 
   String get labelAr => switch (this) {
-        DemoVoucherStatus.draft => 'مسودة',
-        DemoVoucherStatus.pending => 'قيد الاعتماد',
-        DemoVoucherStatus.posted => 'مرحل',
-        DemoVoucherStatus.voided => 'ملغى',
-      };
+    DemoVoucherStatus.draft => 'مسودة',
+    DemoVoucherStatus.pending => 'قيد الاعتماد',
+    DemoVoucherStatus.posted => 'مرحل',
+    DemoVoucherStatus.voided => 'ملغى',
+  };
 }
 
 /// Domain-neutral Demo Voucher record for mobile list and detail presentation.
@@ -87,10 +87,8 @@ class DemoJournalLine {
   final double debit;
   final double credit;
 
-  String accountName(bool isArabic) =>
-      isArabic ? accountNameAr : accountNameEn;
-  String description(bool isArabic) =>
-      isArabic ? descriptionAr : descriptionEn;
+  String accountName(bool isArabic) => isArabic ? accountNameAr : accountNameEn;
+  String description(bool isArabic) => isArabic ? descriptionAr : descriptionEn;
 
   DemoJournalLine copyWith({
     String? id,
@@ -301,8 +299,10 @@ abstract class PlaygroundFixtures {
       id: 'VOUCH-02',
       referenceNumber: 'JV-2026-00143',
       date: '18 Sep 2026',
-      titleEn: 'Opening Balance Inventory Settlement and Adjustments for Central Warehouse Logistics',
-      titleAr: 'سند قيد افتتاحي لتسوية بضاعة أول المدة لمستودع العمليات اللوجستية الرئيسي',
+      titleEn:
+          'Opening Balance Inventory Settlement and Adjustments for Central Warehouse Logistics',
+      titleAr:
+          'سند قيد افتتاحي لتسوية بضاعة أول المدة لمستودع العمليات اللوجستية الرئيسي',
       subtitleEn: 'Inter-warehouse transfer • Stock Adjustment',
       subtitleAr: 'تحويل بين المستودعات • تسوية جردية',
       amount: 145289320.50,
@@ -310,7 +310,8 @@ abstract class PlaygroundFixtures {
       status: DemoVoucherStatus.posted,
       branchEn: 'Central Logistics Hub',
       branchAr: 'مركز الإمداد اللوجستي',
-      notesEn: 'Consolidated physical inventory count audit variance reconciliations.',
+      notesEn:
+          'Consolidated physical inventory count audit variance reconciliations.',
       notesAr: 'تسوية فروقات الجرد الفعلي الميداني المعتمدة.',
     ),
     DemoVoucherItem(
@@ -396,4 +397,3 @@ abstract class PlaygroundFixtures {
     ),
   ];
 }
-

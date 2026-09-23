@@ -1,4 +1,9 @@
 import 'dart:async';
+import 'dart:ui' show PointerDeviceKind;
+
+import 'package:flutter/material.dart' show Scaffold;
+import 'package:flutter/semantics.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nexabiz/app/authorization/app_permission_gate.dart';
@@ -13,6 +18,8 @@ import 'package:nexabiz/core/setup/initialize_nexabiz_core.dart';
 import 'package:nexabiz/core/permissions/nexabiz_permission_intent.dart';
 import 'package:nexabiz/core/session/core_session_controller.dart';
 import 'package:nexabiz/core/session/nexabiz_session.dart';
+import 'package:nexabiz_ui/nexabiz_ui.dart';
+import 'package:shadcn_flutter/shadcn_flutter.dart' as shadcn;
 
 // ---------------------------------------------------------------------------
 // Test Doubles
@@ -123,6 +130,32 @@ Widget _wrapTestWidget({
   }
 
   return current;
+}
+
+Widget _wrapInteractiveTestWidget({
+  required Widget child,
+  NexaBizPermissionEvaluator? evaluator,
+  required CoreSessionController sessionController,
+  Listenable? invalidationSignal,
+}) {
+  Widget current = Directionality(
+    textDirection: TextDirection.ltr,
+    child: child,
+  );
+
+  if (evaluator != null) {
+    current = AppPermissionScope(
+      permissionEvaluator: evaluator,
+      sessionController: sessionController,
+      invalidationSignal: invalidationSignal,
+      child: current,
+    );
+  }
+
+  return shadcn.ShadcnApp(
+    theme: AppTheme.light(),
+    home: Scaffold(body: Center(child: current)),
+  );
 }
 
 void main() {
@@ -406,7 +439,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text('Tap Me Target'));
+      await tester.tap(find.text('Tap Me Target'), warnIfMissed: false);
       await tester.pumpAndSettle();
 
       expect(tapped, isFalse);
@@ -690,6 +723,437 @@ void main() {
 
       expect(find.text('Guarded UI'), findsNothing);
       expect(find.text('Fallback: No Access'), findsOneWidget);
+    });
+
+    testWidgets(
+      '22. DENY blocks mouse and touch even when a generic child remains actionable',
+      (tester) async {
+        setActiveSession();
+        evaluator.decision = NexaBizPermissionDecision.deny;
+        var activationCount = 0;
+
+        await tester.pumpWidget(
+          _wrapInteractiveTestWidget(
+            evaluator: evaluator,
+            sessionController: sessionController,
+            child: AppPermissionGate(
+              permissionId: _permEdit,
+              mode: AppPermissionGateMode.disable,
+              child: shadcn.PrimaryButton(
+                key: const ValueKey('denied-pointer-action'),
+                onPressed: () => activationCount++,
+                child: const Text('Denied pointer action'),
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        final center = tester.getCenter(
+          find.byKey(const ValueKey('denied-pointer-action')),
+        );
+        final mouse = await tester.startGesture(
+          center,
+          kind: PointerDeviceKind.mouse,
+        );
+        await mouse.up();
+        final touch = await tester.startGesture(
+          center,
+          kind: PointerDeviceKind.touch,
+        );
+        await touch.up();
+        await tester.pump();
+
+        expect(activationCount, 0);
+      },
+    );
+
+    testWidgets(
+      '23. DENY excludes focus and blocks Enter and Space for a generic child',
+      (tester) async {
+        setActiveSession();
+        evaluator.decision = NexaBizPermissionDecision.deny;
+        final focusNode = FocusNode();
+        addTearDown(focusNode.dispose);
+        var activationCount = 0;
+
+        await tester.pumpWidget(
+          _wrapInteractiveTestWidget(
+            evaluator: evaluator,
+            sessionController: sessionController,
+            child: AppPermissionGate(
+              permissionId: _permEdit,
+              mode: AppPermissionGateMode.disable,
+              child: shadcn.PrimaryButton(
+                focusNode: focusNode,
+                onPressed: () => activationCount++,
+                child: const Text('Denied keyboard action'),
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        focusNode.requestFocus();
+        await tester.pump();
+        expect(focusNode.hasFocus, isFalse);
+
+        await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+        await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+        await tester.sendKeyEvent(LogicalKeyboardKey.space);
+        await tester.pump();
+
+        expect(focusNode.hasFocus, isFalse);
+        expect(activationCount, 0);
+      },
+    );
+
+    testWidgets(
+      '24. DENY remains discoverable as disabled semantics without actions',
+      (tester) async {
+        final semantics = tester.ensureSemantics();
+        setActiveSession();
+        evaluator.decision = NexaBizPermissionDecision.deny;
+
+        await tester.pumpWidget(
+          _wrapInteractiveTestWidget(
+            evaluator: evaluator,
+            sessionController: sessionController,
+            child: AppPermissionGate(
+              permissionId: _permEdit,
+              mode: AppPermissionGateMode.disable,
+              child: AppButton(
+                key: const ValueKey('denied-semantic-action'),
+                label: 'Denied semantic action',
+                onPressed: () {},
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        final node = tester.getSemantics(
+          find.byKey(const ValueKey('denied-semantic-action')),
+        );
+        expect(node.label, contains('Denied semantic action'));
+        expect(node.flagsCollection.isEnabled.toBoolOrNull(), isFalse);
+        expect(node.getSemanticsData().hasAction(SemanticsAction.tap), isFalse);
+        semantics.dispose();
+      },
+    );
+
+    testWidgets(
+      '25. ALLOW restores pointer focus keyboard and actionable semantics',
+      (tester) async {
+        final semantics = tester.ensureSemantics();
+        setActiveSession();
+        evaluator.decision = NexaBizPermissionDecision.allow;
+        final focusNode = FocusNode();
+        addTearDown(focusNode.dispose);
+        var activationCount = 0;
+
+        await tester.pumpWidget(
+          _wrapInteractiveTestWidget(
+            evaluator: evaluator,
+            sessionController: sessionController,
+            child: AppPermissionGate.disable(
+              permissionId: _permEdit,
+              builder: (context, isAllowed) => shadcn.PrimaryButton(
+                key: const ValueKey('allowed-action'),
+                focusNode: focusNode,
+                onPressed: isAllowed ? () => activationCount++ : null,
+                child: const Text('Allowed action'),
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        final center = tester.getCenter(
+          find.byKey(const ValueKey('allowed-action')),
+        );
+        final mouse = await tester.startGesture(
+          center,
+          kind: PointerDeviceKind.mouse,
+        );
+        await mouse.up();
+        final touch = await tester.startGesture(
+          center,
+          kind: PointerDeviceKind.touch,
+        );
+        await touch.up();
+
+        focusNode.requestFocus();
+        await tester.pump();
+        expect(focusNode.hasFocus, isTrue);
+        await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+        await tester.sendKeyEvent(LogicalKeyboardKey.space);
+        await tester.pump();
+
+        expect(activationCount, 4);
+        final node = tester.getSemantics(find.text('Allowed action'));
+        expect(node.getSemanticsData().hasAction(SemanticsAction.tap), isTrue);
+        expect(
+          node.getSemanticsData().hasAction(SemanticsAction.focus),
+          isTrue,
+        );
+        semantics.dispose();
+      },
+    );
+
+    testWidgets(
+      '26. builder receives false from first loading frame and fail-closed states',
+      (tester) async {
+        setActiveSession();
+        final completer = Completer<NexaBizPermissionDecision>();
+        evaluator.delayedCompleter = completer;
+        bool? builderAllowed;
+
+        Widget gate({NexaBizPermissionEvaluator? explicitEvaluator}) {
+          return AppPermissionGate.disable(
+            permissionId: _permEdit,
+            evaluator: explicitEvaluator,
+            sessionController: sessionController,
+            builder: (context, isAllowed) {
+              builderAllowed = isAllowed;
+              return Text(isAllowed ? 'enabled' : 'disabled');
+            },
+          );
+        }
+
+        await tester.pumpWidget(
+          _wrapTestWidget(
+            evaluator: evaluator,
+            sessionController: sessionController,
+            child: gate(),
+          ),
+        );
+        await tester.pump();
+        expect(builderAllowed, isFalse, reason: 'loading must start disabled');
+
+        completer.complete(NexaBizPermissionDecision.unknown);
+        await tester.pumpAndSettle();
+        expect(builderAllowed, isFalse, reason: 'UNKNOWN must stay disabled');
+
+        evaluator.delayedCompleter = null;
+        evaluator.shouldThrow = true;
+        await tester.pumpWidget(
+          _wrapTestWidget(
+            child: KeyedSubtree(
+              key: const ValueKey('failure-gate'),
+              child: gate(explicitEvaluator: evaluator),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        expect(builderAllowed, isFalse, reason: 'failure must stay disabled');
+
+        await tester.pumpWidget(
+          _wrapTestWidget(child: gate(explicitEvaluator: null)),
+        );
+        await tester.pumpAndSettle();
+        expect(
+          builderAllowed,
+          isFalse,
+          reason: 'missing evaluator must disable',
+        );
+
+        evaluator.shouldThrow = false;
+        evaluator.decision = NexaBizPermissionDecision.allow;
+        sessionController.logout();
+        await tester.pumpWidget(
+          _wrapTestWidget(
+            evaluator: evaluator,
+            sessionController: sessionController,
+            child: gate(),
+          ),
+        );
+        await tester.pumpAndSettle();
+        expect(builderAllowed, isFalse, reason: 'invalid session must disable');
+      },
+    );
+
+    testWidgets(
+      '27. logout and company switch disable an allowed builder action',
+      (tester) async {
+        setActiveSession(companyId: NexaBizCompanyId('cmp-A'));
+        evaluator.decision = NexaBizPermissionDecision.allow;
+        bool? builderAllowed;
+
+        await tester.pumpWidget(
+          _wrapTestWidget(
+            evaluator: evaluator,
+            sessionController: sessionController,
+            child: AppPermissionGate.disable(
+              permissionId: _permEdit,
+              builder: (context, isAllowed) {
+                builderAllowed = isAllowed;
+                return const Text('Session action');
+              },
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        expect(builderAllowed, isTrue);
+
+        evaluator.decision = NexaBizPermissionDecision.deny;
+        setActiveSession(companyId: NexaBizCompanyId('cmp-B'));
+        await tester.pumpAndSettle();
+        expect(builderAllowed, isFalse);
+
+        evaluator.decision = NexaBizPermissionDecision.allow;
+        setActiveSession(companyId: NexaBizCompanyId('cmp-A'));
+        await tester.pumpAndSettle();
+        expect(builderAllowed, isTrue);
+
+        sessionController.logout();
+        await tester.pumpAndSettle();
+        expect(builderAllowed, isFalse);
+      },
+    );
+
+    testWidgets(
+      '28. live revoke unfocuses and fully disables the formerly active action',
+      (tester) async {
+        final semantics = tester.ensureSemantics();
+        setActiveSession();
+        evaluator.decision = NexaBizPermissionDecision.allow;
+        final focusNode = FocusNode();
+        addTearDown(focusNode.dispose);
+        var activationCount = 0;
+
+        await tester.pumpWidget(
+          _wrapInteractiveTestWidget(
+            evaluator: evaluator,
+            sessionController: sessionController,
+            invalidationSignal: invalidationSignal,
+            child: AppPermissionGate.disable(
+              permissionId: _permEdit,
+              builder: (context, isAllowed) => shadcn.PrimaryButton(
+                key: const ValueKey('revoked-action'),
+                focusNode: focusNode,
+                onPressed: isAllowed ? () => activationCount++ : null,
+                child: const Text('Revoked action'),
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        focusNode.requestFocus();
+        await tester.pump();
+        expect(focusNode.hasFocus, isTrue);
+
+        final revokeDecision = Completer<NexaBizPermissionDecision>();
+        evaluator.delayedCompleter = revokeDecision;
+        invalidationSignal.notifyAuthorizationChanged();
+        await tester.pump();
+
+        expect(focusNode.hasFocus, isFalse);
+        await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+        await tester.sendKeyEvent(LogicalKeyboardKey.space);
+        await tester.tap(
+          find.byKey(const ValueKey('revoked-action')),
+          warnIfMissed: false,
+        );
+        await tester.pump();
+        expect(activationCount, 0);
+
+        final node = tester.getSemantics(
+          find.byKey(const ValueKey('revoked-action')),
+        );
+        expect(node.flagsCollection.isEnabled.toBoolOrNull(), isFalse);
+        expect(node.getSemanticsData().hasAction(SemanticsAction.tap), isFalse);
+
+        revokeDecision.complete(NexaBizPermissionDecision.deny);
+        await tester.pumpAndSettle();
+        expect(activationCount, 0);
+        semantics.dispose();
+      },
+    );
+
+    testWidgets(
+      '29. live grant restores pointer focus keyboard and semantics',
+      (tester) async {
+        final semantics = tester.ensureSemantics();
+        setActiveSession();
+        evaluator.decision = NexaBizPermissionDecision.deny;
+        final focusNode = FocusNode();
+        addTearDown(focusNode.dispose);
+        var activationCount = 0;
+
+        await tester.pumpWidget(
+          _wrapInteractiveTestWidget(
+            evaluator: evaluator,
+            sessionController: sessionController,
+            invalidationSignal: invalidationSignal,
+            child: AppPermissionGate.disable(
+              permissionId: _permEdit,
+              builder: (context, isAllowed) => shadcn.PrimaryButton(
+                key: const ValueKey('granted-action'),
+                focusNode: focusNode,
+                onPressed: isAllowed ? () => activationCount++ : null,
+                child: const Text('Granted action'),
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        expect(focusNode.hasFocus, isFalse);
+
+        evaluator.decision = NexaBizPermissionDecision.allow;
+        invalidationSignal.notifyAuthorizationChanged();
+        await tester.pumpAndSettle();
+
+        focusNode.requestFocus();
+        await tester.pump();
+        expect(focusNode.hasFocus, isTrue);
+        await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+        await tester.tap(find.byKey(const ValueKey('granted-action')));
+        await tester.pump();
+        expect(activationCount, 2);
+
+        final node = tester.getSemantics(find.text('Granted action'));
+        expect(node.getSemanticsData().hasAction(SemanticsAction.tap), isTrue);
+        expect(
+          node.getSemanticsData().hasAction(SemanticsAction.focus),
+          isTrue,
+        );
+        semantics.dispose();
+      },
+    );
+
+    testWidgets('30. stale ALLOW cannot restore disable-mode interaction', (
+      tester,
+    ) async {
+      setActiveSession(sessionId: 'stale-session');
+      final completer = Completer<NexaBizPermissionDecision>();
+      evaluator.delayedCompleter = completer;
+      bool? builderAllowed;
+
+      await tester.pumpWidget(
+        _wrapTestWidget(
+          evaluator: evaluator,
+          sessionController: sessionController,
+          child: AppPermissionGate.disable(
+            permissionId: _permEdit,
+            builder: (context, isAllowed) {
+              builderAllowed = isAllowed;
+              return const Text('Stale action');
+            },
+          ),
+        ),
+      );
+      await tester.pump();
+      expect(builderAllowed, isFalse);
+
+      evaluator.delayedCompleter = null;
+      evaluator.decision = NexaBizPermissionDecision.deny;
+      setActiveSession(sessionId: 'current-session');
+      completer.complete(NexaBizPermissionDecision.allow);
+      await tester.pumpAndSettle();
+
+      expect(builderAllowed, isFalse);
     });
   });
 }

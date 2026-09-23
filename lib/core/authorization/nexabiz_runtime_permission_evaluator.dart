@@ -21,7 +21,8 @@ import 'nexabiz_permission_evaluator.dart';
 /// 4. For system-scoped authorization ([NexaBizSystemAuthorizationContext]):
 ///    - Returns [NexaBizPermissionDecision.deny] (system assignment persistence is not yet supported).
 /// 5. Infrastructure / storage errors fail closed safely without leaking internal details.
-final class NexaBizRuntimePermissionEvaluator implements NexaBizPermissionEvaluator {
+final class NexaBizRuntimePermissionEvaluator
+    implements NexaBizPermissionEvaluator {
   const NexaBizRuntimePermissionEvaluator({
     required this.permissionCatalog,
     required this.queryStore,
@@ -128,4 +129,3 @@ final class NexaBizRuntimePermissionEvaluator implements NexaBizPermissionEvalua
     }
   }
 }
-

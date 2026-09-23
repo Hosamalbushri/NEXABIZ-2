@@ -224,7 +224,7 @@ void main() {
     );
     await store.close();
     final migrated = raw.sqlite3.open(databasePath);
-    expect(migrated.select('PRAGMA user_version').single['user_version'], 5);
+    expect(migrated.select('PRAGMA user_version').single['user_version'], 6);
     migrated.close();
   });
 

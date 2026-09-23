@@ -51,7 +51,9 @@ class _StatesScenarioState extends State<StatesScenario> {
         children: [
           // Header & View Selector
           Text(
-            isAr ? 'حالات الشاشة والنظام (Screen States)' : 'Mobile Screen States',
+            isAr
+                ? 'حالات الشاشة والنظام (Screen States)'
+                : 'Mobile Screen States',
             style: theme.typography.h3.copyWith(
               fontFamily: AppTypography.fontFamilyName,
               fontWeight: FontWeight.w700,
@@ -76,15 +78,30 @@ class _StatesScenarioState extends State<StatesScenario> {
             scrollDirection: Axis.horizontal,
             child: Row(
               children: [
-                _buildSelectorChip(StateDemoView.skeleton, isAr ? 'هيكل التحميل' : 'Skeleton'),
+                _buildSelectorChip(
+                  StateDemoView.skeleton,
+                  isAr ? 'هيكل التحميل' : 'Skeleton',
+                ),
                 const SizedBox(width: AppSpacing.xs),
-                _buildSelectorChip(StateDemoView.empty, isAr ? 'حالة فارغة' : 'Empty'),
+                _buildSelectorChip(
+                  StateDemoView.empty,
+                  isAr ? 'حالة فارغة' : 'Empty',
+                ),
                 const SizedBox(width: AppSpacing.xs),
-                _buildSelectorChip(StateDemoView.error, isAr ? 'حالة خطأ' : 'Error'),
+                _buildSelectorChip(
+                  StateDemoView.error,
+                  isAr ? 'حالة خطأ' : 'Error',
+                ),
                 const SizedBox(width: AppSpacing.xs),
-                _buildSelectorChip(StateDemoView.offline, isAr ? 'بدون اتصال' : 'Offline'),
+                _buildSelectorChip(
+                  StateDemoView.offline,
+                  isAr ? 'بدون اتصال' : 'Offline',
+                ),
                 const SizedBox(width: AppSpacing.xs),
-                _buildSelectorChip(StateDemoView.disabled, isAr ? 'عناصر معطلة' : 'Disabled'),
+                _buildSelectorChip(
+                  StateDemoView.disabled,
+                  isAr ? 'عناصر معطلة' : 'Disabled',
+                ),
               ],
             ),
           ),
@@ -109,7 +126,10 @@ class _StatesScenarioState extends State<StatesScenario> {
     return GestureDetector(
       onTap: () => setState(() => _selectedView = view),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 6),
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.md,
+          vertical: 6,
+        ),
         decoration: BoxDecoration(
           color: isSelected ? colorScheme.primary : colorScheme.muted,
           borderRadius: AppRadii.radiusPill,
@@ -120,7 +140,9 @@ class _StatesScenarioState extends State<StatesScenario> {
         child: Text(
           label,
           style: theme.typography.small.copyWith(
-            color: isSelected ? colorScheme.primaryForeground : colorScheme.foreground,
+            color: isSelected
+                ? colorScheme.primaryForeground
+                : colorScheme.foreground,
             fontSize: 12,
             fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
           ),
@@ -140,8 +162,13 @@ class _StatesScenarioState extends State<StatesScenario> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              isAr ? 'نمط التحميل الهيكلي (Skeleton Loading)' : 'Skeleton Placeholder Pattern',
-              style: theme.typography.p.copyWith(fontWeight: FontWeight.bold, fontSize: 13),
+              isAr
+                  ? 'نمط التحميل الهيكلي (Skeleton Loading)'
+                  : 'Skeleton Placeholder Pattern',
+              style: theme.typography.p.copyWith(
+                fontWeight: FontWeight.bold,
+                fontSize: 13,
+              ),
             ),
             const SizedBox(height: AppSpacing.md),
             const SizedBox(
@@ -157,14 +184,20 @@ class _StatesScenarioState extends State<StatesScenario> {
       case StateDemoView.empty:
         return AppEmptyState(
           icon: shadcn.LucideIcons.inbox,
-          title: isAr ? 'لا توجد بيانات دفتر الأستاذ' : 'No ledger data recorded',
+          title: isAr
+              ? 'لا توجد بيانات دفتر الأستاذ'
+              : 'No ledger data recorded',
           subtitle: isAr
               ? 'لم يتم ترحيل أي قيود يومية في هذه الفترة المحاسبية حتى الآن.'
               : 'No journal entries have been posted to this financial period yet.',
           actionLabel: isAr ? 'إنشاء قيد جديد' : 'Create First Voucher',
           onAction: () {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(isAr ? 'بدء إنشاء قيد جديد' : 'Opening new voucher flow')),
+              SnackBar(
+                content: Text(
+                  isAr ? 'بدء إنشاء قيد جديد' : 'Opening new voucher flow',
+                ),
+              ),
             );
           },
         );
@@ -178,7 +211,11 @@ class _StatesScenarioState extends State<StatesScenario> {
           retryLabel: isAr ? 'إعادة محاولة المزامنة' : 'Retry Sync',
           onRetry: () {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(isAr ? 'جارٍ إعادة المحاولة...' : 'Retrying connection...')),
+              SnackBar(
+                content: Text(
+                  isAr ? 'جارٍ إعادة المحاولة...' : 'Retrying connection...',
+                ),
+              ),
             );
           },
         );
@@ -196,14 +233,22 @@ class _StatesScenarioState extends State<StatesScenario> {
               ),
               child: Row(
                 children: [
-                  const Icon(shadcn.LucideIcons.wifiOff, size: 16, color: Colors.amber),
+                  const Icon(
+                    shadcn.LucideIcons.wifiOff,
+                    size: 16,
+                    color: Colors.amber,
+                  ),
                   const SizedBox(width: AppSpacing.xs),
                   Expanded(
                     child: Text(
                       isAr
                           ? 'أنت تعمل في وضع عدم الاتصال (Offline Mode). التغييرات محفوظة محلياً.'
                           : 'You are working offline. Changes are saved locally and will sync when reconnected.',
-                      style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: Colors.amber),
+                      style: const TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.amber,
+                      ),
                     ),
                   ),
                 ],
@@ -221,7 +266,10 @@ class _StatesScenarioState extends State<StatesScenario> {
             Text(
               isAr ? 'البيانات المحلية جاهزة' : 'Local Cache Active',
               textAlign: TextAlign.center,
-              style: theme.typography.p.copyWith(fontWeight: FontWeight.bold, fontSize: 15),
+              style: theme.typography.p.copyWith(
+                fontWeight: FontWeight.bold,
+                fontSize: 15,
+              ),
             ),
             const SizedBox(height: 2),
             Text(
@@ -229,7 +277,10 @@ class _StatesScenarioState extends State<StatesScenario> {
                   ? 'يمكنك متابعة استعراض السندات المحفوظة وإعداد قيود المسودات حتى عودة الاتصال.'
                   : 'You can continue browsing cached records and draft vouchers without interruption.',
               textAlign: TextAlign.center,
-              style: theme.typography.small.copyWith(color: colorScheme.mutedForeground, fontSize: 12),
+              style: theme.typography.small.copyWith(
+                color: colorScheme.mutedForeground,
+                fontSize: 12,
+              ),
             ),
             const SizedBox(height: AppSpacing.md),
             AppButton(
@@ -245,8 +296,13 @@ class _StatesScenarioState extends State<StatesScenario> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              isAr ? 'نماذج العناصر المعطلة والقراءة فقط:' : 'Disabled & Read-Only UI Controls:',
-              style: theme.typography.p.copyWith(fontWeight: FontWeight.bold, fontSize: 13),
+              isAr
+                  ? 'نماذج العناصر المعطلة والقراءة فقط:'
+                  : 'Disabled & Read-Only UI Controls:',
+              style: theme.typography.p.copyWith(
+                fontWeight: FontWeight.bold,
+                fontSize: 13,
+              ),
             ),
             const SizedBox(height: AppSpacing.md),
             AppTextField(
@@ -280,11 +336,17 @@ class _StatesScenarioState extends State<StatesScenario> {
               decoration: BoxDecoration(
                 color: colorScheme.muted.withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(AppRadii.sm),
-                border: Border.all(color: colorScheme.border.withValues(alpha: 0.5)),
+                border: Border.all(
+                  color: colorScheme.border.withValues(alpha: 0.5),
+                ),
               ),
               child: Row(
                 children: [
-                  Icon(shadcn.LucideIcons.lock, size: 16, color: colorScheme.mutedForeground),
+                  Icon(
+                    shadcn.LucideIcons.lock,
+                    size: 16,
+                    color: colorScheme.mutedForeground,
+                  ),
                   const SizedBox(width: AppSpacing.xs),
                   Expanded(
                     child: Text(
@@ -305,4 +367,3 @@ class _StatesScenarioState extends State<StatesScenario> {
     }
   }
 }
-

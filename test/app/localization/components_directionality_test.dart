@@ -25,29 +25,34 @@ void main() {
       );
     }
 
-    testWidgets('AppModuleHubTile icon flips in RTL when mirrorIconInRtl is true', (tester) async {
-      await tester.pumpWidget(
-        buildTestApp(
-          locale: const Locale('ar'),
-          child: AppModuleHubTile(
-            icon: Icons.arrow_forward,
-            title: 'المبيعات',
-            subtitle: 'إدارة المبيعات',
-            mirrorIconInRtl: true,
-            onTap: () {},
+    testWidgets(
+      'AppModuleHubTile icon flips in RTL when mirrorIconInRtl is true',
+      (tester) async {
+        await tester.pumpWidget(
+          buildTestApp(
+            locale: const Locale('ar'),
+            child: AppModuleHubTile(
+              icon: Icons.arrow_forward,
+              title: 'المبيعات',
+              subtitle: 'إدارة المبيعات',
+              mirrorIconInRtl: true,
+              onTap: () {},
+            ),
           ),
-        ),
-      );
-      await tester.pumpAndSettle();
+        );
+        await tester.pumpAndSettle();
 
-      final transformFinder = find.ancestor(
-        of: find.byIcon(Icons.arrow_forward),
-        matching: find.byType(Transform),
-      );
-      expect(transformFinder, findsOneWidget);
-    });
+        final transformFinder = find.ancestor(
+          of: find.byIcon(Icons.arrow_forward),
+          matching: find.byType(Transform),
+        );
+        expect(transformFinder, findsOneWidget);
+      },
+    );
 
-    testWidgets('AppModuleHubCard chevron adapts to RTL and LTR', (tester) async {
+    testWidgets('AppModuleHubCard chevron adapts to RTL and LTR', (
+      tester,
+    ) async {
       // RTL
       await tester.pumpWidget(
         buildTestApp(
@@ -62,7 +67,9 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      final rtlIconWidget = tester.widget<Icon>(find.byIcon(Icons.chevron_left));
+      final rtlIconWidget = tester.widget<Icon>(
+        find.byIcon(Icons.chevron_left),
+      );
       expect(rtlIconWidget, isNotNull);
 
       // LTR
@@ -79,11 +86,15 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      final ltrIconWidget = tester.widget<Icon>(find.byIcon(Icons.chevron_right));
+      final ltrIconWidget = tester.widget<Icon>(
+        find.byIcon(Icons.chevron_right),
+      );
       expect(ltrIconWidget, isNotNull);
     });
 
-    testWidgets('AppDropdown hint adapts dynamically to locale', (tester) async {
+    testWidgets('AppDropdown hint adapts dynamically to locale', (
+      tester,
+    ) async {
       // RTL
       await tester.pumpWidget(
         buildTestApp(
@@ -113,15 +124,14 @@ void main() {
       expect(find.text('Select option...'), findsOneWidget);
     });
 
-    testWidgets('AppDateField hint adapts dynamically to locale', (tester) async {
+    testWidgets('AppDateField hint adapts dynamically to locale', (
+      tester,
+    ) async {
       // RTL
       await tester.pumpWidget(
         buildTestApp(
           locale: const Locale('ar'),
-          child: AppDateField(
-            value: null,
-            onChanged: (_) {},
-          ),
+          child: AppDateField(value: null, onChanged: (_) {}),
         ),
       );
       await tester.pumpAndSettle();
@@ -132,10 +142,7 @@ void main() {
       await tester.pumpWidget(
         buildTestApp(
           locale: const Locale('en'),
-          child: AppDateField(
-            value: null,
-            onChanged: (_) {},
-          ),
+          child: AppDateField(value: null, onChanged: (_) {}),
         ),
       );
       await tester.pumpAndSettle();
@@ -143,15 +150,14 @@ void main() {
       expect(find.text('Select date...'), findsOneWidget);
     });
 
-    testWidgets('AppDateRangeField hint adapts dynamically to locale', (tester) async {
+    testWidgets('AppDateRangeField hint adapts dynamically to locale', (
+      tester,
+    ) async {
       // RTL
       await tester.pumpWidget(
         buildTestApp(
           locale: const Locale('ar'),
-          child: AppDateRangeField(
-            value: null,
-            onChanged: (_) {},
-          ),
+          child: AppDateRangeField(value: null, onChanged: (_) {}),
         ),
       );
       await tester.pumpAndSettle();
@@ -162,10 +168,7 @@ void main() {
       await tester.pumpWidget(
         buildTestApp(
           locale: const Locale('en'),
-          child: AppDateRangeField(
-            value: null,
-            onChanged: (_) {},
-          ),
+          child: AppDateRangeField(value: null, onChanged: (_) {}),
         ),
       );
       await tester.pumpAndSettle();
@@ -173,7 +176,9 @@ void main() {
       expect(find.text('Select date range...'), findsOneWidget);
     });
 
-    testWidgets('AppCheckbox and AppSwitch render labels without errors', (tester) async {
+    testWidgets('AppCheckbox and AppSwitch render labels without errors', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         buildTestApp(
           child: Column(
@@ -198,7 +203,9 @@ void main() {
       expect(find.text('تفعيل التنبيهات'), findsOneWidget);
     });
 
-    testWidgets('AppSliderField renders min max labels correctly', (tester) async {
+    testWidgets('AppSliderField renders min max labels correctly', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         buildTestApp(
           child: AppSliderField(

@@ -8,6 +8,7 @@ import 'package:nexabiz/app/app.dart';
 import 'package:nexabiz/app/bootstrap/nexabiz_capability_manifest.dart';
 import 'package:nexabiz/app/localization/app_locale_controller.dart';
 import 'package:nexabiz/core/capabilities/contributions/nexabiz_capability_runtime_contributions.dart';
+import 'package:nexabiz/core/navigation/nexabiz_route_access_requirement.dart';
 import 'package:nexabiz/core/navigation/nexabiz_route_id.dart';
 import 'package:nexabiz/packages/permissions/permissions_capability.dart';
 import 'package:nexabiz/packages/permissions/presentation/permissions_screen.dart';
@@ -26,7 +27,13 @@ void main() {
       capability.permissionContribution.declaredPermissionIds
           .map((id) => id.value)
           .toSet(),
-      {'permissions.catalog.view', 'permissions.policy.review'},
+      {
+        'permissions.catalog.view',
+        'permissions.policy.review',
+        'permissions.role.manage',
+        'permissions.policy.manage',
+        'permissions.assignment.manage',
+      },
     );
     expect(capability.permissionContribution.requiredPermissions, isEmpty);
   });
@@ -43,7 +50,14 @@ void main() {
       route.routeId,
       const NexaBizRouteId(namespace: 'permissions', routeName: 'home'),
     );
-    expect(route.accessRequirement, isNull);
+    expect(
+      route.accessRequirement,
+      const NexaBizRouteAccessRequirement(
+        requiresReadySetup: true,
+        requiresActiveSession: true,
+        requiresCompanyScope: true,
+      ),
+    );
   });
 
   test('permissions translation keys exist in both ARB catalogs', () {

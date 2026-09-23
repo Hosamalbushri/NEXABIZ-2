@@ -27,7 +27,9 @@ class _SheetsScenarioState extends State<SheetsScenario> {
     AppBottomSheet.show<void>(
       context: context,
       title: isAr ? 'دليل الحسابات المالية' : 'Chart of Accounts',
-      subtitle: isAr ? 'اختر حساباً لترحيل الحركة المالية' : 'Select an account to post entry',
+      subtitle: isAr
+          ? 'اختر حساباً لترحيل الحركة المالية'
+          : 'Select an account to post entry',
       icon: shadcn.LucideIcons.bookOpen,
       child: StatefulBuilder(
         builder: (ctx, setSheetState) {
@@ -52,42 +54,60 @@ class _SheetsScenarioState extends State<SheetsScenario> {
     AppBottomSheet.show<void>(
       context: context,
       title: isAr ? 'إجراءات السند JV-2026-001' : 'Actions for JV-2026-001',
-      subtitle: isAr ? 'الخيارات المتاحة للتعامل مع هذا القيد' : 'Available actions for this voucher',
+      subtitle: isAr
+          ? 'الخيارات المتاحة للتعامل مع هذا القيد'
+          : 'Available actions for this voucher',
       icon: shadcn.LucideIcons.ellipsis,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           _buildActionSheetTile(
             icon: shadcn.LucideIcons.printer,
-            title: isAr ? 'طباعة إشعار السند (PDF)' : 'Print Voucher Receipt (PDF)',
-            subtitle: isAr ? 'إنشاء ملف PDF جاهز للمصادقة' : 'Generate sign-ready PDF document',
+            title: isAr
+                ? 'طباعة إشعار السند (PDF)'
+                : 'Print Voucher Receipt (PDF)',
+            subtitle: isAr
+                ? 'إنشاء ملف PDF جاهز للمصادقة'
+                : 'Generate sign-ready PDF document',
             onTap: () {
               Navigator.of(context).pop();
-              _setResult(isAr ? 'تم بدء طباعة السند' : 'Voucher printing initiated');
+              _setResult(
+                isAr ? 'تم بدء طباعة السند' : 'Voucher printing initiated',
+              );
             },
           ),
           _buildActionSheetTile(
             icon: shadcn.LucideIcons.copy,
             title: isAr ? 'نسخ وإنشاء قيد مطابق' : 'Duplicate Voucher',
-            subtitle: isAr ? 'إنشاء قيد جديد بنفس الحسابات' : 'Clone accounts into new voucher draft',
+            subtitle: isAr
+                ? 'إنشاء قيد جديد بنفس الحسابات'
+                : 'Clone accounts into new voucher draft',
             onTap: () {
               Navigator.of(context).pop();
-              _setResult(isAr ? 'تم نسخ القيد كمسودة' : 'Voucher duplicated as draft');
+              _setResult(
+                isAr ? 'تم نسخ القيد كمسودة' : 'Voucher duplicated as draft',
+              );
             },
           ),
           _buildActionSheetTile(
             icon: shadcn.LucideIcons.undo,
             title: isAr ? 'عكس القيد المحاسبي' : 'Reverse Journal Entry',
-            subtitle: isAr ? 'إنشاء قيد عكسي تسوي معتمد' : 'Create balancing reversal voucher',
+            subtitle: isAr
+                ? 'إنشاء قيد عكسي تسوي معتمد'
+                : 'Create balancing reversal voucher',
             onTap: () {
               Navigator.of(context).pop();
-              _setResult(isAr ? 'تم إنشاء قيد عكسي' : 'Reversal voucher created');
+              _setResult(
+                isAr ? 'تم إنشاء قيد عكسي' : 'Reversal voucher created',
+              );
             },
           ),
           _buildActionSheetTile(
             icon: shadcn.LucideIcons.history,
             title: isAr ? 'سجل التدقيق والتتبع' : 'Audit Trail & Change Log',
-            subtitle: isAr ? 'عرض الحركات وتواريخ التعديل' : 'View modification timestamps & users',
+            subtitle: isAr
+                ? 'عرض الحركات وتواريخ التعديل'
+                : 'View modification timestamps & users',
             onTap: () {
               Navigator.of(context).pop();
               _setResult(isAr ? 'تم فتح سجل التدقيق' : 'Audit log opened');
@@ -103,7 +123,9 @@ class _SheetsScenarioState extends State<SheetsScenario> {
 
     AppBottomSheet.show<void>(
       context: context,
-      title: isAr ? 'تأكيد إلغاء القيد المحاسبي' : 'Confirm Voucher Cancellation',
+      title: isAr
+          ? 'تأكيد إلغاء القيد المحاسبي'
+          : 'Confirm Voucher Cancellation',
       icon: shadcn.LucideIcons.triangleAlert,
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -124,7 +146,11 @@ class _SheetsScenarioState extends State<SheetsScenario> {
                   variant: AppButtonVariant.destructive,
                   onPressed: () {
                     Navigator.of(context).pop();
-                    _setResult(isAr ? 'تم إلغاء القيد بنجاح' : 'Voucher cancelled successfully');
+                    _setResult(
+                      isAr
+                          ? 'تم إلغاء القيد بنجاح'
+                          : 'Voucher cancelled successfully',
+                    );
                   },
                 ),
               ),
@@ -160,7 +186,9 @@ class _SheetsScenarioState extends State<SheetsScenario> {
         children: [
           // Header
           Text(
-            isAr ? 'معرض الصفائح السفلية (Bottom Sheets)' : 'Mobile Bottom Sheets',
+            isAr
+                ? 'معرض الصفائح السفلية (Bottom Sheets)'
+                : 'Mobile Bottom Sheets',
             style: theme.typography.h3.copyWith(
               fontFamily: AppTypography.fontFamilyName,
               fontWeight: FontWeight.w700,
@@ -187,11 +215,17 @@ class _SheetsScenarioState extends State<SheetsScenario> {
               decoration: BoxDecoration(
                 color: colorScheme.primary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(AppRadii.sm),
-                border: Border.all(color: colorScheme.primary.withValues(alpha: 0.3)),
+                border: Border.all(
+                  color: colorScheme.primary.withValues(alpha: 0.3),
+                ),
               ),
               child: Row(
                 children: [
-                  Icon(shadcn.LucideIcons.circleCheck, size: 16, color: colorScheme.primary),
+                  Icon(
+                    shadcn.LucideIcons.circleCheck,
+                    size: 16,
+                    color: colorScheme.primary,
+                  ),
                   const SizedBox(width: AppSpacing.xs),
                   Expanded(
                     child: Text(
@@ -210,7 +244,9 @@ class _SheetsScenarioState extends State<SheetsScenario> {
 
           // Launcher Cards
           _buildSheetLauncherCard(
-            title: isAr ? '١. صفيحة اختيار الحساب المالي (مع بحث سريع)' : '1. Searchable Account Selector Sheet',
+            title: isAr
+                ? '١. صفيحة اختيار الحساب المالي (مع بحث سريع)'
+                : '1. Searchable Account Selector Sheet',
             description: isAr
                 ? 'صفيحة مخصصة للبحث السريع والتمرير بين الحسابات وتصنيفاتها'
                 : 'Modal sheet with instant search filtering across ledger accounts',
@@ -222,7 +258,9 @@ class _SheetsScenarioState extends State<SheetsScenario> {
           const SizedBox(height: AppSpacing.sm),
 
           _buildSheetLauncherCard(
-            title: isAr ? '٢. صفيحة إجراءات السند (Action Sheet)' : '2. Voucher Action Sheet',
+            title: isAr
+                ? '٢. صفيحة إجراءات السند (Action Sheet)'
+                : '2. Voucher Action Sheet',
             description: isAr
                 ? 'قائمة خيارات وإجراءات سريعة للسند (طباعة، نسخ، عكس، تتبع)'
                 : 'Contextual quick actions (Print PDF, Duplicate, Reverse, Audit)',
@@ -234,7 +272,9 @@ class _SheetsScenarioState extends State<SheetsScenario> {
           const SizedBox(height: AppSpacing.sm),
 
           _buildSheetLauncherCard(
-            title: isAr ? '٣. صفيحة التأكيد التحذيرية (Confirmation Sheet)' : '3. Destructive Confirmation Sheet',
+            title: isAr
+                ? '٣. صفيحة التأكيد التحذيرية (Confirmation Sheet)'
+                : '3. Destructive Confirmation Sheet',
             description: isAr
                 ? 'صفيحة تحذيرية لإلغاء القيد مع زر إجراء خطر وزر تراجع'
                 : 'Critical confirmation before performing irreversible changes',
@@ -247,7 +287,9 @@ class _SheetsScenarioState extends State<SheetsScenario> {
 
           // Inline Static Preview of Account Sheet
           Text(
-            isAr ? 'معاينة ثابتة لنمط الصفيحة السفلية:' : 'Static Inline Bottom Sheet Architecture:',
+            isAr
+                ? 'معاينة ثابتة لنمط الصفيحة السفلية:'
+                : 'Static Inline Bottom Sheet Architecture:',
             style: theme.typography.small.copyWith(
               fontWeight: FontWeight.w600,
               color: colorScheme.mutedForeground,
@@ -272,12 +314,18 @@ class _SheetsScenarioState extends State<SheetsScenario> {
                 const SizedBox(height: AppSpacing.sm),
                 Text(
                   isAr ? 'دليل الحسابات' : 'Chart of Accounts',
-                  style: theme.typography.p.copyWith(fontWeight: FontWeight.bold),
+                  style: theme.typography.p.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: AppSpacing.xs),
                 Text(
-                  isAr ? 'تصميم مخصص للمس الإصبع، ارتفاع تكيفي، ودعم كامل للغة العربية.' : 'Touch-optimized drag handle, adaptive height, keyboard avoidance, and RTL.',
-                  style: theme.typography.small.copyWith(color: colorScheme.mutedForeground),
+                  isAr
+                      ? 'تصميم مخصص للمس الإصبع، ارتفاع تكيفي، ودعم كامل للغة العربية.'
+                      : 'Touch-optimized drag handle, adaptive height, keyboard avoidance, and RTL.',
+                  style: theme.typography.small.copyWith(
+                    color: colorScheme.mutedForeground,
+                  ),
                 ),
               ],
             ),
@@ -306,7 +354,10 @@ class _SheetsScenarioState extends State<SheetsScenario> {
               Expanded(
                 child: Text(
                   title,
-                  style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 13,
+                  ),
                 ),
               ),
             ],
@@ -359,16 +410,26 @@ class _SheetsScenarioState extends State<SheetsScenario> {
                 children: [
                   Text(
                     title,
-                    style: theme.typography.p.copyWith(fontWeight: FontWeight.w600, fontSize: 13),
+                    style: theme.typography.p.copyWith(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13,
+                    ),
                   ),
                   Text(
                     subtitle,
-                    style: theme.typography.small.copyWith(color: colorScheme.mutedForeground, fontSize: 11),
+                    style: theme.typography.small.copyWith(
+                      color: colorScheme.mutedForeground,
+                      fontSize: 11,
+                    ),
                   ),
                 ],
               ),
             ),
-            Icon(shadcn.LucideIcons.chevronRight, size: 16, color: colorScheme.mutedForeground),
+            Icon(
+              shadcn.LucideIcons.chevronRight,
+              size: 16,
+              color: colorScheme.mutedForeground,
+            ),
           ],
         ),
       ),
@@ -388,7 +449,8 @@ class _SheetAccountSelectorBody extends StatefulWidget {
   final ValueChanged<DemoAccountOption> onSelect;
 
   @override
-  State<_SheetAccountSelectorBody> createState() => _SheetAccountSelectorBodyState();
+  State<_SheetAccountSelectorBody> createState() =>
+      _SheetAccountSelectorBodyState();
 }
 
 class _SheetAccountSelectorBodyState extends State<_SheetAccountSelectorBody> {
@@ -411,8 +473,14 @@ class _SheetAccountSelectorBodyState extends State<_SheetAccountSelectorBody> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         AppTextField(
-          hint: isAr ? 'بحث برقم أو اسم الحساب...' : 'Search code or account name...',
-          prefixIcon: Icon(shadcn.LucideIcons.search, size: 16, color: colorScheme.mutedForeground),
+          hint: isAr
+              ? 'بحث برقم أو اسم الحساب...'
+              : 'Search code or account name...',
+          prefixIcon: Icon(
+            shadcn.LucideIcons.search,
+            size: 16,
+            color: colorScheme.mutedForeground,
+          ),
           onChanged: (v) => setState(() => _search = v),
         ),
         const SizedBox(height: AppSpacing.sm),
@@ -421,24 +489,35 @@ class _SheetAccountSelectorBodyState extends State<_SheetAccountSelectorBody> {
           child: ListView.separated(
             shrinkWrap: true,
             itemCount: filtered.length,
-            separatorBuilder: (_, _) => Divider(color: colorScheme.border, height: 1),
+            separatorBuilder: (_, _) =>
+                Divider(color: colorScheme.border, height: 1),
             itemBuilder: (ctx, idx) {
               final acc = filtered[idx];
               return InkWell(
                 onTap: () => widget.onSelect(acc),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 10,
+                    horizontal: 4,
+                  ),
                   child: Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 2,
+                        ),
                         decoration: BoxDecoration(
                           color: colorScheme.muted,
                           borderRadius: BorderRadius.circular(AppRadii.xs),
                         ),
                         child: Text(
                           acc.code,
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: colorScheme.foreground),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 11,
+                            color: colorScheme.foreground,
+                          ),
                         ),
                       ),
                       const SizedBox(width: AppSpacing.sm),
@@ -448,16 +527,26 @@ class _SheetAccountSelectorBodyState extends State<_SheetAccountSelectorBody> {
                           children: [
                             Text(
                               acc.name(isAr),
-                              style: theme.typography.p.copyWith(fontWeight: FontWeight.w600, fontSize: 13),
+                              style: theme.typography.p.copyWith(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 13,
+                              ),
                             ),
                             Text(
                               acc.category(isAr),
-                              style: theme.typography.small.copyWith(color: colorScheme.mutedForeground, fontSize: 11),
+                              style: theme.typography.small.copyWith(
+                                color: colorScheme.mutedForeground,
+                                fontSize: 11,
+                              ),
                             ),
                           ],
                         ),
                       ),
-                      Icon(shadcn.LucideIcons.check, size: 16, color: colorScheme.primary),
+                      Icon(
+                        shadcn.LucideIcons.check,
+                        size: 16,
+                        color: colorScheme.primary,
+                      ),
                     ],
                   ),
                 ),
@@ -469,4 +558,3 @@ class _SheetAccountSelectorBodyState extends State<_SheetAccountSelectorBody> {
     );
   }
 }
-

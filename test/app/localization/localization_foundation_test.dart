@@ -70,8 +70,9 @@ void main() {
       );
     }
 
-    testWidgets('renders English UI text and LTR directionality',
-        (tester) async {
+    testWidgets('renders English UI text and LTR directionality', (
+      tester,
+    ) async {
       await AppLocaleController.setLocale(const Locale('en'));
 
       await tester.pumpWidget(
@@ -80,10 +81,7 @@ void main() {
             builder: (context) {
               final l10n = AppLocalizations.of(context);
               return Column(
-                children: [
-                  Text(l10n.dashboardTitle),
-                  Text(l10n.navDashboard),
-                ],
+                children: [Text(l10n.dashboardTitle), Text(l10n.navDashboard)],
               );
             },
           ),
@@ -94,13 +92,15 @@ void main() {
       expect(find.text('NexaBiz Dashboard'), findsOneWidget);
       expect(find.text('Dashboard'), findsOneWidget);
 
-      final directionality =
-          tester.widget<Directionality>(find.byType(Directionality).first);
+      final directionality = tester.widget<Directionality>(
+        find.byType(Directionality).first,
+      );
       expect(directionality.textDirection, equals(TextDirection.ltr));
     });
 
-    testWidgets('renders Arabic UI text and RTL directionality',
-        (tester) async {
+    testWidgets('renders Arabic UI text and RTL directionality', (
+      tester,
+    ) async {
       await AppLocaleController.setLocale(const Locale('ar'));
 
       await tester.pumpWidget(
@@ -109,10 +109,7 @@ void main() {
             builder: (context) {
               final l10n = AppLocalizations.of(context);
               return Column(
-                children: [
-                  Text(l10n.dashboardTitle),
-                  Text(l10n.navDashboard),
-                ],
+                children: [Text(l10n.dashboardTitle), Text(l10n.navDashboard)],
               );
             },
           ),
@@ -123,115 +120,115 @@ void main() {
       expect(find.text('لوحة تحكم نيكسابيز'), findsOneWidget);
       expect(find.text('لوحة التحكم'), findsOneWidget);
 
-      final directionality =
-          tester.widget<Directionality>(find.byType(Directionality).first);
+      final directionality = tester.widget<Directionality>(
+        find.byType(Directionality).first,
+      );
       expect(directionality.textDirection, equals(TextDirection.rtl));
     });
 
     testWidgets(
-        'runtime locale switch updates string resources without breaking widget tree',
-        (tester) async {
-      await AppLocaleController.setLocale(const Locale('en'));
+      'runtime locale switch updates string resources without breaking widget tree',
+      (tester) async {
+        await AppLocaleController.setLocale(const Locale('en'));
 
-      await tester.pumpWidget(
-        buildTestApp(
-          child: Builder(
-            builder: (context) {
-              final l10n = AppLocalizations.of(context);
-              return Text(l10n.servicesTitle);
-            },
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
-      expect(find.text('Services Hub'), findsOneWidget);
-
-      // Switch runtime locale to Arabic
-      await AppLocaleController.setLocale(const Locale('ar'));
-      await tester.pumpAndSettle();
-
-      expect(find.text('مركز الخدمات'), findsOneWidget);
-      expect(find.text('Services Hub'), findsNothing);
-    });
-
-    testWidgets(
-        'runtime locale switch preserves GoRouter deep navigation stack',
-        (tester) async {
-      await AppLocaleController.setLocale(const Locale('en'));
-
-      final router = GoRouter(
-        initialLocation: '/deep/step1',
-        routes: [
-          GoRoute(
-            path: '/deep/step1',
-            builder: (context, state) => Column(
-              children: [
-                const Text('Step 1 Root'),
-                AppButton(
-                  label: 'Push Step 2',
-                  onPressed: () => context.push('/deep/step2'),
-                ),
-              ],
+        await tester.pumpWidget(
+          buildTestApp(
+            child: Builder(
+              builder: (context) {
+                final l10n = AppLocalizations.of(context);
+                return Text(l10n.servicesTitle);
+              },
             ),
           ),
-          GoRoute(
-            path: '/deep/step2',
-            builder: (context, state) {
-              final l10n = AppLocalizations.of(context);
-              return Column(
+        );
+        await tester.pumpAndSettle();
+        expect(find.text('Services Hub'), findsOneWidget);
+
+        // Switch runtime locale to Arabic
+        await AppLocaleController.setLocale(const Locale('ar'));
+        await tester.pumpAndSettle();
+
+        expect(find.text('مركز الخدمات'), findsOneWidget);
+        expect(find.text('Services Hub'), findsNothing);
+      },
+    );
+
+    testWidgets(
+      'runtime locale switch preserves GoRouter deep navigation stack',
+      (tester) async {
+        await AppLocaleController.setLocale(const Locale('en'));
+
+        final router = GoRouter(
+          initialLocation: '/deep/step1',
+          routes: [
+            GoRoute(
+              path: '/deep/step1',
+              builder: (context, state) => Column(
                 children: [
-                  Text('Active Node: ${l10n.navSettings}'),
+                  const Text('Step 1 Root'),
                   AppButton(
-                    label: 'Pop',
-                    onPressed: () => context.pop(),
+                    label: 'Push Step 2',
+                    onPressed: () => context.push('/deep/step2'),
                   ),
+                ],
+              ),
+            ),
+            GoRoute(
+              path: '/deep/step2',
+              builder: (context, state) {
+                final l10n = AppLocalizations.of(context);
+                return Column(
+                  children: [
+                    Text('Active Node: ${l10n.navSettings}'),
+                    AppButton(label: 'Pop', onPressed: () => context.pop()),
+                  ],
+                );
+              },
+            ),
+          ],
+        );
+
+        await tester.pumpWidget(
+          ValueListenableBuilder<Locale>(
+            valueListenable: AppLocaleController.localeNotifier,
+            builder: (context, locale, _) {
+              return NexaBizRootApp.router(
+                title: 'Router Test',
+                routerConfig: router,
+                locale: locale,
+                supportedLocales: AppLocaleController.supportedLocales,
+                localizationsDelegates: const [
+                  AppLocalizations.delegate,
+                  GlobalMaterialLocalizations.delegate,
+                  GlobalWidgetsLocalizations.delegate,
+                  GlobalCupertinoLocalizations.delegate,
+                  NexaBizShadcnLocalizationsDelegate.delegate,
                 ],
               );
             },
           ),
-        ],
-      );
+        );
+        await tester.pumpAndSettle();
 
-      await tester.pumpWidget(
-        ValueListenableBuilder<Locale>(
-          valueListenable: AppLocaleController.localeNotifier,
-          builder: (context, locale, _) {
-            return NexaBizRootApp.router(
-              title: 'Router Test',
-              routerConfig: router,
-              locale: locale,
-              supportedLocales: AppLocaleController.supportedLocales,
-              localizationsDelegates: const [
-                AppLocalizations.delegate,
-                GlobalMaterialLocalizations.delegate,
-                GlobalWidgetsLocalizations.delegate,
-                GlobalCupertinoLocalizations.delegate,
-                NexaBizShadcnLocalizationsDelegate.delegate,
-              ],
-            );
-          },
-        ),
-      );
-      await tester.pumpAndSettle();
+        // Navigate deep into step 2
+        await tester.tap(find.text('Push Step 2'));
+        await tester.pumpAndSettle();
 
-      // Navigate deep into step 2
-      await tester.tap(find.text('Push Step 2'));
-      await tester.pumpAndSettle();
+        expect(find.text('Active Node: Settings'), findsOneWidget);
 
-      expect(find.text('Active Node: Settings'), findsOneWidget);
+        // Switch language to Arabic while deep in stack
+        await AppLocaleController.setLocale(const Locale('ar'));
+        await tester.pumpAndSettle();
 
-      // Switch language to Arabic while deep in stack
-      await AppLocaleController.setLocale(const Locale('ar'));
-      await tester.pumpAndSettle();
+        // Verify node remains Active Step 2 in Arabic
+        expect(find.text('Active Node: الإعدادات'), findsOneWidget);
 
-      // Verify node remains Active Step 2 in Arabic
-      expect(find.text('Active Node: الإعدادات'), findsOneWidget);
+        // Verify popping step 2 returns to step 1
+        await tester.tap(find.text('Pop'));
+        await tester.pumpAndSettle();
 
-      // Verify popping step 2 returns to step 1
-      await tester.tap(find.text('Pop'));
-      await tester.pumpAndSettle();
-
-      expect(find.text('Step 1 Root'), findsOneWidget);
-    });
+        expect(find.text('Step 1 Root'), findsOneWidget);
+      },
+    );
   });
 }

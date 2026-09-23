@@ -29,7 +29,8 @@ class _SettingsNavContribution implements NexaBizNavigationContribution {
         requiresActiveSession: true,
         requiresCompanyScope: true,
       ),
-      pageBuilder: (context) => SettingsScreen(sessionController: sessionController),
+      pageBuilder: (context) =>
+          SettingsScreen(sessionController: sessionController),
     ),
   ];
 }

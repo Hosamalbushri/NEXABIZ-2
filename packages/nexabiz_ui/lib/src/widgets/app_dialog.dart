@@ -304,13 +304,16 @@ class AppDialog<T> extends StatelessWidget {
     final footerBgColor = colorScheme.muted.withValues(alpha: 0.15);
 
     // Build Icon Avatar
-    final Widget? resolvedAvatar = leading ??
+    final Widget? resolvedAvatar =
+        leading ??
         (icon != null
             ? AppIconAvatar(
                 icon: icon!,
                 tone: isDestructive
                     ? AppIconAvatarTone.error
-                    : (isDark ? AppIconAvatarTone.primary : AppIconAvatarTone.primary),
+                    : (isDark
+                          ? AppIconAvatarTone.primary
+                          : AppIconAvatarTone.primary),
                 size: AppIconAvatarSize.md,
               )
             : null);
@@ -343,7 +346,9 @@ class AppDialog<T> extends StatelessWidget {
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.05),
+                      color: Colors.black.withValues(
+                        alpha: isDark ? 0.2 : 0.05,
+                      ),
                       blurRadius: 4,
                       offset: const Offset(0, 1),
                     ),
@@ -368,9 +373,7 @@ class AppDialog<T> extends StatelessWidget {
         decoration: BoxDecoration(
           color: dialogBgColor,
           border: Border(bottom: BorderSide(color: borderColor, width: 1)),
-          borderRadius: const BorderRadius.vertical(
-            top: Radius.circular(20),
-          ),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -512,30 +515,35 @@ class AppDialog<T> extends StatelessWidget {
 
     final maxDialogWidth = size.maxWidth;
     final viewportHeight = mediaQuery.size.height;
-    final maxDialogHeight =
-        isFullscreen ? viewportHeight : viewportHeight * 0.88;
+    final maxDialogHeight = isFullscreen
+        ? viewportHeight
+        : viewportHeight * 0.88;
 
-    final isChildEmpty = child is SizedBox && (child as SizedBox).width == 0 && (child as SizedBox).height == 0;
-    final hasDescription = description != null && description!.trim().isNotEmpty;
+    final isChildEmpty =
+        child is SizedBox &&
+        (child as SizedBox).width == 0 &&
+        (child as SizedBox).height == 0;
+    final hasDescription =
+        description != null && description!.trim().isNotEmpty;
 
     final Widget bodyWidget = !isChildEmpty
         ? child
         : (hasDescription
-            ? Container(
-                width: double.infinity,
-                padding: const EdgeInsets.fromLTRB(24, 20, 24, 20),
-                child: Text(
-                  description!,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 14.5,
-                    height: 1.55,
-                    color: colorScheme.mutedForeground,
-                    fontWeight: FontWeight.w400,
+              ? Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.fromLTRB(24, 20, 24, 20),
+                  child: Text(
+                    description!,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 14.5,
+                      height: 1.55,
+                      color: colorScheme.mutedForeground,
+                      fontWeight: FontWeight.w400,
+                    ),
                   ),
-                ),
-              )
-            : const SizedBox.shrink());
+                )
+              : const SizedBox.shrink());
 
     final bool renderBody = !isChildEmpty || hasDescription;
 
@@ -564,8 +572,9 @@ class AppDialog<T> extends StatelessWidget {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(20),
               child: Column(
-                mainAxisSize:
-                    isFullscreen ? MainAxisSize.max : MainAxisSize.min,
+                mainAxisSize: isFullscreen
+                    ? MainAxisSize.max
+                    : MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   headerWidget,
@@ -573,7 +582,9 @@ class AppDialog<T> extends StatelessWidget {
                   if (renderBody)
                     Flexible(
                       child: SingleChildScrollView(
-                        padding: !isChildEmpty ? contentPadding : EdgeInsets.zero,
+                        padding: !isChildEmpty
+                            ? contentPadding
+                            : EdgeInsets.zero,
                         child: centerContent
                             ? Center(
                                 child: DefaultTextStyle.merge(

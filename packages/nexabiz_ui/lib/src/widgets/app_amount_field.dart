@@ -114,11 +114,7 @@ class AppAmountField extends StatelessWidget {
     final suffixWidget = toneBadge != null
         ? Row(
             mainAxisSize: MainAxisSize.min,
-            children: [
-              ?currencyWidget,
-              const SizedBox(width: 4),
-              toneBadge,
-            ],
+            children: [?currencyWidget, const SizedBox(width: 4), toneBadge],
           )
         : currencyWidget;
 

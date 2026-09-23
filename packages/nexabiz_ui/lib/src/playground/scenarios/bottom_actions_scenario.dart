@@ -38,7 +38,9 @@ class _BottomActionsScenarioState extends State<BottomActionsScenario> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
-                  isAr ? 'شريط الإجراءات السفلية (Bottom Actions)' : 'Mobile Bottom Actions Showcase',
+                  isAr
+                      ? 'شريط الإجراءات السفلية (Bottom Actions)'
+                      : 'Mobile Bottom Actions Showcase',
                   style: theme.typography.h3.copyWith(
                     fontFamily: AppTypography.fontFamilyName,
                     fontWeight: FontWeight.w700,
@@ -63,7 +65,9 @@ class _BottomActionsScenarioState extends State<BottomActionsScenario> {
                     decoration: BoxDecoration(
                       color: colorScheme.primary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(AppRadii.sm),
-                      border: Border.all(color: colorScheme.primary.withValues(alpha: 0.3)),
+                      border: Border.all(
+                        color: colorScheme.primary.withValues(alpha: 0.3),
+                      ),
                     ),
                     child: Text(
                       _lastAction!,
@@ -78,19 +82,26 @@ class _BottomActionsScenarioState extends State<BottomActionsScenario> {
 
                 // Composition 1: Save Draft + Post
                 _buildCard(
-                  title: isAr ? '١. حفظ مسودة + ترحيل نهائي' : '1. Save Draft + Post',
-                  desc: isAr ? 'إجراء فرعي (مسودة) وإجراء رئيسي بارز (ترحيل)' : 'Secondary draft action + Prominent primary post action',
+                  title: isAr
+                      ? '١. حفظ مسودة + ترحيل نهائي'
+                      : '1. Save Draft + Post',
+                  desc: isAr
+                      ? 'إجراء فرعي (مسودة) وإجراء رئيسي بارز (ترحيل)'
+                      : 'Secondary draft action + Prominent primary post action',
                   widget: AppBottomActions(
                     showBorder: true,
                     primaryAction: AppButton(
                       label: isAr ? 'ترحيل القيد' : 'Post Voucher',
                       variant: AppButtonVariant.filled,
-                      onPressed: () => _setAction(isAr ? 'تم ترحيل القيد' : 'Voucher Posted'),
+                      onPressed: () => _setAction(
+                        isAr ? 'تم ترحيل القيد' : 'Voucher Posted',
+                      ),
                     ),
                     secondaryAction: AppButton(
                       label: isAr ? 'حفظ مسودة' : 'Save Draft',
                       variant: AppButtonVariant.outlined,
-                      onPressed: () => _setAction(isAr ? 'تم حفظ المسودة' : 'Draft Saved'),
+                      onPressed: () =>
+                          _setAction(isAr ? 'تم حفظ المسودة' : 'Draft Saved'),
                     ),
                   ),
                 ),
@@ -99,18 +110,25 @@ class _BottomActionsScenarioState extends State<BottomActionsScenario> {
 
                 // Composition 2: Cancel + Save
                 _buildCard(
-                  title: isAr ? '٢. إلغاء + حفظ المستند' : '2. Cancel + Save Document',
-                  desc: isAr ? 'شريط عادي لصفحات إنشاء وتعديل البيانات' : 'Standard creation/edit form actions',
+                  title: isAr
+                      ? '٢. إلغاء + حفظ المستند'
+                      : '2. Cancel + Save Document',
+                  desc: isAr
+                      ? 'شريط عادي لصفحات إنشاء وتعديل البيانات'
+                      : 'Standard creation/edit form actions',
                   widget: AppBottomActions(
                     primaryAction: AppButton(
                       label: isAr ? 'حفظ البيانات' : 'Save Changes',
                       variant: AppButtonVariant.filled,
-                      onPressed: () => _setAction(isAr ? 'تم حفظ البيانات' : 'Changes Saved'),
+                      onPressed: () => _setAction(
+                        isAr ? 'تم حفظ البيانات' : 'Changes Saved',
+                      ),
                     ),
                     secondaryAction: AppButton(
                       label: isAr ? 'إلغاء' : 'Cancel',
                       variant: AppButtonVariant.outlined,
-                      onPressed: () => _setAction(isAr ? 'تم الإلغاء' : 'Cancelled'),
+                      onPressed: () =>
+                          _setAction(isAr ? 'تم الإلغاء' : 'Cancelled'),
                     ),
                   ),
                 ),
@@ -119,15 +137,20 @@ class _BottomActionsScenarioState extends State<BottomActionsScenario> {
 
                 // Composition 3: Delete + Save + Overflow
                 _buildCard(
-                  title: isAr ? '٣. حذف خطر + حفظ + إجراءات إضافية' : '3. Delete + Save + Overflow Action',
-                  desc: isAr ? 'إجراء خطير في الطرف الفرعي مع زر رئيسي للإنهاء' : 'Destructive action on leading side with primary finish',
+                  title: isAr
+                      ? '٣. حذف خطر + حفظ + إجراءات إضافية'
+                      : '3. Delete + Save + Overflow Action',
+                  desc: isAr
+                      ? 'إجراء خطير في الطرف الفرعي مع زر رئيسي للإنهاء'
+                      : 'Destructive action on leading side with primary finish',
                   widget: AppBottomActions(
                     extraActions: [
                       AppIconButton(
                         icon: shadcn.LucideIcons.trash2,
                         variant: AppIconButtonVariant.destructive,
                         tooltip: isAr ? 'حذف القيد' : 'Delete Entry',
-                        onPressed: () => _setAction(isAr ? 'تم الحذف' : 'Deleted'),
+                        onPressed: () =>
+                            _setAction(isAr ? 'تم الحذف' : 'Deleted'),
                       ),
                     ],
                     primaryAction: AppButton(
@@ -138,7 +161,8 @@ class _BottomActionsScenarioState extends State<BottomActionsScenario> {
                     secondaryAction: AppButton(
                       label: isAr ? 'إلغاء' : 'Cancel',
                       variant: AppButtonVariant.outlined,
-                      onPressed: () => _setAction(isAr ? 'تم الإلغاء' : 'Cancelled'),
+                      onPressed: () =>
+                          _setAction(isAr ? 'تم الإلغاء' : 'Cancelled'),
                     ),
                   ),
                 ),
@@ -152,12 +176,17 @@ class _BottomActionsScenarioState extends State<BottomActionsScenario> {
           primaryAction: AppButton(
             label: isAr ? 'تأكيد وحفظ القيد' : 'Confirm & Save Voucher',
             variant: AppButtonVariant.filled,
-            onPressed: () => _setAction(isAr ? 'تم الضغط على الشريط المباشر السفلي' : 'Live bottom actions triggered'),
+            onPressed: () => _setAction(
+              isAr
+                  ? 'تم الضغط على الشريط المباشر السفلي'
+                  : 'Live bottom actions triggered',
+            ),
           ),
           secondaryAction: AppButton(
             label: isAr ? 'تراجع' : 'Back',
             variant: AppButtonVariant.outlined,
-            onPressed: () => _setAction(isAr ? 'تم الضغط على التراجع' : 'Back triggered'),
+            onPressed: () =>
+                _setAction(isAr ? 'تم الضغط على التراجع' : 'Back triggered'),
           ),
         ),
       ],
@@ -174,7 +203,10 @@ class _BottomActionsScenarioState extends State<BottomActionsScenario> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+          Text(
+            title,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+          ),
           const SizedBox(height: 2),
           Text(desc, style: const TextStyle(color: Colors.grey, fontSize: 11)),
           const SizedBox(height: AppSpacing.xs),

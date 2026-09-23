@@ -199,141 +199,138 @@ class AppQuickActionsPanel extends StatelessWidget {
                 const SizedBox(height: AppSpacing.md),
 
                 // Action Items Grid
-                  Flexible(
-                    child: LayoutBuilder(
-                      builder: (context, constraints) {
-                        double lineHeight(double fontSize) {
-                          final painter = TextPainter(
-                            text: TextSpan(
-                              text: 'Ag',
-                              style: DefaultTextStyle.of(
-                                context,
-                              ).style.copyWith(fontSize: fontSize),
-                            ),
-                            textDirection: Directionality.of(context),
-                            textScaler: MediaQuery.textScalerOf(context),
-                          )..layout();
-                          final height = painter.height;
-                          painter.dispose();
-                          return height;
-                        }
+                Flexible(
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      double lineHeight(double fontSize) {
+                        final painter = TextPainter(
+                          text: TextSpan(
+                            text: 'Ag',
+                            style: DefaultTextStyle.of(
+                              context,
+                            ).style.copyWith(fontSize: fontSize),
+                          ),
+                          textDirection: Directionality.of(context),
+                          textScaler: MediaQuery.textScalerOf(context),
+                        )..layout();
+                        final height = painter.height;
+                        painter.dispose();
+                        return height;
+                      }
 
-                        final labelHeight = lineHeight(13);
-                        final descriptionHeight = lineHeight(10);
-                        final contentHeight =
-                            items.any((item) => item.description != null)
-                            ? labelHeight + descriptionHeight
-                            : labelHeight;
-                        final tileWidth =
-                            (constraints.maxWidth - AppSpacing.sm) / 2;
-                        // Preserve the normal aspect ratio, but let scaled text
-                        // determine a larger minimum extent when necessary.
-                        final tileHeight = math.max(
-                          tileWidth / 2.2,
-                          math.max(20 + AppSpacing.xxs * 2, contentHeight) +
-                              AppSpacing.xxs * 2 +
-                              Border.all().dimensions.vertical,
-                        );
-                        return GridView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2,
-                                mainAxisSpacing: AppSpacing.sm,
-                                crossAxisSpacing: AppSpacing.sm,
-                                mainAxisExtent: tileHeight,
+                      final labelHeight = lineHeight(13);
+                      final descriptionHeight = lineHeight(10);
+                      final contentHeight =
+                          items.any((item) => item.description != null)
+                          ? labelHeight + descriptionHeight
+                          : labelHeight;
+                      final tileWidth =
+                          (constraints.maxWidth - AppSpacing.sm) / 2;
+                      // Preserve the normal aspect ratio, but let scaled text
+                      // determine a larger minimum extent when necessary.
+                      final tileHeight = math.max(
+                        tileWidth / 2.2,
+                        math.max(20 + AppSpacing.xxs * 2, contentHeight) +
+                            AppSpacing.xxs * 2 +
+                            Border.all().dimensions.vertical,
+                      );
+                      return GridView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          mainAxisSpacing: AppSpacing.sm,
+                          crossAxisSpacing: AppSpacing.sm,
+                          mainAxisExtent: tileHeight,
+                        ),
+                        itemCount: items.length,
+                        itemBuilder: (context, index) {
+                          final item = items[index];
+                          final itemColor = item.color ?? colorScheme.primary;
+
+                          return GestureDetector(
+                            onTap: () {
+                              if (onClose != null) {
+                                onClose!();
+                              } else {
+                                shadcn.closeDrawer<void>(context);
+                              }
+                              item.onTap();
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: AppSpacing.xs,
+                                vertical: AppSpacing.xxs,
                               ),
-                          itemCount: items.length,
-                          itemBuilder: (context, index) {
-                            final item = items[index];
-                            final itemColor = item.color ?? colorScheme.primary;
-
-                            return GestureDetector(
-                              onTap: () {
-                                if (onClose != null) {
-                                  onClose!();
-                                } else {
-                                  shadcn.closeDrawer<void>(context);
-                                }
-                                item.onTap();
-                              },
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: AppSpacing.xs,
-                                  vertical: AppSpacing.xxs,
+                              decoration: BoxDecoration(
+                                color: itemColor.withValues(alpha: 0.08),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: itemColor.withValues(alpha: 0.18),
                                 ),
-                                decoration: BoxDecoration(
-                                  color: itemColor.withValues(alpha: 0.08),
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(
-                                    color: itemColor.withValues(alpha: 0.18),
-                                  ),
-                                ),
-                                child: Row(
-                                  children: [
-                                    Container(
-                                      padding: const EdgeInsets.all(
-                                        AppSpacing.xxs,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: itemColor.withValues(
-                                          alpha: 0.16,
-                                        ),
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                      child: Icon(
-                                        item.icon,
-                                        size: 20,
-                                        color: itemColor,
-                                      ),
+                              ),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(
+                                      AppSpacing.xxs,
                                     ),
-                                    const SizedBox(width: AppSpacing.xs),
-                                    Expanded(
-                                      child: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
+                                    decoration: BoxDecoration(
+                                      color: itemColor.withValues(alpha: 0.16),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Icon(
+                                      item.icon,
+                                      size: 20,
+                                      color: itemColor,
+                                    ),
+                                  ),
+                                  const SizedBox(width: AppSpacing.xs),
+                                  Expanded(
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          item.label,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w600,
+                                            color: colorScheme.foreground,
+                                          ),
+                                        ),
+                                        if (item.description != null)
                                           Text(
-                                            item.label,
+                                            item.description!,
                                             maxLines: 1,
                                             overflow: TextOverflow.ellipsis,
                                             style: TextStyle(
-                                              fontSize: 13,
-                                              fontWeight: FontWeight.w600,
-                                              color: colorScheme.foreground,
+                                              fontSize: 10,
+                                              color:
+                                                  colorScheme.mutedForeground,
                                             ),
                                           ),
-                                          if (item.description != null)
-                                            Text(
-                                              item.description!,
-                                              maxLines: 1,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: TextStyle(
-                                                fontSize: 10,
-                                                color:
-                                                    colorScheme.mutedForeground,
-                                              ),
-                                            ),
-                                        ],
-                                      ),
+                                      ],
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
-                            );
-                          },
-                        );
-                      },
-                    ),
+                            ),
+                          );
+                        },
+                      );
+                    },
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
+        ),
       ],
     );
   }

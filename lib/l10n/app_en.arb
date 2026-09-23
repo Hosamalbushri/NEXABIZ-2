@@ -383,5 +383,140 @@
   "actionLogout": "Sign Out",
   "unauthorizedTitle": "Access Denied",
   "unauthorizedMessage": "You do not have permission to access this page.",
-  "actionBackToDashboard": "Back to Dashboard"
+  "actionBackToDashboard": "Back to Dashboard",
+  "authAppSubtitle": "Smart ERP & Accounting System",
+  "authFooterNote": "NexaBiz ERP • Secured Enterprise Local Edition",
+  "authAdminPageTitle": "Roles & Access Control",
+  "authAdminPageSubtitle": "Configure company roles, permissions, and member assignments",
+  "authAdminRolesTitle": "Roles",
+  "authAdminRoleDetailsTitle": "Role Details",
+  "authAdminCreateRoleTitle": "Create Role",
+  "authAdminEditRoleTitle": "Edit Role",
+  "authAdminDeleteRoleTitle": "Delete Role",
+  "authAdminPermissionsTitle": "Permissions",
+  "authAdminAssignedMembersTitle": "Assigned Members",
+  "authAdminAssignMemberTitle": "Assign Member",
+  "authAdminRoleTypeBuiltIn": "Built-in",
+  "authAdminRoleTypeCustom": "Custom",
+  "authAdminRoleBuiltInBadge": "Built-in Role",
+  "authAdminRoleCustomBadge": "Custom Role",
+  "authAdminRoleBuiltInHelp": "Built-in roles are system-defined. Their identifier, permissions, and definition cannot be modified or deleted, but active members can be assigned or unassigned.",
+  "authAdminRoleDisplayNameLabel": "Role Name",
+  "authAdminRoleDisplayNamePlaceholder": "e.g. Sales Manager",
+  "authAdminRoleKeyLabel": "Role Identifier",
+  "authAdminRoleKeyPlaceholder": "e.g. company.sales_manager",
+  "authAdminRoleKeyHelpText": "A unique, lowercase identifier (e.g. company.role_name). Cannot be modified after creation.",
+  "authAdminRoleDescriptionLabel": "Description",
+  "authAdminRoleDescriptionPlaceholder": "Describe the purpose and responsibilities of this role",
+  "authAdminRoleDescriptionOptional": "Optional",
+  "authAdminActionSave": "Save",
+  "authAdminActionCreate": "Create Role",
+  "authAdminActionUpdate": "Save Changes",
+  "authAdminActionDelete": "Delete Role",
+  "authAdminActionAssign": "Assign",
+  "authAdminActionRemove": "Remove",
+  "authAdminActionUnassign": "Unassign",
+  "authAdminSearchRolesPlaceholder": "Search roles...",
+  "authAdminSearchPermissionsPlaceholder": "Search permissions...",
+  "authAdminSearchMembersPlaceholder": "Search members...",
+  "authAdminFilterAllRoles": "All Roles",
+  "authAdminFilterBuiltInRoles": "Built-in Roles",
+  "authAdminFilterCustomRoles": "Custom Roles",
+  "authAdminEmptyRoles": "No roles found.",
+  "authAdminEmptyRolesSearch": "No roles matching your search.",
+  "authAdminEmptyAssignedMembers": "No members currently assigned to this role.",
+  "authAdminEmptyAssignableMembers": "No assignable members available.",
+  "authAdminEmptyAssignableMembersSearch": "No members matching your search.",
+  "authAdminEmptyPermissionsSearch": "No permissions matching your search.",
+  "authAdminMemberStatusActive": "Active",
+  "authAdminMemberStatusInactive": "Inactive",
+  "authAdminMemberEligible": "Eligible",
+  "authAdminMemberIneligible": "Ineligible",
+  "authAdminAvailableMembersSection": "Available Members",
+  "authAdminDeleteRoleConfirm": "Are you sure you want to delete role \"{roleName}\"?",
+  "@authAdminDeleteRoleConfirm": {
+    "placeholders": {
+      "roleName": { "type": "String" }
+    }
+  },
+  "authAdminDeleteRoleConfirmMessage": "This action is permanent and cannot be undone.",
+  "authAdminUnassignMemberConfirm": "Remove \"{memberName}\" from role \"{roleName}\"?",
+  "@authAdminUnassignMemberConfirm": {
+    "placeholders": {
+      "memberName": { "type": "String" },
+      "roleName": { "type": "String" }
+    }
+  },
+  "authAdminPermissionCount": "{count, plural, =0{No permissions} =1{1 permission} other{{count} permissions}}",
+  "@authAdminPermissionCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "authAdminMemberCount": "{count, plural, =0{No members} =1{1 member} other{{count} members}}",
+  "@authAdminMemberCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "authAdminGroupCompany": "Company Workspace",
+  "authAdminGroupIdentity": "Identity & Users",
+  "authAdminGroupAuthorization": "Access Control & Roles",
+  "authAdminGroupOther": "Other Permissions",
+  "authAdminPermCompanyProfileViewTitle": "View company profile",
+  "authAdminPermCompanyProfileViewDesc": "View company basic details, code, and organization profile.",
+  "authAdminPermCompanyProfileManageTitle": "Manage company profile",
+  "authAdminPermCompanyProfileManageDesc": "Update company profile information, settings, and business details.",
+  "authAdminPermCompanyMembershipViewTitle": "View company memberships",
+  "authAdminPermCompanyMembershipViewDesc": "Inspect users and members associated with this company workspace.",
+  "authAdminPermIdentitySessionViewTitle": "View active sessions",
+  "authAdminPermIdentitySessionViewDesc": "Inspect active authentication sessions, login status, and devices.",
+  "authAdminPermIdentityUserManageTitle": "Manage users",
+  "authAdminPermIdentityUserManageDesc": "Manage user credentials, account status, and authentication security.",
+  "authAdminPermCatalogViewTitle": "View permission catalog",
+  "authAdminPermCatalogViewDesc": "View all declared capabilities and system permissions available for configuration.",
+  "authAdminPermPolicyReviewTitle": "Review authorization policy",
+  "authAdminPermPolicyReviewDesc": "Read roles, role permissions, and membership assignments without modification.",
+  "authAdminPermRoleManageTitle": "Manage custom roles",
+  "authAdminPermRoleManageDesc": "Create, rename, describe, and delete custom company roles.",
+  "authAdminPermPolicyManageTitle": "Manage role permissions",
+  "authAdminPermPolicyManageDesc": "Grant and revoke specific permissions for custom company roles.",
+  "authAdminPermAssignmentManageTitle": "Manage role assignments",
+  "authAdminPermAssignmentManageDesc": "Assign and remove company roles for active company members.",
+  "authAdminUnknownPermissionDesc": "System-declared capability permission ({permissionId}).",
+  "@authAdminUnknownPermissionDesc": {
+    "placeholders": {
+      "permissionId": { "type": "String" }
+    }
+  },
+  "authAdminErrorRoleNotFound": "Role not found in the current company.",
+  "authAdminErrorMembershipNotFound": "Company membership not found.",
+  "authAdminErrorCrossCompany": "Security violation: tenant mismatch detected.",
+  "authAdminErrorBuiltInCreate": "Cannot create a role with built-in prefix or identifier.",
+  "authAdminErrorBuiltInUpdate": "Built-in roles cannot be renamed or modified.",
+  "authAdminErrorBuiltInDelete": "Built-in system roles cannot be deleted.",
+  "authAdminErrorBuiltInPermissions": "Permissions for built-in roles cannot be modified.",
+  "authAdminErrorLastOwnerProtected": "Cannot remove the last active company owner. Assign another active owner first.",
+  "authAdminErrorUndeclaredPermission": "The requested permission is not declared in the system catalog.",
+  "authAdminErrorDuplicateRoleKey": "A role with this identifier already exists in this company.",
+  "authAdminErrorDuplicateRoleDisplayName": "A role with this name already exists in this company.",
+  "authAdminErrorRoleHasAssignments": "Cannot delete role because members are currently assigned to it.",
+  "authAdminErrorMembershipInactive": "Cannot assign role: member is currently inactive.",
+  "authAdminErrorUserInactive": "Cannot assign role: user account is currently inactive.",
+  "authAdminErrorCompanyInactive": "Cannot perform operation: company workspace is inactive.",
+  "authAdminErrorRoleNameEmpty": "Role name cannot be empty.",
+  "authAdminErrorRoleNameTooLong": "Role name cannot exceed {max} characters.",
+  "@authAdminErrorRoleNameTooLong": {
+    "placeholders": {
+      "max": { "type": "int" }
+    }
+  },
+  "authAdminErrorRoleKeyInvalid": "Invalid role identifier format. Use lowercase letters, numbers, and underscores (e.g. company.sales_rep).",
+  "authAdminErrorPermissionDenied": "You do not have permission to perform this administration action.",
+  "authAdminErrorGeneric": "An unexpected error occurred. Please try again.",
+  "authAdminPendingApplying": "Applying changes...",
+  "authAdminCommittedSuccess": "Changes saved successfully.",
+  "authAdminNoRoleSelected": "Select a role to view its details.",
+  "authAdminLoadMore": "Load More",
+  "authAdminRolePermissionGranted": "Granted"
 }

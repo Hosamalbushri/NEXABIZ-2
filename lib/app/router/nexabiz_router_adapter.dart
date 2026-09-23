@@ -13,6 +13,12 @@ import '../shell/app_exit_scope.dart';
 import '../shell/application_shell.dart';
 import 'nexabiz_flutter_route_definition.dart';
 
+bool _isAuthorizationProgrammerDefect(Object error) =>
+    error is ArgumentError ||
+    error is StateError ||
+    error is TypeError ||
+    error is AssertionError;
+
 /// Infrastructure adapter that translates [NexaBizNavigationRegistry] metadata
 /// into a [GoRouter] configuration instance supporting stateful branch navigation
 /// and centralized authentication/setup gate evaluation.
@@ -267,7 +273,8 @@ class NexaBizGoRouterAdapter {
             authContext = NexaBizAuthorizationContext.fromSession(
               activeSession,
             );
-          } catch (_) {
+          } catch (error) {
+            if (_isAuthorizationProgrammerDefect(error)) rethrow;
             return '/unauthorized';
           }
 
@@ -281,7 +288,8 @@ class NexaBizGoRouterAdapter {
               context: authContext,
               permissionId: permissionRequirement.permissionId,
             );
-          } catch (_) {
+          } catch (error) {
+            if (_isAuthorizationProgrammerDefect(error)) rethrow;
             // Infrastructure / evaluator failure -> Fail-closed safely
             return '/unauthorized';
           }

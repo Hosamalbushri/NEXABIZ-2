@@ -24,4 +24,3 @@ final class NexaBizPermissionDeniedException implements Exception {
     return 'NexaBizPermissionDeniedException(permissionId: $permissionId, scope: ${contextScope.name}, decision: ${decision.name}$suffix)';
   }
 }
-

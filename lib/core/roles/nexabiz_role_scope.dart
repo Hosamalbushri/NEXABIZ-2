@@ -6,4 +6,3 @@ enum NexaBizRoleScope {
   bool get isSystem => this == NexaBizRoleScope.system;
   bool get isCompany => this == NexaBizRoleScope.company;
 }
-

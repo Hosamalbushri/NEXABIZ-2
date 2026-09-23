@@ -150,7 +150,8 @@ class _AppCarouselState<T> extends State<AppCarousel<T>> {
               if (widget.showControls && widget.items.length > 1) ...[
                 Builder(
                   builder: (context) {
-                    final isRtl = Directionality.of(context) == TextDirection.rtl;
+                    final isRtl =
+                        Directionality.of(context) == TextDirection.rtl;
                     return Stack(
                       children: [
                         PositionedDirectional(

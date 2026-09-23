@@ -984,4 +984,383 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get actionBackToDashboard => 'العودة للرئيسية';
+
+  @override
+  String get authAppSubtitle => 'منظومة إدارة الأعمال والحلول التجارية';
+
+  @override
+  String get authFooterNote => 'NexaBiz ERP • الإصدار المحلي المباشر';
+
+  @override
+  String get authAdminPageTitle => 'الأدوار والتحكم في الوصول';
+
+  @override
+  String get authAdminPageSubtitle =>
+      'تهيئة أدوار الشركة وصلاحياتها وتعيينات الأعضاء';
+
+  @override
+  String get authAdminRolesTitle => 'الأدوار';
+
+  @override
+  String get authAdminRoleDetailsTitle => 'تفاصيل الدور';
+
+  @override
+  String get authAdminCreateRoleTitle => 'إنشاء دور جديد';
+
+  @override
+  String get authAdminEditRoleTitle => 'تعديل الدور';
+
+  @override
+  String get authAdminDeleteRoleTitle => 'حذف الدور';
+
+  @override
+  String get authAdminPermissionsTitle => 'الصلاحيات';
+
+  @override
+  String get authAdminAssignedMembersTitle => 'الأعضاء المعينون';
+
+  @override
+  String get authAdminAssignMemberTitle => 'تعيين عضو';
+
+  @override
+  String get authAdminRoleTypeBuiltIn => 'نظامي';
+
+  @override
+  String get authAdminRoleTypeCustom => 'مخصص';
+
+  @override
+  String get authAdminRoleBuiltInBadge => 'دور نظامي';
+
+  @override
+  String get authAdminRoleCustomBadge => 'دور مخصص';
+
+  @override
+  String get authAdminRoleBuiltInHelp =>
+      'الأدوار النظامية محددة مسبقًا من النظام، ولا يمكن تعديل معرفها أو صلاحياتها أو حذفها، ولكن يمكن تعيين الأعضاء النشطين إليها أو إزالتهم منها.';
+
+  @override
+  String get authAdminRoleDisplayNameLabel => 'اسم الدور';
+
+  @override
+  String get authAdminRoleDisplayNamePlaceholder => 'مثال: مدير المبيعات';
+
+  @override
+  String get authAdminRoleKeyLabel => 'معرّف الدور';
+
+  @override
+  String get authAdminRoleKeyPlaceholder => 'مثال: company.sales_manager';
+
+  @override
+  String get authAdminRoleKeyHelpText =>
+      'معرّف فريد بحروف صغيرة (مثل company.role_name). لا يمكن تعديله بعد الإنشاء.';
+
+  @override
+  String get authAdminRoleDescriptionLabel => 'الوصف';
+
+  @override
+  String get authAdminRoleDescriptionPlaceholder =>
+      'اكتب وصفًا يوضح الغرض من هذا الدور ومسؤولياته';
+
+  @override
+  String get authAdminRoleDescriptionOptional => 'اختياري';
+
+  @override
+  String get authAdminActionSave => 'حفظ';
+
+  @override
+  String get authAdminActionCreate => 'إنشاء الدور';
+
+  @override
+  String get authAdminActionUpdate => 'حفظ التغييرات';
+
+  @override
+  String get authAdminActionDelete => 'حذف الدور';
+
+  @override
+  String get authAdminActionAssign => 'تعيين';
+
+  @override
+  String get authAdminActionRemove => 'إزالة';
+
+  @override
+  String get authAdminActionUnassign => 'إلغاء التعيين';
+
+  @override
+  String get authAdminSearchRolesPlaceholder => 'البحث في الأدوار...';
+
+  @override
+  String get authAdminSearchPermissionsPlaceholder => 'البحث في الصلاحيات...';
+
+  @override
+  String get authAdminSearchMembersPlaceholder => 'البحث في الأعضاء...';
+
+  @override
+  String get authAdminFilterAllRoles => 'جميع الأدوار';
+
+  @override
+  String get authAdminFilterBuiltInRoles => 'الأدوار النظامية';
+
+  @override
+  String get authAdminFilterCustomRoles => 'الأدوار المخصصة';
+
+  @override
+  String get authAdminEmptyRoles => 'لا توجد أدوار.';
+
+  @override
+  String get authAdminEmptyRolesSearch => 'لا توجد أدوار تطابق بحثك.';
+
+  @override
+  String get authAdminEmptyAssignedMembers =>
+      'لا يوجد أعضاء معينون لهذا الدور حاليًا.';
+
+  @override
+  String get authAdminEmptyAssignableMembers => 'لا يوجد أعضاء متاحون للتعيين.';
+
+  @override
+  String get authAdminEmptyAssignableMembersSearch =>
+      'لا يوجد أعضاء يطابقون بحثك.';
+
+  @override
+  String get authAdminEmptyPermissionsSearch => 'لا توجد صلاحيات تطابق بحثك.';
+
+  @override
+  String get authAdminMemberStatusActive => 'نشط';
+
+  @override
+  String get authAdminMemberStatusInactive => 'غير نشط';
+
+  @override
+  String get authAdminMemberEligible => 'مؤهل';
+
+  @override
+  String get authAdminMemberIneligible => 'غير مؤهل';
+
+  @override
+  String get authAdminAvailableMembersSection => 'الأعضاء المتاحون';
+
+  @override
+  String authAdminDeleteRoleConfirm(String roleName) {
+    return 'هل أنت متأكد من حذف الدور \"$roleName\"؟';
+  }
+
+  @override
+  String get authAdminDeleteRoleConfirmMessage =>
+      'هذا الإجراء نهائي ولا يمكن التراجع عنه.';
+
+  @override
+  String authAdminUnassignMemberConfirm(String memberName, String roleName) {
+    return 'إزالة \"$memberName\" من الدور \"$roleName\"؟';
+  }
+
+  @override
+  String authAdminPermissionCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count صلاحية',
+      many: '$count صلاحية',
+      few: '$count صلاحيات',
+      two: 'صلاحيتان',
+      one: 'صلاحية واحدة',
+      zero: 'بدون صلاحيات',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String authAdminMemberCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count عضو',
+      many: '$count عضوًا',
+      few: '$count أعضاء',
+      two: 'عضوان',
+      one: 'عضو واحد',
+      zero: 'بدون أعضاء',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get authAdminGroupCompany => 'مساحة عمل الشركة';
+
+  @override
+  String get authAdminGroupIdentity => 'الهوية والمستخدمين';
+
+  @override
+  String get authAdminGroupAuthorization => 'التحكم في الوصول والأدوار';
+
+  @override
+  String get authAdminGroupOther => 'صلاحيات أخرى';
+
+  @override
+  String get authAdminPermCompanyProfileViewTitle =>
+      'عرض الملف التعريفي للشركة';
+
+  @override
+  String get authAdminPermCompanyProfileViewDesc =>
+      'الاطلاع على البيانات الأساسية للشركة ورمزها وملفها التعريفي.';
+
+  @override
+  String get authAdminPermCompanyProfileManageTitle =>
+      'إدارة الملف التعريفي للشركة';
+
+  @override
+  String get authAdminPermCompanyProfileManageDesc =>
+      'تحديث معلومات الملف التعريفي للشركة وإعداداتها والبيانات التجارية.';
+
+  @override
+  String get authAdminPermCompanyMembershipViewTitle => 'عرض عضويات الشركة';
+
+  @override
+  String get authAdminPermCompanyMembershipViewDesc =>
+      'الاطلاع على المستخدمين والأعضاء المرتبطين بمساحة عمل هذه الشركة.';
+
+  @override
+  String get authAdminPermIdentitySessionViewTitle => 'عرض الجلسات النشطة';
+
+  @override
+  String get authAdminPermIdentitySessionViewDesc =>
+      'الاطلاع على جلسات تسجيل الدخول النشطة وحالة الاتصال والأجهزة.';
+
+  @override
+  String get authAdminPermIdentityUserManageTitle => 'إدارة المستخدمين';
+
+  @override
+  String get authAdminPermIdentityUserManageDesc =>
+      'إدارة بيانات اعتماد المستخدمين وحالة الحسابات وأمان تسجيل الدخول.';
+
+  @override
+  String get authAdminPermCatalogViewTitle => 'عرض كتالوج الصلاحيات';
+
+  @override
+  String get authAdminPermCatalogViewDesc =>
+      'الاطلاع على جميع القدرات والصلاحيات المعلنة في النظام والمتاحة للتهيئة.';
+
+  @override
+  String get authAdminPermPolicyReviewTitle => 'مراجعة سياسات التفويض';
+
+  @override
+  String get authAdminPermPolicyReviewDesc =>
+      'الاطلاع وقراءة الأدوار وصلاحياتها وتعيينات الأعضاء دون إمكانية التعديل.';
+
+  @override
+  String get authAdminPermRoleManageTitle => 'إدارة الأدوار المخصصة';
+
+  @override
+  String get authAdminPermRoleManageDesc =>
+      'إنشاء وتسمية ووصف وحذف الأدوار المخصصة للشركة.';
+
+  @override
+  String get authAdminPermPolicyManageTitle => 'إدارة صلاحيات الأدوار';
+
+  @override
+  String get authAdminPermPolicyManageDesc =>
+      'منح وإلغاء صلاحيات محددة للأدوار المخصصة في الشركة.';
+
+  @override
+  String get authAdminPermAssignmentManageTitle => 'إدارة تعيين الأدوار';
+
+  @override
+  String get authAdminPermAssignmentManageDesc =>
+      'تعيين وإزالة أدوار الشركة للأعضاء النشطين في الشركة.';
+
+  @override
+  String authAdminUnknownPermissionDesc(String permissionId) {
+    return 'صلاحية معلنة من قدرات النظام ($permissionId).';
+  }
+
+  @override
+  String get authAdminErrorRoleNotFound => 'الدور غير موجود في الشركة الحالية.';
+
+  @override
+  String get authAdminErrorMembershipNotFound => 'عضوية الشركة غير موجودة.';
+
+  @override
+  String get authAdminErrorCrossCompany =>
+      'مخالفة أمنية: عدم تطابق مساحة عمل الشركة.';
+
+  @override
+  String get authAdminErrorBuiltInCreate =>
+      'لا يمكن إنشاء دور بمعرّف أو بادئة نظامية.';
+
+  @override
+  String get authAdminErrorBuiltInUpdate =>
+      'لا يمكن تعديل اسم أو بيانات الأدوار النظامية.';
+
+  @override
+  String get authAdminErrorBuiltInDelete =>
+      'لا يمكن حذف الأدوار النظامية المدمجة.';
+
+  @override
+  String get authAdminErrorBuiltInPermissions =>
+      'لا يمكن تعديل صلاحيات الأدوار النظامية.';
+
+  @override
+  String get authAdminErrorLastOwnerProtected =>
+      'لا يمكن إزالة آخر مالك نشط للشركة. يجب تعيين مالك نشط آخر أولاً.';
+
+  @override
+  String get authAdminErrorUndeclaredPermission =>
+      'الصلاحية المطلوبة غير معلنة في كتالوج النظام.';
+
+  @override
+  String get authAdminErrorDuplicateRoleKey =>
+      'يوجد دور بهذا المعرّف بالفعل في هذه الشركة.';
+
+  @override
+  String get authAdminErrorDuplicateRoleDisplayName =>
+      'يوجد دور بهذا الاسم بالفعل في هذه الشركة.';
+
+  @override
+  String get authAdminErrorRoleHasAssignments =>
+      'لا يمكن حذف الدور لوجود أعضاء معينين به حالياً.';
+
+  @override
+  String get authAdminErrorMembershipInactive =>
+      'لا يمكن تعيين الدور: العضو غير نشط حالياً.';
+
+  @override
+  String get authAdminErrorUserInactive =>
+      'لا يمكن تعيين الدور: حساب المستخدم غير نشط حالياً.';
+
+  @override
+  String get authAdminErrorCompanyInactive =>
+      'لا يمكن إتمام العملية: مساحة عمل الشركة غير نشطة.';
+
+  @override
+  String get authAdminErrorRoleNameEmpty => 'اسم الدور لا يمكن أن يكون فارغاً.';
+
+  @override
+  String authAdminErrorRoleNameTooLong(int max) {
+    return 'اسم الدور لا يمكن أن يتجاوز $max حرفاً.';
+  }
+
+  @override
+  String get authAdminErrorRoleKeyInvalid =>
+      'صيغة معرّف الدور غير صالحة. استخدم أحرفاً صغيرة وأرقاماً وشرطة سفلية (مثل company.sales_rep).';
+
+  @override
+  String get authAdminErrorPermissionDenied =>
+      'ليس لديك الصلاحية لتنفيذ هذا الإجراء الإداري.';
+
+  @override
+  String get authAdminErrorGeneric =>
+      'حدث خطأ غير متوقع. يرجى المحاولة مجدداً.';
+
+  @override
+  String get authAdminPendingApplying => 'جارٍ تطبيق التغييرات...';
+
+  @override
+  String get authAdminCommittedSuccess => 'تم حفظ التغييرات بنجاح.';
+
+  @override
+  String get authAdminNoRoleSelected => 'حدد دوراً لعرض تفاصيله.';
+
+  @override
+  String get authAdminLoadMore => 'تحميل المزيد';
+
+  @override
+  String get authAdminRolePermissionGranted => 'ممنوحة';
 }

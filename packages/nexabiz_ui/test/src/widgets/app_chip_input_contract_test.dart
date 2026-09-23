@@ -7,16 +7,14 @@ void main() {
   Widget buildTestableWidget(Widget child) {
     return shadcn.ShadcnApp(
       home: shadcn.Scaffold(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: child,
-        ),
+        child: Padding(padding: const EdgeInsets.all(16.0), child: child),
       ),
     );
   }
 
-  testWidgets('AppChipInput: initial externally supplied values rendering',
-      (WidgetTester tester) async {
+  testWidgets('AppChipInput: initial externally supplied values rendering', (
+    WidgetTester tester,
+  ) async {
     await tester.pumpWidget(
       buildTestableWidget(
         AppChipInput<String>(
@@ -32,8 +30,9 @@ void main() {
     expect(find.text('Tag2'), findsOneWidget);
   });
 
-  testWidgets('AppChipInput: parent replaces initialChips on rebuild',
-      (WidgetTester tester) async {
+  testWidgets('AppChipInput: parent replaces initialChips on rebuild', (
+    WidgetTester tester,
+  ) async {
     List<String> currentChips = ['Alpha', 'Beta'];
 
     await tester.pumpWidget(
@@ -73,8 +72,9 @@ void main() {
     expect(find.text('Alpha'), findsNothing);
   });
 
-  testWidgets('AppChipInput: parent clears values on rebuild',
-      (WidgetTester tester) async {
+  testWidgets('AppChipInput: parent clears values on rebuild', (
+    WidgetTester tester,
+  ) async {
     List<String> currentChips = ['One', 'Two'];
 
     await tester.pumpWidget(
@@ -113,51 +113,53 @@ void main() {
     expect(find.text('Two'), findsNothing);
   });
 
-  testWidgets('AppChipInput: caller-owned controller survives widget disposal',
-      (WidgetTester tester) async {
-    final controller = shadcn.ChipEditingController<String>();
-    controller.chips = ['External1'];
+  testWidgets(
+    'AppChipInput: caller-owned controller survives widget disposal',
+    (WidgetTester tester) async {
+      final controller = shadcn.ChipEditingController<String>();
+      controller.chips = ['External1'];
 
-    bool showWidget = true;
+      bool showWidget = true;
 
-    await tester.pumpWidget(
-      StatefulBuilder(
-        builder: (context, setState) {
-          return buildTestableWidget(
-            Column(
-              children: [
-                if (showWidget)
-                  AppChipInput<String>(
-                    controller: controller,
-                    chipBuilder: (context, value) => Text(value),
-                    onChipSubmitted: (text) => text,
+      await tester.pumpWidget(
+        StatefulBuilder(
+          builder: (context, setState) {
+            return buildTestableWidget(
+              Column(
+                children: [
+                  if (showWidget)
+                    AppChipInput<String>(
+                      controller: controller,
+                      chipBuilder: (context, value) => Text(value),
+                      onChipSubmitted: (text) => text,
+                    ),
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        showWidget = false;
+                      });
+                    },
+                    child: const Text('Hide'),
                   ),
-                ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      showWidget = false;
-                    });
-                  },
-                  child: const Text('Hide'),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
-    );
-    await tester.pumpAndSettle();
+                ],
+              ),
+            );
+          },
+        ),
+      );
+      await tester.pumpAndSettle();
 
-    expect(find.text('External1'), findsOneWidget);
+      expect(find.text('External1'), findsOneWidget);
 
-    await tester.tap(find.text('Hide'));
-    await tester.pumpAndSettle();
+      await tester.tap(find.text('Hide'));
+      await tester.pumpAndSettle();
 
-    expect(find.text('External1'), findsNothing);
-    // Controller must remain active and non-disposed
-    expect(() => controller.chips, returnsNormally);
-    expect(controller.chips, contains('External1'));
+      expect(find.text('External1'), findsNothing);
+      // Controller must remain active and non-disposed
+      expect(() => controller.chips, returnsNormally);
+      expect(controller.chips, contains('External1'));
 
-    controller.dispose();
-  });
+      controller.dispose();
+    },
+  );
 }

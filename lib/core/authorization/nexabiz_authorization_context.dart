@@ -48,9 +48,9 @@ final class NexaBizSystemAuthorizationContext
     required NexaBizUserId userId,
     String? sessionId,
   }) : subject = NexaBizAuthorizationSubject(
-          userId: userId,
-          sessionId: sessionId,
-        );
+         userId: userId,
+         sessionId: sessionId,
+       );
 
   NexaBizSystemAuthorizationContext.fromSubject(this.subject) {
     if (subject.companyId != null || subject.membershipId != null) {
@@ -111,11 +111,11 @@ final class NexaBizCompanyAuthorizationContext
     required this.membershipId,
     String? sessionId,
   }) : subject = NexaBizAuthorizationSubject(
-          userId: userId,
-          companyId: companyId,
-          membershipId: membershipId,
-          sessionId: sessionId,
-        );
+         userId: userId,
+         companyId: companyId,
+         membershipId: membershipId,
+         sessionId: sessionId,
+       );
 
   factory NexaBizCompanyAuthorizationContext.fromSubject(
     NexaBizAuthorizationSubject subject,
@@ -195,11 +195,11 @@ final class NexaBizCompanyAuthorizationContext
 
   @override
   int get hashCode => Object.hash(
-        NexaBizCompanyAuthorizationContext,
-        subject,
-        companyId,
-        membershipId,
-      );
+    NexaBizCompanyAuthorizationContext,
+    subject,
+    companyId,
+    membershipId,
+  );
 
   @override
   String toString() =>

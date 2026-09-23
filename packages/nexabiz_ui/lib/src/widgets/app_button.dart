@@ -110,17 +110,12 @@ class AppButton extends StatelessWidget {
         : AppDimensions.buttonHeight;
 
     final constrainedButton = ConstrainedBox(
-      constraints: BoxConstraints(
-        minHeight: isCompact ? 36.0 : 44.0,
-      ),
+      constraints: BoxConstraints(minHeight: isCompact ? 36.0 : 44.0),
       child: height > 0 ? SizedBox(height: height, child: button) : button,
     );
 
     if (expand) {
-      return SizedBox(
-        width: double.infinity,
-        child: constrainedButton,
-      );
+      return SizedBox(width: double.infinity, child: constrainedButton);
     }
 
     return constrainedButton;

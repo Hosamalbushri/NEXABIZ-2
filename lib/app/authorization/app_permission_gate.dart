@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:flutter/widgets.dart';
 
 import '../../core/authorization/nexabiz_authorization_context.dart';
@@ -41,6 +42,12 @@ class AppPermissionGate extends StatefulWidget {
   final Widget? child;
 
   /// Builder providing the active authorization status [isAllowed] to construct child UI.
+  ///
+  /// In [AppPermissionGateMode.disable], callers should use [isAllowed] to
+  /// construct the component in its native disabled state (for example, by
+  /// passing a null callback). The gate additionally enforces a fail-closed
+  /// pointer, focus, keyboard, and accessibility interaction boundary while
+  /// [isAllowed] is false.
   final Widget Function(BuildContext context, bool isAllowed)? builder;
 
   /// Optional replacement widget when permission is denied or pending in [AppPermissionGateMode.hide] mode.
@@ -190,6 +197,8 @@ class _AppPermissionGateState extends State<AppPermissionGate> {
 
   Future<void> _evaluate() async {
     final generation = ++_evaluationGeneration;
+    _applyPendingDecision(generation);
+
     final sessionController = _resolveSessionController();
     final evaluator = _resolveEvaluator();
 
@@ -248,6 +257,16 @@ class _AppPermissionGateState extends State<AppPermissionGate> {
     _applyDecision(decision.isAllowed, generation);
   }
 
+  void _applyPendingDecision(int generation) {
+    if (!mounted || generation != _evaluationGeneration) return;
+    if (_isAllowed || !_isEvaluating) {
+      setState(() {
+        _isAllowed = false;
+        _isEvaluating = true;
+      });
+    }
+  }
+
   void _applyDecision(bool isAllowed, int generation) {
     if (!mounted || generation != _evaluationGeneration) return;
     if (_isAllowed != isAllowed || _isEvaluating) {
@@ -280,19 +299,27 @@ class _AppPermissionGateState extends State<AppPermissionGate> {
 
     // AppPermissionGateMode.disable
     if (widget.builder != null) {
-      return widget.builder!(context, _isAllowed);
+      final child = widget.builder!(context, _isAllowed);
+      return _isAllowed ? child : _buildDisabledInteractionBoundary(child);
     }
 
     if (widget.child != null) {
       if (_isAllowed) {
         return widget.child!;
       }
-      return IgnorePointer(
-        ignoring: true,
-        child: Opacity(opacity: 0.5, child: widget.child!),
+      return _buildDisabledInteractionBoundary(
+        Opacity(opacity: 0.5, child: widget.child!),
       );
     }
 
     return widget.fallback ?? const SizedBox.shrink();
+  }
+
+  Widget _buildDisabledInteractionBoundary(Widget child) {
+    return Semantics(
+      enabled: false,
+      blockUserActions: true,
+      child: ExcludeFocus(child: IgnorePointer(child: child)),
+    );
   }
 }

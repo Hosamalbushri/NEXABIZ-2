@@ -2,7 +2,9 @@ import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nexabiz_ui/nexabiz_ui.dart';
 
+import '../../../app/authorization/app_permission_gate.dart';
 import '../../../app/localization/app_locale_controller.dart';
+import '../../../core/authorization/administration/nexabiz_authorization_administration_permissions.dart';
 import '../../../core/session/core_session_controller.dart';
 import '../../../l10n/app_localizations.dart';
 
@@ -84,10 +86,7 @@ class SettingsScreen extends StatelessWidget {
                       ),
                       title: Text(l10n.settingsNavTestLab),
                       subtitle: Text(l10n.settingsNavTestLabSubtitle),
-                      trailing: const Icon(
-                        AppIcons.chevronRight,
-                        size: 16,
-                      ),
+                      trailing: const Icon(AppIcons.chevronRight, size: 16),
                       onTap: () => context.push('/dev/navigation'),
                     ),
                     const AppDivider(),
@@ -98,10 +97,7 @@ class SettingsScreen extends StatelessWidget {
                       ),
                       title: Text(l10n.settingsGallery),
                       subtitle: Text(l10n.settingsGallerySubtitle),
-                      trailing: const Icon(
-                        AppIcons.chevronRight,
-                        size: 16,
-                      ),
+                      trailing: const Icon(AppIcons.chevronRight, size: 16),
                       onTap: () => context.push('/gallery'),
                     ),
                   ],
@@ -119,7 +115,9 @@ class SettingsScreen extends StatelessWidget {
                       ),
                       title: Text(l10n.settingsDarkMode),
                       subtitle: Text(
-                        isDark ? l10n.settingsDarkModeOn : l10n.settingsDarkModeOff,
+                        isDark
+                            ? l10n.settingsDarkModeOn
+                            : l10n.settingsDarkModeOff,
                       ),
                       trailing: AppSwitch(
                         value: isDark,
@@ -136,10 +134,7 @@ class SettingsScreen extends StatelessWidget {
                       ),
                       title: Text(l10n.settingsLanguage),
                       subtitle: Text(currentLangName),
-                      trailing: const Icon(
-                        AppIcons.chevronRight,
-                        size: 16,
-                      ),
+                      trailing: const Icon(AppIcons.chevronRight, size: 16),
                       onTap: () => _showLanguageSelector(context),
                     ),
                   ],
@@ -178,10 +173,7 @@ class SettingsScreen extends StatelessWidget {
                       ),
                       title: Text(l10n.companySelectionTitle),
                       subtitle: Text(l10n.companySelectionSubtitle),
-                      trailing: const Icon(
-                        AppIcons.chevronRight,
-                        size: 16,
-                      ),
+                      trailing: const Icon(AppIcons.chevronRight, size: 16),
                       onTap: () => context.push('/company-selection'),
                     ),
                     const AppDivider(),
@@ -206,15 +198,32 @@ class SettingsScreen extends StatelessWidget {
                 title: l10n.settingsSecuritySyncSection,
                 child: Column(
                   children: [
-                    AppListTile(
-                      leading: const Icon(
-                        AppIcons.check,
-                        color: AppColors.success,
+                    AppPermissionGate(
+                      permissionId:
+                          NexaBizAuthorizationAdministrationPermissions
+                              .policyReview,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          AppListTile(
+                            leading: const Icon(
+                              AppIcons.lock,
+                              color: AppColors.primaryBlue,
+                            ),
+                            title: Text(l10n.settingsSecurityControls),
+                            subtitle: Text(
+                              l10n.settingsSecurityControlsSubtitle,
+                            ),
+                            trailing: const Icon(
+                              AppIcons.chevronRight,
+                              size: 16,
+                            ),
+                            onTap: () => context.push('/permissions/roles'),
+                          ),
+                          const AppDivider(),
+                        ],
                       ),
-                      title: Text(l10n.settingsSecurityControls),
-                      subtitle: Text(l10n.settingsSecurityControlsSubtitle),
                     ),
-                    const AppDivider(),
                     AppListTile(
                       leading: const Icon(
                         AppIcons.refresh,

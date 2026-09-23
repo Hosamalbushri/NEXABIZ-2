@@ -66,7 +66,9 @@ extension PlaygroundScenarioExtension on PlaygroundScenario {
       case PlaygroundScenario.tree:
         return isArabic ? '١٣. إضافة شجرة' : '13. Tree Node Creation';
       case PlaygroundScenario.stepper:
-        return isArabic ? '١٤. المعالج متعدد الخطوات' : '14. Multi-Step Stepper';
+        return isArabic
+            ? '١٤. المعالج متعدد الخطوات'
+            : '14. Multi-Step Stepper';
     }
   }
 
@@ -169,7 +171,9 @@ class _MobileUiPlaygroundPageState extends State<MobileUiPlaygroundPage> {
     final activeTheme = _isDark ? AppTheme.dark() : AppTheme.light();
 
     return Scaffold(
-      backgroundColor: _isDark ? const Color(0xFF0F172A) : const Color(0xFFF1F5F9),
+      backgroundColor: _isDark
+          ? const Color(0xFF0F172A)
+          : const Color(0xFFF1F5F9),
       body: SafeArea(
         child: Column(
           children: [
@@ -177,11 +181,7 @@ class _MobileUiPlaygroundPageState extends State<MobileUiPlaygroundPage> {
             _buildPlaygroundToolbar(),
 
             // Viewport Simulation Area
-            Expanded(
-              child: Center(
-                child: _buildDeviceViewport(activeTheme),
-              ),
-            ),
+            Expanded(child: Center(child: _buildDeviceViewport(activeTheme))),
           ],
         ),
       ),
@@ -192,7 +192,10 @@ class _MobileUiPlaygroundPageState extends State<MobileUiPlaygroundPage> {
     final isAr = _isArabic;
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.sm,
+      ),
       decoration: BoxDecoration(
         color: _isDark ? const Color(0xFF1E293B) : Colors.white,
         border: Border(
@@ -227,7 +230,11 @@ class _MobileUiPlaygroundPageState extends State<MobileUiPlaygroundPage> {
                         color: AppColors.primaryBlue,
                         borderRadius: BorderRadius.circular(AppRadii.xs),
                       ),
-                      child: const Icon(shadcn.LucideIcons.smartphone, size: 16, color: Colors.white),
+                      child: const Icon(
+                        shadcn.LucideIcons.smartphone,
+                        size: 16,
+                        color: Colors.white,
+                      ),
                     ),
                     const SizedBox(width: AppSpacing.xs),
                     Column(
@@ -235,7 +242,9 @@ class _MobileUiPlaygroundPageState extends State<MobileUiPlaygroundPage> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          isAr ? 'بيئة المعاينة المحمولة' : 'Mobile UI Playground',
+                          isAr
+                              ? 'بيئة المعاينة المحمولة'
+                              : 'Mobile UI Playground',
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 13,
@@ -270,7 +279,9 @@ class _MobileUiPlaygroundPageState extends State<MobileUiPlaygroundPage> {
                 // Theme Switcher (Dark / Light)
                 _buildControlChip(
                   label: _isDark ? 'Dark' : 'Light',
-                  icon: _isDark ? shadcn.LucideIcons.moon : shadcn.LucideIcons.sun,
+                  icon: _isDark
+                      ? shadcn.LucideIcons.moon
+                      : shadcn.LucideIcons.sun,
                   isSelected: _isDark,
                   onTap: () => setState(() => _isDark = !_isDark),
                 ),
@@ -291,11 +302,16 @@ class _MobileUiPlaygroundPageState extends State<MobileUiPlaygroundPage> {
                   child: GestureDetector(
                     onTap: () => setState(() => _currentScenario = sc),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 5,
+                      ),
                       decoration: BoxDecoration(
                         color: isSelected
                             ? AppColors.primaryBlue
-                            : (_isDark ? const Color(0xFF334155) : const Color(0xFFF1F5F9)),
+                            : (_isDark
+                                  ? const Color(0xFF334155)
+                                  : const Color(0xFFF1F5F9)),
                         borderRadius: BorderRadius.circular(AppRadii.xs),
                       ),
                       child: Row(
@@ -304,15 +320,21 @@ class _MobileUiPlaygroundPageState extends State<MobileUiPlaygroundPage> {
                           Icon(
                             sc.icon,
                             size: 13,
-                            color: isSelected ? Colors.white : (_isDark ? Colors.white70 : Colors.black87),
+                            color: isSelected
+                                ? Colors.white
+                                : (_isDark ? Colors.white70 : Colors.black87),
                           ),
                           const SizedBox(width: 4),
                           Text(
                             sc.label(isAr),
                             style: TextStyle(
                               fontSize: 11,
-                              fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                              color: isSelected ? Colors.white : (_isDark ? Colors.white70 : Colors.black87),
+                              fontWeight: isSelected
+                                  ? FontWeight.bold
+                                  : FontWeight.w500,
+                              color: isSelected
+                                  ? Colors.white
+                                  : (_isDark ? Colors.white70 : Colors.black87),
                               fontFamily: 'Cairo',
                             ),
                           ),
@@ -350,19 +372,28 @@ class _MobileUiPlaygroundPageState extends State<MobileUiPlaygroundPage> {
                     child: GestureDetector(
                       onTap: () => setState(() => _targetWidth = w),
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 3,
+                        ),
                         decoration: BoxDecoration(
                           color: isSelected
                               ? AppColors.primaryBlue
-                              : (_isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
+                              : (_isDark
+                                    ? const Color(0xFF334155)
+                                    : const Color(0xFFE2E8F0)),
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: Text(
                           label,
                           style: TextStyle(
                             fontSize: 10,
-                            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                            color: isSelected ? Colors.white : (_isDark ? Colors.white70 : Colors.black87),
+                            fontWeight: isSelected
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                            color: isSelected
+                                ? Colors.white
+                                : (_isDark ? Colors.white70 : Colors.black87),
                           ),
                         ),
                       ),
@@ -397,7 +428,11 @@ class _MobileUiPlaygroundPageState extends State<MobileUiPlaygroundPage> {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 13, color: _isDark ? Colors.white70 : Colors.black87),
+            Icon(
+              icon,
+              size: 13,
+              color: _isDark ? Colors.white70 : Colors.black87,
+            ),
             const SizedBox(width: 4),
             Text(
               label,
@@ -509,10 +544,7 @@ class _MobileUiPlaygroundPageState extends State<MobileUiPlaygroundPage> {
           },
         );
       case PlaygroundScenario.details:
-        return DetailsScenario(
-          isArabic: _isArabic,
-          voucher: _selectedVoucher,
-        );
+        return DetailsScenario(isArabic: _isArabic, voucher: _selectedVoucher);
       case PlaygroundScenario.form:
         return FormScenario(isArabic: _isArabic);
       case PlaygroundScenario.lineItems:
@@ -536,4 +568,3 @@ class _MobileUiPlaygroundPageState extends State<MobileUiPlaygroundPage> {
     }
   }
 }
-

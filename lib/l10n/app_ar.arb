@@ -383,5 +383,140 @@
   "actionLogout": "تسجيل الخروج",
   "unauthorizedTitle": "تم رفض الوصول",
   "unauthorizedMessage": "ليس لديك الصلاحية الكافية للوصول إلى هذه الصفحة.",
-  "actionBackToDashboard": "العودة للرئيسية"
+  "actionBackToDashboard": "العودة للرئيسية",
+  "authAppSubtitle": "منظومة إدارة الأعمال والحلول التجارية",
+  "authFooterNote": "NexaBiz ERP • الإصدار المحلي المباشر",
+  "authAdminPageTitle": "الأدوار والتحكم في الوصول",
+  "authAdminPageSubtitle": "تهيئة أدوار الشركة وصلاحياتها وتعيينات الأعضاء",
+  "authAdminRolesTitle": "الأدوار",
+  "authAdminRoleDetailsTitle": "تفاصيل الدور",
+  "authAdminCreateRoleTitle": "إنشاء دور جديد",
+  "authAdminEditRoleTitle": "تعديل الدور",
+  "authAdminDeleteRoleTitle": "حذف الدور",
+  "authAdminPermissionsTitle": "الصلاحيات",
+  "authAdminAssignedMembersTitle": "الأعضاء المعينون",
+  "authAdminAssignMemberTitle": "تعيين عضو",
+  "authAdminRoleTypeBuiltIn": "نظامي",
+  "authAdminRoleTypeCustom": "مخصص",
+  "authAdminRoleBuiltInBadge": "دور نظامي",
+  "authAdminRoleCustomBadge": "دور مخصص",
+  "authAdminRoleBuiltInHelp": "الأدوار النظامية محددة مسبقًا من النظام، ولا يمكن تعديل معرفها أو صلاحياتها أو حذفها، ولكن يمكن تعيين الأعضاء النشطين إليها أو إزالتهم منها.",
+  "authAdminRoleDisplayNameLabel": "اسم الدور",
+  "authAdminRoleDisplayNamePlaceholder": "مثال: مدير المبيعات",
+  "authAdminRoleKeyLabel": "معرّف الدور",
+  "authAdminRoleKeyPlaceholder": "مثال: company.sales_manager",
+  "authAdminRoleKeyHelpText": "معرّف فريد بحروف صغيرة (مثل company.role_name). لا يمكن تعديله بعد الإنشاء.",
+  "authAdminRoleDescriptionLabel": "الوصف",
+  "authAdminRoleDescriptionPlaceholder": "اكتب وصفًا يوضح الغرض من هذا الدور ومسؤولياته",
+  "authAdminRoleDescriptionOptional": "اختياري",
+  "authAdminActionSave": "حفظ",
+  "authAdminActionCreate": "إنشاء الدور",
+  "authAdminActionUpdate": "حفظ التغييرات",
+  "authAdminActionDelete": "حذف الدور",
+  "authAdminActionAssign": "تعيين",
+  "authAdminActionRemove": "إزالة",
+  "authAdminActionUnassign": "إلغاء التعيين",
+  "authAdminSearchRolesPlaceholder": "البحث في الأدوار...",
+  "authAdminSearchPermissionsPlaceholder": "البحث في الصلاحيات...",
+  "authAdminSearchMembersPlaceholder": "البحث في الأعضاء...",
+  "authAdminFilterAllRoles": "جميع الأدوار",
+  "authAdminFilterBuiltInRoles": "الأدوار النظامية",
+  "authAdminFilterCustomRoles": "الأدوار المخصصة",
+  "authAdminEmptyRoles": "لا توجد أدوار.",
+  "authAdminEmptyRolesSearch": "لا توجد أدوار تطابق بحثك.",
+  "authAdminEmptyAssignedMembers": "لا يوجد أعضاء معينون لهذا الدور حاليًا.",
+  "authAdminEmptyAssignableMembers": "لا يوجد أعضاء متاحون للتعيين.",
+  "authAdminEmptyAssignableMembersSearch": "لا يوجد أعضاء يطابقون بحثك.",
+  "authAdminEmptyPermissionsSearch": "لا توجد صلاحيات تطابق بحثك.",
+  "authAdminMemberStatusActive": "نشط",
+  "authAdminMemberStatusInactive": "غير نشط",
+  "authAdminMemberEligible": "مؤهل",
+  "authAdminMemberIneligible": "غير مؤهل",
+  "authAdminAvailableMembersSection": "الأعضاء المتاحون",
+  "authAdminDeleteRoleConfirm": "هل أنت متأكد من حذف الدور \"{roleName}\"؟",
+  "@authAdminDeleteRoleConfirm": {
+    "placeholders": {
+      "roleName": { "type": "String" }
+    }
+  },
+  "authAdminDeleteRoleConfirmMessage": "هذا الإجراء نهائي ولا يمكن التراجع عنه.",
+  "authAdminUnassignMemberConfirm": "إزالة \"{memberName}\" من الدور \"{roleName}\"؟",
+  "@authAdminUnassignMemberConfirm": {
+    "placeholders": {
+      "memberName": { "type": "String" },
+      "roleName": { "type": "String" }
+    }
+  },
+  "authAdminPermissionCount": "{count, plural, =0{بدون صلاحيات} =1{صلاحية واحدة} =2{صلاحيتان} few{{count} صلاحيات} many{{count} صلاحية} other{{count} صلاحية}}",
+  "@authAdminPermissionCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "authAdminMemberCount": "{count, plural, =0{بدون أعضاء} =1{عضو واحد} =2{عضوان} few{{count} أعضاء} many{{count} عضوًا} other{{count} عضو}}",
+  "@authAdminMemberCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "authAdminGroupCompany": "مساحة عمل الشركة",
+  "authAdminGroupIdentity": "الهوية والمستخدمين",
+  "authAdminGroupAuthorization": "التحكم في الوصول والأدوار",
+  "authAdminGroupOther": "صلاحيات أخرى",
+  "authAdminPermCompanyProfileViewTitle": "عرض الملف التعريفي للشركة",
+  "authAdminPermCompanyProfileViewDesc": "الاطلاع على البيانات الأساسية للشركة ورمزها وملفها التعريفي.",
+  "authAdminPermCompanyProfileManageTitle": "إدارة الملف التعريفي للشركة",
+  "authAdminPermCompanyProfileManageDesc": "تحديث معلومات الملف التعريفي للشركة وإعداداتها والبيانات التجارية.",
+  "authAdminPermCompanyMembershipViewTitle": "عرض عضويات الشركة",
+  "authAdminPermCompanyMembershipViewDesc": "الاطلاع على المستخدمين والأعضاء المرتبطين بمساحة عمل هذه الشركة.",
+  "authAdminPermIdentitySessionViewTitle": "عرض الجلسات النشطة",
+  "authAdminPermIdentitySessionViewDesc": "الاطلاع على جلسات تسجيل الدخول النشطة وحالة الاتصال والأجهزة.",
+  "authAdminPermIdentityUserManageTitle": "إدارة المستخدمين",
+  "authAdminPermIdentityUserManageDesc": "إدارة بيانات اعتماد المستخدمين وحالة الحسابات وأمان تسجيل الدخول.",
+  "authAdminPermCatalogViewTitle": "عرض كتالوج الصلاحيات",
+  "authAdminPermCatalogViewDesc": "الاطلاع على جميع القدرات والصلاحيات المعلنة في النظام والمتاحة للتهيئة.",
+  "authAdminPermPolicyReviewTitle": "مراجعة سياسات التفويض",
+  "authAdminPermPolicyReviewDesc": "الاطلاع وقراءة الأدوار وصلاحياتها وتعيينات الأعضاء دون إمكانية التعديل.",
+  "authAdminPermRoleManageTitle": "إدارة الأدوار المخصصة",
+  "authAdminPermRoleManageDesc": "إنشاء وتسمية ووصف وحذف الأدوار المخصصة للشركة.",
+  "authAdminPermPolicyManageTitle": "إدارة صلاحيات الأدوار",
+  "authAdminPermPolicyManageDesc": "منح وإلغاء صلاحيات محددة للأدوار المخصصة في الشركة.",
+  "authAdminPermAssignmentManageTitle": "إدارة تعيين الأدوار",
+  "authAdminPermAssignmentManageDesc": "تعيين وإزالة أدوار الشركة للأعضاء النشطين في الشركة.",
+  "authAdminUnknownPermissionDesc": "صلاحية معلنة من قدرات النظام ({permissionId}).",
+  "@authAdminUnknownPermissionDesc": {
+    "placeholders": {
+      "permissionId": { "type": "String" }
+    }
+  },
+  "authAdminErrorRoleNotFound": "الدور غير موجود في الشركة الحالية.",
+  "authAdminErrorMembershipNotFound": "عضوية الشركة غير موجودة.",
+  "authAdminErrorCrossCompany": "مخالفة أمنية: عدم تطابق مساحة عمل الشركة.",
+  "authAdminErrorBuiltInCreate": "لا يمكن إنشاء دور بمعرّف أو بادئة نظامية.",
+  "authAdminErrorBuiltInUpdate": "لا يمكن تعديل اسم أو بيانات الأدوار النظامية.",
+  "authAdminErrorBuiltInDelete": "لا يمكن حذف الأدوار النظامية المدمجة.",
+  "authAdminErrorBuiltInPermissions": "لا يمكن تعديل صلاحيات الأدوار النظامية.",
+  "authAdminErrorLastOwnerProtected": "لا يمكن إزالة آخر مالك نشط للشركة. يجب تعيين مالك نشط آخر أولاً.",
+  "authAdminErrorUndeclaredPermission": "الصلاحية المطلوبة غير معلنة في كتالوج النظام.",
+  "authAdminErrorDuplicateRoleKey": "يوجد دور بهذا المعرّف بالفعل في هذه الشركة.",
+  "authAdminErrorDuplicateRoleDisplayName": "يوجد دور بهذا الاسم بالفعل في هذه الشركة.",
+  "authAdminErrorRoleHasAssignments": "لا يمكن حذف الدور لوجود أعضاء معينين به حالياً.",
+  "authAdminErrorMembershipInactive": "لا يمكن تعيين الدور: العضو غير نشط حالياً.",
+  "authAdminErrorUserInactive": "لا يمكن تعيين الدور: حساب المستخدم غير نشط حالياً.",
+  "authAdminErrorCompanyInactive": "لا يمكن إتمام العملية: مساحة عمل الشركة غير نشطة.",
+  "authAdminErrorRoleNameEmpty": "اسم الدور لا يمكن أن يكون فارغاً.",
+  "authAdminErrorRoleNameTooLong": "اسم الدور لا يمكن أن يتجاوز {max} حرفاً.",
+  "@authAdminErrorRoleNameTooLong": {
+    "placeholders": {
+      "max": { "type": "int" }
+    }
+  },
+  "authAdminErrorRoleKeyInvalid": "صيغة معرّف الدور غير صالحة. استخدم أحرفاً صغيرة وأرقاماً وشرطة سفلية (مثل company.sales_rep).",
+  "authAdminErrorPermissionDenied": "ليس لديك الصلاحية لتنفيذ هذا الإجراء الإداري.",
+  "authAdminErrorGeneric": "حدث خطأ غير متوقع. يرجى المحاولة مجدداً.",
+  "authAdminPendingApplying": "جارٍ تطبيق التغييرات...",
+  "authAdminCommittedSuccess": "تم حفظ التغييرات بنجاح.",
+  "authAdminNoRoleSelected": "حدد دوراً لعرض تفاصيله.",
+  "authAdminLoadMore": "تحميل المزيد",
+  "authAdminRolePermissionGranted": "ممنوحة"
 }

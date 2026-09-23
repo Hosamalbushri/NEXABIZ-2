@@ -3,6 +3,9 @@ import 'dart:io';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 
+import '../../core/authorization/administration/nexabiz_authorization_administration_models.dart';
+import '../../core/authorization/administration/nexabiz_authorization_administration_permissions.dart';
+import '../../core/authorization/administration/nexabiz_authorization_administration_policy.dart';
 import '../../core/identity/core_uuid.dart';
 
 part 'drift_core_database.g.dart';
@@ -106,7 +109,7 @@ class CoreLoginAttempts extends Table {
   Set<Column> get primaryKey => {identifierHash};
 }
 
-const List<String> kInitialCompanyOwnerPermissions = [
+const List<String> _companyOwnerFoundationPermissionIds = [
   'company.profile.view',
   'company.profile.manage',
   'company.membership.view',
@@ -115,6 +118,24 @@ const List<String> kInitialCompanyOwnerPermissions = [
   'permissions.catalog.view',
   'permissions.policy.review',
 ];
+
+/// Permission delta introduced by schema v6.
+///
+/// The values come from the Core permission identities used by the owning
+/// capability. Both the v6 migration and the current fresh-install seed use
+/// this same list, so the two paths cannot drift independently.
+final List<String> kCompanyOwnerAdministrationPermissionIds =
+    List.unmodifiable([
+      NexaBizAuthorizationAdministrationPermissions.roleManage.value,
+      NexaBizAuthorizationAdministrationPermissions.policyManage.value,
+      NexaBizAuthorizationAdministrationPermissions.assignmentManage.value,
+    ]);
+
+/// Canonical permission baseline for a freshly-created company owner.
+final List<String> kInitialCompanyOwnerPermissions = List.unmodifiable([
+  ..._companyOwnerFoundationPermissionIds,
+  ...kCompanyOwnerAdministrationPermissionIds,
+]);
 
 @DataClassName('CoreRoleRow')
 class CoreRoles extends Table {
@@ -127,9 +148,9 @@ class CoreRoles extends Table {
       text().nullable().references(CoreCompanies, #id)();
   TextColumn get roleKey => text()(); // e.g. 'company.owner', 'company.admin'
   TextColumn get name => text().nullable()();
+  TextColumn get normalizedName => text().nullable()();
   TextColumn get description => text().nullable()();
-  BoolColumn get isBuiltin =>
-      boolean().withDefault(const Constant(false))();
+  BoolColumn get isBuiltin => boolean().withDefault(const Constant(false))();
   DateTimeColumn get createdAt => dateTime()();
   DateTimeColumn get updatedAt => dateTime()();
 
@@ -142,8 +163,11 @@ class CoreMembershipRoles extends Table {
   @override
   String get tableName => 'core_membership_roles';
 
-  TextColumn get membershipId =>
-      text().references(CoreCompanyMemberships, #id, onDelete: KeyAction.cascade)();
+  TextColumn get membershipId => text().references(
+    CoreCompanyMemberships,
+    #id,
+    onDelete: KeyAction.cascade,
+  )();
   TextColumn get roleId =>
       text().references(CoreRoles, #id, onDelete: KeyAction.cascade)();
   DateTimeColumn get createdAt => dateTime()();
@@ -207,7 +231,7 @@ class DriftCoreDatabase extends _$DriftCoreDatabase {
   );
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -217,86 +241,105 @@ class DriftCoreDatabase extends _$DriftCoreDatabase {
       await into(schemaMigrations).insert(
         const SchemaMigrationsCompanion(
           owner: Value('core'),
-          version: Value(5),
+          version: Value(6),
         ),
       );
     },
     onUpgrade: (m, from, to) async {
-      if (from < 1 || from > 4 || to != 5) {
+      if (from < 1 || from > 5 || to != 6) {
         throw StateError('Unsupported Core schema migration: $from to $to');
       }
-      if (from == 1) {
-        // V1 contains only IDs and a user marker. Preserve those rows, but never
-        // infer names, email, membership, or administrator authority from them.
-        await customStatement(
-          'ALTER TABLE core_companies ADD COLUMN code TEXT',
-        );
-        await customStatement(
-          'ALTER TABLE core_companies ADD COLUMN name TEXT',
-        );
-        await customStatement(
-          'ALTER TABLE core_companies ADD COLUMN status TEXT',
-        );
-        await customStatement(
-          'ALTER TABLE core_companies ADD COLUMN created_at INTEGER',
-        );
-        await customStatement(
-          'ALTER TABLE core_companies ADD COLUMN updated_at INTEGER',
-        );
-        await customStatement(
-          'CREATE UNIQUE INDEX core_companies_code_unique ON core_companies (code)',
-        );
-        await customStatement('ALTER TABLE core_users ADD COLUMN email TEXT');
-        await customStatement('ALTER TABLE core_users ADD COLUMN name TEXT');
-        await customStatement('ALTER TABLE core_users ADD COLUMN status TEXT');
-        await customStatement(
-          'ALTER TABLE core_users ADD COLUMN created_at INTEGER',
-        );
-        await customStatement(
-          'ALTER TABLE core_users ADD COLUMN updated_at INTEGER',
-        );
-        await customStatement(
-          'CREATE UNIQUE INDEX core_users_email_unique ON core_users (email)',
-        );
-        await m.createTable(coreCompanyMemberships);
-        await into(schemaMigrations).insert(
-          const SchemaMigrationsCompanion(
-            owner: Value('core'),
-            version: Value(2),
-          ),
-        );
-      }
-      if (from <= 2) {
-        await m.createTable(coreCredentials);
-        await into(schemaMigrations).insert(
-          const SchemaMigrationsCompanion(
-            owner: Value('core'),
-            version: Value(3),
-          ),
-        );
-      }
-      if (from <= 3) {
-        await m.createTable(coreLoginAttempts);
-        await into(schemaMigrations).insert(
-          const SchemaMigrationsCompanion(
-            owner: Value('core'),
-            version: Value(4),
-          ),
-        );
-      }
-      if (from <= 4) {
-        await m.createTable(coreRoles);
-        await m.createTable(coreMembershipRoles);
-        await m.createTable(coreRolePermissions);
-        await _createAuthorizationTriggersAndIndexes();
-        await _migrateExistingOwnerMemberships();
-        await into(schemaMigrations).insert(
-          const SchemaMigrationsCompanion(
-            owner: Value('core'),
-            version: Value(5),
-          ),
-        );
-      }
+      // Drift recommends wrapping migrations in a transaction. Native Drift
+      // 2.35 starts this with BEGIN IMMEDIATE, serializing writers before any
+      // migration read or write occurs.
+      await transaction(() async {
+        if (from == 1) {
+          // V1 contains only IDs and a user marker. Preserve those rows, but never
+          // infer names, email, membership, or administrator authority from them.
+          await customStatement(
+            'ALTER TABLE core_companies ADD COLUMN code TEXT',
+          );
+          await customStatement(
+            'ALTER TABLE core_companies ADD COLUMN name TEXT',
+          );
+          await customStatement(
+            'ALTER TABLE core_companies ADD COLUMN status TEXT',
+          );
+          await customStatement(
+            'ALTER TABLE core_companies ADD COLUMN created_at INTEGER',
+          );
+          await customStatement(
+            'ALTER TABLE core_companies ADD COLUMN updated_at INTEGER',
+          );
+          await customStatement(
+            'CREATE UNIQUE INDEX core_companies_code_unique ON core_companies (code)',
+          );
+          await customStatement('ALTER TABLE core_users ADD COLUMN email TEXT');
+          await customStatement('ALTER TABLE core_users ADD COLUMN name TEXT');
+          await customStatement(
+            'ALTER TABLE core_users ADD COLUMN status TEXT',
+          );
+          await customStatement(
+            'ALTER TABLE core_users ADD COLUMN created_at INTEGER',
+          );
+          await customStatement(
+            'ALTER TABLE core_users ADD COLUMN updated_at INTEGER',
+          );
+          await customStatement(
+            'CREATE UNIQUE INDEX core_users_email_unique ON core_users (email)',
+          );
+          await m.createTable(coreCompanyMemberships);
+          await into(schemaMigrations).insert(
+            const SchemaMigrationsCompanion(
+              owner: Value('core'),
+              version: Value(2),
+            ),
+          );
+        }
+        if (from <= 2) {
+          await m.createTable(coreCredentials);
+          await into(schemaMigrations).insert(
+            const SchemaMigrationsCompanion(
+              owner: Value('core'),
+              version: Value(3),
+            ),
+          );
+        }
+        if (from <= 3) {
+          await m.createTable(coreLoginAttempts);
+          await into(schemaMigrations).insert(
+            const SchemaMigrationsCompanion(
+              owner: Value('core'),
+              version: Value(4),
+            ),
+          );
+        }
+        if (from <= 4) {
+          await m.createTable(coreRoles);
+          await m.createTable(coreMembershipRoles);
+          await m.createTable(coreRolePermissions);
+          await _createAuthorizationTriggersAndIndexes();
+          await _migrateExistingOwnerMemberships();
+          await into(schemaMigrations).insert(
+            const SchemaMigrationsCompanion(
+              owner: Value('core'),
+              version: Value(5),
+            ),
+          );
+        }
+        if (from <= 5) {
+          await _migrateAuthorizationAdministrationToV6(
+            m,
+            addNormalizedNameColumn: from == 5,
+          );
+          await into(schemaMigrations).insert(
+            const SchemaMigrationsCompanion(
+              owner: Value('core'),
+              version: Value(6),
+            ),
+          );
+        }
+      });
     },
     beforeOpen: (_) async {
       await customStatement('PRAGMA foreign_keys = ON');
@@ -317,6 +360,20 @@ class DriftCoreDatabase extends _$DriftCoreDatabase {
       CREATE UNIQUE INDEX IF NOT EXISTS idx_core_roles_system_key
       ON core_roles (role_key)
       WHERE company_id IS NULL
+    ''');
+
+    // The key is produced by NexaBizRoleDisplayName in Dart. BINARY equality
+    // therefore compares exactly the same representation as the value object;
+    // SQLite NOCASE is deliberately not used because it is ASCII-only.
+    await customStatement('''
+      CREATE UNIQUE INDEX IF NOT EXISTS idx_core_roles_company_normalized_name
+      ON core_roles (company_id, normalized_name)
+      WHERE company_id IS NOT NULL AND normalized_name IS NOT NULL
+    ''');
+
+    await customStatement('''
+      CREATE INDEX IF NOT EXISTS idx_core_membership_roles_role_membership
+      ON core_membership_roles (role_id, membership_id)
     ''');
 
     // Role scope & company_id invariants triggers
@@ -386,17 +443,140 @@ class DriftCoreDatabase extends _$DriftCoreDatabase {
         END;
       END;
     ''');
+
+    // Database-level defense for writes outside the administration store. The
+    // typed store performs the same check before deletion so expected failures
+    // are returned as domain exceptions rather than parsed SQLite messages.
+    final ownerRoleKey = NexaBizBuiltInCompanyRoles.companyOwner.value;
+    await customStatement('''
+      CREATE TRIGGER IF NOT EXISTS trg_core_membership_roles_last_owner_delete
+      BEFORE DELETE ON core_membership_roles
+      WHEN (SELECT r.role_key FROM core_roles r WHERE r.id = OLD.role_id) = '$ownerRoleKey'
+        AND (SELECT c.status
+             FROM core_roles r
+             JOIN core_companies c ON c.id = r.company_id
+             WHERE r.id = OLD.role_id) = 'active'
+        AND (SELECT m.status FROM core_company_memberships m
+             WHERE m.id = OLD.membership_id) = 'active'
+        AND (SELECT u.status
+             FROM core_company_memberships m
+             JOIN core_users u ON u.id = m.user_id
+             WHERE m.id = OLD.membership_id) = 'active'
+        AND (SELECT COUNT(*)
+             FROM core_membership_roles mr
+             JOIN core_roles r ON r.id = mr.role_id
+             JOIN core_company_memberships m ON m.id = mr.membership_id
+             JOIN core_users u ON u.id = m.user_id
+             JOIN core_companies c ON c.id = m.company_id
+             WHERE r.role_key = '$ownerRoleKey'
+               AND r.scope = 'company'
+               AND r.company_id = (
+                 SELECT company_id FROM core_company_memberships
+                 WHERE id = OLD.membership_id
+               )
+               AND c.status = 'active'
+               AND m.status = 'active'
+               AND u.status = 'active') <= 1
+      BEGIN
+        SELECT RAISE(ABORT, 'Active company requires an active owner');
+      END;
+    ''');
+  }
+
+  Future<void> _migrateAuthorizationAdministrationToV6(
+    Migrator migrator, {
+    required bool addNormalizedNameColumn,
+  }) async {
+    if (addNormalizedNameColumn) {
+      await migrator.addColumn(coreRoles, coreRoles.normalizedName);
+    }
+
+    final roleRows = await customSelect('''
+      SELECT id, company_id, role_key, name
+      FROM core_roles
+      ORDER BY company_id, role_key
+    ''').get();
+    final companyNameOwners = <String, String>{};
+
+    for (final row in roleRows) {
+      final internalRoleId = row.read<String>('id');
+      final companyId = row.read<String?>('company_id');
+      final roleKey = row.read<String>('role_key');
+      final name = row.read<String?>('name');
+      if (name == null) {
+        throw StateError(
+          'Core schema v6 migration cannot normalize role "$roleKey": '
+          'the existing display name is missing.',
+        );
+      }
+
+      late final String normalizedName;
+      try {
+        normalizedName = NexaBizRoleDisplayName(name).comparisonKey;
+      } on Object catch (error) {
+        throw StateError(
+          'Core schema v6 migration cannot normalize role "$roleKey": '
+          'the existing display name is invalid ($error).',
+        );
+      }
+
+      if (companyId != null) {
+        final collisionKey = '$companyId\u0000$normalizedName';
+        final existingRoleKey = companyNameOwners[collisionKey];
+        if (existingRoleKey != null) {
+          throw StateError(
+            'Core schema v6 migration found duplicate normalized role names '
+            'in company "$companyId": "$existingRoleKey" and "$roleKey".',
+          );
+        }
+        companyNameOwners[collisionKey] = roleKey;
+      }
+
+      await customStatement(
+        'UPDATE core_roles SET normalized_name = ? WHERE id = ?',
+        [normalizedName, internalRoleId],
+      );
+    }
+
+    final ownerRows = await customSelect(
+      '''
+      SELECT id FROM core_roles
+      WHERE scope = 'company' AND is_builtin = 1 AND role_key = ?
+      ''',
+      variables: [
+        Variable.withString(NexaBizBuiltInCompanyRoles.companyOwner.value),
+      ],
+    ).get();
+    final now = DateTime.now().toUtc();
+    for (final owner in ownerRows) {
+      for (final permissionId in kCompanyOwnerAdministrationPermissionIds) {
+        await into(coreRolePermissions).insert(
+          CoreRolePermissionsCompanion.insert(
+            roleId: owner.read<String>('id'),
+            permissionId: permissionId,
+            createdAt: now,
+          ),
+          mode: InsertMode.insertOrIgnore,
+        );
+      }
+    }
+
+    await _createAuthorizationTriggersAndIndexes();
   }
 
   Future<void> _migrateExistingOwnerMemberships() async {
     final companies = await select(coreCompanies).get();
     final now = DateTime.now().toUtc();
     for (final company in companies) {
-      final existingRole = await (select(coreRoles)
-            ..where((r) =>
-                r.companyId.equals(company.id) &
-                r.roleKey.equals('company.owner')))
-          .getSingleOrNull();
+      final existingRole =
+          await (select(coreRoles)..where(
+                (r) =>
+                    r.companyId.equals(company.id) &
+                    r.roleKey.equals(
+                      NexaBizBuiltInCompanyRoles.companyOwner.value,
+                    ),
+              ))
+              .getSingleOrNull();
 
       final String roleId;
       if (existingRole == null) {
@@ -406,8 +586,9 @@ class DriftCoreDatabase extends _$DriftCoreDatabase {
             id: roleId,
             scope: 'company',
             companyId: Value(company.id),
-            roleKey: 'company.owner',
+            roleKey: NexaBizBuiltInCompanyRoles.companyOwner.value,
             name: const Value('owner'),
+            normalizedName: const Value('owner'),
             description: const Value('Built-in company owner role'),
             isBuiltin: const Value(true),
             createdAt: company.createdAt ?? now,
@@ -428,10 +609,11 @@ class DriftCoreDatabase extends _$DriftCoreDatabase {
         roleId = existingRole.id;
       }
 
-      final memberships = await (select(coreCompanyMemberships)
-            ..where((m) =>
-                m.companyId.equals(company.id) & m.role.equals('owner')))
-          .get();
+      final memberships =
+          await (select(coreCompanyMemberships)..where(
+                (m) => m.companyId.equals(company.id) & m.role.equals('owner'),
+              ))
+              .get();
 
       for (final membership in memberships) {
         await into(coreMembershipRoles).insertOnConflictUpdate(

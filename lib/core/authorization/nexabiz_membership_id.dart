@@ -26,4 +26,3 @@ final class NexaBizMembershipId {
   @override
   String toString() => 'NexaBizMembershipId(<redacted>)';
 }
-

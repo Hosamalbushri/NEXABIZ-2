@@ -2,9 +2,9 @@ import '../support/bootstrap_test_helper.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nexabiz/app/app.dart';
 import 'package:nexabiz/app/authorization/app_permission_scope.dart';
-import 'package:nexabiz/core/identity/authenticate_local_user.dart';
 import 'package:nexabiz/core/navigation/nexabiz_route_id.dart';
-import 'package:nexabiz/core/setup/initialize_nexabiz_core.dart';
+import 'package:nexabiz/main.dart' show createProductionApp;
+import 'package:nexabiz_ui/nexabiz_ui.dart';
 
 void main() {
   group('AppBootstrap Integration Test', () {
@@ -65,29 +65,11 @@ void main() {
     testWidgets(
       'renders Dashboard Page via AppBootstrap router using NexaBiz UI',
       (tester) async {
-        final bootstrap = await bootstrapForTest(initialLocation: '/dashboard');
+        final bootstrap = await bootstrapForTest(
+          initialLocation: '/dashboard',
+          authenticated: true,
+        );
         addTearDown(bootstrap.router.dispose);
-
-        // Initialize Core database & authenticate session to pass Security Gate
-        final initializer = InitializeNexaBizCore(
-          bootstrap.coreInstallationStore,
-        );
-        await initializer(
-          const CoreInitializationInput(
-            companyCode: 'COMP01',
-            companyName: 'Test Company',
-            adminName: 'Admin User',
-            adminEmail: 'admin@nexabiz.test',
-            password: 'Password123!',
-          ),
-        );
-
-        await bootstrap.sessionController.login(
-          const CoreAuthenticationInput(
-            identifier: 'admin@nexabiz.test',
-            password: 'Password123!',
-          ),
-        );
 
         bootstrap.router.go('/dashboard');
 
@@ -108,19 +90,30 @@ void main() {
         );
         addTearDown(bootstrap.router.dispose);
 
-        await tester.pumpWidget(
-          NexaBizApp(
-            router: bootstrap.router,
-            permissionEvaluator: bootstrap.permissionEvaluator,
-            sessionController: bootstrap.sessionController,
-            authorizationInvalidationSignal:
-                bootstrap.authorizationInvalidationSignal,
-          ),
+        final app = createProductionApp(bootstrap);
+
+        expect(identical(app.router, bootstrap.router), isTrue);
+        expect(
+          identical(app.permissionEvaluator, bootstrap.permissionEvaluator),
+          isTrue,
         );
+        expect(
+          identical(app.sessionController, bootstrap.sessionController),
+          isTrue,
+        );
+        expect(
+          identical(
+            app.authorizationInvalidationSignal,
+            bootstrap.authorizationInvalidationSignal,
+          ),
+          isTrue,
+        );
+
+        await tester.pumpWidget(app);
         await tester.pump();
 
-        final element = tester.element(find.byType(AppPermissionScope));
-        final scope = AppPermissionScope.of(element);
+        final appRootContext = tester.element(find.byType(NexaBizRootApp));
+        final scope = AppPermissionScope.of(appRootContext);
 
         expect(
           identical(scope.permissionEvaluator, bootstrap.permissionEvaluator),
@@ -142,6 +135,15 @@ void main() {
           isTrue,
           reason:
               'Scope invalidationSignal must be identical to canonical bootstrap instance',
+        );
+        expect(
+          identical(
+            scope.authorizationAdministration,
+            bootstrap.authorizationAdministration,
+          ),
+          isTrue,
+          reason:
+              'Scope authorizationAdministration must be identical to canonical bootstrap instance',
         );
       },
     );

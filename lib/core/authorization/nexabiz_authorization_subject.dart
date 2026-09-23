@@ -35,4 +35,3 @@ final class NexaBizAuthorizationSubject {
   String toString() =>
       'NexaBizAuthorizationSubject(userId: $userId, companyId: $companyId, membershipId: $membershipId, sessionId: <redacted>)';
 }
-

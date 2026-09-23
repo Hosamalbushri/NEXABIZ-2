@@ -15,17 +15,17 @@ class _SplashNavigationContribution implements NexaBizNavigationContribution {
 
   @override
   List<NexaBizRouteDefinition> get routes => [
-        NexaBizFlutterRouteDefinition(
-          routeId: _root,
-          path: '/splash',
-          accessRequirement: const NexaBizRouteAccessRequirement(
-            requiresReadySetup: false,
-            requiresActiveSession: false,
-            requiresCompanyScope: false,
-          ),
-          pageBuilder: (context) => const SplashScreen(),
-        ),
-      ];
+    NexaBizFlutterRouteDefinition(
+      routeId: _root,
+      path: '/splash',
+      accessRequirement: const NexaBizRouteAccessRequirement(
+        requiresReadySetup: false,
+        requiresActiveSession: false,
+        requiresCompanyScope: false,
+      ),
+      pageBuilder: (context) => const SplashScreen(),
+    ),
+  ];
 }
 
 /// Foundation startup capability providing the initial safe /splash route.
@@ -37,10 +37,10 @@ class SplashCapability implements NexaBizCapability {
 
   @override
   CapabilityMetadata get metadata => const CapabilityMetadata(
-        nameKey: 'splashTitle',
-        iconIdentifier: 'sparkles',
-        sortOrder: 0,
-      );
+    nameKey: 'splashTitle',
+    iconIdentifier: 'sparkles',
+    sortOrder: 0,
+  );
 
   @override
   List<String> get dependsOn => const [];

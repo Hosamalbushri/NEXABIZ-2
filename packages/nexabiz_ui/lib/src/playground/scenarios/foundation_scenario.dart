@@ -39,7 +39,9 @@ class _FoundationScenarioState extends State<FoundationScenario> {
         children: [
           // 1. Typography Hierarchy
           _buildSectionHeader(
-            isAr ? 'التدرج الطباعي المالي (Cairo)' : 'Financial Typography (Cairo)',
+            isAr
+                ? 'التدرج الطباعي المالي (Cairo)'
+                : 'Financial Typography (Cairo)',
           ),
           const SizedBox(height: AppSpacing.xs),
           AppCard(
@@ -47,23 +49,66 @@ class _FoundationScenarioState extends State<FoundationScenario> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildTypeRow('screenTitle (20sp bold)', 'NexaBiz ERP', 'نكسا بيز المحاسبي',
-                    theme.typography.h3.copyWith(fontFamily: AppTypography.fontFamilyName, fontWeight: FontWeight.w700, fontSize: 20)),
+                _buildTypeRow(
+                  'screenTitle (20sp bold)',
+                  'NexaBiz ERP',
+                  'نكسا بيز المحاسبي',
+                  theme.typography.h3.copyWith(
+                    fontFamily: AppTypography.fontFamilyName,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 20,
+                  ),
+                ),
                 _buildDivider(),
-                _buildTypeRow('sectionTitle (16sp semiBold)', 'General Ledger Operations', 'عمليات دفتر الأستاذ العام',
-                    theme.typography.p.copyWith(fontFamily: AppTypography.fontFamilyName, fontWeight: FontWeight.w600, fontSize: 16)),
+                _buildTypeRow(
+                  'sectionTitle (16sp semiBold)',
+                  'General Ledger Operations',
+                  'عمليات دفتر الأستاذ العام',
+                  theme.typography.p.copyWith(
+                    fontFamily: AppTypography.fontFamilyName,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                  ),
+                ),
                 _buildDivider(),
-                _buildTypeRow('cardTitle (15sp semiBold)', 'Commercial Account 101001', 'حساب تجاري رئيسي ١٠١٠٠١',
-                    theme.typography.p.copyWith(fontFamily: AppTypography.fontFamilyName, fontWeight: FontWeight.w600, fontSize: 15)),
+                _buildTypeRow(
+                  'cardTitle (15sp semiBold)',
+                  'Commercial Account 101001',
+                  'حساب تجاري رئيسي ١٠١٠٠١',
+                  theme.typography.p.copyWith(
+                    fontFamily: AppTypography.fontFamilyName,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 15,
+                  ),
+                ),
                 _buildDivider(),
-                _buildTypeRow('body (14sp regular)', 'Transaction balance verified against bank statement.', 'تم التحقق من رصيد المعاملة ومطابقته كشف الحساب.',
-                    theme.typography.p.copyWith(fontFamily: AppTypography.fontFamilyName, fontSize: 14)),
+                _buildTypeRow(
+                  'body (14sp regular)',
+                  'Transaction balance verified against bank statement.',
+                  'تم التحقق من رصيد المعاملة ومطابقته كشف الحساب.',
+                  theme.typography.p.copyWith(
+                    fontFamily: AppTypography.fontFamilyName,
+                    fontSize: 14,
+                  ),
+                ),
                 _buildDivider(),
-                _buildTypeRow('amount (15sp semiBold tabular)', '12,450.00 USD', '١٢,٤٥٠.٠٠ ر.س',
-                    AppTypography.numericValue(context).copyWith(fontSize: 15, fontWeight: FontWeight.w600)),
+                _buildTypeRow(
+                  'amount (15sp semiBold tabular)',
+                  '12,450.00 USD',
+                  '١٢,٤٥٠.٠٠ ر.س',
+                  AppTypography.numericValue(
+                    context,
+                  ).copyWith(fontSize: 15, fontWeight: FontWeight.w600),
+                ),
                 _buildDivider(),
-                _buildTypeRow('largeAmount (22sp bold tabular)', '1,450,280.75 SAR', '١,٤٥٠,٢٨٠.٧٥ ر.س',
-                    AppTypography.numericValue(context).copyWith(fontSize: 22, fontWeight: FontWeight.w700)),
+                _buildTypeRow(
+                  'largeAmount (22sp bold tabular)',
+                  '1,450,280.75 SAR',
+                  '١,٤٥٠,٢٨٠.٧٥ ر.س',
+                  AppTypography.numericValue(
+                    context,
+                  ).copyWith(fontSize: 22, fontWeight: FontWeight.w700),
+                ),
               ],
             ),
           ),
@@ -71,7 +116,9 @@ class _FoundationScenarioState extends State<FoundationScenario> {
           const SizedBox(height: AppSpacing.lg),
 
           // 2. Buttons & Actions
-          _buildSectionHeader(isAr ? 'الأزرار والإجراءات' : 'Buttons & Interactive Controls'),
+          _buildSectionHeader(
+            isAr ? 'الأزرار والإجراءات' : 'Buttons & Interactive Controls',
+          ),
           const SizedBox(height: AppSpacing.xs),
           AppCard(
             padding: const EdgeInsets.all(AppSpacing.md),
@@ -119,10 +166,17 @@ class _FoundationScenarioState extends State<FoundationScenario> {
                 ),
                 const SizedBox(height: AppSpacing.sm),
                 AppButton(
-                  label: isAr ? (_buttonLoading ? 'جارٍ التحميل...' : 'اضغط لاختبار التحميل') : (_buttonLoading ? 'Loading...' : 'Tap for Loading Test'),
+                  label: isAr
+                      ? (_buttonLoading
+                            ? 'جارٍ التحميل...'
+                            : 'اضغط لاختبار التحميل')
+                      : (_buttonLoading
+                            ? 'Loading...'
+                            : 'Tap for Loading Test'),
                   variant: AppButtonVariant.filled,
                   isLoading: _buttonLoading,
-                  onPressed: () => setState(() => _buttonLoading = !_buttonLoading),
+                  onPressed: () =>
+                      setState(() => _buttonLoading = !_buttonLoading),
                 ),
               ],
             ),
@@ -131,7 +185,9 @@ class _FoundationScenarioState extends State<FoundationScenario> {
           const SizedBox(height: AppSpacing.lg),
 
           // 3. Status Badges
-          _buildSectionHeader(isAr ? 'شارات الحالة المحاسبية' : 'Status & Tone Badges'),
+          _buildSectionHeader(
+            isAr ? 'شارات الحالة المحاسبية' : 'Status & Tone Badges',
+          ),
           const SizedBox(height: AppSpacing.xs),
           AppSurface(
             padding: const EdgeInsets.all(AppSpacing.md),
@@ -166,7 +222,9 @@ class _FoundationScenarioState extends State<FoundationScenario> {
           const SizedBox(height: AppSpacing.lg),
 
           // 4. Form Inputs & Toggles
-          _buildSectionHeader(isAr ? 'حقول الإدخال والمفاتيح' : 'Form Inputs & Toggles'),
+          _buildSectionHeader(
+            isAr ? 'حقول الإدخال والمفاتيح' : 'Form Inputs & Toggles',
+          ),
           const SizedBox(height: AppSpacing.xs),
           AppCard(
             padding: const EdgeInsets.all(AppSpacing.md),
@@ -181,11 +239,21 @@ class _FoundationScenarioState extends State<FoundationScenario> {
                 AppNumberField(
                   label: isAr ? 'المبلغ المالي' : 'Monetary Amount',
                   value: _numberVal,
-                  onChanged: (val) => setState(() => _numberVal = (val ?? 0).toDouble()),
+                  onChanged: (val) =>
+                      setState(() => _numberVal = (val ?? 0).toDouble()),
                   allowDecimals: true,
                   prefix: Padding(
-                    padding: const EdgeInsetsDirectional.only(start: AppSpacing.sm, end: AppSpacing.xs),
-                    child: Text('USD', style: TextStyle(color: colorScheme.mutedForeground, fontWeight: FontWeight.bold)),
+                    padding: const EdgeInsetsDirectional.only(
+                      start: AppSpacing.sm,
+                      end: AppSpacing.xs,
+                    ),
+                    child: Text(
+                      'USD',
+                      style: TextStyle(
+                        color: colorScheme.mutedForeground,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                 ),
                 const SizedBox(height: AppSpacing.sm),
@@ -198,7 +266,9 @@ class _FoundationScenarioState extends State<FoundationScenario> {
                     const SizedBox(width: AppSpacing.sm),
                     Expanded(
                       child: Text(
-                        isAr ? 'ترحيل فوري إلى الأستاذ العام' : 'Auto-post to General Ledger',
+                        isAr
+                            ? 'ترحيل فوري إلى الأستاذ العام'
+                            : 'Auto-post to General Ledger',
                         style: AppTypography.body(context),
                       ),
                     ),
@@ -214,7 +284,9 @@ class _FoundationScenarioState extends State<FoundationScenario> {
                     const SizedBox(width: AppSpacing.sm),
                     Expanded(
                       child: Text(
-                        isAr ? 'تأكيد احتساب الضريبة (15%)' : 'Apply Standard Tax (15%)',
+                        isAr
+                            ? 'تأكيد احتساب الضريبة (15%)'
+                            : 'Apply Standard Tax (15%)',
                         style: AppTypography.body(context),
                       ),
                     ),
@@ -240,7 +312,12 @@ class _FoundationScenarioState extends State<FoundationScenario> {
     );
   }
 
-  Widget _buildTypeRow(String role, String sampleEn, String sampleAr, TextStyle style) {
+  Widget _buildTypeRow(
+    String role,
+    String sampleEn,
+    String sampleAr,
+    TextStyle style,
+  ) {
     final text = widget.isArabic ? sampleAr : sampleEn;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
@@ -249,7 +326,11 @@ class _FoundationScenarioState extends State<FoundationScenario> {
         children: [
           Text(
             role,
-            style: const TextStyle(fontSize: 11.0, color: AppColors.mutedTextLight, fontWeight: FontWeight.w600),
+            style: const TextStyle(
+              fontSize: 11.0,
+              color: AppColors.mutedTextLight,
+              fontWeight: FontWeight.w600,
+            ),
           ),
           const SizedBox(height: 2),
           Text(text, style: style),

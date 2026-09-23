@@ -97,22 +97,34 @@ class HomeScenario extends StatelessWidget {
             padding: const EdgeInsets.all(AppSpacing.md),
             child: Row(
               children: [
-                Icon(shadcn.LucideIcons.shieldCheck, color: colorScheme.primary, size: 28),
+                Icon(
+                  shadcn.LucideIcons.shieldCheck,
+                  color: colorScheme.primary,
+                  size: 28,
+                ),
                 const SizedBox(width: AppSpacing.md),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        isAr ? 'حالة النظام الأساسي: جاهز' : 'Core Platform Status: Ready',
-                        style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
+                        isAr
+                            ? 'حالة النظام الأساسي: جاهز'
+                            : 'Core Platform Status: Ready',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 13,
+                        ),
                       ),
                       const SizedBox(height: 2),
                       Text(
                         isAr
                             ? 'جلسة مصادقة نشطة ومؤمنة بالتشفير المحلي'
                             : 'Active authenticated session, secured local storage',
-                        style: TextStyle(fontSize: 11, color: colorScheme.mutedForeground),
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: colorScheme.mutedForeground,
+                        ),
                       ),
                     ],
                   ),
@@ -151,7 +163,9 @@ class HomeScenario extends StatelessWidget {
                   context,
                   icon: shadcn.LucideIcons.settings,
                   title: isAr ? 'إعدادات النظام' : 'System Setup',
-                  subtitle: isAr ? 'المستخدمين والأذونات' : 'Users & Permissions',
+                  subtitle: isAr
+                      ? 'المستخدمين والأذونات'
+                      : 'Users & Permissions',
                   onTap: () {},
                 ),
               ),
@@ -169,7 +183,9 @@ class HomeScenario extends StatelessWidget {
           _buildCapabilityCard(
             context,
             icon: shadcn.LucideIcons.calculator,
-            name: isAr ? 'المحاسبة المالية (Accounting)' : 'Financial Accounting',
+            name: isAr
+                ? 'المحاسبة المالية (Accounting)'
+                : 'Financial Accounting',
             desc: isAr
                 ? 'دفتر الأستاذ، سندات القيد، شجرة الحسابات والتقارير'
                 : 'General Ledger, Journal Vouchers, Chart of Accounts',
@@ -179,7 +195,9 @@ class HomeScenario extends StatelessWidget {
           _buildCapabilityCard(
             context,
             icon: shadcn.LucideIcons.boxes,
-            name: isAr ? 'إدارة المستودعات (Inventory)' : 'Inventory & Warehouse',
+            name: isAr
+                ? 'إدارة المستودعات (Inventory)'
+                : 'Inventory & Warehouse',
             desc: isAr
                 ? 'الأصناف، فواتير التوريد، تسويات الجرد والمواقع'
                 : 'Stock Items, Inbound Logistics, Audit Reconciliation',
@@ -189,7 +207,9 @@ class HomeScenario extends StatelessWidget {
           _buildCapabilityCard(
             context,
             icon: shadcn.LucideIcons.shoppingCart,
-            name: isAr ? 'المبيعات والعملاء (Sales & CRM)' : 'Sales & Commercial Operations',
+            name: isAr
+                ? 'المبيعات والعملاء (Sales & CRM)'
+                : 'Sales & Commercial Operations',
             desc: isAr
                 ? 'فواتير المبيعات، عروض الأسعار، حسابات العملاء'
                 : 'Sales Invoicing, Quotations, Customer Accounts',
@@ -200,26 +220,39 @@ class HomeScenario extends StatelessWidget {
 
           // Recent Core Activity (Real session & system events)
           Text(
-            isAr ? 'سجل العمليات الإدارية الحديثة' : 'Recent Core System Activity',
+            isAr
+                ? 'سجل العمليات الإدارية الحديثة'
+                : 'Recent Core System Activity',
             style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: AppSpacing.xs),
           AppCard(
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.xs),
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.md,
+              vertical: AppSpacing.xs,
+            ),
             child: Column(
               children: [
                 _buildActivityRow(
                   context,
-                  title: isAr ? 'تسجيل دخول ناجح' : 'Successful User Authentication',
-                  detail: isAr ? 'المستخدم: hosam (مسؤول النظام)' : 'User: hosam (Admin)',
+                  title: isAr
+                      ? 'تسجيل دخول ناجح'
+                      : 'Successful User Authentication',
+                  detail: isAr
+                      ? 'المستخدم: hosam (مسؤول النظام)'
+                      : 'User: hosam (Admin)',
                   time: isAr ? 'منذ ١٠ دقائق' : '10m ago',
                   icon: shadcn.LucideIcons.keyRound,
                 ),
                 const Divider(height: 1),
                 _buildActivityRow(
                   context,
-                  title: isAr ? 'تأكيد تهيئة قاعدة البيانات المحلية' : 'Local Database Initialized',
-                  detail: isAr ? 'محرك Drift v2.34 • تشفير AES-256' : 'Drift Engine v2.34 • AES-256 Encrypted',
+                  title: isAr
+                      ? 'تأكيد تهيئة قاعدة البيانات المحلية'
+                      : 'Local Database Initialized',
+                  detail: isAr
+                      ? 'محرك Drift v2.34 • تشفير AES-256'
+                      : 'Drift Engine v2.34 • AES-256 Encrypted',
                   time: isAr ? 'اليوم ٠٠:١٥' : 'Today 00:15',
                   icon: shadcn.LucideIcons.database,
                 ),
@@ -248,9 +281,18 @@ class HomeScenario extends StatelessWidget {
           children: [
             Icon(icon, size: 24, color: theme.colorScheme.primary),
             const SizedBox(height: AppSpacing.sm),
-            Text(title, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13)),
+            Text(
+              title,
+              style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
+            ),
             const SizedBox(height: 2),
-            Text(subtitle, style: TextStyle(fontSize: 11, color: theme.colorScheme.mutedForeground)),
+            Text(
+              subtitle,
+              style: TextStyle(
+                fontSize: 11,
+                color: theme.colorScheme.mutedForeground,
+              ),
+            ),
           ],
         ),
       ),
@@ -280,7 +322,9 @@ class HomeScenario extends StatelessWidget {
             ),
             child: Icon(
               icon,
-              color: isRegistered ? theme.colorScheme.primary : theme.colorScheme.mutedForeground,
+              color: isRegistered
+                  ? theme.colorScheme.primary
+                  : theme.colorScheme.mutedForeground,
               size: 22,
             ),
           ),
@@ -294,7 +338,10 @@ class HomeScenario extends StatelessWidget {
                     Expanded(
                       child: Text(
                         name,
-                        style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 13,
+                        ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -304,7 +351,9 @@ class HomeScenario extends StatelessWidget {
                       label: isRegistered
                           ? (isAr ? 'مثبت' : 'Installed')
                           : (isAr ? 'مخطط' : 'Roadmap'),
-                      tone: isRegistered ? AppStatusTone.success : AppStatusTone.neutral,
+                      tone: isRegistered
+                          ? AppStatusTone.success
+                          : AppStatusTone.neutral,
                       animate: false,
                     ),
                   ],
@@ -312,7 +361,10 @@ class HomeScenario extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   desc,
-                  style: TextStyle(fontSize: 11, color: theme.colorScheme.mutedForeground),
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: theme.colorScheme.mutedForeground,
+                  ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -342,12 +394,30 @@ class HomeScenario extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 12)),
-                Text(detail, style: TextStyle(fontSize: 11, color: theme.colorScheme.mutedForeground)),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 12,
+                  ),
+                ),
+                Text(
+                  detail,
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: theme.colorScheme.mutedForeground,
+                  ),
+                ),
               ],
             ),
           ),
-          Text(time, style: TextStyle(fontSize: 10, color: theme.colorScheme.mutedForeground)),
+          Text(
+            time,
+            style: TextStyle(
+              fontSize: 10,
+              color: theme.colorScheme.mutedForeground,
+            ),
+          ),
         ],
       ),
     );

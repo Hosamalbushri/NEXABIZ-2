@@ -197,8 +197,8 @@ class _AppStepperState extends State<AppStepper> {
                     color: isCompleted
                         ? colorScheme.primary
                         : (isActive
-                            ? colorScheme.primary.withValues(alpha: 0.15)
-                            : colorScheme.muted.withValues(alpha: 0.2)),
+                              ? colorScheme.primary.withValues(alpha: 0.15)
+                              : colorScheme.muted.withValues(alpha: 0.2)),
                     border: Border.all(
                       color: circleColor,
                       width: isActive ? 2.0 : 1.0,

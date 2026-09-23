@@ -5,6 +5,8 @@ import 'package:drift/drift.dart';
 import 'package:flutter/foundation.dart';
 
 import '../../core/authorization/core_authorization_query_store.dart';
+import '../../core/authorization/administration/nexabiz_authorization_administration_models.dart';
+import '../../core/authorization/administration/nexabiz_authorization_administration_policy.dart';
 import '../../core/authorization/nexabiz_membership_authorization_snapshot.dart';
 import '../../core/authorization/nexabiz_membership_id.dart';
 import '../../core/company/nexabiz_company_scope.dart';
@@ -197,8 +199,9 @@ final class DriftCoreInstallationStore
                 id: ownerRoleId,
                 scope: 'company',
                 companyId: Value(records.companyId),
-                roleKey: 'company.owner',
+                roleKey: NexaBizBuiltInCompanyRoles.companyOwner.value,
                 name: const Value('owner'),
+                normalizedName: const Value('owner'),
                 description: const Value('Built-in company owner role'),
                 isBuiltin: const Value(true),
                 createdAt: createdAt,
@@ -509,9 +512,10 @@ final class DriftCoreInstallationStore
 
   @override
   Future<NexaBizMembershipAuthorizationSnapshot?>
-      readMembershipAuthorizationSnapshot(String membershipId) async {
-    final rows = await database.customSelect(
-      '''
+  readMembershipAuthorizationSnapshot(String membershipId) async {
+    final rows = await database
+        .customSelect(
+          '''
       SELECT
         m.id AS membership_id,
         m.company_id,
@@ -531,8 +535,9 @@ final class DriftCoreInstallationStore
       LEFT JOIN core_role_permissions rp ON rp.role_id = r.id
       WHERE m.id = ?
       ''',
-      variables: [Variable.withString(membershipId)],
-    ).get();
+          variables: [Variable.withString(membershipId)],
+        )
+        .get();
 
     if (rows.isEmpty) return null;
 
@@ -588,21 +593,25 @@ final class DriftCoreInstallationStore
       );
     }
 
+    final displayName = NexaBizRoleDisplayName(name ?? roleId.roleName);
     final id = generateCoreUuidV7();
     final now = DateTime.now().toUtc();
-    await database.into(database.coreRoles).insert(
-      CoreRolesCompanion.insert(
-        id: id,
-        scope: scopeStr,
-        companyId: Value(companyId),
-        roleKey: roleId.value,
-        name: Value(name),
-        description: Value(description),
-        isBuiltin: Value(isBuiltin),
-        createdAt: now,
-        updatedAt: now,
-      ),
-    );
+    await database
+        .into(database.coreRoles)
+        .insert(
+          CoreRolesCompanion.insert(
+            id: id,
+            scope: scopeStr,
+            companyId: Value(companyId),
+            roleKey: roleId.value,
+            name: Value(displayName.value),
+            normalizedName: Value(displayName.comparisonKey),
+            description: Value(description),
+            isBuiltin: Value(isBuiltin),
+            createdAt: now,
+            updatedAt: now,
+          ),
+        );
     return id;
   }
 
@@ -612,13 +621,15 @@ final class DriftCoreInstallationStore
     required String roleId,
   }) async {
     final now = DateTime.now().toUtc();
-    await database.into(database.coreMembershipRoles).insert(
-      CoreMembershipRolesCompanion.insert(
-        membershipId: membershipId,
-        roleId: roleId,
-        createdAt: now,
-      ),
-    );
+    await database
+        .into(database.coreMembershipRoles)
+        .insert(
+          CoreMembershipRolesCompanion.insert(
+            membershipId: membershipId,
+            roleId: roleId,
+            createdAt: now,
+          ),
+        );
   }
 
   /// Removes a role from a membership in `core_membership_roles`.
@@ -626,9 +637,9 @@ final class DriftCoreInstallationStore
     required String membershipId,
     required String roleId,
   }) async {
-    return (database.delete(database.coreMembershipRoles)
-          ..where((t) =>
-              t.membershipId.equals(membershipId) & t.roleId.equals(roleId)))
+    return (database.delete(database.coreMembershipRoles)..where(
+          (t) => t.membershipId.equals(membershipId) & t.roleId.equals(roleId),
+        ))
         .go();
   }
 
@@ -638,13 +649,15 @@ final class DriftCoreInstallationStore
     required NexaBizPermissionId permissionId,
   }) async {
     final now = DateTime.now().toUtc();
-    await database.into(database.coreRolePermissions).insert(
-      CoreRolePermissionsCompanion.insert(
-        roleId: roleId,
-        permissionId: permissionId.value,
-        createdAt: now,
-      ),
-    );
+    await database
+        .into(database.coreRolePermissions)
+        .insert(
+          CoreRolePermissionsCompanion.insert(
+            roleId: roleId,
+            permissionId: permissionId.value,
+            createdAt: now,
+          ),
+        );
   }
 
   /// Revokes a permission from a role in `core_role_permissions`.
@@ -652,10 +665,11 @@ final class DriftCoreInstallationStore
     required String roleId,
     required NexaBizPermissionId permissionId,
   }) async {
-    return (database.delete(database.coreRolePermissions)
-          ..where((t) =>
+    return (database.delete(database.coreRolePermissions)..where(
+          (t) =>
               t.roleId.equals(roleId) &
-              t.permissionId.equals(permissionId.value)))
+              t.permissionId.equals(permissionId.value),
+        ))
         .go();
   }
 

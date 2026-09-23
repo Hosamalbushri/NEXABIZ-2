@@ -7,6 +7,7 @@ import '../core/authorization/nexabiz_permission_evaluator.dart';
 import '../core/session/core_session_controller.dart';
 import '../l10n/app_localizations.dart';
 import 'authorization/app_permission_scope.dart';
+import 'authorization/nexabiz_authorization_administration.dart';
 import 'localization/app_locale_controller.dart';
 
 /// Primary root widget for the NexaBiz application.
@@ -15,6 +16,7 @@ class NexaBizApp extends StatelessWidget {
   final NexaBizPermissionEvaluator? permissionEvaluator;
   final CoreSessionController? sessionController;
   final Listenable? authorizationInvalidationSignal;
+  final NexaBizAuthorizationAdministration? authorizationAdministration;
 
   const NexaBizApp({
     super.key,
@@ -22,6 +24,7 @@ class NexaBizApp extends StatelessWidget {
     this.permissionEvaluator,
     this.sessionController,
     this.authorizationInvalidationSignal,
+    this.authorizationAdministration,
   });
 
   @override
@@ -56,6 +59,7 @@ class NexaBizApp extends StatelessWidget {
         permissionEvaluator: permissionEvaluator!,
         sessionController: sessionController!,
         invalidationSignal: authorizationInvalidationSignal,
+        authorizationAdministration: authorizationAdministration,
         child: app,
       );
     }

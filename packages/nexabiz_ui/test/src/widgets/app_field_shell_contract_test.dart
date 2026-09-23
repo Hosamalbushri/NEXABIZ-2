@@ -7,16 +7,14 @@ void main() {
   Widget buildTestableWidget(Widget child) {
     return shadcn.ShadcnApp(
       home: shadcn.Scaffold(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: child,
-        ),
+        child: Padding(padding: const EdgeInsets.all(16.0), child: child),
       ),
     );
   }
 
-  testWidgets('AppFieldShell: parent-driven update of label and errorText',
-      (WidgetTester tester) async {
+  testWidgets('AppFieldShell: parent-driven update of label and errorText', (
+    WidgetTester tester,
+  ) async {
     String? error;
 
     await tester.pumpWidget(

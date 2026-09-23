@@ -158,7 +158,10 @@ class AppBottomSheet extends StatelessWidget {
             behavior: HitTestBehavior.opaque,
             onTap: item.enabled ? () => close<T>(ctx, item.value) : null,
             child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 2.0),
+              margin: const EdgeInsets.symmetric(
+                horizontal: 12.0,
+                vertical: 2.0,
+              ),
               padding: const EdgeInsets.symmetric(
                 horizontal: 16.0,
                 vertical: 12.0,
@@ -336,12 +339,18 @@ class AppBottomSheet extends StatelessWidget {
                       color: theme.colorScheme.primary.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(AppRadius.md),
                       border: Border.all(
-                        color: theme.colorScheme.primary.withValues(alpha: 0.24),
+                        color: theme.colorScheme.primary.withValues(
+                          alpha: 0.24,
+                        ),
                         width: 1.0,
                       ),
                     ),
                     child: Center(
-                      child: Icon(icon, size: 18, color: theme.colorScheme.primary),
+                      child: Icon(
+                        icon,
+                        size: 18,
+                        color: theme.colorScheme.primary,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 12),

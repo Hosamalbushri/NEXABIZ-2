@@ -120,23 +120,26 @@ void main() {
   });
 
   group('NexaBizAuthorizationSubject', () {
-    test('holds security identifiers and provides safe toString without secrets', () {
-      final subject = NexaBizAuthorizationSubject(
-        userId: NexaBizUserId('user-uuid-1'),
-        companyId: NexaBizCompanyId('company-uuid-1'),
-        membershipId: NexaBizMembershipId('membership-uuid-1'),
-        sessionId: 'session-token-secret',
-      );
+    test(
+      'holds security identifiers and provides safe toString without secrets',
+      () {
+        final subject = NexaBizAuthorizationSubject(
+          userId: NexaBizUserId('user-uuid-1'),
+          companyId: NexaBizCompanyId('company-uuid-1'),
+          membershipId: NexaBizMembershipId('membership-uuid-1'),
+          sessionId: 'session-token-secret',
+        );
 
-      expect(subject.userId, NexaBizUserId('user-uuid-1'));
-      expect(subject.companyId, NexaBizCompanyId('company-uuid-1'));
-      expect(subject.membershipId, NexaBizMembershipId('membership-uuid-1'));
-      expect(subject.sessionId, 'session-token-secret');
+        expect(subject.userId, NexaBizUserId('user-uuid-1'));
+        expect(subject.companyId, NexaBizCompanyId('company-uuid-1'));
+        expect(subject.membershipId, NexaBizMembershipId('membership-uuid-1'));
+        expect(subject.sessionId, 'session-token-secret');
 
-      final stringOutput = subject.toString();
-      expect(stringOutput, isNot(contains('session-token-secret')));
-      expect(stringOutput, contains('<redacted>'));
-    });
+        final stringOutput = subject.toString();
+        expect(stringOutput, isNot(contains('session-token-secret')));
+        expect(stringOutput, contains('<redacted>'));
+      },
+    );
 
     test('supports value equality and hashCode', () {
       final s1 = NexaBizAuthorizationSubject(
@@ -149,9 +152,7 @@ void main() {
         companyId: NexaBizCompanyId('company-1'),
         membershipId: NexaBizMembershipId('mem-1'),
       );
-      final s3 = NexaBizAuthorizationSubject(
-        userId: NexaBizUserId('user-2'),
-      );
+      final s3 = NexaBizAuthorizationSubject(userId: NexaBizUserId('user-2'));
 
       expect(s1, equals(s2));
       expect(s1.hashCode, equals(s2.hashCode));
@@ -184,52 +185,59 @@ void main() {
       );
     });
 
-    test('NexaBizCompanyAuthorizationContext guarantees non-null company and membership', () {
-      final context = NexaBizCompanyAuthorizationContext(
-        userId: NexaBizUserId('user-1'),
-        companyId: NexaBizCompanyId('comp-1'),
-        membershipId: NexaBizMembershipId('mem-1'),
-        sessionId: 'session-1',
-      );
+    test(
+      'NexaBizCompanyAuthorizationContext guarantees non-null company and membership',
+      () {
+        final context = NexaBizCompanyAuthorizationContext(
+          userId: NexaBizUserId('user-1'),
+          companyId: NexaBizCompanyId('comp-1'),
+          membershipId: NexaBizMembershipId('mem-1'),
+          sessionId: 'session-1',
+        );
 
-      expect(context.scope, NexaBizRoleScope.company);
-      expect(context.isSystem, isFalse);
-      expect(context.isCompany, isTrue);
-      expect(context.companyId, NexaBizCompanyId('comp-1'));
-      expect(context.membershipId, NexaBizMembershipId('mem-1'));
-      expect(context.userId, NexaBizUserId('user-1'));
-      expect(context.sessionId, 'session-1');
+        expect(context.scope, NexaBizRoleScope.company);
+        expect(context.isSystem, isFalse);
+        expect(context.isCompany, isTrue);
+        expect(context.companyId, NexaBizCompanyId('comp-1'));
+        expect(context.membershipId, NexaBizMembershipId('mem-1'));
+        expect(context.userId, NexaBizUserId('user-1'));
+        expect(context.sessionId, 'session-1');
 
-      final incompleteSubject = NexaBizAuthorizationSubject(
-        userId: NexaBizUserId('user-1'),
-        companyId: NexaBizCompanyId('comp-1'),
-        // missing membershipId
-      );
-      expect(
-        () => NexaBizCompanyAuthorizationContext.fromSubject(incompleteSubject),
-        throwsArgumentError,
-      );
-    });
+        final incompleteSubject = NexaBizAuthorizationSubject(
+          userId: NexaBizUserId('user-1'),
+          companyId: NexaBizCompanyId('comp-1'),
+          // missing membershipId
+        );
+        expect(
+          () =>
+              NexaBizCompanyAuthorizationContext.fromSubject(incompleteSubject),
+          throwsArgumentError,
+        );
+      },
+    );
 
-    test('pattern matching over sealed NexaBizAuthorizationContext is exhaustive', () {
-      NexaBizAuthorizationContext ctx = NexaBizSystemAuthorizationContext(
-        userId: NexaBizUserId('user-1'),
-      );
+    test(
+      'pattern matching over sealed NexaBizAuthorizationContext is exhaustive',
+      () {
+        NexaBizAuthorizationContext ctx = NexaBizSystemAuthorizationContext(
+          userId: NexaBizUserId('user-1'),
+        );
 
-      String describe(NexaBizAuthorizationContext c) => switch (c) {
-            NexaBizSystemAuthorizationContext() => 'system',
-            NexaBizCompanyAuthorizationContext() => 'company',
-          };
+        String describe(NexaBizAuthorizationContext c) => switch (c) {
+          NexaBizSystemAuthorizationContext() => 'system',
+          NexaBizCompanyAuthorizationContext() => 'company',
+        };
 
-      expect(describe(ctx), 'system');
+        expect(describe(ctx), 'system');
 
-      ctx = NexaBizCompanyAuthorizationContext(
-        userId: NexaBizUserId('user-1'),
-        companyId: NexaBizCompanyId('comp-1'),
-        membershipId: NexaBizMembershipId('mem-1'),
-      );
-      expect(describe(ctx), 'company');
-    });
+        ctx = NexaBizCompanyAuthorizationContext(
+          userId: NexaBizUserId('user-1'),
+          companyId: NexaBizCompanyId('comp-1'),
+          membershipId: NexaBizMembershipId('mem-1'),
+        );
+        expect(describe(ctx), 'company');
+      },
+    );
   });
 
   group('NexaBizPermissionDecision Fail-Closed Semantics', () {
@@ -269,48 +277,56 @@ void main() {
       );
     });
 
-    test('guard throws NexaBizPermissionDeniedException when evaluator returns deny', () async {
-      final evaluator = _FakeEvaluator({
-        'company.record.delete': NexaBizPermissionDecision.deny,
-      });
-      final guard = NexaBizDefaultPermissionGuard(evaluator);
-      final context = NexaBizCompanyAuthorizationContext(
-        userId: NexaBizUserId('u-1'),
-        companyId: NexaBizCompanyId('c-1'),
-        membershipId: NexaBizMembershipId('m-1'),
-      );
+    test(
+      'guard throws NexaBizPermissionDeniedException when evaluator returns deny',
+      () async {
+        final evaluator = _FakeEvaluator({
+          'company.record.delete': NexaBizPermissionDecision.deny,
+        });
+        final guard = NexaBizDefaultPermissionGuard(evaluator);
+        final context = NexaBizCompanyAuthorizationContext(
+          userId: NexaBizUserId('u-1'),
+          companyId: NexaBizCompanyId('c-1'),
+          membershipId: NexaBizMembershipId('m-1'),
+        );
 
-      final permId = NexaBizPermissionId('company.record.delete');
-      try {
-        await guard.requirePermission(context: context, permissionId: permId);
-        fail('Should throw NexaBizPermissionDeniedException');
-      } on NexaBizPermissionDeniedException catch (e) {
-        expect(e.permissionId, permId);
-        expect(e.contextScope, NexaBizRoleScope.company);
-        expect(e.decision, NexaBizPermissionDecision.deny);
-        expect(e.toString(), contains('company.record.delete'));
-        expect(e.toString(), contains('company'));
-        expect(e.toString(), contains('deny'));
-      }
-    });
+        final permId = NexaBizPermissionId('company.record.delete');
+        try {
+          await guard.requirePermission(context: context, permissionId: permId);
+          fail('Should throw NexaBizPermissionDeniedException');
+        } on NexaBizPermissionDeniedException catch (e) {
+          expect(e.permissionId, permId);
+          expect(e.contextScope, NexaBizRoleScope.company);
+          expect(e.decision, NexaBizPermissionDecision.deny);
+          expect(e.toString(), contains('company.record.delete'));
+          expect(e.toString(), contains('company'));
+          expect(e.toString(), contains('deny'));
+        }
+      },
+    );
 
-    test('guard throws NexaBizPermissionDeniedException on unknown (Fail-Closed)', () async {
-      final evaluator = _FakeEvaluator({}); // empty, so everything returns unknown
-      final guard = NexaBizDefaultPermissionGuard(evaluator);
-      final context = NexaBizSystemAuthorizationContext(
-        userId: NexaBizUserId('admin-1'),
-      );
+    test(
+      'guard throws NexaBizPermissionDeniedException on unknown (Fail-Closed)',
+      () async {
+        final evaluator = _FakeEvaluator(
+          {},
+        ); // empty, so everything returns unknown
+        final guard = NexaBizDefaultPermissionGuard(evaluator);
+        final context = NexaBizSystemAuthorizationContext(
+          userId: NexaBizUserId('admin-1'),
+        );
 
-      final permId = NexaBizPermissionId('system.backup.run');
-      try {
-        await guard.requirePermission(context: context, permissionId: permId);
-        fail('Should throw NexaBizPermissionDeniedException on unknown');
-      } on NexaBizPermissionDeniedException catch (e) {
-        expect(e.permissionId, permId);
-        expect(e.contextScope, NexaBizRoleScope.system);
-        expect(e.decision, NexaBizPermissionDecision.unknown);
-      }
-    });
+        final permId = NexaBizPermissionId('system.backup.run');
+        try {
+          await guard.requirePermission(context: context, permissionId: permId);
+          fail('Should throw NexaBizPermissionDeniedException on unknown');
+        } on NexaBizPermissionDeniedException catch (e) {
+          expect(e.permissionId, permId);
+          expect(e.contextScope, NexaBizRoleScope.system);
+          expect(e.decision, NexaBizPermissionDecision.unknown);
+        }
+      },
+    );
   });
 
   group('Capability Registry Namespace Ownership Validation', () {
@@ -349,7 +365,9 @@ void main() {
           isA<StateError>().having(
             (e) => e.message,
             'message',
-            contains('Capability "sales" cannot declare permission "inventory.item.create" outside its namespace.'),
+            contains(
+              'Capability "sales" cannot declare permission "inventory.item.create" outside its namespace.',
+            ),
           ),
         ),
       );
@@ -389,10 +407,8 @@ final class _TestCapability
   List<String> get dependsOn => const [];
 
   @override
-  CapabilityMetadata get metadata => const CapabilityMetadata(
-        nameKey: 'test',
-        iconIdentifier: 'test',
-      );
+  CapabilityMetadata get metadata =>
+      const CapabilityMetadata(nameKey: 'test', iconIdentifier: 'test');
 
   @override
   NexaBizNavigationContribution? get navigationContribution => null;

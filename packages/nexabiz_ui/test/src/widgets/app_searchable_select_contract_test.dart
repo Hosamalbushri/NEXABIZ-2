@@ -7,16 +7,14 @@ void main() {
   Widget buildTestableWidget(Widget child) {
     return shadcn.ShadcnApp(
       home: shadcn.Scaffold(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: child,
-        ),
+        child: Padding(padding: const EdgeInsets.all(16.0), child: child),
       ),
     );
   }
 
-  testWidgets('AppSearchableSelect: initial selection rendering',
-      (WidgetTester tester) async {
+  testWidgets('AppSearchableSelect: initial selection rendering', (
+    WidgetTester tester,
+  ) async {
     await tester.pumpWidget(
       buildTestableWidget(
         AppSearchableSelect<String>(
@@ -31,8 +29,9 @@ void main() {
     expect(find.text('Item 2'), findsOneWidget);
   });
 
-  testWidgets('AppSearchableSelect: parent changes selected value',
-      (WidgetTester tester) async {
+  testWidgets('AppSearchableSelect: parent changes selected value', (
+    WidgetTester tester,
+  ) async {
     String? selectedValue = 'Item 1';
 
     await tester.pumpWidget(
@@ -70,8 +69,9 @@ void main() {
     expect(find.text('Item 3'), findsOneWidget);
   });
 
-  testWidgets('AppSearchableSelect: parent clears selected value',
-      (WidgetTester tester) async {
+  testWidgets('AppSearchableSelect: parent clears selected value', (
+    WidgetTester tester,
+  ) async {
     String? selectedValue = 'Item 1';
 
     await tester.pumpWidget(
@@ -110,8 +110,9 @@ void main() {
     expect(find.text('Select item'), findsOneWidget);
   });
 
-  testWidgets('AppSearchableSelect: items and value update simultaneously',
-      (WidgetTester tester) async {
+  testWidgets('AppSearchableSelect: items and value update simultaneously', (
+    WidgetTester tester,
+  ) async {
     List<String> itemList = ['Apple', 'Banana'];
     String? selectedValue = 'Apple';
 

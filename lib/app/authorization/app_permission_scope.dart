@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 
 import '../../core/authorization/nexabiz_permission_evaluator.dart';
 import '../../core/session/core_session_controller.dart';
+import 'nexabiz_authorization_administration.dart';
 
 /// Scoped [InheritedWidget] providing authorization evaluation dependencies
 /// to presentation widgets such as [AppPermissionGate].
@@ -18,11 +19,15 @@ class AppPermissionScope extends InheritedWidget {
   /// Optional notification signal fired when permissions are mutated in persistence.
   final Listenable? invalidationSignal;
 
+  /// Optional authorization administration facade for role/access control presentation.
+  final NexaBizAuthorizationAdministration? authorizationAdministration;
+
   const AppPermissionScope({
     super.key,
     required this.permissionEvaluator,
     required this.sessionController,
     this.invalidationSignal,
+    this.authorizationAdministration,
     required super.child,
   });
 
@@ -43,6 +48,7 @@ class AppPermissionScope extends InheritedWidget {
   bool updateShouldNotify(AppPermissionScope oldWidget) {
     return permissionEvaluator != oldWidget.permissionEvaluator ||
         sessionController != oldWidget.sessionController ||
-        invalidationSignal != oldWidget.invalidationSignal;
+        invalidationSignal != oldWidget.invalidationSignal ||
+        authorizationAdministration != oldWidget.authorizationAdministration;
   }
 }

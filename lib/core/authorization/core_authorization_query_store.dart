@@ -6,6 +6,5 @@ abstract interface class CoreAuthorizationQueryStore {
   ///
   /// Returns null if the membership does not exist.
   Future<NexaBizMembershipAuthorizationSnapshot?>
-      readMembershipAuthorizationSnapshot(String membershipId);
+  readMembershipAuthorizationSnapshot(String membershipId);
 }
-

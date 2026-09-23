@@ -14,12 +14,14 @@ class AppLoading extends StatelessWidget {
     this.message,
     this.progress,
     this.skeletonItemCount = 6,
+    this.showMessage = true,
   });
 
   final AppLoadingStyle style;
   final String? message;
   final double? progress;
   final int skeletonItemCount;
+  final bool showMessage;
 
   @override
   Widget build(BuildContext context) {
@@ -27,11 +29,15 @@ class AppLoading extends StatelessWidget {
 
     switch (style) {
       case AppLoadingStyle.circular:
+        final spinner = shadcn.CircularProgressIndicator(value: progress);
+        if (!showMessage) {
+          return Center(child: spinner);
+        }
         return Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              shadcn.CircularProgressIndicator(value: progress),
+              spinner,
               const SizedBox(height: AppSpacing.md),
               Text(label),
             ],

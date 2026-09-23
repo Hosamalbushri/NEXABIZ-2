@@ -58,10 +58,7 @@ class AppTopHeader extends StatelessWidget implements PreferredSizeWidget {
       decoration: BoxDecoration(
         color: effectiveBg,
         border: Border(
-          bottom: BorderSide(
-            color: effectiveBorder,
-            width: AppBorders.thin,
-          ),
+          bottom: BorderSide(color: effectiveBorder, width: AppBorders.thin),
         ),
       ),
       child: Row(
@@ -72,11 +69,7 @@ class AppTopHeader extends StatelessWidget implements PreferredSizeWidget {
             const SizedBox(width: AppSpacing.sm),
           ],
           if (center != null)
-            Expanded(
-              child: Center(
-                child: center!,
-              ),
-            )
+            Expanded(child: Center(child: center!))
           else
             const Spacer(),
           if (actions.isNotEmpty) ...[
@@ -96,4 +89,3 @@ class AppTopHeader extends StatelessWidget implements PreferredSizeWidget {
     );
   }
 }
-

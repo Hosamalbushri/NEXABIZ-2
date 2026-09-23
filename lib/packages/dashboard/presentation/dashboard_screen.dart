@@ -174,7 +174,11 @@ class _DashboardCarouselSection extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(width: AppSpacing.xs),
-                          Icon(item.icon, size: 20, color: AppColors.primaryBlue),
+                          Icon(
+                            item.icon,
+                            size: 20,
+                            color: AppColors.primaryBlue,
+                          ),
                         ],
                       ),
                       const SizedBox(height: AppSpacing.xs),

@@ -97,7 +97,8 @@ class AppDateRangeField extends StatelessWidget {
     final hasError = errorText != null && errorText!.isNotEmpty;
     final isInteractive = enabled && !readOnly;
     final isRtl = Directionality.of(context) == TextDirection.rtl;
-    final effectiveHint = hint ?? (isRtl ? 'اختر الفترة الزمنية...' : 'Select date range...');
+    final effectiveHint =
+        hint ?? (isRtl ? 'اختر الفترة الزمنية...' : 'Select date range...');
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

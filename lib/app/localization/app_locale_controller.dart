@@ -7,17 +7,15 @@ abstract final class AppLocaleController {
   static const String _prefsKey = 'nexabiz_user_locale';
 
   /// Supported application locales: English (en) and Arabic (ar).
-  static const List<Locale> supportedLocales = [
-    Locale('en'),
-    Locale('ar'),
-  ];
+  static const List<Locale> supportedLocales = [Locale('en'), Locale('ar')];
 
   /// Fallback locale when device/selected locale is unsupported.
   static const Locale defaultFallbackLocale = Locale('en');
 
   /// Global ValueNotifier for active Locale.
-  static final ValueNotifier<Locale> localeNotifier =
-      ValueNotifier<Locale>(defaultFallbackLocale);
+  static final ValueNotifier<Locale> localeNotifier = ValueNotifier<Locale>(
+    defaultFallbackLocale,
+  );
 
   /// Get current active Locale.
   static Locale get currentLocale => localeNotifier.value;

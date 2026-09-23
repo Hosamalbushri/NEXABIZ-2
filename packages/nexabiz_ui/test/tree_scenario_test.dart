@@ -4,12 +4,12 @@ import 'package:nexabiz_ui/src/playground/scenarios/tree_scenario.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart' as shadcn;
 
 void main() {
-  testWidgets('TreeScenario renders tree nodes and header title', (tester) async {
+  testWidgets('TreeScenario renders tree nodes and header title', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       const shadcn.ShadcnApp(
-        home: Scaffold(
-          body: TreeScenario(isArabic: true),
-        ),
+        home: Scaffold(body: TreeScenario(isArabic: true)),
       ),
     );
     await tester.pumpAndSettle();

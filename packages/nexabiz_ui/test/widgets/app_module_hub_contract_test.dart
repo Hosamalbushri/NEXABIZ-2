@@ -40,7 +40,8 @@ void main() {
                 children: [
                   AppModuleHubTile(
                     title: 'General Ledger Audit Verification',
-                    subtitle: 'Journal verification and multi-currency balancing',
+                    subtitle:
+                        'Journal verification and multi-currency balancing',
                     icon: AppIcons.check,
                     onTap: () {},
                   ),
@@ -56,7 +57,10 @@ void main() {
           );
           await tester.pumpAndSettle();
 
-          expect(find.text('General Ledger Audit Verification'), findsOneWidget);
+          expect(
+            find.text('General Ledger Audit Verification'),
+            findsOneWidget,
+          );
           expect(tester.takeException(), isNull);
         }
         tester.view.resetPhysicalSize();
@@ -95,7 +99,10 @@ void main() {
         );
         await tester.pumpAndSettle();
 
-        expect(find.text('مراجعة التدقيق المالي الشامل والتسويات'), findsOneWidget);
+        expect(
+          find.text('مراجعة التدقيق المالي الشامل والتسويات'),
+          findsOneWidget,
+        );
         expect(tester.takeException(), isNull);
       },
     );
@@ -111,9 +118,7 @@ void main() {
 
           await tester.pumpWidget(
             MediaQuery(
-              data: MediaQueryData(
-                textScaler: TextScaler.linear(scale),
-              ),
+              data: MediaQueryData(textScaler: TextScaler.linear(scale)),
               child: Directionality(
                 textDirection: TextDirection.rtl,
                 child: wrapWithApp(
@@ -121,7 +126,8 @@ void main() {
                     children: [
                       AppModuleHubTile(
                         title: 'General Ledger Audit Verification',
-                        subtitle: 'Journal verification and multi-currency balancing',
+                        subtitle:
+                            'Journal verification and multi-currency balancing',
                         icon: AppIcons.check,
                         onTap: () {},
                       ),
@@ -139,7 +145,10 @@ void main() {
           );
           await tester.pumpAndSettle();
 
-          expect(find.text('General Ledger Audit Verification'), findsOneWidget);
+          expect(
+            find.text('General Ledger Audit Verification'),
+            findsOneWidget,
+          );
           expect(tester.takeException(), isNull);
         }
         tester.view.resetPhysicalSize();

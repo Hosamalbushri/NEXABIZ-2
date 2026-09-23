@@ -72,7 +72,9 @@ class _LineItemsScenarioState extends State<LineItemsScenario> {
                   );
                 }).toList(),
                 onChanged: (val) {
-                  if (val != null) setModalState(() => selectedAccountCode = val);
+                  if (val != null) {
+                    setModalState(() => selectedAccountCode = val);
+                  }
                 },
               ),
               const SizedBox(height: AppSpacing.sm),
@@ -84,15 +86,21 @@ class _LineItemsScenarioState extends State<LineItemsScenario> {
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 8),
                         decoration: BoxDecoration(
-                          color: isDebit ? colorScheme.primary : colorScheme.muted,
+                          color: isDebit
+                              ? colorScheme.primary
+                              : colorScheme.muted,
                           borderRadius: BorderRadius.circular(AppRadii.xs),
                         ),
                         alignment: Alignment.center,
                         child: Text(
                           isAr ? 'مدين (Debit)' : 'Debit',
                           style: TextStyle(
-                            color: isDebit ? colorScheme.primaryForeground : colorScheme.foreground,
-                            fontWeight: isDebit ? FontWeight.bold : FontWeight.normal,
+                            color: isDebit
+                                ? colorScheme.primaryForeground
+                                : colorScheme.foreground,
+                            fontWeight: isDebit
+                                ? FontWeight.bold
+                                : FontWeight.normal,
                           ),
                         ),
                       ),
@@ -105,15 +113,21 @@ class _LineItemsScenarioState extends State<LineItemsScenario> {
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 8),
                         decoration: BoxDecoration(
-                          color: !isDebit ? colorScheme.primary : colorScheme.muted,
+                          color: !isDebit
+                              ? colorScheme.primary
+                              : colorScheme.muted,
                           borderRadius: BorderRadius.circular(AppRadii.xs),
                         ),
                         alignment: Alignment.center,
                         child: Text(
                           isAr ? 'دائن (Credit)' : 'Credit',
                           style: TextStyle(
-                            color: !isDebit ? colorScheme.primaryForeground : colorScheme.foreground,
-                            fontWeight: !isDebit ? FontWeight.bold : FontWeight.normal,
+                            color: !isDebit
+                                ? colorScheme.primaryForeground
+                                : colorScheme.foreground,
+                            fontWeight: !isDebit
+                                ? FontWeight.bold
+                                : FontWeight.normal,
                           ),
                         ),
                       ),
@@ -125,7 +139,8 @@ class _LineItemsScenarioState extends State<LineItemsScenario> {
               AppNumberField(
                 label: isAr ? 'المبلغ' : 'Amount',
                 value: amount,
-                onChanged: (v) => setModalState(() => amount = (v ?? 0.0).toDouble()),
+                onChanged: (v) =>
+                    setModalState(() => amount = (v ?? 0.0).toDouble()),
               ),
               const SizedBox(height: AppSpacing.sm),
               AppTextField(
@@ -138,7 +153,9 @@ class _LineItemsScenarioState extends State<LineItemsScenario> {
                 label: isAr ? 'إضافة إلى القيد' : 'Add to Voucher',
                 variant: AppButtonVariant.filled,
                 onPressed: () {
-                  final selectedAcc = accounts.firstWhere((a) => a.code == selectedAccountCode);
+                  final selectedAcc = accounts.firstWhere(
+                    (a) => a.code == selectedAccountCode,
+                  );
                   _addLine(
                     DemoJournalLine(
                       id: 'line-${DateTime.now().millisecondsSinceEpoch}',
@@ -147,8 +164,12 @@ class _LineItemsScenarioState extends State<LineItemsScenario> {
                       accountNameAr: selectedAcc.nameAr,
                       debit: isDebit ? amount : 0.0,
                       credit: !isDebit ? amount : 0.0,
-                      descriptionEn: descController.text.isEmpty ? 'Adjusting entry' : descController.text,
-                      descriptionAr: descController.text.isEmpty ? 'قيد تسوية' : descController.text,
+                      descriptionEn: descController.text.isEmpty
+                          ? 'Adjusting entry'
+                          : descController.text,
+                      descriptionAr: descController.text.isEmpty
+                          ? 'قيد تسوية'
+                          : descController.text,
                     ),
                   );
                   AppBottomSheet.close<void>(modalCtx);
@@ -196,7 +217,9 @@ class _LineItemsScenarioState extends State<LineItemsScenario> {
                       overflow: TextOverflow.ellipsis,
                     ),
                     Text(
-                      isAr ? '${_lines.length} أسطر مسجلة' : '${_lines.length} recorded lines',
+                      isAr
+                          ? '${_lines.length} أسطر مسجلة'
+                          : '${_lines.length} recorded lines',
                       style: theme.typography.small.copyWith(
                         color: colorScheme.mutedForeground,
                         fontSize: 12,
@@ -249,7 +272,9 @@ class _LineItemsScenarioState extends State<LineItemsScenario> {
                       child: _buildSummaryItem(
                         isAr ? 'الفرق' : 'Difference',
                         diff,
-                        isBalanced ? colorScheme.primary : colorScheme.destructive,
+                        isBalanced
+                            ? colorScheme.primary
+                            : colorScheme.destructive,
                         context,
                       ),
                     ),
@@ -262,8 +287,12 @@ class _LineItemsScenarioState extends State<LineItemsScenario> {
                     AppStatusBadge(
                       label: isBalanced
                           ? (isAr ? 'القيد متوازن تماماً' : 'Balanced Entry')
-                          : (isAr ? 'القيد غير متوازن: ${diff.toStringAsFixed(2)}' : 'Unbalanced: ${diff.toStringAsFixed(2)}'),
-                      tone: isBalanced ? AppStatusTone.success : AppStatusTone.error,
+                          : (isAr
+                                ? 'القيد غير متوازن: ${diff.toStringAsFixed(2)}'
+                                : 'Unbalanced: ${diff.toStringAsFixed(2)}'),
+                      tone: isBalanced
+                          ? AppStatusTone.success
+                          : AppStatusTone.error,
                     ),
                   ],
                 ),
@@ -300,7 +329,12 @@ class _LineItemsScenarioState extends State<LineItemsScenario> {
     );
   }
 
-  Widget _buildSummaryItem(String label, double value, Color color, BuildContext context) {
+  Widget _buildSummaryItem(
+    String label,
+    double value,
+    Color color,
+    BuildContext context,
+  ) {
     final theme = shadcn.Theme.of(context);
     final colorScheme = theme.colorScheme;
 
@@ -319,11 +353,9 @@ class _LineItemsScenarioState extends State<LineItemsScenario> {
         const SizedBox(height: 2),
         Text(
           value.toStringAsFixed(2),
-          style: AppTypography.numericValue(context).copyWith(
-            fontWeight: FontWeight.w700,
-            fontSize: 13,
-            color: color,
-          ),
+          style: AppTypography.numericValue(
+            context,
+          ).copyWith(fontWeight: FontWeight.w700, fontSize: 13, color: color),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
@@ -331,7 +363,12 @@ class _LineItemsScenarioState extends State<LineItemsScenario> {
     );
   }
 
-  Widget _buildLineCard(BuildContext context, DemoJournalLine line, int index, bool isAr) {
+  Widget _buildLineCard(
+    BuildContext context,
+    DemoJournalLine line,
+    int index,
+    bool isAr,
+  ) {
     final theme = shadcn.Theme.of(context);
     final colorScheme = theme.colorScheme;
     final isDebit = line.debit > 0;
@@ -345,7 +382,9 @@ class _LineItemsScenarioState extends State<LineItemsScenario> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
             decoration: BoxDecoration(
-              color: isDebit ? colorScheme.primary.withValues(alpha: 0.15) : colorScheme.secondary,
+              color: isDebit
+                  ? colorScheme.primary.withValues(alpha: 0.15)
+                  : colorScheme.secondary,
               borderRadius: BorderRadius.circular(AppRadii.xs),
             ),
             child: Text(
@@ -353,7 +392,9 @@ class _LineItemsScenarioState extends State<LineItemsScenario> {
               style: TextStyle(
                 fontSize: 10,
                 fontWeight: FontWeight.bold,
-                color: isDebit ? colorScheme.primary : colorScheme.secondaryForeground,
+                color: isDebit
+                    ? colorScheme.primary
+                    : colorScheme.secondaryForeground,
               ),
             ),
           ),
@@ -391,11 +432,12 @@ class _LineItemsScenarioState extends State<LineItemsScenario> {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                isDebit ? line.debit.toStringAsFixed(2) : line.credit.toStringAsFixed(2),
-                style: AppTypography.numericValue(context).copyWith(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 13,
-                ),
+                isDebit
+                    ? line.debit.toStringAsFixed(2)
+                    : line.credit.toStringAsFixed(2),
+                style: AppTypography.numericValue(
+                  context,
+                ).copyWith(fontWeight: FontWeight.w700, fontSize: 13),
               ),
               const SizedBox(height: 2),
               GestureDetector(

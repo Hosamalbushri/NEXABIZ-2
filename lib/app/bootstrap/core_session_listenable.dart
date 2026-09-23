@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 
-import 'core_session_controller.dart';
-import 'nexabiz_session.dart';
+import '../../core/session/core_session_controller.dart';
+import '../../core/session/nexabiz_session.dart';
 
 /// Flutter [Listenable] adapter that bridges [CoreSessionController.onSessionChanged]
 /// stream events to [GoRouter.refreshListenable] for real-time authentication gating.

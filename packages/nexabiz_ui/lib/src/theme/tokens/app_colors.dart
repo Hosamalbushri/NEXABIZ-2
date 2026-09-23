@@ -19,6 +19,7 @@ class AppColors {
   static const Color darkBackground = Color(0xFF0F172A);
   static const Color lightSurface = Color(0xFFFFFFFF);
   static const Color darkSurface = Color(0xFF1E293B);
+  static const Color shadow = Color(0xFF000000);
 
   // Border & Divider Tokens
   static const Color borderLight = Color(0xFFE2E8F0);

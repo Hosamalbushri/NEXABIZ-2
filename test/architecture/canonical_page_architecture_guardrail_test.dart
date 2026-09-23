@@ -44,10 +44,9 @@ List<File> _getAppProductionDartFiles() {
 
   final packagesDir = Directory('packages');
   if (packagesDir.existsSync()) {
-    final featureDirs = packagesDir
-        .listSync()
-        .whereType<Directory>()
-        .where((d) => !d.path.replaceAll('\\', '/').endsWith('packages/nexabiz_ui'));
+    final featureDirs = packagesDir.listSync().whereType<Directory>().where(
+      (d) => !d.path.replaceAll('\\', '/').endsWith('packages/nexabiz_ui'),
+    );
     for (final dir in featureDirs) {
       files.addAll(_collectDartFiles(dir));
     }
@@ -59,9 +58,11 @@ List<File> _collectDartFiles(Directory dir) {
   return dir
       .listSync(recursive: true)
       .whereType<File>()
-      .where((f) =>
-          f.path.endsWith('.dart') &&
-          !f.path.endsWith('.g.dart') &&
-          !f.path.endsWith('.freezed.dart'))
+      .where(
+        (f) =>
+            f.path.endsWith('.dart') &&
+            !f.path.endsWith('.g.dart') &&
+            !f.path.endsWith('.freezed.dart'),
+      )
       .toList();
 }

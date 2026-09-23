@@ -19,11 +19,7 @@ class AppExitPopScope extends StatefulWidget {
   final Widget child;
   final AppExitCallback? onConfirmExit;
 
-  const AppExitPopScope({
-    super.key,
-    required this.child,
-    this.onConfirmExit,
-  });
+  const AppExitPopScope({super.key, required this.child, this.onConfirmExit});
 
   /// Show canonical exit confirmation dialog.
   static Future<bool> confirmExit(BuildContext context) async {

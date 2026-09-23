@@ -66,12 +66,9 @@ class AppModuleHubTile extends StatelessWidget {
 
         Widget buildTileIcon(double size) {
           final isRtl = Directionality.of(context) == TextDirection.rtl;
-          final shouldFlip = isRtl && (icon.matchTextDirection || mirrorIconInRtl);
-          final iconWidget = Icon(
-            icon,
-            color: colorScheme.primary,
-            size: size,
-          );
+          final shouldFlip =
+              isRtl && (icon.matchTextDirection || mirrorIconInRtl);
+          final iconWidget = Icon(icon, color: colorScheme.primary, size: size);
           if (shouldFlip) {
             return Transform.flip(flipX: true, child: iconWidget);
           }

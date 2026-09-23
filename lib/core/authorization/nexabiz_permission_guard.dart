@@ -37,4 +37,3 @@ final class NexaBizDefaultPermissionGuard implements NexaBizPermissionGuard {
     }
   }
 }
-

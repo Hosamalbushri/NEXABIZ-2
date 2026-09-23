@@ -1879,6 +1879,630 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Back to Dashboard'**
   String get actionBackToDashboard;
+
+  /// No description provided for @authAppSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Smart ERP & Accounting System'**
+  String get authAppSubtitle;
+
+  /// No description provided for @authFooterNote.
+  ///
+  /// In en, this message translates to:
+  /// **'NexaBiz ERP • Secured Enterprise Local Edition'**
+  String get authFooterNote;
+
+  /// No description provided for @authAdminPageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Roles & Access Control'**
+  String get authAdminPageTitle;
+
+  /// No description provided for @authAdminPageSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Configure company roles, permissions, and member assignments'**
+  String get authAdminPageSubtitle;
+
+  /// No description provided for @authAdminRolesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Roles'**
+  String get authAdminRolesTitle;
+
+  /// No description provided for @authAdminRoleDetailsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Role Details'**
+  String get authAdminRoleDetailsTitle;
+
+  /// No description provided for @authAdminCreateRoleTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Role'**
+  String get authAdminCreateRoleTitle;
+
+  /// No description provided for @authAdminEditRoleTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Role'**
+  String get authAdminEditRoleTitle;
+
+  /// No description provided for @authAdminDeleteRoleTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Role'**
+  String get authAdminDeleteRoleTitle;
+
+  /// No description provided for @authAdminPermissionsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Permissions'**
+  String get authAdminPermissionsTitle;
+
+  /// No description provided for @authAdminAssignedMembersTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned Members'**
+  String get authAdminAssignedMembersTitle;
+
+  /// No description provided for @authAdminAssignMemberTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Assign Member'**
+  String get authAdminAssignMemberTitle;
+
+  /// No description provided for @authAdminRoleTypeBuiltIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Built-in'**
+  String get authAdminRoleTypeBuiltIn;
+
+  /// No description provided for @authAdminRoleTypeCustom.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom'**
+  String get authAdminRoleTypeCustom;
+
+  /// No description provided for @authAdminRoleBuiltInBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Built-in Role'**
+  String get authAdminRoleBuiltInBadge;
+
+  /// No description provided for @authAdminRoleCustomBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom Role'**
+  String get authAdminRoleCustomBadge;
+
+  /// No description provided for @authAdminRoleBuiltInHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Built-in roles are system-defined. Their identifier, permissions, and definition cannot be modified or deleted, but active members can be assigned or unassigned.'**
+  String get authAdminRoleBuiltInHelp;
+
+  /// No description provided for @authAdminRoleDisplayNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Role Name'**
+  String get authAdminRoleDisplayNameLabel;
+
+  /// No description provided for @authAdminRoleDisplayNamePlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Sales Manager'**
+  String get authAdminRoleDisplayNamePlaceholder;
+
+  /// No description provided for @authAdminRoleKeyLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Role Identifier'**
+  String get authAdminRoleKeyLabel;
+
+  /// No description provided for @authAdminRoleKeyPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. company.sales_manager'**
+  String get authAdminRoleKeyPlaceholder;
+
+  /// No description provided for @authAdminRoleKeyHelpText.
+  ///
+  /// In en, this message translates to:
+  /// **'A unique, lowercase identifier (e.g. company.role_name). Cannot be modified after creation.'**
+  String get authAdminRoleKeyHelpText;
+
+  /// No description provided for @authAdminRoleDescriptionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get authAdminRoleDescriptionLabel;
+
+  /// No description provided for @authAdminRoleDescriptionPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe the purpose and responsibilities of this role'**
+  String get authAdminRoleDescriptionPlaceholder;
+
+  /// No description provided for @authAdminRoleDescriptionOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional'**
+  String get authAdminRoleDescriptionOptional;
+
+  /// No description provided for @authAdminActionSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get authAdminActionSave;
+
+  /// No description provided for @authAdminActionCreate.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Role'**
+  String get authAdminActionCreate;
+
+  /// No description provided for @authAdminActionUpdate.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Changes'**
+  String get authAdminActionUpdate;
+
+  /// No description provided for @authAdminActionDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Role'**
+  String get authAdminActionDelete;
+
+  /// No description provided for @authAdminActionAssign.
+  ///
+  /// In en, this message translates to:
+  /// **'Assign'**
+  String get authAdminActionAssign;
+
+  /// No description provided for @authAdminActionRemove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get authAdminActionRemove;
+
+  /// No description provided for @authAdminActionUnassign.
+  ///
+  /// In en, this message translates to:
+  /// **'Unassign'**
+  String get authAdminActionUnassign;
+
+  /// No description provided for @authAdminSearchRolesPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Search roles...'**
+  String get authAdminSearchRolesPlaceholder;
+
+  /// No description provided for @authAdminSearchPermissionsPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Search permissions...'**
+  String get authAdminSearchPermissionsPlaceholder;
+
+  /// No description provided for @authAdminSearchMembersPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Search members...'**
+  String get authAdminSearchMembersPlaceholder;
+
+  /// No description provided for @authAdminFilterAllRoles.
+  ///
+  /// In en, this message translates to:
+  /// **'All Roles'**
+  String get authAdminFilterAllRoles;
+
+  /// No description provided for @authAdminFilterBuiltInRoles.
+  ///
+  /// In en, this message translates to:
+  /// **'Built-in Roles'**
+  String get authAdminFilterBuiltInRoles;
+
+  /// No description provided for @authAdminFilterCustomRoles.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom Roles'**
+  String get authAdminFilterCustomRoles;
+
+  /// No description provided for @authAdminEmptyRoles.
+  ///
+  /// In en, this message translates to:
+  /// **'No roles found.'**
+  String get authAdminEmptyRoles;
+
+  /// No description provided for @authAdminEmptyRolesSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'No roles matching your search.'**
+  String get authAdminEmptyRolesSearch;
+
+  /// No description provided for @authAdminEmptyAssignedMembers.
+  ///
+  /// In en, this message translates to:
+  /// **'No members currently assigned to this role.'**
+  String get authAdminEmptyAssignedMembers;
+
+  /// No description provided for @authAdminEmptyAssignableMembers.
+  ///
+  /// In en, this message translates to:
+  /// **'No assignable members available.'**
+  String get authAdminEmptyAssignableMembers;
+
+  /// No description provided for @authAdminEmptyAssignableMembersSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'No members matching your search.'**
+  String get authAdminEmptyAssignableMembersSearch;
+
+  /// No description provided for @authAdminEmptyPermissionsSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'No permissions matching your search.'**
+  String get authAdminEmptyPermissionsSearch;
+
+  /// No description provided for @authAdminMemberStatusActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get authAdminMemberStatusActive;
+
+  /// No description provided for @authAdminMemberStatusInactive.
+  ///
+  /// In en, this message translates to:
+  /// **'Inactive'**
+  String get authAdminMemberStatusInactive;
+
+  /// No description provided for @authAdminMemberEligible.
+  ///
+  /// In en, this message translates to:
+  /// **'Eligible'**
+  String get authAdminMemberEligible;
+
+  /// No description provided for @authAdminMemberIneligible.
+  ///
+  /// In en, this message translates to:
+  /// **'Ineligible'**
+  String get authAdminMemberIneligible;
+
+  /// No description provided for @authAdminAvailableMembersSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Available Members'**
+  String get authAdminAvailableMembersSection;
+
+  /// No description provided for @authAdminDeleteRoleConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete role \"{roleName}\"?'**
+  String authAdminDeleteRoleConfirm(String roleName);
+
+  /// No description provided for @authAdminDeleteRoleConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This action is permanent and cannot be undone.'**
+  String get authAdminDeleteRoleConfirmMessage;
+
+  /// No description provided for @authAdminUnassignMemberConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove \"{memberName}\" from role \"{roleName}\"?'**
+  String authAdminUnassignMemberConfirm(String memberName, String roleName);
+
+  /// No description provided for @authAdminPermissionCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No permissions} =1{1 permission} other{{count} permissions}}'**
+  String authAdminPermissionCount(int count);
+
+  /// No description provided for @authAdminMemberCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No members} =1{1 member} other{{count} members}}'**
+  String authAdminMemberCount(int count);
+
+  /// No description provided for @authAdminGroupCompany.
+  ///
+  /// In en, this message translates to:
+  /// **'Company Workspace'**
+  String get authAdminGroupCompany;
+
+  /// No description provided for @authAdminGroupIdentity.
+  ///
+  /// In en, this message translates to:
+  /// **'Identity & Users'**
+  String get authAdminGroupIdentity;
+
+  /// No description provided for @authAdminGroupAuthorization.
+  ///
+  /// In en, this message translates to:
+  /// **'Access Control & Roles'**
+  String get authAdminGroupAuthorization;
+
+  /// No description provided for @authAdminGroupOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other Permissions'**
+  String get authAdminGroupOther;
+
+  /// No description provided for @authAdminPermCompanyProfileViewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'View company profile'**
+  String get authAdminPermCompanyProfileViewTitle;
+
+  /// No description provided for @authAdminPermCompanyProfileViewDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'View company basic details, code, and organization profile.'**
+  String get authAdminPermCompanyProfileViewDesc;
+
+  /// No description provided for @authAdminPermCompanyProfileManageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage company profile'**
+  String get authAdminPermCompanyProfileManageTitle;
+
+  /// No description provided for @authAdminPermCompanyProfileManageDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Update company profile information, settings, and business details.'**
+  String get authAdminPermCompanyProfileManageDesc;
+
+  /// No description provided for @authAdminPermCompanyMembershipViewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'View company memberships'**
+  String get authAdminPermCompanyMembershipViewTitle;
+
+  /// No description provided for @authAdminPermCompanyMembershipViewDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Inspect users and members associated with this company workspace.'**
+  String get authAdminPermCompanyMembershipViewDesc;
+
+  /// No description provided for @authAdminPermIdentitySessionViewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'View active sessions'**
+  String get authAdminPermIdentitySessionViewTitle;
+
+  /// No description provided for @authAdminPermIdentitySessionViewDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Inspect active authentication sessions, login status, and devices.'**
+  String get authAdminPermIdentitySessionViewDesc;
+
+  /// No description provided for @authAdminPermIdentityUserManageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage users'**
+  String get authAdminPermIdentityUserManageTitle;
+
+  /// No description provided for @authAdminPermIdentityUserManageDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage user credentials, account status, and authentication security.'**
+  String get authAdminPermIdentityUserManageDesc;
+
+  /// No description provided for @authAdminPermCatalogViewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'View permission catalog'**
+  String get authAdminPermCatalogViewTitle;
+
+  /// No description provided for @authAdminPermCatalogViewDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'View all declared capabilities and system permissions available for configuration.'**
+  String get authAdminPermCatalogViewDesc;
+
+  /// No description provided for @authAdminPermPolicyReviewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Review authorization policy'**
+  String get authAdminPermPolicyReviewTitle;
+
+  /// No description provided for @authAdminPermPolicyReviewDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Read roles, role permissions, and membership assignments without modification.'**
+  String get authAdminPermPolicyReviewDesc;
+
+  /// No description provided for @authAdminPermRoleManageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage custom roles'**
+  String get authAdminPermRoleManageTitle;
+
+  /// No description provided for @authAdminPermRoleManageDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Create, rename, describe, and delete custom company roles.'**
+  String get authAdminPermRoleManageDesc;
+
+  /// No description provided for @authAdminPermPolicyManageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage role permissions'**
+  String get authAdminPermPolicyManageTitle;
+
+  /// No description provided for @authAdminPermPolicyManageDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Grant and revoke specific permissions for custom company roles.'**
+  String get authAdminPermPolicyManageDesc;
+
+  /// No description provided for @authAdminPermAssignmentManageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage role assignments'**
+  String get authAdminPermAssignmentManageTitle;
+
+  /// No description provided for @authAdminPermAssignmentManageDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Assign and remove company roles for active company members.'**
+  String get authAdminPermAssignmentManageDesc;
+
+  /// No description provided for @authAdminUnknownPermissionDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'System-declared capability permission ({permissionId}).'**
+  String authAdminUnknownPermissionDesc(String permissionId);
+
+  /// No description provided for @authAdminErrorRoleNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Role not found in the current company.'**
+  String get authAdminErrorRoleNotFound;
+
+  /// No description provided for @authAdminErrorMembershipNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Company membership not found.'**
+  String get authAdminErrorMembershipNotFound;
+
+  /// No description provided for @authAdminErrorCrossCompany.
+  ///
+  /// In en, this message translates to:
+  /// **'Security violation: tenant mismatch detected.'**
+  String get authAdminErrorCrossCompany;
+
+  /// No description provided for @authAdminErrorBuiltInCreate.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot create a role with built-in prefix or identifier.'**
+  String get authAdminErrorBuiltInCreate;
+
+  /// No description provided for @authAdminErrorBuiltInUpdate.
+  ///
+  /// In en, this message translates to:
+  /// **'Built-in roles cannot be renamed or modified.'**
+  String get authAdminErrorBuiltInUpdate;
+
+  /// No description provided for @authAdminErrorBuiltInDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Built-in system roles cannot be deleted.'**
+  String get authAdminErrorBuiltInDelete;
+
+  /// No description provided for @authAdminErrorBuiltInPermissions.
+  ///
+  /// In en, this message translates to:
+  /// **'Permissions for built-in roles cannot be modified.'**
+  String get authAdminErrorBuiltInPermissions;
+
+  /// No description provided for @authAdminErrorLastOwnerProtected.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot remove the last active company owner. Assign another active owner first.'**
+  String get authAdminErrorLastOwnerProtected;
+
+  /// No description provided for @authAdminErrorUndeclaredPermission.
+  ///
+  /// In en, this message translates to:
+  /// **'The requested permission is not declared in the system catalog.'**
+  String get authAdminErrorUndeclaredPermission;
+
+  /// No description provided for @authAdminErrorDuplicateRoleKey.
+  ///
+  /// In en, this message translates to:
+  /// **'A role with this identifier already exists in this company.'**
+  String get authAdminErrorDuplicateRoleKey;
+
+  /// No description provided for @authAdminErrorDuplicateRoleDisplayName.
+  ///
+  /// In en, this message translates to:
+  /// **'A role with this name already exists in this company.'**
+  String get authAdminErrorDuplicateRoleDisplayName;
+
+  /// No description provided for @authAdminErrorRoleHasAssignments.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot delete role because members are currently assigned to it.'**
+  String get authAdminErrorRoleHasAssignments;
+
+  /// No description provided for @authAdminErrorMembershipInactive.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot assign role: member is currently inactive.'**
+  String get authAdminErrorMembershipInactive;
+
+  /// No description provided for @authAdminErrorUserInactive.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot assign role: user account is currently inactive.'**
+  String get authAdminErrorUserInactive;
+
+  /// No description provided for @authAdminErrorCompanyInactive.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot perform operation: company workspace is inactive.'**
+  String get authAdminErrorCompanyInactive;
+
+  /// No description provided for @authAdminErrorRoleNameEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Role name cannot be empty.'**
+  String get authAdminErrorRoleNameEmpty;
+
+  /// No description provided for @authAdminErrorRoleNameTooLong.
+  ///
+  /// In en, this message translates to:
+  /// **'Role name cannot exceed {max} characters.'**
+  String authAdminErrorRoleNameTooLong(int max);
+
+  /// No description provided for @authAdminErrorRoleKeyInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid role identifier format. Use lowercase letters, numbers, and underscores (e.g. company.sales_rep).'**
+  String get authAdminErrorRoleKeyInvalid;
+
+  /// No description provided for @authAdminErrorPermissionDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'You do not have permission to perform this administration action.'**
+  String get authAdminErrorPermissionDenied;
+
+  /// No description provided for @authAdminErrorGeneric.
+  ///
+  /// In en, this message translates to:
+  /// **'An unexpected error occurred. Please try again.'**
+  String get authAdminErrorGeneric;
+
+  /// No description provided for @authAdminPendingApplying.
+  ///
+  /// In en, this message translates to:
+  /// **'Applying changes...'**
+  String get authAdminPendingApplying;
+
+  /// No description provided for @authAdminCommittedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Changes saved successfully.'**
+  String get authAdminCommittedSuccess;
+
+  /// No description provided for @authAdminNoRoleSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a role to view its details.'**
+  String get authAdminNoRoleSelected;
+
+  /// No description provided for @authAdminLoadMore.
+  ///
+  /// In en, this message translates to:
+  /// **'Load More'**
+  String get authAdminLoadMore;
+
+  /// No description provided for @authAdminRolePermissionGranted.
+  ///
+  /// In en, this message translates to:
+  /// **'Granted'**
+  String get authAdminRolePermissionGranted;
 }
 
 class _AppLocalizationsDelegate

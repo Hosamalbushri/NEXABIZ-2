@@ -92,9 +92,7 @@ class AppNumberField extends StatelessWidget {
       enabled: isInteractive,
       readOnly: readOnly,
       placeholder: placeholder ?? (hint != null ? Text(hint!) : null),
-      keyboardType: TextInputType.numberWithOptions(
-        decimal: allowDecimals,
-      ),
+      keyboardType: TextInputType.numberWithOptions(decimal: allowDecimals),
       inputFormatters: formatters,
       features: features,
       padding: EdgeInsets.zero,

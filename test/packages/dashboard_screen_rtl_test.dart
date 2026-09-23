@@ -148,21 +148,22 @@ void main() {
       expect(find.text('NexaBiz Dashboard'), findsOneWidget);
     });
 
-    testWidgets('Test F — Arabic locale rendering with Mobile UI Playground banner', (
-      tester,
-    ) async {
-      await AppLocaleController.setLocale(const Locale('ar'));
+    testWidgets(
+      'Test F — Arabic locale rendering with Mobile UI Playground banner',
+      (tester) async {
+        await AppLocaleController.setLocale(const Locale('ar'));
 
-      await tester.pumpWidget(
-        buildTestableWidget(textDirection: TextDirection.rtl),
-      );
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(
+          buildTestableWidget(textDirection: TextDirection.rtl),
+        );
+        await tester.pumpAndSettle();
 
-      expect(tester.takeException(), isNull);
-      expect(find.byType(DashboardScreen), findsOneWidget);
-      expect(find.text('لوحة تحكم نيكسابيز'), findsOneWidget);
-      expect(find.text('مختبر واجهات الجوال'), findsOneWidget);
-      expect(find.text('UI-01'), findsOneWidget);
-    });
+        expect(tester.takeException(), isNull);
+        expect(find.byType(DashboardScreen), findsOneWidget);
+        expect(find.text('لوحة تحكم نيكسابيز'), findsOneWidget);
+        expect(find.text('مختبر واجهات الجوال'), findsOneWidget);
+        expect(find.text('UI-01'), findsOneWidget);
+      },
+    );
   });
 }

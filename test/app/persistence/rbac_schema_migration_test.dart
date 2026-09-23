@@ -16,7 +16,9 @@ void main() {
   late String databasePath;
 
   setUp(() {
-    directory = Directory.systemTemp.createTempSync('nexabiz_rbac_migration_test_');
+    directory = Directory.systemTemp.createTempSync(
+      'nexabiz_rbac_migration_test_',
+    );
     databasePath = p.join(directory.path, 'core.sqlite');
   });
 
@@ -126,89 +128,100 @@ void main() {
     db.close();
   }
 
-  group('RBAC Schema Migration (v4 -> v5)', () {
-    test('1. Migrating v4 database upgrades schemaVersion to 5 and creates RBAC artifacts', () async {
-      await createV4Database(databasePath);
+  group('RBAC Schema Migration (v4 -> v6)', () {
+    test(
+      '1. Migrating v4 database upgrades schemaVersion to 6 and creates RBAC artifacts',
+      () async {
+        await createV4Database(databasePath);
 
-      final store = await DriftCoreInstallationStore.open(databasePath);
-      final readiness = await store.readReadiness();
-      expect(readiness.isReady, isTrue);
+        final store = await DriftCoreInstallationStore.open(databasePath);
+        final readiness = await store.readReadiness();
+        expect(readiness.isReady, isTrue);
 
-      final snapshot = await store.readMembershipAuthorizationSnapshot('m1');
-      expect(snapshot, isNotNull);
-      expect(snapshot!.isEligibleForAuthorization, isTrue);
-      expect(snapshot.roleIds, {NexaBizRoleId('company.owner')});
-      expect(
-        snapshot.permissionIds,
-        kInitialCompanyOwnerPermissions.map(NexaBizPermissionId.new).toSet(),
-      );
+        final snapshot = await store.readMembershipAuthorizationSnapshot('m1');
+        expect(snapshot, isNotNull);
+        expect(snapshot!.isEligibleForAuthorization, isTrue);
+        expect(snapshot.roleIds, {NexaBizRoleId('company.owner')});
+        expect(
+          snapshot.permissionIds,
+          kInitialCompanyOwnerPermissions.map(NexaBizPermissionId.new).toSet(),
+        );
 
-      await store.close();
+        await store.close();
 
-      // Inspect SQLite raw level
-      final rawDb = raw.sqlite3.open(databasePath);
-      expect(rawDb.select('PRAGMA user_version').single['user_version'], 5);
+        // Inspect SQLite raw level
+        final rawDb = raw.sqlite3.open(databasePath);
+        expect(rawDb.select('PRAGMA user_version').single['user_version'], 6);
 
-      final migrations = rawDb
-          .select('SELECT version FROM schema_migrations ORDER BY version')
-          .map((r) => r['version'] as int)
-          .toList();
-      expect(migrations, [1, 2, 3, 4, 5]);
+        final migrations = rawDb
+            .select('SELECT version FROM schema_migrations ORDER BY version')
+            .map((r) => r['version'] as int)
+            .toList();
+        expect(migrations, [1, 2, 3, 4, 5, 6]);
 
-      // Verify legacy membership role column remains 'owner'
-      final memRow = rawDb
-          .select("SELECT role FROM core_company_memberships WHERE id = 'm1'")
-          .single;
-      expect(memRow['role'], 'owner');
+        // Verify legacy membership role column remains 'owner'
+        final memRow = rawDb
+            .select("SELECT role FROM core_company_memberships WHERE id = 'm1'")
+            .single;
+        expect(memRow['role'], 'owner');
 
-      // Verify login attempt was preserved
-      final attemptRow = rawDb
-          .select("SELECT attempt_count FROM core_login_attempts WHERE identifier_hash = 'some_dummy_hash'")
-          .single;
-      expect(attemptRow['attempt_count'], 3);
+        // Verify login attempt was preserved
+        final attemptRow = rawDb
+            .select(
+              "SELECT attempt_count FROM core_login_attempts WHERE identifier_hash = 'some_dummy_hash'",
+            )
+            .single;
+        expect(attemptRow['attempt_count'], 3);
 
-      rawDb.close();
-    });
+        rawDb.close();
+      },
+    );
 
-    test('2. Authentication works seamlessly after v4 to v5 migration', () async {
-      const password = 'my_super_secure_password';
-      await createV4Database(databasePath, password: password);
+    test(
+      '2. Authentication works seamlessly after v4 to v6 migration',
+      () async {
+        const password = 'my_super_secure_password';
+        await createV4Database(databasePath, password: password);
 
-      final store = await DriftCoreInstallationStore.open(databasePath);
-      final auth = AuthenticateLocalUser(queryStore: store);
+        final store = await DriftCoreInstallationStore.open(databasePath);
+        final auth = AuthenticateLocalUser(queryStore: store);
 
-      // Wrong password fails
-      final failedResult = await auth(
-        const CoreAuthenticationInput(
-          identifier: 'admin@acme.test',
-          password: 'wrong_password',
-        ),
-      );
-      expect(failedResult.isSuccess, isFalse);
-      expect(failedResult.status, CoreAuthenticationStatus.invalidCredentials);
-      expect(failedResult.user, isNull);
+        // Wrong password fails
+        final failedResult = await auth(
+          const CoreAuthenticationInput(
+            identifier: 'admin@acme.test',
+            password: 'wrong_password',
+          ),
+        );
+        expect(failedResult.isSuccess, isFalse);
+        expect(
+          failedResult.status,
+          CoreAuthenticationStatus.invalidCredentials,
+        );
+        expect(failedResult.user, isNull);
 
-      // Correct password succeeds
-      final successResult = await auth(
-        const CoreAuthenticationInput(
-          identifier: 'admin@acme.test',
-          password: password,
-        ),
-      );
-      expect(successResult.isSuccess, isTrue);
-      expect(successResult.status, CoreAuthenticationStatus.success);
-      expect(successResult.user, isNotNull);
-      expect(successResult.user!.id, 'u1');
-      expect(successResult.user!.email, 'admin@acme.test');
-      expect(successResult.activeCompany?.id, 'c1');
+        // Correct password succeeds
+        final successResult = await auth(
+          const CoreAuthenticationInput(
+            identifier: 'admin@acme.test',
+            password: password,
+          ),
+        );
+        expect(successResult.isSuccess, isTrue);
+        expect(successResult.status, CoreAuthenticationStatus.success);
+        expect(successResult.user, isNotNull);
+        expect(successResult.user!.id, 'u1');
+        expect(successResult.user!.email, 'admin@acme.test');
+        expect(successResult.activeCompany?.id, 'c1');
 
-      await store.close();
-    });
+        await store.close();
+      },
+    );
 
     test('3. Migration is idempotent across multiple store opens', () async {
       await createV4Database(databasePath);
 
-      // First open: migrates v4 -> v5
+      // First open: migrates v4 -> v6
       final store1 = await DriftCoreInstallationStore.open(databasePath);
       expect((await store1.readReadiness()).isReady, isTrue);
       await store1.close();
@@ -217,21 +230,32 @@ void main() {
       final store2 = await DriftCoreInstallationStore.open(databasePath);
       expect((await store2.readReadiness()).isReady, isTrue);
 
-      final roles = await store2.database.select(store2.database.coreRoles).get();
+      final roles = await store2.database
+          .select(store2.database.coreRoles)
+          .get();
       expect(roles, hasLength(1));
 
-      final membershipRoles = await store2.database.select(store2.database.coreMembershipRoles).get();
+      final membershipRoles = await store2.database
+          .select(store2.database.coreMembershipRoles)
+          .get();
       expect(membershipRoles, hasLength(1));
 
-      final rolePermissions = await store2.database.select(store2.database.coreRolePermissions).get();
-      expect(rolePermissions, hasLength(kInitialCompanyOwnerPermissions.length));
+      final rolePermissions = await store2.database
+          .select(store2.database.coreRolePermissions)
+          .get();
+      expect(
+        rolePermissions,
+        hasLength(kInitialCompanyOwnerPermissions.length),
+      );
 
       await store2.close();
     });
 
-    test('4. Migration with multiple legacy companies and owner memberships', () async {
-      final db = raw.sqlite3.open(databasePath);
-      db.execute('''
+    test(
+      '4. Migration with multiple legacy companies and owner memberships',
+      () async {
+        final db = raw.sqlite3.open(databasePath);
+        db.execute('''
         CREATE TABLE schema_migrations (
           owner TEXT NOT NULL,
           version INTEGER NOT NULL,
@@ -295,33 +319,44 @@ void main() {
         INSERT INTO core_company_memberships VALUES ('m1', 'u1', 'c1', 'owner', 'active', $sampleTimestamp, $sampleTimestamp);
         INSERT INTO core_company_memberships VALUES ('m2', 'u2', 'c2', 'owner', 'active', $sampleTimestamp, $sampleTimestamp);
       ''');
-      db.close();
+        db.close();
 
-      final store = await DriftCoreInstallationStore.open(databasePath);
+        final store = await DriftCoreInstallationStore.open(databasePath);
 
-      // Both companies should each have a company.owner role
-      final roles = await store.database.select(store.database.coreRoles).get();
-      expect(roles, hasLength(2));
-      expect(roles.every((r) => r.roleKey == 'company.owner'), isTrue);
+        // Both companies should each have a company.owner role
+        final roles = await store.database
+            .select(store.database.coreRoles)
+            .get();
+        expect(roles, hasLength(2));
+        expect(roles.every((r) => r.roleKey == 'company.owner'), isTrue);
 
-      final snap1 = await store.readMembershipAuthorizationSnapshot('m1');
-      expect(snap1, isNotNull);
-      expect(snap1!.companyId.value, 'c1');
-      expect(snap1.roleIds, {NexaBizRoleId('company.owner')});
-      expect(snap1.permissionIds, hasLength(kInitialCompanyOwnerPermissions.length));
+        final snap1 = await store.readMembershipAuthorizationSnapshot('m1');
+        expect(snap1, isNotNull);
+        expect(snap1!.companyId.value, 'c1');
+        expect(snap1.roleIds, {NexaBizRoleId('company.owner')});
+        expect(
+          snap1.permissionIds,
+          hasLength(kInitialCompanyOwnerPermissions.length),
+        );
 
-      final snap2 = await store.readMembershipAuthorizationSnapshot('m2');
-      expect(snap2, isNotNull);
-      expect(snap2!.companyId.value, 'c2');
-      expect(snap2.roleIds, {NexaBizRoleId('company.owner')});
-      expect(snap2.permissionIds, hasLength(kInitialCompanyOwnerPermissions.length));
+        final snap2 = await store.readMembershipAuthorizationSnapshot('m2');
+        expect(snap2, isNotNull);
+        expect(snap2!.companyId.value, 'c2');
+        expect(snap2.roleIds, {NexaBizRoleId('company.owner')});
+        expect(
+          snap2.permissionIds,
+          hasLength(kInitialCompanyOwnerPermissions.length),
+        );
 
-      await store.close();
-    });
+        await store.close();
+      },
+    );
 
-    test('5. Non-owner legacy membership does not receive owner role upon migration', () async {
-      final db = raw.sqlite3.open(databasePath);
-      db.execute('''
+    test(
+      '5. Non-owner legacy membership does not receive owner role upon migration',
+      () async {
+        final db = raw.sqlite3.open(databasePath);
+        db.execute('''
         CREATE TABLE schema_migrations (
           owner TEXT NOT NULL,
           version INTEGER NOT NULL,
@@ -384,24 +419,27 @@ void main() {
         INSERT INTO core_company_memberships VALUES ('m1', 'u1', 'c1', 'owner', 'active', $sampleTimestamp, $sampleTimestamp);
         INSERT INTO core_company_memberships VALUES ('m2', 'u2', 'c1', 'member', 'active', $sampleTimestamp, $sampleTimestamp);
       ''');
-      db.close();
+        db.close();
 
-      final store = await DriftCoreInstallationStore.open(databasePath);
+        final store = await DriftCoreInstallationStore.open(databasePath);
 
-      // m1 (owner) has company.owner role
-      final snap1 = await store.readMembershipAuthorizationSnapshot('m1');
-      expect(snap1!.roleIds, {NexaBizRoleId('company.owner')});
-      expect(snap1.permissionIds, hasLength(kInitialCompanyOwnerPermissions.length));
+        // m1 (owner) has company.owner role
+        final snap1 = await store.readMembershipAuthorizationSnapshot('m1');
+        expect(snap1!.roleIds, {NexaBizRoleId('company.owner')});
+        expect(
+          snap1.permissionIds,
+          hasLength(kInitialCompanyOwnerPermissions.length),
+        );
 
-      // m2 (member) has NO roles assigned, fails closed
-      final snap2 = await store.readMembershipAuthorizationSnapshot('m2');
-      expect(snap2!.roleIds, isEmpty);
-      expect(snap2.permissionIds, isEmpty);
-      expect(snap2.effectiveRoles, isEmpty);
-      expect(snap2.effectivePermissions, isEmpty);
+        // m2 (member) has NO roles assigned, fails closed
+        final snap2 = await store.readMembershipAuthorizationSnapshot('m2');
+        expect(snap2!.roleIds, isEmpty);
+        expect(snap2.permissionIds, isEmpty);
+        expect(snap2.effectiveRoles, isEmpty);
+        expect(snap2.effectivePermissions, isEmpty);
 
-      await store.close();
-    });
+        await store.close();
+      },
+    );
   });
 }
-

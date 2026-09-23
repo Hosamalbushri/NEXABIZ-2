@@ -10,6 +10,9 @@ import 'app_typography.dart';
 class AppTheme {
   const AppTheme._();
 
+  /// Canonical theme data accessor from current context.
+  static shadcn.ThemeData of(BuildContext context) => shadcn.Theme.of(context);
+
   /// Canonical Native shadcn_flutter Light ThemeData
   static shadcn.ThemeData light({
     double radius = 0.5,

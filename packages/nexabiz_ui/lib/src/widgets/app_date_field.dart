@@ -102,7 +102,8 @@ class AppDateField extends StatelessWidget {
 
     final isInteractive = enabled && !readOnly;
     final isRtl = Directionality.of(context) == TextDirection.rtl;
-    final effectiveHint = hint ?? (isRtl ? 'اختر التاريخ...' : 'Select date...');
+    final effectiveHint =
+        hint ?? (isRtl ? 'اختر التاريخ...' : 'Select date...');
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

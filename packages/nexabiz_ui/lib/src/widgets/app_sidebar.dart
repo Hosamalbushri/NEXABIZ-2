@@ -50,10 +50,7 @@ class AppSidebarGroup {
   /// Children navigation items in this group.
   final List<AppSidebarItem> items;
 
-  const AppSidebarGroup({
-    this.title,
-    required this.items,
-  });
+  const AppSidebarGroup({this.title, required this.items});
 }
 
 /// Canonical enterprise navigation sidebar for NexaBiz ERP.
@@ -97,8 +94,9 @@ class AppSidebar extends StatelessWidget {
     final colorScheme = theme.colorScheme;
     final effectiveBg = backgroundColor ?? colorScheme.card;
 
-    final effectiveWidth =
-        isCollapsed ? AppLayoutTokens.navCollapsedSidebarWidth : width;
+    final effectiveWidth = isCollapsed
+        ? AppLayoutTokens.navCollapsedSidebarWidth
+        : width;
 
     final isRtl = Directionality.of(context) == TextDirection.rtl;
 
@@ -161,10 +159,7 @@ class AppSidebar extends StatelessWidget {
                       ),
                     ],
                     for (final item in group.items) ...[
-                      _SidebarItemTile(
-                        item: item,
-                        isCollapsed: isCollapsed,
-                      ),
+                      _SidebarItemTile(item: item, isCollapsed: isCollapsed),
                       const SizedBox(height: 2.0),
                     ],
                     if (gIndex < groups.length - 1)
@@ -206,10 +201,7 @@ class _SidebarItemTile extends StatelessWidget {
   final AppSidebarItem item;
   final bool isCollapsed;
 
-  const _SidebarItemTile({
-    required this.item,
-    required this.isCollapsed,
-  });
+  const _SidebarItemTile({required this.item, required this.isCollapsed});
 
   @override
   Widget build(BuildContext context) {
@@ -222,7 +214,9 @@ class _SidebarItemTile extends StatelessWidget {
       style: isSelected
           ? const shadcn.ButtonStyle.secondary()
           : const shadcn.ButtonStyle.ghost(),
-      alignment: isCollapsed ? Alignment.center : AlignmentDirectional.centerStart,
+      alignment: isCollapsed
+          ? Alignment.center
+          : AlignmentDirectional.centerStart,
       onPressed: item.enabled ? item.onTap : null,
       child: isCollapsed
           ? item.icon
@@ -236,8 +230,9 @@ class _SidebarItemTile extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      fontWeight:
-                          isSelected ? FontWeight.w600 : FontWeight.w500,
+                      fontWeight: isSelected
+                          ? FontWeight.w600
+                          : FontWeight.w500,
                       color: isSelected
                           ? colorScheme.primary
                           : colorScheme.foreground,

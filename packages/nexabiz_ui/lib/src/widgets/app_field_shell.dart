@@ -95,8 +95,8 @@ class _AppFieldShellState extends State<AppFieldShell> {
         : widget.readOnly
         ? colorScheme.muted.withValues(alpha: 0.3)
         : (isDark
-            ? colorScheme.muted.withValues(alpha: 0.2)
-            : colorScheme.muted.withValues(alpha: 0.1));
+              ? colorScheme.muted.withValues(alpha: 0.2)
+              : colorScheme.muted.withValues(alpha: 0.1));
 
     Color borderColor;
     if (hasError) {

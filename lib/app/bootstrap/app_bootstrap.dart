@@ -4,16 +4,19 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
 import '../../core/authorization/nexabiz_permission_evaluator.dart';
+import '../../core/authorization/nexabiz_permission_guard.dart';
 import '../../core/authorization/nexabiz_runtime_permission_evaluator.dart';
 import '../../core/capabilities/nexabiz_capability_registry.dart';
 import '../../core/identity/authenticate_local_user.dart';
 import '../../core/navigation/nexabiz_navigation_registry.dart';
 import '../../core/session/core_session_controller.dart';
-import '../../core/session/core_session_listenable.dart';
+import 'core_session_listenable.dart';
 import '../../core/setup/initialize_nexabiz_core.dart';
 import '../../core/setup/nexabiz_core_installation_store.dart';
 import '../../core/setup/nexabiz_setup_readiness.dart';
+import '../authorization/nexabiz_authorization_administration.dart';
 import '../authorization/nexabiz_authorization_invalidation_signal.dart';
+import '../persistence/drift_authorization_administration_store.dart';
 import '../persistence/drift_core_installation_store.dart';
 import '../router/nexabiz_router_adapter.dart';
 import 'nexabiz_capability_manifest.dart';
@@ -27,8 +30,9 @@ class AppBootstrapResult {
   final ValueListenable<NexaBizSetupReadiness> setupReadiness;
   NexaBizSetupReadiness get coreReadiness => setupReadiness.value;
   final CoreSessionController sessionController;
-  final NexaBizPermissionEvaluator? permissionEvaluator;
-  final NexaBizAuthorizationInvalidationSignal? authorizationInvalidationSignal;
+  final NexaBizPermissionEvaluator permissionEvaluator;
+  final NexaBizAuthorizationInvalidationSignal authorizationInvalidationSignal;
+  final NexaBizAuthorizationAdministration authorizationAdministration;
 
   const AppBootstrapResult({
     required this.capabilityRegistry,
@@ -37,8 +41,9 @@ class AppBootstrapResult {
     required this.coreInstallationStore,
     required this.setupReadiness,
     required this.sessionController,
-    this.permissionEvaluator,
-    this.authorizationInvalidationSignal,
+    required this.permissionEvaluator,
+    required this.authorizationInvalidationSignal,
+    required this.authorizationAdministration,
   });
 }
 
@@ -104,6 +109,23 @@ abstract final class AppBootstrap {
         authorizationInvalidationListenable: authorizationInvalidationSignal,
       );
 
+      // 6. Build Authorization Administration Application Facade
+      final administrationStore = DriftAuthorizationAdministrationStore(
+        coreInstallationStore.database,
+        permissionCatalog: capabilityRegistry.permissionCatalog,
+      );
+      final permissionGuard = NexaBizDefaultPermissionGuard(
+        permissionEvaluator,
+      );
+      final authorizationAdministration =
+          NexaBizAuthorizationAdministration.create(
+            permissionGuard: permissionGuard,
+            queryStore: administrationStore,
+            mutationStore: administrationStore,
+            invalidationSignal: authorizationInvalidationSignal,
+            permissionCatalog: capabilityRegistry.permissionCatalog,
+          );
+
       return AppBootstrapResult(
         capabilityRegistry: capabilityRegistry,
         navigationRegistry: navigationRegistry,
@@ -113,6 +135,7 @@ abstract final class AppBootstrap {
         sessionController: sessionController,
         permissionEvaluator: permissionEvaluator,
         authorizationInvalidationSignal: authorizationInvalidationSignal,
+        authorizationAdministration: authorizationAdministration,
       );
     } catch (_) {
       await coreInstallationStore.close();

@@ -4,7 +4,9 @@ import 'package:nexabiz_ui/nexabiz_ui.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart' as shadcn;
 
 void main() {
-  testWidgets('AppFormRow lays out children side by side with equal flex', (tester) async {
+  testWidgets('AppFormRow lays out children side by side with equal flex', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       shadcn.ShadcnApp(
         home: Scaffold(

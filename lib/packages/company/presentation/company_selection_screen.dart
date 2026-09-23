@@ -64,7 +64,8 @@ class _CompanySelectionScreenState extends State<CompanySelectionScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final session = widget.sessionController?.currentSession;
-    final companies = session?.availableCompanies ?? const <CoreAuthCompanyRef>[];
+    final companies =
+        session?.availableCompanies ?? const <CoreAuthCompanyRef>[];
 
     return AppListPage<CoreAuthCompanyRef>(
       title: l10n.companySelectionTitle,
@@ -84,7 +85,8 @@ class _CompanySelectionScreenState extends State<CompanySelectionScreen> {
         return ListView.separated(
           padding: const EdgeInsets.all(AppSpacing.md),
           itemCount: items.length,
-          separatorBuilder: (context, index) => const SizedBox(height: AppSpacing.sm),
+          separatorBuilder: (context, index) =>
+              const SizedBox(height: AppSpacing.sm),
           itemBuilder: (context, index) {
             final company = items[index];
             final isCurrent = session?.companyId?.value == company.id;

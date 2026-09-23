@@ -176,9 +176,7 @@ void main() {
 
           await tester.pumpWidget(
             MediaQuery(
-              data: MediaQueryData(
-                textScaler: TextScaler.linear(scale),
-              ),
+              data: MediaQueryData(textScaler: TextScaler.linear(scale)),
               child: Directionality(
                 textDirection: TextDirection.rtl,
                 child: wrapWithApp(const SettingsScreen()),
@@ -191,9 +189,7 @@ void main() {
 
           await tester.pumpWidget(
             MediaQuery(
-              data: MediaQueryData(
-                textScaler: TextScaler.linear(scale),
-              ),
+              data: MediaQueryData(textScaler: TextScaler.linear(scale)),
               child: Directionality(
                 textDirection: TextDirection.rtl,
                 child: wrapWithApp(const ReportsScreen()),
@@ -208,27 +204,26 @@ void main() {
       },
     );
 
-    testWidgets(
-      'SettingsScreen dark mode switch toggles theme state on tap',
-      (tester) async {
-        tester.view.physicalSize = const Size(800, 1200);
-        tester.view.devicePixelRatio = 1.0;
-        addTearDown(tester.view.resetPhysicalSize);
+    testWidgets('SettingsScreen dark mode switch toggles theme state on tap', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(800, 1200);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
 
-        await tester.pumpWidget(wrapWithApp(const SettingsScreen()));
-        await tester.pumpAndSettle();
+      await tester.pumpWidget(wrapWithApp(const SettingsScreen()));
+      await tester.pumpAndSettle();
 
-        expect(find.text('Dark Mode'), findsOneWidget);
-        final switchFinder = find.byType(AppSwitch);
-        expect(switchFinder, findsOneWidget);
+      expect(find.text('Dark Mode'), findsOneWidget);
+      final switchFinder = find.byType(AppSwitch);
+      expect(switchFinder, findsOneWidget);
 
-        final initialMode = AppThemeController.themeModeNotifier.value;
-        await tester.tap(switchFinder);
-        await tester.pumpAndSettle();
+      final initialMode = AppThemeController.themeModeNotifier.value;
+      await tester.tap(switchFinder);
+      await tester.pumpAndSettle();
 
-        final updatedMode = AppThemeController.themeModeNotifier.value;
-        expect(updatedMode, isNot(initialMode));
-      },
-    );
+      final updatedMode = AppThemeController.themeModeNotifier.value;
+      expect(updatedMode, isNot(initialMode));
+    });
   });
 }

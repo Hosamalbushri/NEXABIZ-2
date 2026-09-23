@@ -32,7 +32,9 @@ class _DialogsScenarioState extends State<DialogsScenario> {
       tone: AppDialogTone.primary,
       onConfirm: () {
         setState(() {
-          _dialogFeedback = isAr ? 'تم ترحيل القيد المالي بنجاح!' : 'Voucher posted successfully!';
+          _dialogFeedback = isAr
+              ? 'تم ترحيل القيد المالي بنجاح!'
+              : 'Voucher posted successfully!';
         });
       },
     );
@@ -51,7 +53,9 @@ class _DialogsScenarioState extends State<DialogsScenario> {
       tone: AppDialogTone.danger,
       onConfirm: () {
         setState(() {
-          _dialogFeedback = isAr ? 'تم حذف مسودة القيد.' : 'Voucher draft deleted.';
+          _dialogFeedback = isAr
+              ? 'تم حذف مسودة القيد.'
+              : 'Voucher draft deleted.';
         });
       },
     );
@@ -86,17 +90,23 @@ class _DialogsScenarioState extends State<DialogsScenario> {
             isAr
                 ? 'حدد طريقة المعالجة المناسبة لهذا القيد:'
                 : 'Choose processing method for this journal entry:',
-            style: theme.typography.small.copyWith(color: colorScheme.mutedForeground),
+            style: theme.typography.small.copyWith(
+              color: colorScheme.mutedForeground,
+            ),
           ),
           const SizedBox(height: AppSpacing.md),
           AppButton(
-            label: isAr ? 'ترحيل مباشر لدفتر الأستاذ' : 'Post Directly to Ledger',
+            label: isAr
+                ? 'ترحيل مباشر لدفتر الأستاذ'
+                : 'Post Directly to Ledger',
             icon: shadcn.LucideIcons.checkCheck,
             variant: AppButtonVariant.filled,
             onPressed: () {
               Navigator.of(context).pop();
               setState(() {
-                _dialogFeedback = isAr ? 'تم الحفظ والترحيل المباشر' : 'Saved and posted directly';
+                _dialogFeedback = isAr
+                    ? 'تم الحفظ والترحيل المباشر'
+                    : 'Saved and posted directly';
               });
             },
           ),
@@ -108,7 +118,9 @@ class _DialogsScenarioState extends State<DialogsScenario> {
             onPressed: () {
               Navigator.of(context).pop();
               setState(() {
-                _dialogFeedback = isAr ? 'تم الحفظ كمسودة' : 'Saved as draft only';
+                _dialogFeedback = isAr
+                    ? 'تم الحفظ كمسودة'
+                    : 'Saved as draft only';
               });
             },
           ),
@@ -157,11 +169,17 @@ class _DialogsScenarioState extends State<DialogsScenario> {
               decoration: BoxDecoration(
                 color: colorScheme.primary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(AppRadii.sm),
-                border: Border.all(color: colorScheme.primary.withValues(alpha: 0.3)),
+                border: Border.all(
+                  color: colorScheme.primary.withValues(alpha: 0.3),
+                ),
               ),
               child: Row(
                 children: [
-                  Icon(shadcn.LucideIcons.info, size: 16, color: colorScheme.primary),
+                  Icon(
+                    shadcn.LucideIcons.info,
+                    size: 16,
+                    color: colorScheme.primary,
+                  ),
                   const SizedBox(width: AppSpacing.xs),
                   Expanded(
                     child: Text(
@@ -180,8 +198,12 @@ class _DialogsScenarioState extends State<DialogsScenario> {
 
           // Dialog Launchers
           _buildLauncher(
-            title: isAr ? '١. تأكيد ترحيل القيد (إجراء أساسي)' : '1. Standard Confirmation Dialog',
-            desc: isAr ? 'حوار تأكيد مع أيقونة أساسية وزري تأكيد وتراجع' : 'Voucher posting confirmation with primary icon and twin buttons',
+            title: isAr
+                ? '١. تأكيد ترحيل القيد (إجراء أساسي)'
+                : '1. Standard Confirmation Dialog',
+            desc: isAr
+                ? 'حوار تأكيد مع أيقونة أساسية وزري تأكيد وتراجع'
+                : 'Voucher posting confirmation with primary icon and twin buttons',
             btnLabel: isAr ? 'عرض حوار الترحيل' : 'Show Post Dialog',
             onTap: _showWarningDialog,
           ),
@@ -189,8 +211,12 @@ class _DialogsScenarioState extends State<DialogsScenario> {
           const SizedBox(height: AppSpacing.sm),
 
           _buildLauncher(
-            title: isAr ? '٢. حوار الحذف الخطر (Destructive)' : '2. Destructive Confirmation Dialog',
-            desc: isAr ? 'تنبيه خطر بلون أحمر تحذيري لمنع الحذف العرضي' : 'High-risk action with danger tone to prevent accidental deletion',
+            title: isAr
+                ? '٢. حوار الحذف الخطر (Destructive)'
+                : '2. Destructive Confirmation Dialog',
+            desc: isAr
+                ? 'تنبيه خطر بلون أحمر تحذيري لمنع الحذف العرضي'
+                : 'High-risk action with danger tone to prevent accidental deletion',
             btnLabel: isAr ? 'عرض حوار الحذف' : 'Show Delete Dialog',
             onTap: _showDestructiveDialog,
           ),
@@ -198,8 +224,12 @@ class _DialogsScenarioState extends State<DialogsScenario> {
           const SizedBox(height: AppSpacing.sm),
 
           _buildLauncher(
-            title: isAr ? '٣. حوار القرار متعدد الخيارات' : '3. Multi-Option Decision Dialog',
-            desc: isAr ? 'خيارات حفظ كمسودة أو ترحيل فوري لدفتر الأستاذ' : 'Modal decision between draft save and instant ledger posting',
+            title: isAr
+                ? '٣. حوار القرار متعدد الخيارات'
+                : '3. Multi-Option Decision Dialog',
+            desc: isAr
+                ? 'خيارات حفظ كمسودة أو ترحيل فوري لدفتر الأستاذ'
+                : 'Modal decision between draft save and instant ledger posting',
             btnLabel: isAr ? 'عرض حوار الخيارات' : 'Show Decision Dialog',
             onTap: _showDecisionDialog,
           ),
@@ -208,7 +238,9 @@ class _DialogsScenarioState extends State<DialogsScenario> {
 
           // Inline Static Preview
           Text(
-            isAr ? 'معاينة هيكلية لتصميم مربع الحوار المحمول:' : 'Mobile Dialog Anatomical Preview:',
+            isAr
+                ? 'معاينة هيكلية لتصميم مربع الحوار المحمول:'
+                : 'Mobile Dialog Anatomical Preview:',
             style: theme.typography.small.copyWith(
               fontWeight: FontWeight.w600,
               color: colorScheme.mutedForeground,
@@ -228,7 +260,10 @@ class _DialogsScenarioState extends State<DialogsScenario> {
                 const SizedBox(height: AppSpacing.sm),
                 Text(
                   isAr ? 'تأكيد العملية المالية' : 'Financial Operation Notice',
-                  style: theme.typography.p.copyWith(fontWeight: FontWeight.bold, fontSize: 14),
+                  style: theme.typography.p.copyWith(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: AppSpacing.xs),
@@ -283,7 +318,10 @@ class _DialogsScenarioState extends State<DialogsScenario> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(title, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13)),
+          Text(
+            title,
+            style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
+          ),
           const SizedBox(height: 2),
           Text(desc, style: const TextStyle(color: Colors.grey, fontSize: 12)),
           const SizedBox(height: AppSpacing.sm),
@@ -298,4 +336,3 @@ class _DialogsScenarioState extends State<DialogsScenario> {
     );
   }
 }
-

@@ -55,7 +55,9 @@ final class _FakeSessionSource implements NexaBizAuthorizationSessionSource {
     if (sessionId != activeSessionId) return false;
     if (userId != activeUserId) return false;
     if (companyId != null && activeCompanyId != companyId) return false;
-    if (membershipId != null && activeMembershipId != membershipId) return false;
+    if (membershipId != null && activeMembershipId != membershipId) {
+      return false;
+    }
     return true;
   }
 }
@@ -68,7 +70,7 @@ final class _FakeQueryStore implements CoreAuthorizationQueryStore {
 
   @override
   Future<NexaBizMembershipAuthorizationSnapshot?>
-      readMembershipAuthorizationSnapshot(String membershipId) async {
+  readMembershipAuthorizationSnapshot(String membershipId) async {
     if (shouldThrow) {
       throw Exception('Database query failed');
     }
@@ -186,59 +188,65 @@ void main() {
     });
 
     // 3. Unknown permission → not allowed (UNKNOWN)
-    test('3. Undeclared unknown permission evaluates to UNKNOWN (not allowed)', () async {
-      final sessionSource = _FakeSessionSource(
-        activeSessionId: defaultSessionId,
-        activeUserId: defaultUser,
-        activeCompanyId: defaultCompany,
-        activeMembershipId: defaultMembership,
-      );
-      final queryStore = _FakeQueryStore(
-        snapshot: createDefaultSnapshot(permissions: {permUndeclared}),
-      );
-      final evaluator = NexaBizRuntimePermissionEvaluator(
-        permissionCatalog: testCatalog,
-        queryStore: queryStore,
-        sessionSource: sessionSource,
-      );
+    test(
+      '3. Undeclared unknown permission evaluates to UNKNOWN (not allowed)',
+      () async {
+        final sessionSource = _FakeSessionSource(
+          activeSessionId: defaultSessionId,
+          activeUserId: defaultUser,
+          activeCompanyId: defaultCompany,
+          activeMembershipId: defaultMembership,
+        );
+        final queryStore = _FakeQueryStore(
+          snapshot: createDefaultSnapshot(permissions: {permUndeclared}),
+        );
+        final evaluator = NexaBizRuntimePermissionEvaluator(
+          permissionCatalog: testCatalog,
+          queryStore: queryStore,
+          sessionSource: sessionSource,
+        );
 
-      final decision = await evaluator.evaluate(
-        context: createDefaultContext(),
-        permissionId: permUndeclared,
-      );
+        final decision = await evaluator.evaluate(
+          context: createDefaultContext(),
+          permissionId: permUndeclared,
+        );
 
-      expect(decision, NexaBizPermissionDecision.unknown);
-      expect(decision.isAllowed, isFalse);
-      expect(decision.isUnknown, isTrue);
-    });
+        expect(decision, NexaBizPermissionDecision.unknown);
+        expect(decision.isAllowed, isFalse);
+        expect(decision.isUnknown, isTrue);
+      },
+    );
 
     // 4. DB-injected undeclared permission → not allowed
-    test('4. DB-injected undeclared permission evaluates to UNKNOWN even if in snapshot', () async {
-      final sessionSource = _FakeSessionSource(
-        activeSessionId: defaultSessionId,
-        activeUserId: defaultUser,
-        activeCompanyId: defaultCompany,
-        activeMembershipId: defaultMembership,
-      );
-      final queryStore = _FakeQueryStore(
-        snapshot: createDefaultSnapshot(
-          permissions: {permView, permUndeclared},
-        ),
-      );
-      final evaluator = NexaBizRuntimePermissionEvaluator(
-        permissionCatalog: testCatalog,
-        queryStore: queryStore,
-        sessionSource: sessionSource,
-      );
+    test(
+      '4. DB-injected undeclared permission evaluates to UNKNOWN even if in snapshot',
+      () async {
+        final sessionSource = _FakeSessionSource(
+          activeSessionId: defaultSessionId,
+          activeUserId: defaultUser,
+          activeCompanyId: defaultCompany,
+          activeMembershipId: defaultMembership,
+        );
+        final queryStore = _FakeQueryStore(
+          snapshot: createDefaultSnapshot(
+            permissions: {permView, permUndeclared},
+          ),
+        );
+        final evaluator = NexaBizRuntimePermissionEvaluator(
+          permissionCatalog: testCatalog,
+          queryStore: queryStore,
+          sessionSource: sessionSource,
+        );
 
-      final decision = await evaluator.evaluate(
-        context: createDefaultContext(),
-        permissionId: permUndeclared,
-      );
+        final decision = await evaluator.evaluate(
+          context: createDefaultContext(),
+          permissionId: permUndeclared,
+        );
 
-      expect(decision, NexaBizPermissionDecision.unknown);
-      expect(decision.isAllowed, isFalse);
-    });
+        expect(decision, NexaBizPermissionDecision.unknown);
+        expect(decision.isAllowed, isFalse);
+      },
+    );
 
     // 5. Inactive user → DENY
     test('5. Inactive user status evaluates to DENY', () async {
@@ -343,82 +351,95 @@ void main() {
     });
 
     // 9. Mismatched user → DENY
-    test('9. Mismatched user between context and snapshot evaluates to DENY', () async {
-      final sessionSource = _FakeSessionSource(
-        activeSessionId: defaultSessionId,
-        activeUserId: defaultUser,
-        activeCompanyId: defaultCompany,
-        activeMembershipId: defaultMembership,
-      );
-      final queryStore = _FakeQueryStore(
-        snapshot: createDefaultSnapshot(userId: NexaBizUserId('other-user')),
-      );
-      final evaluator = NexaBizRuntimePermissionEvaluator(
-        permissionCatalog: testCatalog,
-        queryStore: queryStore,
-        sessionSource: sessionSource,
-      );
+    test(
+      '9. Mismatched user between context and snapshot evaluates to DENY',
+      () async {
+        final sessionSource = _FakeSessionSource(
+          activeSessionId: defaultSessionId,
+          activeUserId: defaultUser,
+          activeCompanyId: defaultCompany,
+          activeMembershipId: defaultMembership,
+        );
+        final queryStore = _FakeQueryStore(
+          snapshot: createDefaultSnapshot(userId: NexaBizUserId('other-user')),
+        );
+        final evaluator = NexaBizRuntimePermissionEvaluator(
+          permissionCatalog: testCatalog,
+          queryStore: queryStore,
+          sessionSource: sessionSource,
+        );
 
-      final decision = await evaluator.evaluate(
-        context: createDefaultContext(userId: defaultUser),
-        permissionId: permView,
-      );
+        final decision = await evaluator.evaluate(
+          context: createDefaultContext(userId: defaultUser),
+          permissionId: permView,
+        );
 
-      expect(decision, NexaBizPermissionDecision.deny);
-      expect(decision.isAllowed, isFalse);
-    });
+        expect(decision, NexaBizPermissionDecision.deny);
+        expect(decision.isAllowed, isFalse);
+      },
+    );
 
     // 10. Mismatched company → DENY
-    test('10. Mismatched company between context and snapshot evaluates to DENY', () async {
-      final sessionSource = _FakeSessionSource(
-        activeSessionId: defaultSessionId,
-        activeUserId: defaultUser,
-        activeCompanyId: defaultCompany,
-        activeMembershipId: defaultMembership,
-      );
-      final queryStore = _FakeQueryStore(
-        snapshot: createDefaultSnapshot(companyId: NexaBizCompanyId('other-company')),
-      );
-      final evaluator = NexaBizRuntimePermissionEvaluator(
-        permissionCatalog: testCatalog,
-        queryStore: queryStore,
-        sessionSource: sessionSource,
-      );
+    test(
+      '10. Mismatched company between context and snapshot evaluates to DENY',
+      () async {
+        final sessionSource = _FakeSessionSource(
+          activeSessionId: defaultSessionId,
+          activeUserId: defaultUser,
+          activeCompanyId: defaultCompany,
+          activeMembershipId: defaultMembership,
+        );
+        final queryStore = _FakeQueryStore(
+          snapshot: createDefaultSnapshot(
+            companyId: NexaBizCompanyId('other-company'),
+          ),
+        );
+        final evaluator = NexaBizRuntimePermissionEvaluator(
+          permissionCatalog: testCatalog,
+          queryStore: queryStore,
+          sessionSource: sessionSource,
+        );
 
-      final decision = await evaluator.evaluate(
-        context: createDefaultContext(companyId: defaultCompany),
-        permissionId: permView,
-      );
+        final decision = await evaluator.evaluate(
+          context: createDefaultContext(companyId: defaultCompany),
+          permissionId: permView,
+        );
 
-      expect(decision, NexaBizPermissionDecision.deny);
-      expect(decision.isAllowed, isFalse);
-    });
+        expect(decision, NexaBizPermissionDecision.deny);
+        expect(decision.isAllowed, isFalse);
+      },
+    );
 
     // 11. Mismatched membership → DENY
-    test('11. Mismatched membership ID between context and snapshot evaluates to DENY', () async {
-      final sessionSource = _FakeSessionSource(
-        activeSessionId: defaultSessionId,
-        activeUserId: defaultUser,
-        activeCompanyId: defaultCompany,
-        activeMembershipId: defaultMembership,
-      );
-      final queryStore = _FakeQueryStore(
-        snapshot: createDefaultSnapshot(membershipId: NexaBizMembershipId('other-mem')),
-      );
-      final evaluator = NexaBizRuntimePermissionEvaluator(
-        permissionCatalog: testCatalog,
-        queryStore: queryStore,
-        sessionSource: sessionSource,
-      );
+    test(
+      '11. Mismatched membership ID between context and snapshot evaluates to DENY',
+      () async {
+        final sessionSource = _FakeSessionSource(
+          activeSessionId: defaultSessionId,
+          activeUserId: defaultUser,
+          activeCompanyId: defaultCompany,
+          activeMembershipId: defaultMembership,
+        );
+        final queryStore = _FakeQueryStore(
+          snapshot: createDefaultSnapshot(
+            membershipId: NexaBizMembershipId('other-mem'),
+          ),
+        );
+        final evaluator = NexaBizRuntimePermissionEvaluator(
+          permissionCatalog: testCatalog,
+          queryStore: queryStore,
+          sessionSource: sessionSource,
+        );
 
-      final decision = await evaluator.evaluate(
-        context: createDefaultContext(membershipId: defaultMembership),
-        permissionId: permView,
-      );
+        final decision = await evaluator.evaluate(
+          context: createDefaultContext(membershipId: defaultMembership),
+          permissionId: permView,
+        );
 
-      expect(decision, NexaBizPermissionDecision.deny);
-      expect(decision.isAllowed, isFalse);
-    });
+        expect(decision, NexaBizPermissionDecision.deny);
+        expect(decision.isAllowed, isFalse);
+      },
+    );
 
     // 12. Stale sessionId → DENY
     test('12. Stale or mismatched sessionId evaluates to DENY', () async {
@@ -464,7 +485,10 @@ void main() {
 
       // Before logout: allowed
       expect(
-        (await evaluator.evaluate(context: ctx, permissionId: permView)).isAllowed,
+        (await evaluator.evaluate(
+          context: ctx,
+          permissionId: permView,
+        )).isAllowed,
         isTrue,
       );
 
@@ -481,40 +505,46 @@ void main() {
     });
 
     // 14. Company switch invalidates previous context
-    test('14. Company switch immediately invalidates previous company context', () async {
-      final sessionSource = _FakeSessionSource(
-        activeSessionId: defaultSessionId,
-        activeUserId: defaultUser,
-        activeCompanyId: defaultCompany,
-        activeMembershipId: defaultMembership,
-      );
-      final queryStore = _FakeQueryStore(snapshot: createDefaultSnapshot());
-      final evaluator = NexaBizRuntimePermissionEvaluator(
-        permissionCatalog: testCatalog,
-        queryStore: queryStore,
-        sessionSource: sessionSource,
-      );
+    test(
+      '14. Company switch immediately invalidates previous company context',
+      () async {
+        final sessionSource = _FakeSessionSource(
+          activeSessionId: defaultSessionId,
+          activeUserId: defaultUser,
+          activeCompanyId: defaultCompany,
+          activeMembershipId: defaultMembership,
+        );
+        final queryStore = _FakeQueryStore(snapshot: createDefaultSnapshot());
+        final evaluator = NexaBizRuntimePermissionEvaluator(
+          permissionCatalog: testCatalog,
+          queryStore: queryStore,
+          sessionSource: sessionSource,
+        );
 
-      final contextCompanyA = createDefaultContext();
+        final contextCompanyA = createDefaultContext();
 
-      expect(
-        (await evaluator.evaluate(context: contextCompanyA, permissionId: permView)).isAllowed,
-        isTrue,
-      );
+        expect(
+          (await evaluator.evaluate(
+            context: contextCompanyA,
+            permissionId: permView,
+          )).isAllowed,
+          isTrue,
+        );
 
-      // Switch to company B
-      sessionSource.activeCompanyId = NexaBizCompanyId('company-2');
-      sessionSource.activeMembershipId = NexaBizMembershipId('mem-2');
-      sessionSource.activeSessionId = 'new-session-id';
+        // Switch to company B
+        sessionSource.activeCompanyId = NexaBizCompanyId('company-2');
+        sessionSource.activeMembershipId = NexaBizMembershipId('mem-2');
+        sessionSource.activeSessionId = 'new-session-id';
 
-      // Old Company A context is now rejected
-      final postSwitchDecision = await evaluator.evaluate(
-        context: contextCompanyA,
-        permissionId: permView,
-      );
-      expect(postSwitchDecision, NexaBizPermissionDecision.deny);
-      expect(postSwitchDecision.isAllowed, isFalse);
-    });
+        // Old Company A context is now rejected
+        final postSwitchDecision = await evaluator.evaluate(
+          context: contextCompanyA,
+          permissionId: permView,
+        );
+        expect(postSwitchDecision, NexaBizPermissionDecision.deny);
+        expect(postSwitchDecision.isAllowed, isFalse);
+      },
+    );
 
     // 15. Multiple roles union permissions correctly
     test('15. Multiple roles union their permissions correctly', () async {
@@ -540,262 +570,345 @@ void main() {
       );
 
       final ctx = createDefaultContext();
-      expect((await evaluator.evaluate(context: ctx, permissionId: permView)).isAllowed, isTrue);
-      expect((await evaluator.evaluate(context: ctx, permissionId: permManage)).isAllowed, isTrue);
-      expect((await evaluator.evaluate(context: ctx, permissionId: permMembers)).isAllowed, isFalse);
+      expect(
+        (await evaluator.evaluate(
+          context: ctx,
+          permissionId: permView,
+        )).isAllowed,
+        isTrue,
+      );
+      expect(
+        (await evaluator.evaluate(
+          context: ctx,
+          permissionId: permManage,
+        )).isAllowed,
+        isTrue,
+      );
+      expect(
+        (await evaluator.evaluate(
+          context: ctx,
+          permissionId: permMembers,
+        )).isAllowed,
+        isFalse,
+      );
     });
 
     // 16. Duplicate permission grants do not affect decision
-    test('16. Duplicate permission grants across roles do not affect evaluation', () async {
-      final sessionSource = _FakeSessionSource(
-        activeSessionId: defaultSessionId,
-        activeUserId: defaultUser,
-        activeCompanyId: defaultCompany,
-        activeMembershipId: defaultMembership,
-      );
-      // Set deduplicates, union yields single grant
-      final queryStore = _FakeQueryStore(
-        snapshot: createDefaultSnapshot(
-          roles: {
-            NexaBizRoleId('company.owner'),
-            NexaBizRoleId('company.admin'),
-          },
-          permissions: {permView},
-        ),
-      );
-      final evaluator = NexaBizRuntimePermissionEvaluator(
-        permissionCatalog: testCatalog,
-        queryStore: queryStore,
-        sessionSource: sessionSource,
-      );
+    test(
+      '16. Duplicate permission grants across roles do not affect evaluation',
+      () async {
+        final sessionSource = _FakeSessionSource(
+          activeSessionId: defaultSessionId,
+          activeUserId: defaultUser,
+          activeCompanyId: defaultCompany,
+          activeMembershipId: defaultMembership,
+        );
+        // Set deduplicates, union yields single grant
+        final queryStore = _FakeQueryStore(
+          snapshot: createDefaultSnapshot(
+            roles: {
+              NexaBizRoleId('company.owner'),
+              NexaBizRoleId('company.admin'),
+            },
+            permissions: {permView},
+          ),
+        );
+        final evaluator = NexaBizRuntimePermissionEvaluator(
+          permissionCatalog: testCatalog,
+          queryStore: queryStore,
+          sessionSource: sessionSource,
+        );
 
-      final decision = await evaluator.evaluate(
-        context: createDefaultContext(),
-        permissionId: permView,
-      );
-      expect(decision, NexaBizPermissionDecision.allow);
-    });
+        final decision = await evaluator.evaluate(
+          context: createDefaultContext(),
+          permissionId: permView,
+        );
+        expect(decision, NexaBizPermissionDecision.allow);
+      },
+    );
 
     // 17. Live permission revoke → immediate DENY
-    test('17. Live permission revocation reflects immediately without re-login', () async {
-      final sessionSource = _FakeSessionSource(
-        activeSessionId: defaultSessionId,
-        activeUserId: defaultUser,
-        activeCompanyId: defaultCompany,
-        activeMembershipId: defaultMembership,
-      );
-      final queryStore = _FakeQueryStore(
-        snapshot: createDefaultSnapshot(permissions: {permView}),
-      );
-      final evaluator = NexaBizRuntimePermissionEvaluator(
-        permissionCatalog: testCatalog,
-        queryStore: queryStore,
-        sessionSource: sessionSource,
-      );
+    test(
+      '17. Live permission revocation reflects immediately without re-login',
+      () async {
+        final sessionSource = _FakeSessionSource(
+          activeSessionId: defaultSessionId,
+          activeUserId: defaultUser,
+          activeCompanyId: defaultCompany,
+          activeMembershipId: defaultMembership,
+        );
+        final queryStore = _FakeQueryStore(
+          snapshot: createDefaultSnapshot(permissions: {permView}),
+        );
+        final evaluator = NexaBizRuntimePermissionEvaluator(
+          permissionCatalog: testCatalog,
+          queryStore: queryStore,
+          sessionSource: sessionSource,
+        );
 
-      final ctx = createDefaultContext();
-      expect((await evaluator.evaluate(context: ctx, permissionId: permView)).isAllowed, isTrue);
+        final ctx = createDefaultContext();
+        expect(
+          (await evaluator.evaluate(
+            context: ctx,
+            permissionId: permView,
+          )).isAllowed,
+          isTrue,
+        );
 
-      // Revoke permission dynamically
-      queryStore.snapshot = createDefaultSnapshot(permissions: <NexaBizPermissionId>{});
+        // Revoke permission dynamically
+        queryStore.snapshot = createDefaultSnapshot(
+          permissions: <NexaBizPermissionId>{},
+        );
 
-      expect((await evaluator.evaluate(context: ctx, permissionId: permView)).isAllowed, isFalse);
-    });
+        expect(
+          (await evaluator.evaluate(
+            context: ctx,
+            permissionId: permView,
+          )).isAllowed,
+          isFalse,
+        );
+      },
+    );
 
     // 18. Live role removal → immediate DENY
-    test('18. Live role removal reflects immediately without re-login', () async {
-      final sessionSource = _FakeSessionSource(
-        activeSessionId: defaultSessionId,
-        activeUserId: defaultUser,
-        activeCompanyId: defaultCompany,
-        activeMembershipId: defaultMembership,
-      );
-      final queryStore = _FakeQueryStore(
-        snapshot: createDefaultSnapshot(
-          roles: {NexaBizRoleId('company.editor')},
-          permissions: {permManage},
-        ),
-      );
-      final evaluator = NexaBizRuntimePermissionEvaluator(
-        permissionCatalog: testCatalog,
-        queryStore: queryStore,
-        sessionSource: sessionSource,
-      );
+    test(
+      '18. Live role removal reflects immediately without re-login',
+      () async {
+        final sessionSource = _FakeSessionSource(
+          activeSessionId: defaultSessionId,
+          activeUserId: defaultUser,
+          activeCompanyId: defaultCompany,
+          activeMembershipId: defaultMembership,
+        );
+        final queryStore = _FakeQueryStore(
+          snapshot: createDefaultSnapshot(
+            roles: {NexaBizRoleId('company.editor')},
+            permissions: {permManage},
+          ),
+        );
+        final evaluator = NexaBizRuntimePermissionEvaluator(
+          permissionCatalog: testCatalog,
+          queryStore: queryStore,
+          sessionSource: sessionSource,
+        );
 
-      final ctx = createDefaultContext();
-      expect((await evaluator.evaluate(context: ctx, permissionId: permManage)).isAllowed, isTrue);
+        final ctx = createDefaultContext();
+        expect(
+          (await evaluator.evaluate(
+            context: ctx,
+            permissionId: permManage,
+          )).isAllowed,
+          isTrue,
+        );
 
-      // Remove role and its permissions
-      queryStore.snapshot = createDefaultSnapshot(
-        roles: <NexaBizRoleId>{},
-        permissions: <NexaBizPermissionId>{},
-      );
+        // Remove role and its permissions
+        queryStore.snapshot = createDefaultSnapshot(
+          roles: <NexaBizRoleId>{},
+          permissions: <NexaBizPermissionId>{},
+        );
 
-      expect((await evaluator.evaluate(context: ctx, permissionId: permManage)).isAllowed, isFalse);
-    });
+        expect(
+          (await evaluator.evaluate(
+            context: ctx,
+            permissionId: permManage,
+          )).isAllowed,
+          isFalse,
+        );
+      },
+    );
 
     // 19. Live permission grant → immediate ALLOW
-    test('19. Live permission grant reflects immediately without re-login', () async {
-      final sessionSource = _FakeSessionSource(
-        activeSessionId: defaultSessionId,
-        activeUserId: defaultUser,
-        activeCompanyId: defaultCompany,
-        activeMembershipId: defaultMembership,
-      );
-      final queryStore = _FakeQueryStore(
-        snapshot: createDefaultSnapshot(permissions: <NexaBizPermissionId>{}),
-      );
-      final evaluator = NexaBizRuntimePermissionEvaluator(
-        permissionCatalog: testCatalog,
-        queryStore: queryStore,
-        sessionSource: sessionSource,
-      );
+    test(
+      '19. Live permission grant reflects immediately without re-login',
+      () async {
+        final sessionSource = _FakeSessionSource(
+          activeSessionId: defaultSessionId,
+          activeUserId: defaultUser,
+          activeCompanyId: defaultCompany,
+          activeMembershipId: defaultMembership,
+        );
+        final queryStore = _FakeQueryStore(
+          snapshot: createDefaultSnapshot(permissions: <NexaBizPermissionId>{}),
+        );
+        final evaluator = NexaBizRuntimePermissionEvaluator(
+          permissionCatalog: testCatalog,
+          queryStore: queryStore,
+          sessionSource: sessionSource,
+        );
 
-      final ctx = createDefaultContext();
-      expect((await evaluator.evaluate(context: ctx, permissionId: permMembers)).isAllowed, isFalse);
+        final ctx = createDefaultContext();
+        expect(
+          (await evaluator.evaluate(
+            context: ctx,
+            permissionId: permMembers,
+          )).isAllowed,
+          isFalse,
+        );
 
-      // Grant permission dynamically
-      queryStore.snapshot = createDefaultSnapshot(permissions: {permMembers});
+        // Grant permission dynamically
+        queryStore.snapshot = createDefaultSnapshot(permissions: {permMembers});
 
-      expect((await evaluator.evaluate(context: ctx, permissionId: permMembers)).isAllowed, isTrue);
-    });
+        expect(
+          (await evaluator.evaluate(
+            context: ctx,
+            permissionId: permMembers,
+          )).isAllowed,
+          isTrue,
+        );
+      },
+    );
 
     // 20. Owner without explicit grant → DENY
-    test('20. Owner role name grants zero permissions without explicit DB grant', () async {
-      final sessionSource = _FakeSessionSource(
-        activeSessionId: defaultSessionId,
-        activeUserId: defaultUser,
-        activeCompanyId: defaultCompany,
-        activeMembershipId: defaultMembership,
-      );
-      final queryStore = _FakeQueryStore(
-        snapshot: createDefaultSnapshot(
-          roles: {NexaBizRoleId('company.owner')},
-          permissions: <NexaBizPermissionId>{}, // Empty explicit grants
-        ),
-      );
-      final evaluator = NexaBizRuntimePermissionEvaluator(
-        permissionCatalog: testCatalog,
-        queryStore: queryStore,
-        sessionSource: sessionSource,
-      );
+    test(
+      '20. Owner role name grants zero permissions without explicit DB grant',
+      () async {
+        final sessionSource = _FakeSessionSource(
+          activeSessionId: defaultSessionId,
+          activeUserId: defaultUser,
+          activeCompanyId: defaultCompany,
+          activeMembershipId: defaultMembership,
+        );
+        final queryStore = _FakeQueryStore(
+          snapshot: createDefaultSnapshot(
+            roles: {NexaBizRoleId('company.owner')},
+            permissions: <NexaBizPermissionId>{}, // Empty explicit grants
+          ),
+        );
+        final evaluator = NexaBizRuntimePermissionEvaluator(
+          permissionCatalog: testCatalog,
+          queryStore: queryStore,
+          sessionSource: sessionSource,
+        );
 
-      final decision = await evaluator.evaluate(
-        context: createDefaultContext(),
-        permissionId: permView,
-      );
+        final decision = await evaluator.evaluate(
+          context: createDefaultContext(),
+          permissionId: permView,
+        );
 
-      expect(decision, NexaBizPermissionDecision.deny);
-      expect(decision.isAllowed, isFalse);
-    });
+        expect(decision, NexaBizPermissionDecision.deny);
+        expect(decision.isAllowed, isFalse);
+      },
+    );
 
     // 21. Arbitrary admin role name → no bypass
-    test('21. Arbitrary admin or superuser role name provides no automatic bypass', () async {
-      final sessionSource = _FakeSessionSource(
-        activeSessionId: defaultSessionId,
-        activeUserId: defaultUser,
-        activeCompanyId: defaultCompany,
-        activeMembershipId: defaultMembership,
-      );
-      final queryStore = _FakeQueryStore(
-        snapshot: createDefaultSnapshot(
-          roles: {
-            NexaBizRoleId('company.admin'),
-            NexaBizRoleId('system.admin'),
-          },
-          permissions: <NexaBizPermissionId>{}, // No explicit grants
-        ),
-      );
-      final evaluator = NexaBizRuntimePermissionEvaluator(
-        permissionCatalog: testCatalog,
-        queryStore: queryStore,
-        sessionSource: sessionSource,
-      );
+    test(
+      '21. Arbitrary admin or superuser role name provides no automatic bypass',
+      () async {
+        final sessionSource = _FakeSessionSource(
+          activeSessionId: defaultSessionId,
+          activeUserId: defaultUser,
+          activeCompanyId: defaultCompany,
+          activeMembershipId: defaultMembership,
+        );
+        final queryStore = _FakeQueryStore(
+          snapshot: createDefaultSnapshot(
+            roles: {
+              NexaBizRoleId('company.admin'),
+              NexaBizRoleId('system.admin'),
+            },
+            permissions: <NexaBizPermissionId>{}, // No explicit grants
+          ),
+        );
+        final evaluator = NexaBizRuntimePermissionEvaluator(
+          permissionCatalog: testCatalog,
+          queryStore: queryStore,
+          sessionSource: sessionSource,
+        );
 
-      final decision = await evaluator.evaluate(
-        context: createDefaultContext(),
-        permissionId: permManage,
-      );
+        final decision = await evaluator.evaluate(
+          context: createDefaultContext(),
+          permissionId: permManage,
+        );
 
-      expect(decision, NexaBizPermissionDecision.deny);
-      expect(decision.isAllowed, isFalse);
-    });
+        expect(decision, NexaBizPermissionDecision.deny);
+        expect(decision.isAllowed, isFalse);
+      },
+    );
 
     // 22. Query-store expected failure → fail closed
-    test('22. Expected query-store failure fails closed safely to DENY without rethrowing', () async {
-      final sessionSource = _FakeSessionSource(
-        activeSessionId: defaultSessionId,
-        activeUserId: defaultUser,
-        activeCompanyId: defaultCompany,
-        activeMembershipId: defaultMembership,
-      );
-      final queryStore = _FakeQueryStore(shouldThrow: true);
-      final evaluator = NexaBizRuntimePermissionEvaluator(
-        permissionCatalog: testCatalog,
-        queryStore: queryStore,
-        sessionSource: sessionSource,
-      );
+    test(
+      '22. Expected query-store failure fails closed safely to DENY without rethrowing',
+      () async {
+        final sessionSource = _FakeSessionSource(
+          activeSessionId: defaultSessionId,
+          activeUserId: defaultUser,
+          activeCompanyId: defaultCompany,
+          activeMembershipId: defaultMembership,
+        );
+        final queryStore = _FakeQueryStore(shouldThrow: true);
+        final evaluator = NexaBizRuntimePermissionEvaluator(
+          permissionCatalog: testCatalog,
+          queryStore: queryStore,
+          sessionSource: sessionSource,
+        );
 
-      final decision = await evaluator.evaluate(
-        context: createDefaultContext(),
-        permissionId: permView,
-      );
+        final decision = await evaluator.evaluate(
+          context: createDefaultContext(),
+          permissionId: permView,
+        );
 
-      expect(decision, NexaBizPermissionDecision.deny);
-      expect(decision.isAllowed, isFalse);
-    });
+        expect(decision, NexaBizPermissionDecision.deny);
+        expect(decision.isAllowed, isFalse);
+      },
+    );
 
     // 23. Session-source expected failure → fail closed
-    test('23. Expected session-source failure fails closed safely to DENY without rethrowing', () async {
-      final sessionSource = _FakeSessionSource(
-        activeSessionId: defaultSessionId,
-        activeUserId: defaultUser,
-        activeCompanyId: defaultCompany,
-        activeMembershipId: defaultMembership,
-        shouldThrow: true,
-      );
-      final queryStore = _FakeQueryStore(snapshot: createDefaultSnapshot());
-      final evaluator = NexaBizRuntimePermissionEvaluator(
-        permissionCatalog: testCatalog,
-        queryStore: queryStore,
-        sessionSource: sessionSource,
-      );
+    test(
+      '23. Expected session-source failure fails closed safely to DENY without rethrowing',
+      () async {
+        final sessionSource = _FakeSessionSource(
+          activeSessionId: defaultSessionId,
+          activeUserId: defaultUser,
+          activeCompanyId: defaultCompany,
+          activeMembershipId: defaultMembership,
+          shouldThrow: true,
+        );
+        final queryStore = _FakeQueryStore(snapshot: createDefaultSnapshot());
+        final evaluator = NexaBizRuntimePermissionEvaluator(
+          permissionCatalog: testCatalog,
+          queryStore: queryStore,
+          sessionSource: sessionSource,
+        );
 
-      final decision = await evaluator.evaluate(
-        context: createDefaultContext(),
-        permissionId: permView,
-      );
+        final decision = await evaluator.evaluate(
+          context: createDefaultContext(),
+          permissionId: permView,
+        );
 
-      expect(decision, NexaBizPermissionDecision.deny);
-      expect(decision.isAllowed, isFalse);
-    });
+        expect(decision, NexaBizPermissionDecision.deny);
+        expect(decision.isAllowed, isFalse);
+      },
+    );
 
     // 24. System context without supported assignment → not allowed
-    test('24. System context evaluates to DENY as system persistence is deferred', () async {
-      final sessionSource = _FakeSessionSource(
-        activeSessionId: defaultSessionId,
-        activeUserId: defaultUser,
-      );
-      final queryStore = _FakeQueryStore(snapshot: createDefaultSnapshot());
-      final evaluator = NexaBizRuntimePermissionEvaluator(
-        permissionCatalog: testCatalog,
-        queryStore: queryStore,
-        sessionSource: sessionSource,
-      );
+    test(
+      '24. System context evaluates to DENY as system persistence is deferred',
+      () async {
+        final sessionSource = _FakeSessionSource(
+          activeSessionId: defaultSessionId,
+          activeUserId: defaultUser,
+        );
+        final queryStore = _FakeQueryStore(snapshot: createDefaultSnapshot());
+        final evaluator = NexaBizRuntimePermissionEvaluator(
+          permissionCatalog: testCatalog,
+          queryStore: queryStore,
+          sessionSource: sessionSource,
+        );
 
-      final systemContext = NexaBizSystemAuthorizationContext(
-        userId: defaultUser,
-        sessionId: defaultSessionId,
-      );
+        final systemContext = NexaBizSystemAuthorizationContext(
+          userId: defaultUser,
+          sessionId: defaultSessionId,
+        );
 
-      final decision = await evaluator.evaluate(
-        context: systemContext,
-        permissionId: permView,
-      );
+        final decision = await evaluator.evaluate(
+          context: systemContext,
+          permissionId: permView,
+        );
 
-      expect(decision, NexaBizPermissionDecision.deny);
-      expect(decision.isAllowed, isFalse);
-    });
+        expect(decision, NexaBizPermissionDecision.deny);
+        expect(decision.isAllowed, isFalse);
+      },
+    );
 
     // 25. Guard ALLOW → returns
     test('25. Guard completes normally when evaluator returns ALLOW', () async {
@@ -825,67 +938,77 @@ void main() {
     });
 
     // 26. Guard DENY → typed exception
-    test('26. Guard throws NexaBizPermissionDeniedException when decision is DENY', () async {
-      final sessionSource = _FakeSessionSource(
-        activeSessionId: defaultSessionId,
-        activeUserId: defaultUser,
-        activeCompanyId: defaultCompany,
-        activeMembershipId: defaultMembership,
-      );
-      final queryStore = _FakeQueryStore(
-        snapshot: createDefaultSnapshot(permissions: <NexaBizPermissionId>{}),
-      );
-      final evaluator = NexaBizRuntimePermissionEvaluator(
-        permissionCatalog: testCatalog,
-        queryStore: queryStore,
-        sessionSource: sessionSource,
-      );
-      final guard = NexaBizDefaultPermissionGuard(evaluator);
+    test(
+      '26. Guard throws NexaBizPermissionDeniedException when decision is DENY',
+      () async {
+        final sessionSource = _FakeSessionSource(
+          activeSessionId: defaultSessionId,
+          activeUserId: defaultUser,
+          activeCompanyId: defaultCompany,
+          activeMembershipId: defaultMembership,
+        );
+        final queryStore = _FakeQueryStore(
+          snapshot: createDefaultSnapshot(permissions: <NexaBizPermissionId>{}),
+        );
+        final evaluator = NexaBizRuntimePermissionEvaluator(
+          permissionCatalog: testCatalog,
+          queryStore: queryStore,
+          sessionSource: sessionSource,
+        );
+        final guard = NexaBizDefaultPermissionGuard(evaluator);
 
-      expect(
-        () => guard.requirePermission(
-          context: createDefaultContext(),
-          permissionId: permView,
-        ),
-        throwsA(
-          isA<NexaBizPermissionDeniedException>()
-              .having((e) => e.permissionId, 'permissionId', permView)
-              .having((e) => e.contextScope, 'contextScope', equals(NexaBizRoleScope.company))
-              .having((e) => e.decision.isDenied, 'isDenied', isTrue),
-        ),
-      );
-    });
+        expect(
+          () => guard.requirePermission(
+            context: createDefaultContext(),
+            permissionId: permView,
+          ),
+          throwsA(
+            isA<NexaBizPermissionDeniedException>()
+                .having((e) => e.permissionId, 'permissionId', permView)
+                .having(
+                  (e) => e.contextScope,
+                  'contextScope',
+                  equals(NexaBizRoleScope.company),
+                )
+                .having((e) => e.decision.isDenied, 'isDenied', isTrue),
+          ),
+        );
+      },
+    );
 
     // 27. Guard UNKNOWN → typed exception
-    test('27. Guard throws NexaBizPermissionDeniedException when decision is UNKNOWN', () async {
-      final sessionSource = _FakeSessionSource(
-        activeSessionId: defaultSessionId,
-        activeUserId: defaultUser,
-        activeCompanyId: defaultCompany,
-        activeMembershipId: defaultMembership,
-      );
-      final queryStore = _FakeQueryStore(
-        snapshot: createDefaultSnapshot(permissions: {permUndeclared}),
-      );
-      final evaluator = NexaBizRuntimePermissionEvaluator(
-        permissionCatalog: testCatalog,
-        queryStore: queryStore,
-        sessionSource: sessionSource,
-      );
-      final guard = NexaBizDefaultPermissionGuard(evaluator);
+    test(
+      '27. Guard throws NexaBizPermissionDeniedException when decision is UNKNOWN',
+      () async {
+        final sessionSource = _FakeSessionSource(
+          activeSessionId: defaultSessionId,
+          activeUserId: defaultUser,
+          activeCompanyId: defaultCompany,
+          activeMembershipId: defaultMembership,
+        );
+        final queryStore = _FakeQueryStore(
+          snapshot: createDefaultSnapshot(permissions: {permUndeclared}),
+        );
+        final evaluator = NexaBizRuntimePermissionEvaluator(
+          permissionCatalog: testCatalog,
+          queryStore: queryStore,
+          sessionSource: sessionSource,
+        );
+        final guard = NexaBizDefaultPermissionGuard(evaluator);
 
-      expect(
-        () => guard.requirePermission(
-          context: createDefaultContext(),
-          permissionId: permUndeclared,
-        ),
-        throwsA(
-          isA<NexaBizPermissionDeniedException>()
-              .having((e) => e.permissionId, 'permissionId', permUndeclared)
-              .having((e) => e.decision.isUnknown, 'isUnknown', isTrue),
-        ),
-      );
-    });
+        expect(
+          () => guard.requirePermission(
+            context: createDefaultContext(),
+            permissionId: permUndeclared,
+          ),
+          throwsA(
+            isA<NexaBizPermissionDeniedException>()
+                .having((e) => e.permissionId, 'permissionId', permUndeclared)
+                .having((e) => e.decision.isUnknown, 'isUnknown', isTrue),
+          ),
+        );
+      },
+    );
 
     // 28. Session never stores effective permissions
     test('28. NexaBizSession never stores effective permissions', () {
@@ -907,51 +1030,59 @@ void main() {
     });
 
     // 29. Company B permissions never bleed into Company A
-    test('29. Permissions from Company B never bleed into Company A context', () async {
-      final sessionSource = _FakeSessionSource(
-        activeSessionId: defaultSessionId,
-        activeUserId: defaultUser,
-        activeCompanyId: defaultCompany,
-        activeMembershipId: defaultMembership,
-      );
+    test(
+      '29. Permissions from Company B never bleed into Company A context',
+      () async {
+        final sessionSource = _FakeSessionSource(
+          activeSessionId: defaultSessionId,
+          activeUserId: defaultUser,
+          activeCompanyId: defaultCompany,
+          activeMembershipId: defaultMembership,
+        );
 
-      // Snapshot for Company A has no permissions; Company B snapshot would have permManage
-      final queryStore = _FakeQueryStore(
-        snapshot: createDefaultSnapshot(
-          companyId: defaultCompany,
-          membershipId: defaultMembership,
-          permissions: <NexaBizPermissionId>{},
-        ),
-      );
+        // Snapshot for Company A has no permissions; Company B snapshot would have permManage
+        final queryStore = _FakeQueryStore(
+          snapshot: createDefaultSnapshot(
+            companyId: defaultCompany,
+            membershipId: defaultMembership,
+            permissions: <NexaBizPermissionId>{},
+          ),
+        );
 
-      final evaluator = NexaBizRuntimePermissionEvaluator(
-        permissionCatalog: testCatalog,
-        queryStore: queryStore,
-        sessionSource: sessionSource,
-      );
+        final evaluator = NexaBizRuntimePermissionEvaluator(
+          permissionCatalog: testCatalog,
+          queryStore: queryStore,
+          sessionSource: sessionSource,
+        );
 
-      final decisionA = await evaluator.evaluate(
-        context: createDefaultContext(companyId: defaultCompany),
-        permissionId: permManage,
-      );
+        final decisionA = await evaluator.evaluate(
+          context: createDefaultContext(companyId: defaultCompany),
+          permissionId: permManage,
+        );
 
-      expect(decisionA, NexaBizPermissionDecision.deny);
-      expect(decisionA.isAllowed, isFalse);
-    });
+        expect(decisionA, NexaBizPermissionDecision.deny);
+        expect(decisionA.isAllowed, isFalse);
+      },
+    );
 
     // 30. Architecture dependencies remain Pure Dart
-    test('30. Evaluator, Catalog, and SessionSource maintain pure Dart boundaries', () {
-      final authDir = Directory('lib/core/authorization');
-      final files = authDir.listSync().whereType<File>().where((f) => f.path.endsWith('.dart'));
+    test(
+      '30. Evaluator, Catalog, and SessionSource maintain pure Dart boundaries',
+      () {
+        final authDir = Directory('lib/core/authorization');
+        final files = authDir.listSync().whereType<File>().where(
+          (f) => f.path.endsWith('.dart'),
+        );
 
-      for (final file in files) {
-        final content = file.readAsStringSync();
-        expect(content, isNot(contains("import 'package:flutter/")));
-        expect(content, isNot(contains("import 'package:drift/")));
-        expect(content, isNot(contains("import 'package:flutter_riverpod/")));
-        expect(content, isNot(contains("import 'package:nexabiz_ui/")));
-      }
-    });
+        for (final file in files) {
+          final content = file.readAsStringSync();
+          expect(content, isNot(contains("import 'package:flutter/")));
+          expect(content, isNot(contains("import 'package:drift/")));
+          expect(content, isNot(contains("import 'package:flutter_riverpod/")));
+          expect(content, isNot(contains("import 'package:nexabiz_ui/")));
+        }
+      },
+    );
   });
 
   group('NexaBizRuntimePermissionEvaluator — End-to-End Drift Integration', () {
@@ -962,7 +1093,9 @@ void main() {
     late CoreSessionController sessionController;
 
     setUp(() async {
-      directory = Directory.systemTemp.createTempSync('nexabiz_evaluator_test_');
+      directory = Directory.systemTemp.createTempSync(
+        'nexabiz_evaluator_test_',
+      );
       databasePath = p.join(directory.path, 'core.sqlite');
       store = await DriftCoreInstallationStore.open(databasePath);
 
@@ -984,99 +1117,106 @@ void main() {
       }
     });
 
-    test('Full lifecycle: initialization, login, evaluation, live revoke, company switch, logout', () async {
-      final db = store.database;
+    test(
+      'Full lifecycle: initialization, login, evaluation, live revoke, company switch, logout',
+      () async {
+        final db = store.database;
 
-      // 1. Initialize core system
-      final init = InitializeNexaBizCore(store);
-      final initResult = await init(
-        const CoreInitializationInput(
-          companyCode: 'COMP1',
-          companyName: 'Company One',
-          adminName: 'Owner One',
-          adminEmail: 'owner@comp1.com',
-          password: 'password12345',
-        ),
-      );
-      expect(initResult.isReady, isTrue);
+        // 1. Initialize core system
+        final init = InitializeNexaBizCore(store);
+        final initResult = await init(
+          const CoreInitializationInput(
+            companyCode: 'COMP1',
+            companyName: 'Company One',
+            adminName: 'Owner One',
+            adminEmail: 'owner@comp1.com',
+            password: 'password12345',
+          ),
+        );
+        expect(initResult.isReady, isTrue);
 
-      // 2. Login through session controller
-      final loginResult = await sessionController.login(
-        const CoreAuthenticationInput(
-          identifier: 'owner@comp1.com',
-          password: 'password12345',
-        ),
-      );
-      expect(loginResult.isSuccess, isTrue);
-      final activeSession = sessionController.currentSession;
-      expect(activeSession.isActive, isTrue);
-      expect(activeSession.membershipId, isNotNull);
+        // 2. Login through session controller
+        final loginResult = await sessionController.login(
+          const CoreAuthenticationInput(
+            identifier: 'owner@comp1.com',
+            password: 'password12345',
+          ),
+        );
+        expect(loginResult.isSuccess, isTrue);
+        final activeSession = sessionController.currentSession;
+        expect(activeSession.isActive, isTrue);
+        expect(activeSession.membershipId, isNotNull);
 
-      // 3. Construct Runtime Evaluator with real store and session controller
-      final evaluator = NexaBizRuntimePermissionEvaluator(
-        permissionCatalog: registry.permissionCatalog,
-        queryStore: store,
-        sessionSource: sessionController,
-      );
+        // 3. Construct Runtime Evaluator with real store and session controller
+        final evaluator = NexaBizRuntimePermissionEvaluator(
+          permissionCatalog: registry.permissionCatalog,
+          queryStore: store,
+          sessionSource: sessionController,
+        );
 
-      final ctx = NexaBizCompanyAuthorizationContext(
-        userId: activeSession.userId!,
-        sessionId: activeSession.sessionId!,
-        companyId: activeSession.companyId!,
-        membershipId: activeSession.membershipId!,
-      );
+        final ctx = NexaBizCompanyAuthorizationContext(
+          userId: activeSession.userId!,
+          sessionId: activeSession.sessionId!,
+          companyId: activeSession.companyId!,
+          membershipId: activeSession.membershipId!,
+        );
 
-      // 4. Initial owner has seeded declared permissions
-      final viewDecision = await evaluator.evaluate(
-        context: ctx,
-        permissionId: permView,
-      );
-      expect(viewDecision, NexaBizPermissionDecision.allow);
+        // 4. Initial owner has seeded declared permissions
+        final viewDecision = await evaluator.evaluate(
+          context: ctx,
+          permissionId: permView,
+        );
+        expect(viewDecision, NexaBizPermissionDecision.allow);
 
-      // 5. Undeclared permission returns unknown
-      final unknownDecision = await evaluator.evaluate(
-        context: ctx,
-        permissionId: permUndeclared,
-      );
-      expect(unknownDecision, NexaBizPermissionDecision.unknown);
+        // 5. Undeclared permission returns unknown
+        final unknownDecision = await evaluator.evaluate(
+          context: ctx,
+          permissionId: permUndeclared,
+        );
+        expect(unknownDecision, NexaBizPermissionDecision.unknown);
 
-      // 6. Live revocation of permission directly from DB
-      await db.customStatement(
-        "DELETE FROM core_role_permissions WHERE permission_id = 'company.profile.view'",
-      );
+        // 6. Live revocation of permission directly from DB
+        await db.customStatement(
+          "DELETE FROM core_role_permissions WHERE permission_id = 'company.profile.view'",
+        );
 
-      final revokedDecision = await evaluator.evaluate(
-        context: ctx,
-        permissionId: permView,
-      );
-      expect(revokedDecision, NexaBizPermissionDecision.deny);
+        final revokedDecision = await evaluator.evaluate(
+          context: ctx,
+          permissionId: permView,
+        );
+        expect(revokedDecision, NexaBizPermissionDecision.deny);
 
-      // 7. Live grant of permission directly into DB
-      final ownerRoleId = (await db.customSelect(
-        "SELECT id FROM core_roles WHERE role_key = 'company.owner'",
-      ).getSingle()).read<String>('id');
+        // 7. Live grant of permission directly into DB
+        final ownerRoleId =
+            (await db
+                    .customSelect(
+                      "SELECT id FROM core_roles WHERE role_key = 'company.owner'",
+                    )
+                    .getSingle())
+                .read<String>('id');
 
-      await db.customStatement(
-        "INSERT INTO core_role_permissions (role_id, permission_id, created_at) "
-        "VALUES (?, 'company.profile.view', ?)",
-        [ownerRoleId, DateTime.now().millisecondsSinceEpoch],
-      );
+        await db.customStatement(
+          "INSERT INTO core_role_permissions (role_id, permission_id, created_at) "
+          "VALUES (?, 'company.profile.view', ?)",
+          [ownerRoleId, DateTime.now().millisecondsSinceEpoch],
+        );
 
-      final reGrantedDecision = await evaluator.evaluate(
-        context: ctx,
-        permissionId: permView,
-      );
-      expect(reGrantedDecision, NexaBizPermissionDecision.allow);
+        final reGrantedDecision = await evaluator.evaluate(
+          context: ctx,
+          permissionId: permView,
+        );
+        expect(reGrantedDecision, NexaBizPermissionDecision.allow);
 
-      // 8. Logout invalidation
-      sessionController.logout();
-      expect(sessionController.currentSession.isActive, isFalse);
+        // 8. Logout invalidation
+        sessionController.logout();
+        expect(sessionController.currentSession.isActive, isFalse);
 
-      final postLogoutDecision = await evaluator.evaluate(
-        context: ctx,
-        permissionId: permView,
-      );
-      expect(postLogoutDecision, NexaBizPermissionDecision.deny);
-    });
+        final postLogoutDecision = await evaluator.evaluate(
+          context: ctx,
+          permissionId: permView,
+        );
+        expect(postLogoutDecision, NexaBizPermissionDecision.deny);
+      },
+    );
   });
 }

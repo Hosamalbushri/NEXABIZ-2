@@ -24,4 +24,3 @@ abstract interface class NexaBizAuthorizationSessionSource {
     NexaBizMembershipId? membershipId,
   });
 }
-

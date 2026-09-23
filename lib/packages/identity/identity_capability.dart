@@ -18,7 +18,10 @@ class _IdentityNavigationContribution implements NexaBizNavigationContribution {
   final CoreSessionController? sessionController;
 
   static const _home = NexaBizRouteId(namespace: 'identity', routeName: 'home');
-  static const _login = NexaBizRouteId(namespace: 'identity', routeName: 'login');
+  static const _login = NexaBizRouteId(
+    namespace: 'identity',
+    routeName: 'login',
+  );
 
   @override
   NexaBizRouteId get rootRouteId => _home;
@@ -43,7 +46,8 @@ class _IdentityNavigationContribution implements NexaBizNavigationContribution {
         requiresActiveSession: false,
         requiresCompanyScope: false,
       ),
-      pageBuilder: (context) => LoginScreen(sessionController: sessionController),
+      pageBuilder: (context) =>
+          LoginScreen(sessionController: sessionController),
     ),
   ];
 }
