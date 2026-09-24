@@ -57,4 +57,24 @@ class AppIcons {
   static const IconData user = shadcn.LucideIcons.user;
   static const IconData lock = shadcn.LucideIcons.lock;
   static const IconData mail = shadcn.LucideIcons.mail;
+  static const IconData qr = shadcn.LucideIcons.qrCode;
+  static const IconData sliders = shadcn.LucideIcons.slidersHorizontal;
+  static const IconData palette = shadcn.LucideIcons.palette;
+  static const IconData circleHelp = shadcn.LucideIcons.circleHelp;
+
+  /// Returns the forward navigation chevron based on [Directionality]:
+  /// [chevronLeft] in RTL locales, [chevronRight] in LTR locales.
+  static IconData chevronForward(BuildContext context) {
+    return Directionality.of(context) == TextDirection.rtl
+        ? chevronLeft
+        : chevronRight;
+  }
+
+  /// Returns the backward navigation chevron based on [Directionality]:
+  /// [chevronRight] in RTL locales, [chevronLeft] in LTR locales.
+  static IconData chevronBack(BuildContext context) {
+    return Directionality.of(context) == TextDirection.rtl
+        ? chevronRight
+        : chevronLeft;
+  }
 }

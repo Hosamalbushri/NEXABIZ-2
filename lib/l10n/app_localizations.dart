@@ -146,6 +146,18 @@ abstract class AppLocalizations {
   /// **'Quick Actions'**
   String get quickActionsTitle;
 
+  /// No description provided for @mainBranch.
+  ///
+  /// In en, this message translates to:
+  /// **'Main Branch'**
+  String get mainBranch;
+
+  /// No description provided for @actionBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get actionBack;
+
   /// No description provided for @quickActionsSubtitle.
   ///
   /// In en, this message translates to:
@@ -889,6 +901,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'All local databases up to date'**
   String get settingsOfflineSyncSubtitle;
+
+  /// No description provided for @settingsAccountCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Account No. / Code'**
+  String get settingsAccountCode;
+
+  /// No description provided for @settingsRoleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Role / Membership'**
+  String get settingsRoleLabel;
+
+  /// No description provided for @settingsDeviceManagement.
+  ///
+  /// In en, this message translates to:
+  /// **'Device & Session Management'**
+  String get settingsDeviceManagement;
+
+  /// No description provided for @settingsDeviceManagementSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Active local session and device security'**
+  String get settingsDeviceManagementSubtitle;
+
+  /// No description provided for @settingsAppCustomization.
+  ///
+  /// In en, this message translates to:
+  /// **'App Customization'**
+  String get settingsAppCustomization;
+
+  /// No description provided for @settingsAdditionalSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Additional Settings'**
+  String get settingsAdditionalSettings;
+
+  /// No description provided for @settingsHelpSupport.
+  ///
+  /// In en, this message translates to:
+  /// **'Help & Support'**
+  String get settingsHelpSupport;
+
+  /// No description provided for @settingsHelpSupportSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'NexaBiz ERP v1.0.0 • Help Center'**
+  String get settingsHelpSupportSubtitle;
+
+  /// No description provided for @settingsQrTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Company & Identity QR'**
+  String get settingsQrTitle;
+
+  /// No description provided for @settingsQrDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan to verify entity credentials and workspace access'**
+  String get settingsQrDescription;
+
+  /// No description provided for @settingsActiveDevice.
+  ///
+  /// In en, this message translates to:
+  /// **'Active Device'**
+  String get settingsActiveDevice;
+
+  /// No description provided for @settingsActiveDeviceDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Linux Workstation (x86_64) • Active'**
+  String get settingsActiveDeviceDesc;
+
+  /// No description provided for @settingsSessionId.
+  ///
+  /// In en, this message translates to:
+  /// **'Session ID'**
+  String get settingsSessionId;
+
+  /// No description provided for @settingsSupportTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'NexaBiz Enterprise ERP'**
+  String get settingsSupportTitle;
+
+  /// No description provided for @settingsSupportVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'Version 1.0.0 (Production Release)'**
+  String get settingsSupportVersion;
+
+  /// No description provided for @settingsSupportAssistance.
+  ///
+  /// In en, this message translates to:
+  /// **'24/7 Enterprise Assistance'**
+  String get settingsSupportAssistance;
+
+  /// No description provided for @settingsDefaultUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Hosam Hazem Ali'**
+  String get settingsDefaultUser;
+
+  /// No description provided for @settingsDefaultRole.
+  ///
+  /// In en, this message translates to:
+  /// **'System Administrator'**
+  String get settingsDefaultRole;
 
   /// No description provided for @demoTitle.
   ///
@@ -2168,6 +2288,24 @@ abstract class AppLocalizations {
   /// **'Ineligible'**
   String get authAdminMemberIneligible;
 
+  /// No description provided for @authAdminUnknownMember.
+  ///
+  /// In en, this message translates to:
+  /// **'Unnamed member'**
+  String get authAdminUnknownMember;
+
+  /// No description provided for @authAdminAssignMemberSemantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Assign {memberName} to this role'**
+  String authAdminAssignMemberSemantics(String memberName);
+
+  /// No description provided for @authAdminUnassignMemberSemantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Unassign {memberName} from this role'**
+  String authAdminUnassignMemberSemantics(String memberName);
+
   /// No description provided for @authAdminAvailableMembersSection.
   ///
   /// In en, this message translates to:
@@ -2503,6 +2641,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Granted'**
   String get authAdminRolePermissionGranted;
+
+  /// No description provided for @authAdminRolePermissionNotGranted.
+  ///
+  /// In en, this message translates to:
+  /// **'Not granted'**
+  String get authAdminRolePermissionNotGranted;
 }
 
 class _AppLocalizationsDelegate

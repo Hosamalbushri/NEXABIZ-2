@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/widgets.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart' as shadcn;
 import '../../../nexabiz_ui.dart';
+import '../gallery_state_controller.dart';
 import '../gallery_preview_card.dart';
 
 class GalleryDataPlayground extends StatefulWidget {

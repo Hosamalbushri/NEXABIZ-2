@@ -10,7 +10,7 @@ class ApplicationShell extends StatefulWidget {
   final Widget child;
   final String currentPath;
   final StatefulNavigationShell? navigationShell;
-  final List<AppNavItem> items;
+  final List<AppNavigationItem> items;
 
   const ApplicationShell({
     super.key,
@@ -27,40 +27,40 @@ class ApplicationShell extends StatefulWidget {
 class _ApplicationShellState extends State<ApplicationShell> {
   bool _quickActionsOpen = false;
 
-  List<AppNavItem> _getNavItems(BuildContext context) {
+  List<AppNavigationItem> _getNavItems(BuildContext context) {
     if (widget.items.isNotEmpty) return widget.items;
     final l10n = AppLocalizations.of(context);
     return [
-      AppNavItem(
+      AppNavigationItem(
+        id: '/dashboard',
         label: l10n.navDashboard,
         icon: AppIcons.dashboard,
-        routePath: '/dashboard',
       ),
-      AppNavItem(
+      AppNavigationItem(
+        id: '/services',
         label: l10n.navServices,
         icon: AppIcons.grid,
-        routePath: '/services',
       ),
-      AppNavItem(
+      AppNavigationItem(
+        id: '/reports',
         label: l10n.navReports,
         icon: AppIcons.chart,
-        routePath: '/reports',
       ),
-      AppNavItem(
+      AppNavigationItem(
+        id: '/settings',
         label: l10n.navSettings,
         icon: AppIcons.settings,
-        routePath: '/settings',
       ),
     ];
   }
 
-  int _getSelectedIndex(List<AppNavItem> navItems) {
+  int _getSelectedIndex(List<AppNavigationItem> navItems) {
     if (widget.navigationShell != null) {
       return widget.navigationShell!.currentIndex;
     }
     final cleanPath = widget.currentPath.split('?').first;
     for (var i = 0; i < navItems.length; i++) {
-      final p = navItems[i].routePath;
+      final p = navItems[i].id;
       if (cleanPath == p || cleanPath.startsWith('$p/')) {
         return i;
       }
@@ -68,7 +68,12 @@ class _ApplicationShellState extends State<ApplicationShell> {
     return 0;
   }
 
-  void _onSelect(BuildContext context, int index, List<AppNavItem> navItems) {
+  void _onSelect(
+    BuildContext context,
+    String id,
+    List<AppNavigationItem> navItems,
+  ) {
+    final index = navItems.indexWhere((item) => item.id == id);
     if (index < 0 || index >= navItems.length) return;
     if (_quickActionsOpen) {
       setState(() => _quickActionsOpen = false);
@@ -79,7 +84,7 @@ class _ApplicationShellState extends State<ApplicationShell> {
         initialLocation: index == widget.navigationShell!.currentIndex,
       );
     } else {
-      final targetPath = navItems[index].routePath;
+      final targetPath = navItems[index].id;
       if (widget.currentPath != targetPath) {
         context.go(targetPath);
       }
@@ -168,24 +173,17 @@ class _ApplicationShellState extends State<ApplicationShell> {
     final sidebar = AppSidebar(
       header: AppCompanySwitcher(
         companyName: l10n.appName,
-        branchName: l10n.localeName == 'ar' ? 'الفرع الرئيسي' : 'Main Branch',
+        branchName: l10n.mainBranch,
         onTap: () => context.push('/company-selection'),
       ),
       groups: [
         AppSidebarGroup(
           title: l10n.appName,
-          items: [
-            for (var i = 0; i < navItems.length; i++)
-              AppSidebarItem(
-                key: ValueKey(navItems[i].routePath),
-                label: navItems[i].label,
-                icon: Icon(navItems[i].icon, size: 20.0),
-                selected: i == selectedIndex,
-                onTap: () => _onSelect(context, i, navItems),
-              ),
-          ],
+          items: [for (var i = 0; i < navItems.length; i++) navItems[i]],
         ),
       ],
+      selectedId: navItems[selectedIndex].id,
+      onSelected: (id) => _onSelect(context, id, navItems),
     );
 
     final topHeader = AppTopHeader(
@@ -212,18 +210,17 @@ class _ApplicationShellState extends State<ApplicationShell> {
     );
 
     return AppResponsiveScaffold(
-      currentIndex: selectedIndex,
-      onNavigationIndexChanged: (index) => _onSelect(context, index, navItems),
       extendBody: true,
       sidebar: sidebar,
       topHeader: topHeader,
       mobileBottomBar: AppCustomBottomNav(
-        currentIndex: selectedIndex,
+        selectedId: navItems[selectedIndex].id,
         items: navItems,
-        onTap: (index) => _onSelect(context, index, navItems),
+        onSelected: (id) => _onSelect(context, id, navItems),
         onFabTap: () => _toggleQuickActions(context),
         isFabOpen: _quickActionsOpen,
         fabIcon: AppIcons.plus,
+        fabTooltip: l10n.quickActionsTitle,
       ),
       body: widget.child,
     );

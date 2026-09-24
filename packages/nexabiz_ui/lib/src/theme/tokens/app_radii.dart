@@ -18,6 +18,9 @@ class AppRadii {
   static const double xl = 24.0;
   static const double pill = 999.0;
 
+  /// Full / pill radius token (999.0).
+  static const double full = pill;
+
   /// Default control radius (buttons, inputs, cards).
   static const double control = sm;
 
@@ -43,6 +46,7 @@ class AppRadii {
   static final BorderRadius radiusLg = BorderRadius.circular(lg);
   static final BorderRadius radiusXl = BorderRadius.circular(xl);
   static final BorderRadius radiusPill = BorderRadius.circular(pill);
+  static final BorderRadius radiusFull = radiusPill;
 
   static final BorderRadius radiusControl = BorderRadius.circular(control);
   static final BorderRadius radiusSurface = BorderRadius.circular(surface);
@@ -74,6 +78,7 @@ abstract class AppRadius {
   static const double lg = AppRadii.lg;
   static const double xl = AppRadii.xl;
   static const double pill = AppRadii.pill;
+  static const double full = AppRadii.full;
 
   static const double control = AppRadii.control;
   static const double surface = AppRadii.surface;
@@ -87,6 +92,7 @@ abstract class AppRadius {
   static final BorderRadius radiusLg = AppRadii.radiusLg;
   static final BorderRadius radiusXl = AppRadii.radiusXl;
   static final BorderRadius radiusPill = AppRadii.radiusPill;
+  static final BorderRadius radiusFull = AppRadii.radiusFull;
 
   static double smOf(BuildContext context) => AppRadii.smOf(context);
   static double mdOf(BuildContext context) => AppRadii.mdOf(context);

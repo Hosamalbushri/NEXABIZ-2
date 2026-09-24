@@ -210,7 +210,7 @@ void main() {
             label: labels[1],
             required: true,
             hint: 'Select',
-            items: const [AppSelectItem(value: 'cash', label: 'Cash')],
+            items: const [AppSelectOption(value: 'cash', label: 'Cash')],
             onChanged: (value) => selected = value,
           ),
           280,

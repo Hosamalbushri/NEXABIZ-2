@@ -15,18 +15,26 @@ class AppSpacing {
   static const double xxxl = 48.0;
 
   /// Default page/content padding.
+  /// Deprecated: Authoritative layout tokens reside in [AppLayoutTokens].
+  @Deprecated('Use AppLayoutTokens instead')
   static const double page = md;
 
   /// Compact inset for dense lists & tables.
+  /// Deprecated: Authoritative layout tokens reside in [AppLayoutTokens].
+  @Deprecated('Use AppLayoutTokens instead')
   static const double compact = xs;
 
   /// Section gap between major blocks.
+  /// Deprecated: Authoritative layout tokens reside in [AppLayoutTokens.sectionGap] instead.
+  @Deprecated('Use AppLayoutTokens.sectionGap instead')
   static const double section = lg;
 
   /// Standard card internal padding.
   static const double cardPadding = md;
 
   /// Standard form field vertical gap.
+  /// Deprecated: Authoritative layout tokens reside in [AppLayoutTokens.formFieldGap] instead.
+  @Deprecated('Use AppLayoutTokens.formFieldGap instead')
   static const double formGap = md;
 
   /// Standard EdgeInsets helpers

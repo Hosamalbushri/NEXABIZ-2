@@ -1,18 +1,20 @@
 import 'package:flutter/widgets.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart' as shadcn;
+import '../localization/nexabiz_ui_localizations.dart';
 import 'app_field_shell.dart';
 
 /// Canonical date range selection field primitive for NexaBiz ERP.
 ///
 /// Backed natively by `shadcn_flutter` [shadcn.DateRangePicker], providing
 /// dialog/popover date range selection, date range bounds filtering (`firstDate`/`lastDate`),
-/// full type safety via [shadcn.DateTimeRange], and ERP form field layout rules (`label`, `errorText`, `helperText`).
+/// full type safety via [shadcn.DateTimeRange], and [AppFieldShell] layout rules (`label`, `description`, `errorText`, `helperText`).
 class AppDateRangeField extends StatelessWidget {
   const AppDateRangeField({
     super.key,
     required this.value,
     required this.onChanged,
     this.label,
+    this.description,
     this.hint,
     this.placeholder,
     this.required = false,
@@ -36,6 +38,9 @@ class AppDateRangeField extends StatelessWidget {
 
   /// Label string displayed above the field.
   final String? label;
+
+  /// Secondary description displayed below the label.
+  final String? description;
 
   /// Default hint text when no range is selected.
   final String? hint;
@@ -93,71 +98,28 @@ class AppDateRangeField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = shadcn.Theme.of(context);
-    final hasError = errorText != null && errorText!.isNotEmpty;
     final isInteractive = enabled && !readOnly;
-    final isRtl = Directionality.of(context) == TextDirection.rtl;
     final effectiveHint =
-        hint ?? (isRtl ? 'اختر الفترة الزمنية...' : 'Select date range...');
+        hint ?? NexaBizUiLocalizations.of(context).selectDateRange;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        if (label != null && label!.isNotEmpty) ...[
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                label!,
-                style: theme.typography.small.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: isInteractive
-                      ? theme.colorScheme.foreground
-                      : theme.colorScheme.mutedForeground,
-                ),
-              ),
-              if (required) ...[
-                const SizedBox(width: 4),
-                Text(
-                  '*',
-                  style: TextStyle(
-                    color: theme.colorScheme.destructive,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ],
-          ),
-          const SizedBox(height: 6),
-        ],
-        shadcn.DateRangePicker(
-          value: value,
-          onChanged: isInteractive ? onChanged : null,
-          placeholder: placeholder ?? Text(effectiveHint),
-          mode: mode,
-          dialogTitle: dialogTitle ?? (label != null ? Text(label!) : null),
-          stateBuilder: _effectiveStateBuilder,
-        ),
-        if (hasError) ...[
-          const SizedBox(height: 4),
-          Text(
-            errorText!,
-            style: theme.typography.small.copyWith(
-              color: theme.colorScheme.destructive,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ] else if (helperText != null && helperText!.isNotEmpty) ...[
-          const SizedBox(height: 4),
-          Text(
-            helperText!,
-            style: theme.typography.small.copyWith(
-              color: theme.colorScheme.mutedForeground,
-            ),
-          ),
-        ],
-      ],
+    return AppFieldShell(
+      label: label,
+      required: required,
+      description: description,
+      errorText: errorText,
+      helperText: helperText,
+      density: density,
+      enabled: enabled,
+      readOnly: readOnly,
+      borderless: true,
+      child: shadcn.DateRangePicker(
+        value: value,
+        onChanged: isInteractive ? onChanged : null,
+        placeholder: placeholder ?? Text(effectiveHint),
+        mode: mode,
+        dialogTitle: dialogTitle ?? (label != null ? Text(label!) : null),
+        stateBuilder: _effectiveStateBuilder,
+      ),
     );
   }
 }

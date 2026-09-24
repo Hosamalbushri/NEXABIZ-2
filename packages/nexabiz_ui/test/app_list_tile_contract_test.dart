@@ -70,6 +70,29 @@ void main() {
       expect(find.text('Action'), findsOneWidget);
     });
 
+    testWidgets('wrapTrailing: false retains horizontal Row layout at 280px', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        buildTestableTile(
+          width: 280.0,
+          child: const AppListTile(
+            wrapTrailing: false,
+            leading: Icon(AppIcons.settings),
+            title: Text('Dark Mode'),
+            subtitle: Text('Light theme enabled'),
+            trailing: Text('Action'),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(tester.takeException(), isNull);
+      expect(find.byType(AppListTile), findsOneWidget);
+      expect(find.text('Dark Mode'), findsOneWidget);
+      expect(find.text('Action'), findsOneWidget);
+    });
+
     testWidgets('Boundary test (319px vs 321px)', (tester) async {
       // 319px -> Compact branch (< 320.0)
       await tester.pumpWidget(

@@ -42,65 +42,100 @@ class AppSection extends StatelessWidget {
     final hasHeader =
         title != null || description != null || icon != null || actions != null;
     final contentList = child != null ? [child!] : children;
+    final heading = Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        if (icon != null) ...[
+          Container(
+            padding: const EdgeInsets.all(AppSpacing.xxs),
+            decoration: BoxDecoration(
+              color: colorScheme.primary.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(theme.radiusSm),
+            ),
+            child: Icon(icon, size: 18, color: colorScheme.primary),
+          ),
+          const SizedBox(width: AppSpacing.sm),
+        ] else if (title != null) ...[
+          Container(
+            width: 4,
+            height: 18,
+            decoration: BoxDecoration(
+              color: colorScheme.primary,
+              borderRadius: BorderRadius.circular(theme.radiusSm),
+            ),
+          ),
+          const SizedBox(width: AppSpacing.sm),
+        ],
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (title != null)
+                Text(
+                  title!,
+                  style: theme.typography.p.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: colorScheme.foreground,
+                  ),
+                ),
+              if (description != null) ...[
+                const SizedBox(height: 2),
+                Text(
+                  description!,
+                  style: theme.typography.small.copyWith(
+                    color: colorScheme.mutedForeground,
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ],
+    );
+    final actionCluster = actions == null || actions!.isEmpty
+        ? null
+        : Wrap(
+            alignment: WrapAlignment.end,
+            spacing: AppSpacing.sm,
+            runSpacing: AppSpacing.sm,
+            children: actions!,
+          );
 
     final column = Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
       children: [
         if (hasHeader) ...[
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              if (icon != null) ...[
-                Container(
-                  padding: const EdgeInsets.all(AppSpacing.xxs),
-                  decoration: BoxDecoration(
-                    color: colorScheme.primary.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(theme.radiusSm),
-                  ),
-                  child: Icon(icon, size: 18, color: colorScheme.primary),
-                ),
-                const SizedBox(width: AppSpacing.sm),
-              ] else if (title != null) ...[
-                Container(
-                  width: 4,
-                  height: 18,
-                  decoration: BoxDecoration(
-                    color: colorScheme.primary,
-                    borderRadius: BorderRadius.circular(theme.radiusSm),
-                  ),
-                ),
-                const SizedBox(width: AppSpacing.sm),
-              ],
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final stackHeader =
+                  actionCluster != null &&
+                  (!constraints.hasBoundedWidth ||
+                      constraints.maxWidth <
+                          AppLayoutTokens.sectionHeaderStackMaxWidth);
+              if (stackHeader) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    if (title != null)
-                      Text(
-                        title!,
-                        style: theme.typography.p.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: colorScheme.foreground,
-                        ),
-                      ),
-                    if (description != null) ...[
-                      const SizedBox(height: 2),
-                      Text(
-                        description!,
-                        style: theme.typography.small.copyWith(
-                          color: colorScheme.mutedForeground,
-                        ),
-                      ),
-                    ],
+                    heading,
+                    const SizedBox(height: AppSpacing.sm),
+                    Align(
+                      alignment: AlignmentDirectional.centerEnd,
+                      child: actionCluster,
+                    ),
                   ],
-                ),
-              ),
-              if (actions != null && actions!.isNotEmpty) ...[
-                const SizedBox(width: AppSpacing.sm),
-                Row(mainAxisSize: MainAxisSize.min, children: actions!),
-              ],
-            ],
+                );
+              }
+              return Row(
+                children: [
+                  Expanded(child: heading),
+                  if (actionCluster != null) ...[
+                    const SizedBox(width: AppSpacing.sm),
+                    Flexible(child: actionCluster),
+                  ],
+                ],
+              );
+            },
           ),
           const SizedBox(height: AppLayoutTokens.sectionTitleGap),
           Divider(

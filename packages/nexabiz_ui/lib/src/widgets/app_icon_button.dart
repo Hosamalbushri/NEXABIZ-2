@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart' as shadcn;
 
-import '../theme/app_dimensions.dart';
+import '../theme/tokens/app_dimensions.dart';
 import '../theme/tokens/app_icons.dart';
+import '../theme/tokens/app_radii.dart';
 
 enum AppIconButtonVariant {
   standard,
@@ -21,16 +22,22 @@ class AppIconButton extends StatefulWidget {
     required this.onPressed,
     this.variant = AppIconButtonVariant.standard,
     this.tooltip,
+    this.semanticLabel,
     this.badgeCount,
     this.isLoading = false,
     this.iconSize = AppIcons.sm,
     this.color,
-  });
+  }) : assert(
+         (tooltip != null && tooltip != '') ||
+             (semanticLabel != null && semanticLabel != ''),
+         'AppIconButton requires a non-empty tooltip or semanticLabel.',
+       );
 
   final IconData icon;
   final VoidCallback? onPressed;
   final AppIconButtonVariant variant;
   final String? tooltip;
+  final String? semanticLabel;
   final int? badgeCount;
   final bool isLoading;
   final double iconSize;
@@ -49,6 +56,7 @@ class _AppIconButtonState extends State<AppIconButton> {
     final shadcnTheme = shadcn.Theme.of(context);
     final colorScheme = shadcnTheme.colorScheme;
     final accent = widget.color ?? colorScheme.primary;
+    final effectiveLabel = widget.semanticLabel ?? widget.tooltip!;
 
     final childWidget = widget.isLoading
         ? SizedBox(
@@ -90,11 +98,11 @@ class _AppIconButtonState extends State<AppIconButton> {
         curve: Curves.easeOutCubic,
         child: Material(
           color: accent.withValues(alpha: enabled ? 0.12 : 0.05),
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(AppRadii.md),
           child: InkWell(
             onTap: handler,
             onHighlightChanged: (value) => setState(() => _pressed = value),
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(AppRadii.md),
             child: SizedBox(
               width: AppDimensions.minTouchTarget,
               height: AppDimensions.minTouchTarget,
@@ -110,6 +118,13 @@ class _AppIconButtonState extends State<AppIconButton> {
           child: chipBtn,
         );
       }
+
+      chipBtn = Semantics(
+        button: true,
+        enabled: enabled,
+        label: effectiveLabel,
+        child: chipBtn,
+      );
 
       return chipBtn;
     }
@@ -161,6 +176,13 @@ class _AppIconButtonState extends State<AppIconButton> {
         child: button,
       );
     }
+
+    button = Semantics(
+      button: true,
+      enabled: enabled,
+      label: effectiveLabel,
+      child: button,
+    );
 
     return button;
   }

@@ -4,7 +4,7 @@ import 'package:shadcn_flutter/shadcn_flutter.dart' as shadcn;
 import '../../theme/tokens/tokens.dart';
 import '../../widgets/app_amount_field.dart';
 import '../../widgets/app_date_field.dart';
-import '../../widgets/app_dropdown.dart';
+import '../../widgets/app_select_field.dart';
 import '../../widgets/app_form.dart';
 import '../../widgets/app_form_actions.dart';
 import '../../widgets/app_text_field.dart';
@@ -130,19 +130,19 @@ class _FormScenarioState extends State<FormScenario> {
                     value: _selectedDate,
                     onChanged: (d) => setState(() => _selectedDate = d),
                   ),
-                  AppDropdown<String>(
+                  AppSelectField<String>(
                     label: isAr ? 'العملة' : 'Currency',
                     value: _selectedCurrency,
                     items: const [
-                      AppDropdownItem(
+                      AppSelectOption(
                         value: 'SAR',
                         label: 'SAR - Saudi Riyal (ر.س)',
                       ),
-                      AppDropdownItem(
+                      AppSelectOption(
                         value: 'USD',
                         label: 'USD - US Dollar (\$)',
                       ),
-                      AppDropdownItem(
+                      AppSelectOption(
                         value: 'AED',
                         label: 'AED - UAE Dirham (د.إ)',
                       ),
@@ -164,12 +164,12 @@ class _FormScenarioState extends State<FormScenario> {
                     : 'Ledger account & financial entry',
                 icon: shadcn.LucideIcons.wallet,
                 children: [
-                  AppDropdown<String>(
+                  AppSelectField<String>(
                     label: isAr ? 'الحساب المالي' : 'Ledger Account',
                     value: _selectedAccountCode,
                     errorText: _accountError,
                     items: accounts.map((acc) {
-                      return AppDropdownItem(
+                      return AppSelectOption(
                         value: acc.code,
                         label: '${acc.code} - ${acc.name(isAr)}',
                       );

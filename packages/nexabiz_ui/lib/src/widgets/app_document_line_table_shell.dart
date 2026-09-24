@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import '../theme/app_radius.dart';
-import '../theme/app_spacing.dart';
+import '../localization/nexabiz_ui_localizations.dart';
+import '../theme/tokens/app_radii.dart';
+import '../theme/tokens/app_spacing.dart';
 
 /// Dashed border painter for empty-state add-row cards across document line tables.
 class DashedBorderPainter extends CustomPainter {
@@ -72,7 +73,7 @@ class AppDocumentLineTableShell<T> extends StatelessWidget {
     this.showIndexColumn = true,
     this.indexColumnWidth = 44.0,
     this.emptyText,
-    this.emptyAddLabel = 'إضافة سطر جديد',
+    this.emptyAddLabel,
     this.onAddRow,
     this.scrollController,
   });
@@ -112,7 +113,7 @@ class AppDocumentLineTableShell<T> extends StatelessWidget {
   final String? emptyText;
 
   /// Add row button label text.
-  final String emptyAddLabel;
+  final String? emptyAddLabel;
 
   /// Callback when user taps to append a new line draft.
   final VoidCallback? onAddRow;
@@ -288,7 +289,7 @@ class AppDocumentLineTableShell<T> extends StatelessWidget {
               ),
               const SizedBox(height: AppSpacing.md),
               Text(
-                emptyText ?? 'جدول الأسطر فارغ',
+                emptyText ?? NexaBizUiLocalizations.of(context).noLinesData,
                 textAlign: TextAlign.center,
                 style: theme.textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.w800,
@@ -356,7 +357,7 @@ class AppDocumentLineTableShell<T> extends StatelessWidget {
               const SizedBox(width: AppSpacing.sm),
               Flexible(
                 child: Text(
-                  emptyAddLabel,
+                  emptyAddLabel ?? NexaBizUiLocalizations.of(context).addLine,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: theme.textTheme.labelLarge?.copyWith(

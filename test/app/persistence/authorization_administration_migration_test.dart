@@ -200,6 +200,25 @@ void main() {
           .single['count'],
       kInitialCompanyOwnerPermissions.length,
     );
+    final triggers = db
+        .select("SELECT name FROM sqlite_master WHERE type = 'trigger'")
+        .map((row) => row['name']! as String)
+        .toSet();
+    expect(
+      triggers,
+      containsAll({
+        'trg_core_memberships_assignment_tenant_update',
+        'trg_core_roles_assignment_tenant_update',
+        'trg_core_memberships_last_owner_delete',
+        'trg_core_roles_last_owner_delete',
+        'trg_core_roles_last_owner_update',
+        'trg_core_membership_roles_last_owner_delete',
+        'trg_core_membership_roles_last_owner_update',
+        'trg_core_memberships_last_owner_update',
+        'trg_core_users_last_owner_update',
+        'trg_core_companies_owner_activation_update',
+      }),
+    );
     db.close();
   });
 

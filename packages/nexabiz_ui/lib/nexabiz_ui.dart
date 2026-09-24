@@ -39,6 +39,7 @@ export 'src/widgets/app_document_line_table_shell.dart';
 export 'src/widgets/app_empty_state.dart';
 export 'src/widgets/app_error_state.dart';
 export 'src/widgets/app_checkbox.dart';
+export 'src/widgets/app_radio.dart';
 export 'src/widgets/app_chip_input.dart';
 export 'src/widgets/app_chip_autocomplete.dart';
 export 'src/widgets/app_multi_select_field.dart';
@@ -51,7 +52,6 @@ export 'src/widgets/app_multiline_field.dart';
 export 'src/widgets/app_exclusive_toggle_group.dart';
 export 'src/widgets/app_carousel.dart';
 export 'src/widgets/app_switch.dart';
-export 'src/widgets/app_dropdown.dart';
 export 'src/widgets/app_amount_field.dart';
 export 'src/widgets/app_bottom_actions.dart';
 export 'src/widgets/app_field_shell.dart';
@@ -64,6 +64,8 @@ export 'src/widgets/app_detail_surface_card.dart';
 export 'src/widgets/app_expandable_text.dart';
 export 'src/widgets/app_date_field.dart';
 export 'src/widgets/app_date_range_field.dart';
+export 'src/widgets/app_select_option.dart';
+export 'src/widgets/app_selection_foundation.dart';
 export 'src/widgets/app_select_field.dart';
 export 'src/widgets/app_snackbar.dart';
 export 'src/widgets/app_surface.dart';
@@ -80,35 +82,26 @@ export 'src/widgets/app_tabs.dart';
 export 'src/widgets/app_tab_workspace.dart';
 export 'src/widgets/app_drawer_sheet.dart';
 export 'src/widgets/app_hover_preview.dart';
+export 'src/widgets/app_tooltip.dart';
 export 'src/widgets/app_pinned_dock_sheet.dart';
 export 'src/widgets/app_form_sheet.dart';
 export 'src/widgets/app_swiper_sheet.dart';
 export 'src/widgets/app_list_tile.dart';
+export 'src/widgets/app_separator.dart';
 export 'src/widgets/app_custom_bottom_nav.dart';
+export 'src/widgets/app_navigation_item.dart';
 export 'src/widgets/app_custom_app_bar.dart';
 export 'src/widgets/app_sidebar.dart';
 export 'src/widgets/app_top_header.dart';
 export 'src/widgets/app_company_switcher.dart';
 export 'src/widgets/app_quick_actions_panel.dart';
-export 'src/widgets/app_draggable_quick_nav.dart';
 export 'src/widgets/app_bottom_sheet.dart';
-export 'src/widgets/nexabiz_aliases.dart';
+export 'src/widgets/app_accordion.dart';
 
 // Localization & Internationalization
 export 'src/localization/nexa_biz_shadcn_localizations_delegate.dart';
+export 'src/localization/nexabiz_ui_localizations.dart';
 
 // Scaffolds & Page Patterns
 export 'src/presentation/scaffolds/app_root.dart';
-export 'src/presentation/scaffolds/app_responsive.dart';
 export 'src/presentation/scaffolds/app_responsive_scaffold.dart';
-export 'src/presentation/scaffolds/module_list_scaffold.dart';
-export 'src/presentation/scaffolds/module_form_scaffold.dart';
-export 'src/presentation/patterns/app_page_shell.dart';
-export 'src/presentation/patterns/app_list_page_pattern.dart';
-export 'src/presentation/patterns/app_form_page_pattern.dart';
-export 'src/presentation/patterns/app_detail_page_pattern.dart';
-
-// Component Gallery & Playground
-export 'src/gallery/component_gallery_page.dart';
-export 'src/gallery/gallery_state_controller.dart';
-export 'src/playground/mobile_ui_playground_page.dart';

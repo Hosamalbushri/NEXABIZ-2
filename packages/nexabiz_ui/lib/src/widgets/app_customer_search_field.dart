@@ -1,7 +1,9 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:shadcn_flutter/shadcn_flutter.dart' as shadcn;
 
+import '../theme/tokens/tokens.dart';
 import 'app_async_autocomplete_field.dart';
 
 /// Reusable design-system customer search field wrapping [AppAsyncAutocompleteField].
@@ -15,6 +17,7 @@ class AppCustomerSearchField<T> extends StatelessWidget {
     this.focusNode,
     this.initialQuery = '',
     this.label,
+    this.description,
     this.hint,
     this.showLabelAbove = true,
     this.autofocus = false,
@@ -27,7 +30,7 @@ class AppCustomerSearchField<T> extends StatelessWidget {
     this.noResultsText,
     this.errorText,
     this.itemBuilder,
-    this.prefixIcon = Icons.person_outline_rounded,
+    this.prefixIcon = shadcn.LucideIcons.user,
     this.decoration,
   });
 
@@ -38,6 +41,7 @@ class AppCustomerSearchField<T> extends StatelessWidget {
   final FocusNode? focusNode;
   final String initialQuery;
   final String? label;
+  final String? description;
   final String? hint;
   final bool showLabelAbove;
   final bool autofocus;
@@ -51,7 +55,7 @@ class AppCustomerSearchField<T> extends StatelessWidget {
   final String? errorText;
   final Widget Function(BuildContext context, T option)? itemBuilder;
   final IconData? prefixIcon;
-  final InputDecoration? decoration;
+  final dynamic decoration;
 
   @override
   Widget build(BuildContext context) {
@@ -60,6 +64,7 @@ class AppCustomerSearchField<T> extends StatelessWidget {
       focusNode: focusNode,
       initialQuery: initialQuery,
       label: label,
+      description: description,
       showLabelAbove: showLabelAbove,
       hint: hint,
       autofocus: autofocus,
@@ -78,18 +83,33 @@ class AppCustomerSearchField<T> extends StatelessWidget {
       itemBuilder:
           itemBuilder ??
           (context, item) {
-            final theme = Theme.of(context);
-            final scheme = theme.colorScheme;
-            return ListTile(
-              dense: true,
-              leading: prefixIcon != null
-                  ? Icon(prefixIcon, color: scheme.primary)
-                  : null,
-              title: Text(
-                itemLabelBuilder(item),
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
+            final theme = shadcn.Theme.of(context);
+            final colorScheme = theme.colorScheme;
+            return Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.sm,
+                vertical: AppSpacing.xs,
+              ),
+              child: Row(
+                children: [
+                  if (prefixIcon != null) ...[
+                    Icon(
+                      prefixIcon,
+                      color: colorScheme.primary,
+                      size: AppIcons.sm,
+                    ),
+                    const SizedBox(width: AppSpacing.xs),
+                  ],
+                  Expanded(
+                    child: Text(
+                      itemLabelBuilder(item),
+                      style: theme.typography.small.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: colorScheme.foreground,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             );
           },

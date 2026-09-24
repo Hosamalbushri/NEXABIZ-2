@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 
 import '../../../../app/authorization/nexabiz_authorization_administration.dart';
 import '../../../../app/authorization/nexabiz_authorization_invalidation_signal.dart';
+import '../../../../core/authorization/administration/nexabiz_authorization_administration_errors.dart';
 import '../../../../core/authorization/administration/nexabiz_authorization_administration_models.dart';
 import '../../../../core/authorization/nexabiz_authorization_context.dart';
 import '../../../../core/authorization/nexabiz_membership_id.dart';
@@ -88,7 +89,12 @@ final class RolesAdministrationController extends ChangeNotifier {
   int _epoch = 0;
   int _roleListGeneration = 0;
   int _roleDetailsGeneration = 0;
+  int _roleSelectionGeneration = 0;
   int _assignableMembersGeneration = 0;
+  int _permissionMutationSerial = 0;
+  final Map<NexaBizPermissionId, int> _permissionMutationTokens = {};
+  int _membershipMutationSerial = 0;
+  final Map<NexaBizMembershipId, int> _membershipMutationTokens = {};
   bool _isRefreshing = false;
   bool _refreshRequestedWhileActive = false;
   bool _isDisposed = false;
@@ -130,6 +136,10 @@ final class RolesAdministrationController extends ChangeNotifier {
   ) async {
     if (_isDisposed) return;
     _epoch++;
+    _roleSelectionGeneration++;
+    _permissionMutationTokens.clear();
+    _membershipMutationTokens.clear();
+    _assignableMembersGeneration++;
 
     if (newContext == null) {
       _currentContext = null;
@@ -154,6 +164,10 @@ final class RolesAdministrationController extends ChangeNotifier {
   void handleLogout() {
     if (_isDisposed) return;
     _epoch++;
+    _roleSelectionGeneration++;
+    _permissionMutationTokens.clear();
+    _membershipMutationTokens.clear();
+    _assignableMembersGeneration++;
     _currentContext = null;
     _state = RolesAdministrationState.initial();
     _safeNotifyListeners();
@@ -455,6 +469,13 @@ final class RolesAdministrationController extends ChangeNotifier {
     final requestEpoch = _epoch;
     final requestGen = ++_roleDetailsGeneration;
 
+    if (!silent) {
+      _roleSelectionGeneration++;
+      _permissionMutationTokens.clear();
+      _membershipMutationTokens.clear();
+      _assignableMembersGeneration++;
+    }
+
     // Find summary from current list if available
     NexaBizCompanyRoleSummary? summary;
     for (final r in _state.roles) {
@@ -478,8 +499,13 @@ final class RolesAdministrationController extends ChangeNotifier {
         isLoadingRoleDetails: true,
         isLoadingRolePermissions: true,
         isLoadingAssignedMembers: true,
+        isLoadingAssignableMembers: false,
+        isLoadingMoreAssignableMembers: false,
+        pendingPermissionIds: const {},
+        pendingMembershipIds: const {},
         roleDetailsError: () => null,
         assignedMembersError: () => null,
+        assignableMembersError: () => null,
         mutationError: () => null,
       );
       _safeNotifyListeners();
@@ -551,6 +577,11 @@ final class RolesAdministrationController extends ChangeNotifier {
         return;
       }
 
+      if (e is NexaBizRoleNotFoundException) {
+        clearSelectedRole();
+        return;
+      }
+
       _state = _state.copyWith(
         isLoadingRoleDetails: false,
         isLoadingRolePermissions: false,
@@ -566,6 +597,10 @@ final class RolesAdministrationController extends ChangeNotifier {
   void clearSelectedRole() {
     if (_isDisposed) return;
     _roleDetailsGeneration++;
+    _roleSelectionGeneration++;
+    _permissionMutationTokens.clear();
+    _membershipMutationTokens.clear();
+    _assignableMembersGeneration++;
     _state = _state.copyWith(
       selectedRoleId: () => null,
       selectedRoleSummary: () => null,
@@ -579,8 +614,13 @@ final class RolesAdministrationController extends ChangeNotifier {
       isLoadingRoleDetails: false,
       isLoadingRolePermissions: false,
       isLoadingAssignedMembers: false,
+      isLoadingAssignableMembers: false,
+      isLoadingMoreAssignableMembers: false,
+      pendingPermissionIds: const {},
+      pendingMembershipIds: const {},
       roleDetailsError: () => null,
       assignedMembersError: () => null,
+      assignableMembersError: () => null,
       mutationError: () => null,
     );
     _safeNotifyListeners();
@@ -710,6 +750,7 @@ final class RolesAdministrationController extends ChangeNotifier {
 
     _state = _state.copyWith(
       assignableMembersSearchQuery: () => normalized,
+      assignableMembers: const [],
       assignableMembersNextCursor: () => null,
       isLoadingAssignableMembers: true,
       assignableMembersError: () => null,
@@ -839,15 +880,24 @@ final class RolesAdministrationController extends ChangeNotifier {
     _state = _state.copyWith(isCreatingRole: true, mutationError: () => null);
     _safeNotifyListeners();
 
+    final requestEpoch = _epoch;
+    final requestContext = _currentContext!;
+
     try {
       final result = await _administration.createCompanyRole.execute(
-        context: _currentContext!,
+        context: requestContext,
         roleId: roleId,
         metadata: NexaBizRoleMetadata(
           displayName: displayName,
           description: description,
         ),
       );
+
+      if (_isDisposed ||
+          requestEpoch != _epoch ||
+          _currentContext != requestContext) {
+        return false;
+      }
 
       final after = result.after;
       if (after != null) {
@@ -859,7 +909,10 @@ final class RolesAdministrationController extends ChangeNotifier {
           membershipAssignmentCount: after.membershipAssignmentCount,
         );
 
-        final updatedRoles = [newSummary, ..._state.roles];
+        final updatedRoles = [
+          newSummary,
+          ..._state.roles.where((role) => role.roleId != roleId),
+        ];
 
         _state = _state.copyWith(
           roles: List.unmodifiable(updatedRoles),
@@ -879,6 +932,11 @@ final class RolesAdministrationController extends ChangeNotifier {
       _safeNotifyListeners();
       return true;
     } catch (e) {
+      if (_isDisposed ||
+          requestEpoch != _epoch ||
+          _currentContext != requestContext) {
+        return false;
+      }
       _state = _state.copyWith(
         isCreatingRole: false,
         mutationError: () =>
@@ -901,15 +959,24 @@ final class RolesAdministrationController extends ChangeNotifier {
     _state = _state.copyWith(isUpdatingRole: true, mutationError: () => null);
     _safeNotifyListeners();
 
+    final requestEpoch = _epoch;
+    final requestContext = _currentContext!;
+
     try {
       final result = await _administration.updateCompanyRoleMetadata.execute(
-        context: _currentContext!,
+        context: requestContext,
         roleId: roleId,
         metadata: NexaBizRoleMetadata(
           displayName: displayName,
           description: description,
         ),
       );
+
+      if (_isDisposed ||
+          requestEpoch != _epoch ||
+          _currentContext != requestContext) {
+        return false;
+      }
 
       final after = result.after;
       if (after != null) {
@@ -925,6 +992,17 @@ final class RolesAdministrationController extends ChangeNotifier {
           }
           return r;
         }).toList();
+
+        NexaBizCompanyRoleSummary? updatedSummary = _state.selectedRoleSummary;
+        if (_state.selectedRoleId == roleId && updatedSummary != null) {
+          updatedSummary = NexaBizCompanyRoleSummary(
+            companyId: after.companyId,
+            roleId: after.roleId,
+            metadata: after.metadata,
+            kind: after.kind,
+            membershipAssignmentCount: updatedSummary.membershipAssignmentCount,
+          );
+        }
 
         NexaBizCompanyRoleDetails? updatedDetails = _state.selectedRoleDetails;
         if (_state.selectedRoleId == roleId && updatedDetails != null) {
@@ -942,6 +1020,7 @@ final class RolesAdministrationController extends ChangeNotifier {
 
         _state = _state.copyWith(
           roles: List.unmodifiable(updatedRoles),
+          selectedRoleSummary: () => updatedSummary,
           selectedRoleDetails: () => updatedDetails,
           isUpdatingRole: false,
           mutationError: () => null,
@@ -957,6 +1036,11 @@ final class RolesAdministrationController extends ChangeNotifier {
       _safeNotifyListeners();
       return true;
     } catch (e) {
+      if (_isDisposed ||
+          requestEpoch != _epoch ||
+          _currentContext != requestContext) {
+        return false;
+      }
       _state = _state.copyWith(
         isUpdatingRole: false,
         mutationError: () =>
@@ -975,11 +1059,20 @@ final class RolesAdministrationController extends ChangeNotifier {
     _state = _state.copyWith(isDeletingRole: true, mutationError: () => null);
     _safeNotifyListeners();
 
+    final requestEpoch = _epoch;
+    final requestContext = _currentContext!;
+
     try {
       await _administration.deleteCompanyRole.execute(
-        context: _currentContext!,
+        context: requestContext,
         roleId: roleId,
       );
+
+      if (_isDisposed ||
+          requestEpoch != _epoch ||
+          _currentContext != requestContext) {
+        return false;
+      }
 
       final updatedRoles = _state.roles
           .where((r) => r.roleId != roleId)
@@ -1000,6 +1093,11 @@ final class RolesAdministrationController extends ChangeNotifier {
       _safeNotifyListeners();
       return true;
     } catch (e) {
+      if (_isDisposed ||
+          requestEpoch != _epoch ||
+          _currentContext != requestContext) {
+        return false;
+      }
       _state = _state.copyWith(
         isDeletingRole: false,
         mutationError: () =>
@@ -1023,22 +1121,40 @@ final class RolesAdministrationController extends ChangeNotifier {
       return false; // Sequencing guard
     }
 
+    final requestEpoch = _epoch;
+    final requestSelectionGeneration = _roleSelectionGeneration;
+    final requestContext = _currentContext!;
+    final mutationToken = ++_permissionMutationSerial;
+    _permissionMutationTokens[permissionId] = mutationToken;
+
     final newPending = Set<NexaBizPermissionId>.from(
       _state.pendingPermissionIds,
     )..add(permissionId);
 
     _state = _state.copyWith(
       pendingPermissionIds: newPending,
-      mutationError: () => null,
+      mutationError: () => _state.mutationError?.permissionId == permissionId
+          ? null
+          : _state.mutationError,
     );
     _safeNotifyListeners();
 
     try {
       await _administration.grantPermissionToRole.execute(
-        context: _currentContext!,
+        context: requestContext,
         roleId: roleId,
         permissionId: permissionId,
       );
+
+      if (!_isCurrentPermissionMutation(
+        requestEpoch: requestEpoch,
+        requestSelectionGeneration: requestSelectionGeneration,
+        roleId: roleId,
+        permissionId: permissionId,
+        mutationToken: mutationToken,
+      )) {
+        return false;
+      }
 
       final updatedPermissions = _state.selectedRolePermissions.map((item) {
         if (item.permissionId == permissionId) {
@@ -1070,20 +1186,36 @@ final class RolesAdministrationController extends ChangeNotifier {
         selectedRolePermissions: List.unmodifiable(updatedPermissions),
         pendingPermissionIds: pendingAfter,
         selectedRoleDetails: () => updatedDetails,
-        mutationError: () => null,
+        mutationError: () => _state.mutationError?.permissionId == permissionId
+            ? null
+            : _state.mutationError,
       );
+      _permissionMutationTokens.remove(permissionId);
       _safeNotifyListeners();
       return true;
     } catch (e) {
+      if (!_isCurrentPermissionMutation(
+        requestEpoch: requestEpoch,
+        requestSelectionGeneration: requestSelectionGeneration,
+        roleId: roleId,
+        permissionId: permissionId,
+        mutationToken: mutationToken,
+      )) {
+        return false;
+      }
       final pendingAfter = Set<NexaBizPermissionId>.from(
         _state.pendingPermissionIds,
       )..remove(permissionId);
 
       _state = _state.copyWith(
         pendingPermissionIds: pendingAfter,
-        mutationError: () =>
-            NexaBizAuthorizationPresentationError(error: e, roleId: roleId),
+        mutationError: () => NexaBizAuthorizationPresentationError(
+          error: e,
+          roleId: roleId,
+          permissionId: permissionId,
+        ),
       );
+      _permissionMutationTokens.remove(permissionId);
       _safeNotifyListeners();
       return false;
     }
@@ -1098,22 +1230,40 @@ final class RolesAdministrationController extends ChangeNotifier {
       return false;
     }
 
+    final requestEpoch = _epoch;
+    final requestSelectionGeneration = _roleSelectionGeneration;
+    final requestContext = _currentContext!;
+    final mutationToken = ++_permissionMutationSerial;
+    _permissionMutationTokens[permissionId] = mutationToken;
+
     final newPending = Set<NexaBizPermissionId>.from(
       _state.pendingPermissionIds,
     )..add(permissionId);
 
     _state = _state.copyWith(
       pendingPermissionIds: newPending,
-      mutationError: () => null,
+      mutationError: () => _state.mutationError?.permissionId == permissionId
+          ? null
+          : _state.mutationError,
     );
     _safeNotifyListeners();
 
     try {
       await _administration.revokePermissionFromRole.execute(
-        context: _currentContext!,
+        context: requestContext,
         roleId: roleId,
         permissionId: permissionId,
       );
+
+      if (!_isCurrentPermissionMutation(
+        requestEpoch: requestEpoch,
+        requestSelectionGeneration: requestSelectionGeneration,
+        roleId: roleId,
+        permissionId: permissionId,
+        mutationToken: mutationToken,
+      )) {
+        return false;
+      }
 
       final updatedPermissions = _state.selectedRolePermissions.map((item) {
         if (item.permissionId == permissionId) {
@@ -1145,23 +1295,53 @@ final class RolesAdministrationController extends ChangeNotifier {
         selectedRolePermissions: List.unmodifiable(updatedPermissions),
         pendingPermissionIds: pendingAfter,
         selectedRoleDetails: () => updatedDetails,
-        mutationError: () => null,
+        mutationError: () => _state.mutationError?.permissionId == permissionId
+            ? null
+            : _state.mutationError,
       );
+      _permissionMutationTokens.remove(permissionId);
       _safeNotifyListeners();
       return true;
     } catch (e) {
+      if (!_isCurrentPermissionMutation(
+        requestEpoch: requestEpoch,
+        requestSelectionGeneration: requestSelectionGeneration,
+        roleId: roleId,
+        permissionId: permissionId,
+        mutationToken: mutationToken,
+      )) {
+        return false;
+      }
       final pendingAfter = Set<NexaBizPermissionId>.from(
         _state.pendingPermissionIds,
       )..remove(permissionId);
 
       _state = _state.copyWith(
         pendingPermissionIds: pendingAfter,
-        mutationError: () =>
-            NexaBizAuthorizationPresentationError(error: e, roleId: roleId),
+        mutationError: () => NexaBizAuthorizationPresentationError(
+          error: e,
+          roleId: roleId,
+          permissionId: permissionId,
+        ),
       );
+      _permissionMutationTokens.remove(permissionId);
       _safeNotifyListeners();
       return false;
     }
+  }
+
+  bool _isCurrentPermissionMutation({
+    required int requestEpoch,
+    required int requestSelectionGeneration,
+    required NexaBizRoleId roleId,
+    required NexaBizPermissionId permissionId,
+    required int mutationToken,
+  }) {
+    return !_isDisposed &&
+        requestEpoch == _epoch &&
+        requestSelectionGeneration == _roleSelectionGeneration &&
+        _state.selectedRoleId == roleId &&
+        _permissionMutationTokens[permissionId] == mutationToken;
   }
 
   // =========================================================================
@@ -1177,26 +1357,57 @@ final class RolesAdministrationController extends ChangeNotifier {
       return false; // Sequencing guard
     }
 
+    final requestEpoch = _epoch;
+    final requestSelectionGeneration = _roleSelectionGeneration;
+    final requestContext = _currentContext!;
+    final mutationToken = ++_membershipMutationSerial;
+    _membershipMutationTokens[membershipId] = mutationToken;
+
     final newPending = Set<NexaBizMembershipId>.from(
       _state.pendingMembershipIds,
     )..add(membershipId);
 
     _state = _state.copyWith(
       pendingMembershipIds: newPending,
-      mutationError: () => null,
+      mutationError: () => _state.mutationError?.membershipId == membershipId
+          ? null
+          : _state.mutationError,
     );
     _safeNotifyListeners();
 
     try {
-      await _administration.assignRoleToMembership.execute(
-        context: _currentContext!,
+      final result = await _administration.assignRoleToMembership.execute(
+        context: requestContext,
         roleId: roleId,
         membershipId: membershipId,
       );
 
+      if (!_isCurrentMembershipMutation(
+        requestEpoch: requestEpoch,
+        requestSelectionGeneration: requestSelectionGeneration,
+        roleId: roleId,
+        membershipId: membershipId,
+        mutationToken: mutationToken,
+      )) {
+        return false;
+      }
+
       final updatedCandidates = _state.assignableMembers
           .where((m) => m.membershipId != membershipId)
           .toList();
+      final updatedMembers = List<NexaBizMembershipRoleAssignment>.from(
+        _state.assignedMembers,
+      );
+      final committedAssignment = result.after;
+      if (committedAssignment != null &&
+          !updatedMembers.any(
+            (member) => member.membershipId == membershipId,
+          )) {
+        updatedMembers.add(committedAssignment);
+        updatedMembers.sort(
+          (a, b) => a.membershipId.value.compareTo(b.membershipId.value),
+        );
+      }
 
       final pendingAfter = Set<NexaBizMembershipId>.from(
         _state.pendingMembershipIds,
@@ -1204,15 +1415,36 @@ final class RolesAdministrationController extends ChangeNotifier {
 
       _state = _state.copyWith(
         assignableMembers: List.unmodifiable(updatedCandidates),
+        assignedMembers: List.unmodifiable(updatedMembers),
         pendingMembershipIds: pendingAfter,
-        mutationError: () => null,
+        mutationError: () => _state.mutationError?.membershipId == membershipId
+            ? null
+            : _state.mutationError,
       );
+      if (result.changed) {
+        final currentCount =
+            _state.selectedRoleDetails?.membershipAssignmentCount;
+        if (currentCount != null) {
+          _updateMembershipCount(roleId, currentCount + 1);
+        }
+      }
+      _membershipMutationTokens.remove(membershipId);
       _safeNotifyListeners();
-
-      // Refresh assigned members to obtain enriched projection
-      await _refreshAssignedMembersSilently(roleId);
       return true;
     } catch (e) {
+      if (!_isCurrentMembershipMutation(
+        requestEpoch: requestEpoch,
+        requestSelectionGeneration: requestSelectionGeneration,
+        roleId: roleId,
+        membershipId: membershipId,
+        mutationToken: mutationToken,
+      )) {
+        return false;
+      }
+      if (e is NexaBizRoleNotFoundException) {
+        clearSelectedRole();
+        return false;
+      }
       final pendingAfter = Set<NexaBizMembershipId>.from(
         _state.pendingMembershipIds,
       )..remove(membershipId);
@@ -1225,6 +1457,7 @@ final class RolesAdministrationController extends ChangeNotifier {
           membershipId: membershipId,
         ),
       );
+      _membershipMutationTokens.remove(membershipId);
       _safeNotifyListeners();
       return false;
     }
@@ -1239,22 +1472,40 @@ final class RolesAdministrationController extends ChangeNotifier {
       return false;
     }
 
+    final requestEpoch = _epoch;
+    final requestSelectionGeneration = _roleSelectionGeneration;
+    final requestContext = _currentContext!;
+    final mutationToken = ++_membershipMutationSerial;
+    _membershipMutationTokens[membershipId] = mutationToken;
+
     final newPending = Set<NexaBizMembershipId>.from(
       _state.pendingMembershipIds,
     )..add(membershipId);
 
     _state = _state.copyWith(
       pendingMembershipIds: newPending,
-      mutationError: () => null,
+      mutationError: () => _state.mutationError?.membershipId == membershipId
+          ? null
+          : _state.mutationError,
     );
     _safeNotifyListeners();
 
     try {
-      await _administration.unassignRoleFromMembership.execute(
-        context: _currentContext!,
+      final result = await _administration.unassignRoleFromMembership.execute(
+        context: requestContext,
         roleId: roleId,
         membershipId: membershipId,
       );
+
+      if (!_isCurrentMembershipMutation(
+        requestEpoch: requestEpoch,
+        requestSelectionGeneration: requestSelectionGeneration,
+        roleId: roleId,
+        membershipId: membershipId,
+        mutationToken: mutationToken,
+      )) {
+        return false;
+      }
 
       final updatedMembers = _state.assignedMembers
           .where((m) => m.membershipId != membershipId)
@@ -1267,14 +1518,37 @@ final class RolesAdministrationController extends ChangeNotifier {
       _state = _state.copyWith(
         assignedMembers: List.unmodifiable(updatedMembers),
         pendingMembershipIds: pendingAfter,
-        mutationError: () => null,
+        mutationError: () => _state.mutationError?.membershipId == membershipId
+            ? null
+            : _state.mutationError,
       );
+      if (result.changed) {
+        final currentCount =
+            _state.selectedRoleDetails?.membershipAssignmentCount;
+        if (currentCount != null) {
+          _updateMembershipCount(
+            roleId,
+            currentCount > 0 ? currentCount - 1 : 0,
+          );
+        }
+      }
+      _membershipMutationTokens.remove(membershipId);
       _safeNotifyListeners();
-
-      // Update assignment count in details and summary
-      _updateMembershipCount(roleId, updatedMembers.length);
       return true;
     } catch (e) {
+      if (!_isCurrentMembershipMutation(
+        requestEpoch: requestEpoch,
+        requestSelectionGeneration: requestSelectionGeneration,
+        roleId: roleId,
+        membershipId: membershipId,
+        mutationToken: mutationToken,
+      )) {
+        return false;
+      }
+      if (e is NexaBizRoleNotFoundException) {
+        clearSelectedRole();
+        return false;
+      }
       final pendingAfter = Set<NexaBizMembershipId>.from(
         _state.pendingMembershipIds,
       )..remove(membershipId);
@@ -1288,26 +1562,24 @@ final class RolesAdministrationController extends ChangeNotifier {
           membershipId: membershipId,
         ),
       );
+      _membershipMutationTokens.remove(membershipId);
       _safeNotifyListeners();
       return false;
     }
   }
 
-  Future<void> _refreshAssignedMembersSilently(NexaBizRoleId roleId) async {
-    if (_currentContext == null) return;
-    try {
-      final page = await _administration.listMembershipsAssignedToRole.execute(
-        context: _currentContext!,
-        roleId: roleId,
-        page: NexaBizAuthorizationAdministrationPageRequest(limit: _pageSize),
-      );
-      _state = _state.copyWith(
-        assignedMembers: List.unmodifiable(page.items),
-        assignedMembersNextCursor: () => page.nextCursor,
-      );
-      _updateMembershipCount(roleId, page.items.length);
-      _safeNotifyListeners();
-    } catch (_) {}
+  bool _isCurrentMembershipMutation({
+    required int requestEpoch,
+    required int requestSelectionGeneration,
+    required NexaBizRoleId roleId,
+    required NexaBizMembershipId membershipId,
+    required int mutationToken,
+  }) {
+    return !_isDisposed &&
+        requestEpoch == _epoch &&
+        requestSelectionGeneration == _roleSelectionGeneration &&
+        _state.selectedRoleId == roleId &&
+        _membershipMutationTokens[membershipId] == mutationToken;
   }
 
   void _updateMembershipCount(NexaBizRoleId roleId, int newCount) {

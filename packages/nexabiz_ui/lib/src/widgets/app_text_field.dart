@@ -1,6 +1,8 @@
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart' as shadcn;
+
+import '../theme/tokens/tokens.dart';
 import 'app_field_shell.dart';
 
 /// Design-system text field primitive for NexaBiz ERP built natively on [shadcn.TextField].
@@ -10,6 +12,7 @@ class AppTextField extends StatefulWidget {
     this.controller,
     this.focusNode,
     this.label,
+    this.description,
     this.hint,
     this.required = false,
     this.errorText,
@@ -21,6 +24,7 @@ class AppTextField extends StatefulWidget {
     this.onSubmitted,
     this.keyboardType,
     this.textInputAction,
+    this.textDirection,
     this.inputFormatters,
     this.obscureText = false,
     this.showPasswordToggle = false,
@@ -35,6 +39,7 @@ class AppTextField extends StatefulWidget {
   final TextEditingController? controller;
   final FocusNode? focusNode;
   final String? label;
+  final String? description;
   final String? hint;
   final bool required;
   final String? errorText;
@@ -46,6 +51,7 @@ class AppTextField extends StatefulWidget {
   final ValueChanged<String>? onSubmitted;
   final TextInputType? keyboardType;
   final TextInputAction? textInputAction;
+  final TextDirection? textDirection;
   final List<TextInputFormatter>? inputFormatters;
   final bool obscureText;
   final bool showPasswordToggle;
@@ -93,56 +99,61 @@ class _AppTextFieldState extends State<AppTextField> {
             ? () => setState(() => _obscureText = !_obscureText)
             : null,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xxs),
           child: Icon(
-            _obscureText
-                ? Icons.visibility_outlined
-                : Icons.visibility_off_outlined,
-            size: 18,
+            _obscureText ? shadcn.LucideIcons.eye : shadcn.LucideIcons.eyeOff,
+            size: AppIcons.sm,
             color: colorScheme.mutedForeground,
           ),
         ),
       );
     }
 
-    final childInput = shadcn.TextField(
-      controller: widget.controller,
-      focusNode: widget.focusNode,
-      enabled: widget.enabled,
-      readOnly: widget.readOnly,
-      autofocus: widget.autofocus,
-      obscureText: _obscureText,
-      maxLines: widget.maxLines,
-      minLines: widget.minLines,
-      keyboardType: widget.keyboardType,
-      textInputAction: widget.textInputAction,
-      inputFormatters: widget.inputFormatters,
-      onChanged: widget.onChanged != null
-          ? (value) {
-              final binding = WidgetsBinding.instance;
-              if (binding.buildOwner?.debugBuilding ?? false) {
-                binding.addPostFrameCallback((_) => widget.onChanged!(value));
-              } else {
-                widget.onChanged!(value);
+    final childInput = shadcn.ComponentTheme(
+      data: const shadcn.FocusOutlineTheme(border: Border()),
+      child: shadcn.TextField(
+        controller: widget.controller,
+        focusNode: widget.focusNode,
+        enabled: widget.enabled,
+        readOnly: widget.readOnly,
+        autofocus: widget.autofocus,
+        obscureText: _obscureText,
+        maxLines: widget.maxLines,
+        minLines: widget.minLines,
+        keyboardType: widget.keyboardType,
+        textInputAction: widget.textInputAction,
+        textDirection: widget.textDirection,
+        inputFormatters: widget.inputFormatters,
+        onChanged: widget.onChanged != null
+            ? (value) {
+                final binding = WidgetsBinding.instance;
+                if (binding.buildOwner?.debugBuilding ?? false) {
+                  binding.addPostFrameCallback((_) => widget.onChanged!(value));
+                } else {
+                  widget.onChanged!(value);
+                }
               }
-            }
-          : null,
-      onSubmitted: widget.onSubmitted != null
-          ? (value) {
-              final binding = WidgetsBinding.instance;
-              if (binding.buildOwner?.debugBuilding ?? false) {
-                binding.addPostFrameCallback((_) => widget.onSubmitted!(value));
-              } else {
-                widget.onSubmitted!(value);
+            : null,
+        onSubmitted: widget.onSubmitted != null
+            ? (value) {
+                final binding = WidgetsBinding.instance;
+                if (binding.buildOwner?.debugBuilding ?? false) {
+                  binding.addPostFrameCallback(
+                    (_) => widget.onSubmitted!(value),
+                  );
+                } else {
+                  widget.onSubmitted!(value);
+                }
               }
-            }
-          : null,
-      placeholder: widget.hint != null
-          ? Text(widget.hint!, style: hintTextStyle)
-          : null,
-      padding: EdgeInsets.zero,
-      border: const Border(),
-      features: const [],
+            : null,
+        placeholder: widget.hint != null
+            ? Text(widget.hint!, style: hintTextStyle)
+            : null,
+        padding: EdgeInsets.zero,
+        decoration: const BoxDecoration(),
+        border: const Border(),
+        features: const [],
+      ),
     );
 
     final prefixWidget = widget.prefixIcon is IconData
@@ -153,12 +164,12 @@ class _AppTextFieldState extends State<AppTextField> {
               color: widget.enabled
                   ? colorScheme.primary.withValues(alpha: 0.1)
                   : colorScheme.muted.withValues(alpha: 0.3),
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(AppRadii.smOf(context)),
             ),
             child: Center(
               child: Icon(
                 widget.prefixIcon as IconData,
-                size: 16,
+                size: AppIcons.xs,
                 color: widget.enabled
                     ? colorScheme.primary
                     : colorScheme.mutedForeground,
@@ -169,6 +180,7 @@ class _AppTextFieldState extends State<AppTextField> {
 
     return AppFieldShell(
       label: widget.label,
+      description: widget.description,
       required: widget.required,
       errorText: widget.errorText,
       helperText: widget.helperText,

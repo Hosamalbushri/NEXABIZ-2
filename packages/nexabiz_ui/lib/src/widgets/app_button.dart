@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart' as shadcn;
 
-import '../theme/app_dimensions.dart';
+import '../theme/tokens/app_dimensions.dart';
 
 enum AppButtonVariant { filled, elevated, outlined, text, tonal, destructive }
 
@@ -44,16 +44,10 @@ class AppButton extends StatelessWidget {
         ? Icon(icon, size: 18)
         : null;
 
-    final childWidget = FittedBox(
-      fit: BoxFit.scaleDown,
-      alignment: Alignment.center,
-      child: Text(
-        label,
-        textAlign: TextAlign.center,
-        maxLines: 1,
-        softWrap: false,
-        overflow: TextOverflow.ellipsis,
-      ),
+    final childWidget = Text(
+      label,
+      textAlign: TextAlign.center,
+      softWrap: true,
     );
 
     final VoidCallback? handler = enabled ? onPressed : null;
@@ -105,19 +99,25 @@ class AppButton extends StatelessWidget {
       ),
     };
 
-    final double height = isCompact
+    final double minHeight = isCompact
         ? AppDimensions.buttonHeightCompact
-        : AppDimensions.buttonHeight;
+        : AppDimensions.desktopButtonHeight;
 
     final constrainedButton = ConstrainedBox(
-      constraints: BoxConstraints(minHeight: isCompact ? 36.0 : 44.0),
-      child: height > 0 ? SizedBox(height: height, child: button) : button,
+      constraints: BoxConstraints(minHeight: minHeight),
+      child: button,
+    );
+
+    final semanticButton = Semantics(
+      button: true,
+      label: label,
+      child: constrainedButton,
     );
 
     if (expand) {
-      return SizedBox(width: double.infinity, child: constrainedButton);
+      return SizedBox(width: double.infinity, child: semanticButton);
     }
 
-    return constrainedButton;
+    return semanticButton;
   }
 }

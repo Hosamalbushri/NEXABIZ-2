@@ -3,6 +3,7 @@ import 'package:shadcn_flutter/shadcn_flutter.dart' as shadcn;
 
 import 'app_breakpoints.dart';
 import 'app_layout_tokens.dart';
+import 'app_responsive.dart';
 
 /// Central canonical page layout abstraction for NexaBiz screens.
 ///
@@ -35,11 +36,13 @@ class AppPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final shadcnTheme = shadcn.Theme.of(context);
-    final mediaWidth = MediaQuery.of(context).size.width;
+    final scope = AppResponsiveScope.maybeOf(context);
+    final availableWidth =
+        scope?.availableWidth ?? MediaQuery.sizeOf(context).width;
 
     final defaultPadding =
         padding ??
-        (AppBreakpoints.isCompact(mediaWidth)
+        (AppBreakpoints.isCompact(availableWidth)
             ? AppLayoutTokens.pagePaddingDirectionalCompact
             : AppLayoutTokens.pagePaddingDirectionalStandard);
 

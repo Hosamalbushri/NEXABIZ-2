@@ -10,8 +10,8 @@ class AppConfirmationDialog extends StatelessWidget {
     required this.title,
     required this.message,
     required this.onConfirm,
-    this.confirmLabel = 'Confirm',
-    this.cancelLabel = 'Cancel',
+    this.confirmLabel,
+    this.cancelLabel,
     this.tone = AppDialogTone.warning,
     this.isLoading = false,
     this.customBody,
@@ -20,8 +20,8 @@ class AppConfirmationDialog extends StatelessWidget {
   final String title;
   final String message;
   final VoidCallback onConfirm;
-  final String confirmLabel;
-  final String cancelLabel;
+  final String? confirmLabel;
+  final String? cancelLabel;
   final AppDialogTone tone;
   final bool isLoading;
   final Widget? customBody;
@@ -31,8 +31,8 @@ class AppConfirmationDialog extends StatelessWidget {
     required String title,
     required String message,
     required VoidCallback onConfirm,
-    String confirmLabel = 'Confirm',
-    String cancelLabel = 'Cancel',
+    String? confirmLabel,
+    String? cancelLabel,
     AppDialogTone tone = AppDialogTone.warning,
     Widget? customBody,
   }) {

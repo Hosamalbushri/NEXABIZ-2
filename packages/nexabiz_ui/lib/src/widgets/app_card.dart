@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart' as shadcn;
 
-import '../theme/app_spacing.dart';
+import '../theme/tokens/app_spacing.dart';
 
 /// Canonical card primitive for NexaBiz ERP built natively on [shadcn.Card].
 class AppCard extends StatelessWidget {

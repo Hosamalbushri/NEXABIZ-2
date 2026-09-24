@@ -6,6 +6,7 @@ import '../widgets/app_loading.dart';
 import '../widgets/app_page_header.dart';
 import 'app_layout_tokens.dart';
 import 'app_page.dart';
+import 'app_responsive.dart';
 
 /// Canonical Form Page layout component for NexaBiz screens.
 ///
@@ -19,9 +20,9 @@ class AppFormPage extends StatelessWidget {
     this.subtitle,
     this.breadcrumbs,
     this.formKey,
-    this.submitLabel = 'Save',
+    this.submitLabel,
     this.onCancel,
-    this.cancelLabel = 'Cancel',
+    this.cancelLabel,
     this.isLoading = false,
     this.isPageLoading = false,
     this.errorText,
@@ -44,9 +45,9 @@ class AppFormPage extends StatelessWidget {
 
   final Widget body;
   final VoidCallback? onSubmit;
-  final String submitLabel;
+  final String? submitLabel;
   final VoidCallback? onCancel;
-  final String cancelLabel;
+  final String? cancelLabel;
   final bool isLoading;
 
   // Page initialization feedback states
@@ -118,49 +119,6 @@ class AppFormPage extends StatelessWidget {
       );
     }
 
-    final mediaWidth = MediaQuery.of(context).size.width;
-    final isDesktop = mediaWidth >= AppLayoutTokens.maxFormWidth;
-
-    final formContent = Form(
-      key: formKey,
-      child: isDesktop && secondaryBody != null
-          ? Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(flex: 3, child: body),
-                const SizedBox(width: AppLayoutTokens.formGroupGap),
-                Expanded(flex: 2, child: secondaryBody!),
-              ],
-            )
-          : (isBodyScrollView
-                ? body
-                : Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      body,
-                      if (secondaryBody != null) ...[
-                        const SizedBox(height: AppLayoutTokens.formGroupGap),
-                        secondaryBody!,
-                      ],
-                    ],
-                  )),
-    );
-
-    final formChildren = [
-      if (isBodyScrollView) Expanded(child: formContent) else formContent,
-      if (showFormActions && (onSubmit != null || onCancel != null)) ...[
-        const SizedBox(height: AppLayoutTokens.formGroupGap),
-        AppFormActions(
-          onSubmit: _handleSubmit,
-          submitLabel: submitLabel,
-          onCancel: onCancel,
-          cancelLabel: cancelLabel,
-          isLoading: isLoading,
-          isSticky: false,
-        ),
-      ],
-    ];
-
     return AppPage(
       maxWidth: secondaryBody != null
           ? AppLayoutTokens.maxWideFormWidth
@@ -174,15 +132,63 @@ class AppFormPage extends StatelessWidget {
         showBackButton: showBackButton,
         onBack: onBack,
       ),
-      child: isBodyScrollView
-          ? Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: formChildren,
-            )
-          : Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: formChildren,
-            ),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final parentScope = AppResponsiveScope.maybeOf(context);
+          final availableWidth = constraints.hasBoundedWidth
+              ? constraints.maxWidth
+              : (parentScope?.availableWidth ??
+                    MediaQuery.sizeOf(context).width);
+          final isDesktop = availableWidth >= AppLayoutTokens.maxFormWidth;
+
+          final formContent = Form(
+            key: formKey,
+            child: isDesktop && secondaryBody != null
+                ? Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(flex: 3, child: body),
+                      const SizedBox(width: AppLayoutTokens.formGroupGap),
+                      Expanded(flex: 2, child: secondaryBody!),
+                    ],
+                  )
+                : (isBodyScrollView
+                      ? body
+                      : Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            body,
+                            if (secondaryBody != null) ...[
+                              const SizedBox(
+                                height: AppLayoutTokens.formGroupGap,
+                              ),
+                              secondaryBody!,
+                            ],
+                          ],
+                        )),
+          );
+
+          final formChildren = [
+            if (isBodyScrollView) Expanded(child: formContent) else formContent,
+            if (showFormActions && (onSubmit != null || onCancel != null)) ...[
+              const SizedBox(height: AppLayoutTokens.formGroupGap),
+              AppFormActions(
+                onSubmit: _handleSubmit,
+                submitLabel: submitLabel,
+                onCancel: onCancel,
+                cancelLabel: cancelLabel,
+                isLoading: isLoading,
+                isSticky: false,
+              ),
+            ],
+          ];
+
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: formChildren,
+          );
+        },
+      ),
     );
   }
 }

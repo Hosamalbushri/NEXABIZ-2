@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../localization/nexabiz_ui_localizations.dart';
 import 'app_dialog.dart';
 
 /// Canonical NexaBiz Form Dialog Component (`NexaBizFormDialog<T>`).
@@ -17,9 +18,9 @@ class AppFormDialog<T> extends StatelessWidget {
     this.errorMessage,
     required this.children,
     this.onSubmit,
-    this.submitLabel = 'Save',
+    this.submitLabel,
     this.onCancel,
-    this.cancelLabel = 'Cancel',
+    this.cancelLabel,
     this.isSubmitting = false,
     this.size = AppDialogSize.medium,
     this.showCloseButton = true,
@@ -48,14 +49,14 @@ class AppFormDialog<T> extends StatelessWidget {
   /// Callback when submit action button is clicked.
   final VoidCallback? onSubmit;
 
-  /// Label for submit button (default: 'Save').
-  final String submitLabel;
+  /// Label for submit button (default: localized 'Save').
+  final String? submitLabel;
 
   /// Callback when cancel action button is clicked.
   final VoidCallback? onCancel;
 
-  /// Label for cancel button (default: 'Cancel').
-  final String cancelLabel;
+  /// Label for cancel button (default: localized 'Cancel').
+  final String? cancelLabel;
 
   /// Whether form submission is currently in progress.
   final bool isSubmitting;
@@ -82,41 +83,57 @@ class AppFormDialog<T> extends StatelessWidget {
     String? errorMessage,
     required List<Widget> children,
     VoidCallback? onSubmit,
-    String submitLabel = 'Save',
+    String? submitLabel,
     VoidCallback? onCancel,
-    String cancelLabel = 'Cancel',
+    String? cancelLabel,
     bool isSubmitting = false,
     AppDialogSize size = AppDialogSize.medium,
     bool showCloseButton = true,
     List<Widget>? extraActions,
     bool barrierDismissible = true,
+    double spacing = 16.0,
   }) {
-    return showDialog<T>(
+    final loc = NexaBizUiLocalizations.of(context);
+    final effectiveSubmitLabel = submitLabel ?? loc.save;
+    final effectiveCancelLabel = cancelLabel ?? loc.cancel;
+
+    return AppDialog.show<T>(
       context: context,
+      title: title,
+      description: subtitle,
+      icon: icon,
+      errorMessage: errorMessage,
+      isLoading: isSubmitting,
+      size: size,
+      showCloseButton: showCloseButton,
+      confirmLabel: effectiveSubmitLabel,
+      onConfirm: onSubmit,
+      cancelLabel: effectiveCancelLabel,
+      onCancel: onCancel,
+      actions: extraActions,
       barrierDismissible: barrierDismissible && !isSubmitting,
-      builder: (dialogContext) {
-        return AppFormDialog<T>(
-          formKey: formKey,
-          title: title,
-          subtitle: subtitle,
-          icon: icon,
-          errorMessage: errorMessage,
-          onSubmit: onSubmit,
-          submitLabel: submitLabel,
-          onCancel: onCancel,
-          cancelLabel: cancelLabel,
-          isSubmitting: isSubmitting,
-          size: size,
-          showCloseButton: showCloseButton,
-          extraActions: extraActions,
-          children: children,
-        );
-      },
+      child: Form(
+        key: formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for (int i = 0; i < children.length; i++) ...[
+              children[i],
+              if (i < children.length - 1) SizedBox(height: spacing),
+            ],
+          ],
+        ),
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final loc = NexaBizUiLocalizations.of(context);
+    final effectiveSubmitLabel = submitLabel ?? loc.save;
+    final effectiveCancelLabel = cancelLabel ?? loc.cancel;
+
     return AppDialog<T>(
       title: title,
       description: subtitle,
@@ -125,10 +142,10 @@ class AppFormDialog<T> extends StatelessWidget {
       isLoading: isSubmitting,
       size: size,
       showCloseButton: showCloseButton,
-      confirmLabel: submitLabel,
+      confirmLabel: effectiveSubmitLabel,
       onConfirm: onSubmit,
-      cancelLabel: cancelLabel,
-      onCancel: onCancel ?? () => Navigator.of(context).pop(null),
+      cancelLabel: effectiveCancelLabel,
+      onCancel: onCancel,
       actions: extraActions,
       child: Form(
         key: formKey,

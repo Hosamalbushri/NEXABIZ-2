@@ -4,21 +4,7 @@ import 'package:shadcn_flutter/shadcn_flutter.dart' as shadcn;
 
 import '../theme/tokens/app_spacing.dart';
 import '../theme/tokens/app_typography.dart';
-
-/// Item definition for [AppCustomBottomNav].
-class AppNavItem {
-  final String label;
-  final IconData icon;
-  final IconData? activeIcon;
-  final String routePath;
-
-  const AppNavItem({
-    required this.label,
-    required this.icon,
-    this.activeIcon,
-    required this.routePath,
-  });
-}
+import 'app_navigation_item.dart';
 
 /// Center-docked quick-actions FAB for the NexaBiz platform shell,
 /// built natively on `shadcn_flutter` v0.0.53 theme tokens and primitives.
@@ -52,6 +38,7 @@ class _QuickActionsFabState extends State<QuickActionsFab>
   static const Duration _iconDuration = Duration(milliseconds: 220);
 
   bool _pressed = false;
+  bool _focused = false;
 
   void _setPressed(bool value) {
     if (_pressed == value || !mounted) return;
@@ -80,49 +67,76 @@ class _QuickActionsFabState extends State<QuickActionsFab>
       child: shadcn.Tooltip(
         tooltip: (context) =>
             shadcn.TooltipContainer(child: Text(widget.tooltip)),
-        child: GestureDetector(
-          onTap: _handleTap,
-          onTapDown: (_) => _setPressed(true),
-          onTapUp: (_) => _setPressed(false),
-          onTapCancel: () => _setPressed(false),
-          child: AnimatedScale(
-            scale: pressScale,
-            duration: reduceMotion ? Duration.zero : pressDuration,
-            curve: Curves.easeOutCubic,
-            child: Container(
-              width: QuickActionsFab.size,
-              height: QuickActionsFab.size,
-              decoration: BoxDecoration(
-                color: colorScheme.primary,
-                borderRadius: BorderRadius.circular(
-                  QuickActionsFab.cornerRadius,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: colorScheme.primary.withValues(
-                      alpha: isDark ? 0.45 : 0.25,
-                    ),
-                    blurRadius: _pressed ? 6 : 14,
-                    offset: Offset(0, _pressed ? 2 : 5),
-                  ),
-                ],
+        child: Shortcuts(
+          shortcuts: const {
+            SingleActivator(LogicalKeyboardKey.enter): ActivateIntent(),
+            SingleActivator(LogicalKeyboardKey.space): ActivateIntent(),
+          },
+          child: Actions(
+            actions: {
+              ActivateIntent: CallbackAction<ActivateIntent>(
+                onInvoke: (_) {
+                  _handleTap();
+                  return null;
+                },
               ),
-              child: Center(
-                child: AnimatedSwitcher(
-                  duration: reduceMotion ? Duration.zero : _iconDuration,
-                  switchInCurve: Curves.easeOutCubic,
-                  switchOutCurve: Curves.easeInCubic,
-                  transitionBuilder: (child, animation) {
-                    return ScaleTransition(
-                      scale: animation,
-                      child: FadeTransition(opacity: animation, child: child),
-                    );
-                  },
-                  child: Icon(
-                    widget.isOpen ? shadcn.LucideIcons.x : widget.icon,
-                    key: ValueKey<bool>(widget.isOpen),
-                    size: 24,
-                    color: colorScheme.primaryForeground,
+            },
+            child: FocusableActionDetector(
+              onShowFocusHighlight: (value) {
+                if (mounted) setState(() => _focused = value);
+              },
+              child: GestureDetector(
+                onTap: _handleTap,
+                onTapDown: (_) => _setPressed(true),
+                onTapUp: (_) => _setPressed(false),
+                onTapCancel: () => _setPressed(false),
+                child: AnimatedScale(
+                  scale: pressScale,
+                  duration: reduceMotion ? Duration.zero : pressDuration,
+                  curve: Curves.easeOutCubic,
+                  child: Container(
+                    width: QuickActionsFab.size,
+                    height: QuickActionsFab.size,
+                    decoration: BoxDecoration(
+                      color: colorScheme.primary,
+                      borderRadius: BorderRadius.circular(
+                        QuickActionsFab.cornerRadius,
+                      ),
+                      border: _focused
+                          ? Border.all(color: colorScheme.ring, width: 2)
+                          : null,
+                      boxShadow: [
+                        BoxShadow(
+                          color: colorScheme.primary.withValues(
+                            alpha: isDark ? 0.45 : 0.25,
+                          ),
+                          blurRadius: _pressed ? 6 : 14,
+                          offset: Offset(0, _pressed ? 2 : 5),
+                        ),
+                      ],
+                    ),
+                    child: Center(
+                      child: AnimatedSwitcher(
+                        duration: reduceMotion ? Duration.zero : _iconDuration,
+                        switchInCurve: Curves.easeOutCubic,
+                        switchOutCurve: Curves.easeInCubic,
+                        transitionBuilder: (child, animation) {
+                          return ScaleTransition(
+                            scale: animation,
+                            child: FadeTransition(
+                              opacity: animation,
+                              child: child,
+                            ),
+                          );
+                        },
+                        child: Icon(
+                          widget.isOpen ? shadcn.LucideIcons.x : widget.icon,
+                          key: ValueKey<bool>(widget.isOpen),
+                          size: 24,
+                          color: colorScheme.primaryForeground,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -139,12 +153,12 @@ class _QuickActionsFabState extends State<QuickActionsFab>
 class AppCustomBottomNav extends StatelessWidget {
   const AppCustomBottomNav({
     super.key,
-    required this.currentIndex,
+    required this.selectedId,
     required this.items,
-    required this.onTap,
+    required this.onSelected,
+    required this.fabTooltip,
     this.onFabTap,
     this.fabIcon = shadcn.LucideIcons.plus,
-    this.fabTooltip = 'Quick Actions',
     this.isFabOpen = false,
     this.height = barHeight,
     this.notchMargin = QuickActionsFab.notchMargin,
@@ -157,9 +171,9 @@ class AppCustomBottomNav extends StatelessWidget {
   static double bodyBottomInset(double systemBottomInset) =>
       barHeight + systemBottomInset + QuickActionsFab.dockOverlap;
 
-  final int currentIndex;
-  final List<AppNavItem> items;
-  final ValueChanged<int> onTap;
+  final String selectedId;
+  final List<AppNavigationItem> items;
+  final ValueChanged<String> onSelected;
   final VoidCallback? onFabTap;
   final IconData fabIcon;
   final String fabTooltip;
@@ -174,6 +188,9 @@ class AppCustomBottomNav extends StatelessWidget {
     final theme = shadcn.Theme.of(context);
     final colorScheme = theme.colorScheme;
     final isDark = theme.brightness == Brightness.dark;
+    final textScale = MediaQuery.textScalerOf(context).scale(1);
+    final effectiveHeight =
+        height + ((textScale - 1).clamp(0.0, 2.0) * AppSpacing.lg);
 
     final mid = items.length ~/ 2;
     final left = items.take(mid).toList(growable: false);
@@ -187,7 +204,7 @@ class AppCustomBottomNav extends StatelessWidget {
       children: [
         // Main Navigation Bar Surface
         Container(
-          height: height + viewBottomPadding,
+          height: effectiveHeight + viewBottomPadding,
           padding: EdgeInsets.only(bottom: viewBottomPadding),
           decoration: BoxDecoration(
             color: colorScheme.popover,
@@ -212,8 +229,10 @@ class AppCustomBottomNav extends StatelessWidget {
                   Expanded(
                     child: _NavItem(
                       item: left[i],
-                      selected: i == currentIndex,
-                      onTap: () => onTap(i),
+                      selected: left[i].id == selectedId,
+                      onTap: left[i].enabled
+                          ? () => onSelected(left[i].id)
+                          : null,
                     ),
                   ),
                 const SizedBox(width: _fabSlotWidth),
@@ -221,8 +240,10 @@ class AppCustomBottomNav extends StatelessWidget {
                   Expanded(
                     child: _NavItem(
                       item: right[i],
-                      selected: (mid + i) == currentIndex,
-                      onTap: () => onTap(mid + i),
+                      selected: right[i].id == selectedId,
+                      onTap: right[i].enabled
+                          ? () => onSelected(right[i].id)
+                          : null,
                     ),
                   ),
               ],
@@ -253,9 +274,9 @@ class _NavItem extends StatelessWidget {
     required this.onTap,
   });
 
-  final AppNavItem item;
+  final AppNavigationItem item;
   final bool selected;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -264,20 +285,28 @@ class _NavItem extends StatelessWidget {
     final activeColor = colorScheme.primary;
     final inactiveColor = colorScheme.mutedForeground;
 
-    final iconData = selected && item.activeIcon != null
-        ? item.activeIcon!
+    final iconData = selected && item.selectedIcon != null
+        ? item.selectedIcon!
         : item.icon;
 
     return Semantics(
       button: true,
       selected: selected,
+      enabled: item.enabled,
       label: item.label,
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: () {
-          HapticFeedback.selectionClick();
-          onTap();
-        },
+      child: shadcn.Button(
+        // The bar itself owns the touch-target height. Removing shadcn's
+        // additional vertical button padding leaves the full local constraint
+        // available to the icon/label stack, including at larger text scales.
+        style: const shadcn.ButtonStyle.ghost(
+          density: shadcn.ButtonDensity.compact,
+        ),
+        onPressed: onTap == null
+            ? null
+            : () {
+                HapticFeedback.selectionClick();
+                onTap!();
+              },
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 220),
           curve: Curves.easeOutCubic,

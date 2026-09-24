@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart' as shadcn;
 
-import '../theme/app_spacing.dart';
+import '../theme/tokens/app_spacing.dart';
 import 'app_card.dart';
 
 enum AppLoadingStyle { circular, linear, skeletonList }
@@ -66,7 +66,14 @@ class AppLoading extends StatelessWidget {
               return AppCard(
                 child: Row(
                   children: [
-                    const CircleAvatar(child: Text('A')),
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: shadcn.Theme.of(context).colorScheme.muted,
+                      ),
+                    ),
                     const SizedBox(width: AppSpacing.md),
                     Expanded(
                       child: Column(

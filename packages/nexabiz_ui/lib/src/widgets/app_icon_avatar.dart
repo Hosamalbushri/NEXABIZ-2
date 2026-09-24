@@ -1,4 +1,7 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:shadcn_flutter/shadcn_flutter.dart' as shadcn;
+
+import '../theme/tokens/app_colors.dart';
 import '../theme/tokens/app_radii.dart';
 
 enum AppIconAvatarTone {
@@ -16,7 +19,7 @@ enum AppIconAvatarSize { sm, md, lg }
 /// Canonical icon tile avatar widget for NexaBiz ERP.
 ///
 /// Displays icons inside structured, rounded surface tiles with
-/// soft tint backgrounds and crisp borders.
+/// soft tint backgrounds and crisp borders built on shadcn theme tokens.
 class AppIconAvatar extends StatelessWidget {
   const AppIconAvatar({
     super.key,
@@ -24,16 +27,18 @@ class AppIconAvatar extends StatelessWidget {
     this.tone = AppIconAvatarTone.primary,
     this.size = AppIconAvatarSize.md,
     this.customColor,
+    this.semanticLabel,
   });
 
   final IconData icon;
   final AppIconAvatarTone tone;
   final AppIconAvatarSize size;
   final Color? customColor;
+  final String? semanticLabel;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final theme = shadcn.Theme.of(context);
     final colorScheme = theme.colorScheme;
 
     final double dimension = switch (size) {
@@ -53,29 +58,33 @@ class AppIconAvatar extends StatelessWidget {
         switch (tone) {
           AppIconAvatarTone.primary => colorScheme.primary,
           AppIconAvatarTone.secondary => colorScheme.secondary,
-          AppIconAvatarTone.success => Colors.green,
-          AppIconAvatarTone.warning => Colors.amber.shade700,
-          AppIconAvatarTone.error => colorScheme.error,
-          AppIconAvatarTone.info => Colors.lightBlue,
-          AppIconAvatarTone.neutral => colorScheme.onSurface.withValues(
-            alpha: 0.6,
-          ),
+          AppIconAvatarTone.success => AppColors.success,
+          AppIconAvatarTone.warning => AppColors.warning,
+          AppIconAvatarTone.error => colorScheme.destructive,
+          AppIconAvatarTone.info => AppColors.info,
+          AppIconAvatarTone.neutral => colorScheme.mutedForeground,
         };
 
     final Color bgColor = baseColor.withValues(alpha: 0.12);
     final Color borderColor = baseColor.withValues(alpha: 0.24);
 
-    return Container(
+    final avatarWidget = Container(
       width: dimension,
       height: dimension,
       decoration: BoxDecoration(
         color: bgColor,
-        borderRadius: BorderRadius.circular(AppRadius.md),
+        borderRadius: BorderRadius.circular(AppRadii.md),
         border: Border.all(color: borderColor, width: 1.0),
       ),
       child: Center(
         child: Icon(icon, size: iconSize, color: baseColor),
       ),
     );
+
+    if (semanticLabel != null && semanticLabel!.isNotEmpty) {
+      return Semantics(label: semanticLabel, image: true, child: avatarWidget);
+    }
+
+    return avatarWidget;
   }
 }

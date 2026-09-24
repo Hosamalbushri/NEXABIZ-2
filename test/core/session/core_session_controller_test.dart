@@ -57,6 +57,27 @@ void main() {
       expect(controller.currentSession.isActive, isTrue);
     }
 
+    Future<void> addBackupOwner() async {
+      final db = store.database;
+      await db.customStatement('''
+        INSERT INTO core_users (id, email, name, status)
+        VALUES ('backup-owner-user', 'backup-owner@alpha.com', 'Backup Owner', 'active')
+      ''');
+      await db.customStatement('''
+        INSERT INTO core_company_memberships
+          (id, user_id, company_id, role, status)
+        SELECT 'backup-owner-membership', 'backup-owner-user', id, 'owner', 'active'
+        FROM core_companies WHERE code = 'ALPHA'
+      ''');
+      await db.customStatement('''
+        INSERT INTO core_membership_roles (membership_id, role_id, created_at)
+        SELECT 'backup-owner-membership', id, 0
+        FROM core_roles
+        WHERE company_id = (SELECT id FROM core_companies WHERE code = 'ALPHA')
+          AND role_key = 'company.owner'
+      ''');
+    }
+
     for (final table in [
       'core_users',
       'core_company_memberships',
@@ -64,8 +85,11 @@ void main() {
     ]) {
       test('validation invalidates session after disabling $table', () async {
         await loginEligibleUser();
+        if (table != 'core_companies') {
+          await addBackupOwner();
+        }
         await store.database.customStatement(
-          "UPDATE $table SET status = 'inactive'",
+          "UPDATE $table SET status = 'inactive' WHERE id NOT LIKE 'backup-owner-%'",
         );
         expect(await controller.validateSession(), isFalse);
         expect(controller.currentSession.state, NexaBizSessionState.noSession);
@@ -73,30 +97,26 @@ void main() {
         expect(controller.currentSession.companyId, isNull);
       });
 
-      test(
-        'Drift changes automatically invalidate session for $table',
-        () async {
-          await loginEligibleUser();
-          final invalidated = controller.onSessionChanged.firstWhere(
-            (session) => !session.isActive,
-          );
-          final db = store.database;
-          await db.customUpdate(
-            "UPDATE $table SET status = 'inactive'",
-            updates: {
-              if (table == 'core_users') db.coreUsers,
-              if (table == 'core_company_memberships')
-                db.coreCompanyMemberships,
-              if (table == 'core_companies') db.coreCompanies,
-            },
-          );
-          await invalidated.timeout(const Duration(seconds: 5));
-          expect(
-            controller.currentSession.state,
-            NexaBizSessionState.noSession,
-          );
-        },
-      );
+      test('Drift changes automatically invalidate session for $table', () async {
+        await loginEligibleUser();
+        if (table != 'core_companies') {
+          await addBackupOwner();
+        }
+        final invalidated = controller.onSessionChanged.firstWhere(
+          (session) => !session.isActive,
+        );
+        final db = store.database;
+        await db.customUpdate(
+          "UPDATE $table SET status = 'inactive' WHERE id NOT LIKE 'backup-owner-%'",
+          updates: {
+            if (table == 'core_users') db.coreUsers,
+            if (table == 'core_company_memberships') db.coreCompanyMemberships,
+            if (table == 'core_companies') db.coreCompanies,
+          },
+        );
+        await invalidated.timeout(const Duration(seconds: 5));
+        expect(controller.currentSession.state, NexaBizSessionState.noSession);
+      });
     }
 
     test('eligible session survives validation without replacement', () async {
@@ -110,6 +130,7 @@ void main() {
       'another eligible company does not preserve a revoked scope',
       () async {
         await loginEligibleUser();
+        await addBackupOwner();
         final current = controller.currentSession;
         final db = store.database;
         await db.customStatement(
@@ -124,8 +145,8 @@ void main() {
         );
         await db.customStatement(
           "UPDATE core_company_memberships SET status = 'inactive' "
-          "WHERE company_id = ?",
-          [current.companyId!.value],
+          "WHERE company_id = ? AND user_id = ?",
+          [current.companyId!.value, current.userId!.value],
         );
         expect(
           await store.isSessionEligible(current.userId!.value, null),
@@ -708,6 +729,7 @@ void main() {
         final pendingSelection = controller.selectOrSwitchCompany('company-2');
         await delayedStore.started.future;
 
+        await addBackupOwner();
         await db.customStatement(
           "UPDATE core_users SET status = 'inactive' WHERE id = '${alice.id}'",
         );
@@ -1017,8 +1039,10 @@ void main() {
 
         await delayedStore.started.future;
 
+        await addBackupOwner();
         await store.database.customStatement(
-          "UPDATE core_company_memberships SET status = 'inactive'",
+          "UPDATE core_company_memberships SET status = 'inactive' "
+          "WHERE id NOT LIKE 'backup-owner-%'",
         );
 
         delayedStore.release.complete();

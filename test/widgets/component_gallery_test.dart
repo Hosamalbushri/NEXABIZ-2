@@ -2,7 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nexabiz/app/bootstrap/nexabiz_capability_manifest.dart';
 import 'package:nexabiz/core/navigation/nexabiz_route_id.dart';
-import 'package:nexabiz_ui/nexabiz_ui.dart';
+import 'package:nexabiz_ui/nexabiz_ui_dev.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart' as shadcn;
 
 void main() {

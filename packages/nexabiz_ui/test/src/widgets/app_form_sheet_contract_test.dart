@@ -34,11 +34,43 @@ void main() {
     expect(find.text('Sheet Form'), findsOneWidget);
     expect(find.text('Form Body'), findsOneWidget);
 
-    await tester.tap(find.text('حفظ'));
+    await tester.tap(find.text('Save'));
     await tester.pumpAndSettle();
 
     expect(submitted, isTrue);
   });
+
+  testWidgets(
+    'AppFormSheet: respects custom localized submit and cancel labels',
+    (WidgetTester tester) async {
+      bool submitted = false;
+
+      await tester.pumpWidget(
+        buildTestableWidget(
+          AppFormSheet(
+            title: 'استمارة',
+            submitLabel: 'حفظ',
+            cancelLabel: 'إلغاء',
+            onSubmit: (context, values) {
+              submitted = true;
+            },
+            child: const Text('محتوى'),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('استمارة'), findsOneWidget);
+      expect(find.text('محتوى'), findsOneWidget);
+      expect(find.text('حفظ'), findsOneWidget);
+      expect(find.text('إلغاء'), findsOneWidget);
+
+      await tester.tap(find.text('حفظ'));
+      await tester.pumpAndSettle();
+
+      expect(submitted, isTrue);
+    },
+  );
 
   testWidgets(
     'AppFormSheet: unmounting during async submit does not throw context exception',
@@ -77,7 +109,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Trigger submit
-      await tester.tap(find.text('حفظ'));
+      await tester.tap(find.text('Save'));
       await tester.pump(); // Submit starts async operation
 
       // Unmount sheet while submission is pending

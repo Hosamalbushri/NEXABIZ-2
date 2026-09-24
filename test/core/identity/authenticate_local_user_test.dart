@@ -227,6 +227,27 @@ void main() {
       }
     });
 
+    Future<void> addBackupOwner() async {
+      final db = store.database;
+      await db.customStatement('''
+        INSERT INTO core_users (id, email, name, status)
+        VALUES ('backup-owner-user', 'backup-owner@acme.com', 'Backup Owner', 'active')
+      ''');
+      await db.customStatement('''
+        INSERT INTO core_company_memberships
+          (id, user_id, company_id, role, status)
+        SELECT 'backup-owner-membership', 'backup-owner-user', id, 'owner', 'active'
+        FROM core_companies WHERE code = 'ACME'
+      ''');
+      await db.customStatement('''
+        INSERT INTO core_membership_roles (membership_id, role_id, created_at)
+        SELECT 'backup-owner-membership', id, 0
+        FROM core_roles
+        WHERE company_id = (SELECT id FROM core_companies WHERE code = 'ACME')
+          AND role_key = 'company.owner'
+      ''');
+    }
+
     test(
       'valid setup administrator authenticates and resolves active company',
       () async {
@@ -272,6 +293,9 @@ void main() {
             password: 'correct horse battery staple',
           ),
         );
+        if (change.key != 'company disabled') {
+          await addBackupOwner();
+        }
         final delayed = _PendingIdentitySnapshotStore(store);
         final controller = CoreSessionController(
           authenticateLocalUser: AuthenticateLocalUser(queryStore: delayed),
@@ -289,7 +313,16 @@ void main() {
         );
         await delayed.started.future;
         // The old flow has already obtained its list of eligible companies.
-        await store.database.customStatement(change.value);
+        final statement = switch (change.key) {
+          'membership deleted' =>
+            '${change.value} WHERE id NOT LIKE \'backup-owner-%\'',
+          'membership disabled' =>
+            '${change.value} WHERE id NOT LIKE \'backup-owner-%\'',
+          'user disabled' =>
+            '${change.value} WHERE id NOT LIKE \'backup-owner-%\'',
+          _ => change.value,
+        };
+        await store.database.customStatement(statement);
         delayed.release.complete();
         final result = await pending;
         expect(result.isSuccess, isFalse);
@@ -354,6 +387,7 @@ void main() {
       );
 
       // Deactivate user directly in DB
+      await addBackupOwner();
       await store.database.customStatement(
         "UPDATE core_users SET status = 'inactive' WHERE email = 'alice@acme.com'",
       );
@@ -381,6 +415,7 @@ void main() {
             password: 'correct horse battery staple',
           ),
         );
+        await addBackupOwner();
         await store.database.customStatement(
           "UPDATE core_users SET status = 'inactive' WHERE email = 'alice@acme.com'",
         );
@@ -417,6 +452,7 @@ void main() {
           password: 'correct horse battery staple',
         ),
       );
+      await addBackupOwner();
       await store.database.customStatement(
         "UPDATE core_users SET status = 'inactive' WHERE email = 'alice@acme.com'",
       );
@@ -475,6 +511,7 @@ void main() {
             password: 'correct horse battery staple',
           ),
         );
+        await addBackupOwner();
         await store.database.customStatement(
           "UPDATE core_users SET status = 'inactive' WHERE email = 'alice@acme.com'",
         );
@@ -513,6 +550,7 @@ void main() {
             password: 'correct horse battery staple',
           ),
         );
+        await addBackupOwner();
         await store.database.customStatement(
           "UPDATE core_users SET status = 'inactive' WHERE email = 'alice@acme.com'",
         );

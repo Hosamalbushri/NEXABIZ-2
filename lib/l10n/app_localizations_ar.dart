@@ -33,6 +33,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get quickActionsTitle => 'إجراءات سريعة';
 
   @override
+  String get mainBranch => 'الفرع الرئيسي';
+
+  @override
+  String get actionBack => 'رجوع';
+
+  @override
   String get quickActionsSubtitle =>
       'تنفيذ العمليات التجارية وأدوات المطور الشائعة';
 
@@ -423,6 +429,63 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get settingsOfflineSyncSubtitle => 'جميع قواعد البيانات المحلية محدثة';
+
+  @override
+  String get settingsAccountCode => 'رقم الحساب / كود المنشأة';
+
+  @override
+  String get settingsRoleLabel => 'الصفة / الدور';
+
+  @override
+  String get settingsDeviceManagement => 'إدارة الأجهزة والجلسات';
+
+  @override
+  String get settingsDeviceManagementSubtitle => 'الجلسة النشطة وأمان الجهاز';
+
+  @override
+  String get settingsAppCustomization => 'تخصيص التطبيق';
+
+  @override
+  String get settingsAdditionalSettings => 'إعدادات إضافية';
+
+  @override
+  String get settingsHelpSupport => 'الدعم والمساعدة';
+
+  @override
+  String get settingsHelpSupportSubtitle =>
+      'نيكسابيز ERP v1.0.0 • مركز المساعدة';
+
+  @override
+  String get settingsQrTitle => 'رمز الاستجابة السريعة للمنشأة والمستخدم';
+
+  @override
+  String get settingsQrDescription =>
+      'امسح الرمز للتحقق من هوية المنشأة وبيانات الاعتماد';
+
+  @override
+  String get settingsActiveDevice => 'الجهاز الحالي';
+
+  @override
+  String get settingsActiveDeviceDesc => 'محطة عمل نشطة • محلي';
+
+  @override
+  String get settingsSessionId => 'معرّف الجلسة';
+
+  @override
+  String get settingsSupportTitle => 'نظام نيكسابيز للمؤسسات';
+
+  @override
+  String get settingsSupportVersion => 'الإصدار 1.0.0 (نسخة الإنتاج)';
+
+  @override
+  String get settingsSupportAssistance =>
+      'الدعم الفني للمؤسسات على مدار الساعة';
+
+  @override
+  String get settingsDefaultUser => 'حسام حازم علي مصلح البشاري';
+
+  @override
+  String get settingsDefaultRole => 'مسؤول النظام';
 
   @override
   String get demoTitle => 'إمكانية العرض التوضيحي لنيكسابيز';
@@ -1136,6 +1199,19 @@ class AppLocalizationsAr extends AppLocalizations {
   String get authAdminMemberIneligible => 'غير مؤهل';
 
   @override
+  String get authAdminUnknownMember => 'عضو بدون اسم';
+
+  @override
+  String authAdminAssignMemberSemantics(String memberName) {
+    return 'تعيين $memberName لهذا الدور';
+  }
+
+  @override
+  String authAdminUnassignMemberSemantics(String memberName) {
+    return 'إلغاء تعيين $memberName من هذا الدور';
+  }
+
+  @override
   String get authAdminAvailableMembersSection => 'الأعضاء المتاحون';
 
   @override
@@ -1363,4 +1439,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get authAdminRolePermissionGranted => 'ممنوحة';
+
+  @override
+  String get authAdminRolePermissionNotGranted => 'غير ممنوحة';
 }

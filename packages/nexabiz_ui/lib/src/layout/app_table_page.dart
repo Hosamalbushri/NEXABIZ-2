@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../localization/nexabiz_ui_localizations.dart';
 import '../widgets/app_empty_state.dart';
 import '../widgets/app_error_state.dart';
 import '../widgets/app_loading.dart';
@@ -27,8 +28,8 @@ class AppTablePage extends StatelessWidget {
     this.errorText,
     this.onRetry,
     this.isEmpty = false,
-    this.emptyTitle = 'لا توجد سجلات',
-    this.emptySubtitle = 'لا توجد بيانات متاحة لعرضها في الجدول',
+    this.emptyTitle,
+    this.emptySubtitle,
     this.onEmptyAction,
     this.emptyActionLabel,
     this.page = 0,
@@ -56,8 +57,8 @@ class AppTablePage extends StatelessWidget {
   final String? errorText;
   final VoidCallback? onRetry;
   final bool isEmpty;
-  final String emptyTitle;
-  final String emptySubtitle;
+  final String? emptyTitle;
+  final String? emptySubtitle;
   final VoidCallback? onEmptyAction;
   final String? emptyActionLabel;
 
@@ -95,7 +96,7 @@ class AppTablePage extends StatelessWidget {
             filterBar!,
             const SizedBox(height: AppLayoutTokens.tableFilterGap),
           ],
-          Expanded(child: _buildTableBody()),
+          Expanded(child: _buildTableBody(context)),
           if (onPageChanged != null && totalPages > 1) ...[
             const SizedBox(height: AppLayoutTokens.tablePaginationGap),
             AppPaginationBar(
@@ -113,7 +114,7 @@ class AppTablePage extends StatelessWidget {
     );
   }
 
-  Widget _buildTableBody() {
+  Widget _buildTableBody(BuildContext context) {
     if (isLoading) {
       return const AppLoading();
     }
@@ -121,9 +122,10 @@ class AppTablePage extends StatelessWidget {
       return AppErrorState(message: errorText, onRetry: onRetry);
     }
     if (isEmpty) {
+      final loc = NexaBizUiLocalizations.of(context);
       return AppEmptyState(
-        title: emptyTitle,
-        subtitle: emptySubtitle,
+        title: emptyTitle ?? loc.noRecords,
+        subtitle: emptySubtitle ?? loc.noRecordsSubtitle,
         onAction: onEmptyAction,
         actionLabel: emptyActionLabel,
       );

@@ -5,7 +5,7 @@ import '../../theme/tokens/tokens.dart';
 import '../../widgets/app_button.dart';
 import '../../widgets/app_card.dart';
 import '../../widgets/app_date_field.dart';
-import '../../widgets/app_dropdown.dart';
+import '../../widgets/app_select_field.dart';
 import '../../widgets/app_number_field.dart';
 
 class FiltersScenario extends StatefulWidget {
@@ -221,13 +221,13 @@ class _FiltersScenarioState extends State<FiltersScenario> {
                 ],
               ),
               const SizedBox(height: AppSpacing.sm),
-              AppDropdown<String>(
+              AppSelectField<String>(
                 label: isAr ? 'عملة التصفية' : 'Currency Filter',
                 value: _currency,
                 items: const [
-                  AppDropdownItem(value: 'SAR', label: 'SAR (Saudi Riyal)'),
-                  AppDropdownItem(value: 'USD', label: 'USD (US Dollar)'),
-                  AppDropdownItem(value: 'EUR', label: 'EUR (Euro)'),
+                  AppSelectOption(value: 'SAR', label: 'SAR (Saudi Riyal)'),
+                  AppSelectOption(value: 'USD', label: 'USD (US Dollar)'),
+                  AppSelectOption(value: 'EUR', label: 'EUR (Euro)'),
                 ],
                 onChanged: (v) {
                   if (v != null) setState(() => _currency = v);

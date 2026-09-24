@@ -112,12 +112,15 @@ class AppTabs extends StatelessWidget {
         }).toList(),
       );
     } else {
-      header = shadcn.TabList(
-        index: safeIndex,
-        onChanged: onChanged,
-        children: items.map<shadcn.TabChild>((item) {
-          return shadcn.TabItem(child: _buildTabLabel(item));
-        }).toList(),
+      header = SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: shadcn.TabList(
+          index: safeIndex,
+          onChanged: onChanged,
+          children: items.map<shadcn.TabChild>((item) {
+            return shadcn.TabItem(child: _buildTabLabel(item));
+          }).toList(),
+        ),
       );
     }
 

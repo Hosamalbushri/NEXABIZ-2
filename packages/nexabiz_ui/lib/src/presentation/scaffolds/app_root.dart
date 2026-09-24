@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart' as shadcn;
+import '../../localization/nexa_biz_shadcn_localizations_delegate.dart';
+import '../../localization/nexabiz_ui_localizations.dart';
 import '../../theme/app_theme.dart';
 
 /// NexaBiz Design System canonical root application container.
@@ -62,6 +64,11 @@ class NexaBizRootApp extends StatelessWidget {
     };
 
     final locales = supportedLocales ?? const <Locale>[Locale('en', 'US')];
+    final effectiveDelegates = [
+      NexaBizUiLocalizations.delegate,
+      NexaBizShadcnLocalizationsDelegate.delegate,
+      ...?localizationsDelegates,
+    ];
 
     Widget effectiveBuilder(BuildContext context, Widget? child) {
       final drawerWrappedChild = shadcn.DrawerOverlay(
@@ -84,7 +91,7 @@ class NexaBizRootApp extends StatelessWidget {
         materialTheme: resolvedMaterialTheme,
         locale: locale,
         supportedLocales: locales,
-        localizationsDelegates: localizationsDelegates,
+        localizationsDelegates: effectiveDelegates,
         builder: effectiveBuilder,
       );
     }
@@ -99,7 +106,7 @@ class NexaBizRootApp extends StatelessWidget {
       materialTheme: resolvedMaterialTheme,
       locale: locale,
       supportedLocales: locales,
-      localizationsDelegates: localizationsDelegates,
+      localizationsDelegates: effectiveDelegates,
       builder: effectiveBuilder,
     );
   }

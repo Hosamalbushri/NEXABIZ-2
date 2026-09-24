@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
-import '../theme/app_radius.dart';
+import 'package:flutter/widgets.dart';
+
+import 'app_exclusive_toggle_group.dart';
 
 /// Descriptor for an option in an [AppViewModeToggle].
 class AppViewModeOption<T> {
@@ -14,9 +15,10 @@ class AppViewModeOption<T> {
   final String tooltip;
 }
 
-/// Generic segmented view mode toggle widget.
+/// Generic segmented view mode toggle widget built natively on `shadcn_flutter`.
 ///
-/// Allows switching between collection view modes (e.g. List, Grid) using styled icon buttons.
+/// Allows switching between collection view modes (e.g. List, Grid) using
+/// canonical design-system toggles via [AppExclusiveToggleGroup].
 class AppViewModeToggle<T> extends StatelessWidget {
   const AppViewModeToggle({
     super.key,
@@ -31,38 +33,20 @@ class AppViewModeToggle<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final scheme = theme.colorScheme;
-
-    return Container(
-      decoration: BoxDecoration(
-        color: scheme.surfaceContainerHigh,
-        borderRadius: BorderRadius.circular(AppRadius.md),
-      ),
-      padding: const EdgeInsets.all(2),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: options.map((option) {
-          final isSelected = option.value == selected;
-          return IconButton(
-            tooltip: option.tooltip,
-            visualDensity: VisualDensity.compact,
-            iconSize: 18,
-            style: IconButton.styleFrom(
-              backgroundColor: isSelected ? scheme.surface : Colors.transparent,
-              foregroundColor: isSelected
-                  ? scheme.primary
-                  : scheme.onSurfaceVariant,
-              elevation: isSelected ? 1 : 0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(AppRadius.sm),
-              ),
-            ),
-            icon: Icon(option.icon),
-            onPressed: () => onChanged(option.value),
-          );
-        }).toList(),
-      ),
+    return AppExclusiveToggleGroup<T>(
+      value: selected,
+      onChanged: (val) {
+        if (val != null) {
+          onChanged(val);
+        }
+      },
+      options: options.map((option) {
+        return ToggleOption<T>(
+          value: option.value,
+          tooltip: option.tooltip,
+          child: Icon(option.icon, size: 18),
+        );
+      }).toList(),
     );
   }
 }

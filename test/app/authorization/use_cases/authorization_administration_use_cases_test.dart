@@ -505,6 +505,175 @@ void main() {
     });
 
     test(
+      'review-only actor cannot update or delete roles through UseCases',
+      () async {
+        guard.decision = NexaBizPermissionDecision.deny;
+        final update = UpdateCompanyRoleMetadataUseCase(
+          permissionGuard: guard,
+          mutationStore: store,
+          invalidationSignal: signal,
+        );
+        final delete = DeleteCompanyRoleUseCase(
+          permissionGuard: guard,
+          mutationStore: store,
+          invalidationSignal: signal,
+        );
+
+        await expectLater(
+          update.execute(context: contextA, roleId: roleId, metadata: metadata),
+          throwsA(isA<NexaBizPermissionDeniedException>()),
+        );
+        await expectLater(
+          delete.execute(context: contextA, roleId: roleId),
+          throwsA(isA<NexaBizPermissionDeniedException>()),
+        );
+
+        expect(store.callCount, 0);
+        expect(invalidationCount, 0);
+        expect(eventTrace, [
+          'guard.requirePermission:permissions.role.manage',
+          'guard.requirePermission:permissions.role.manage',
+        ]);
+      },
+    );
+
+    test(
+      'review-only actor cannot grant or revoke permissions through UseCases',
+      () async {
+        guard.decision = NexaBizPermissionDecision.deny;
+        final grant = GrantPermissionToRoleUseCase(
+          permissionGuard: guard,
+          mutationStore: store,
+          invalidationSignal: signal,
+        );
+        final revoke = RevokePermissionFromRoleUseCase(
+          permissionGuard: guard,
+          mutationStore: store,
+          invalidationSignal: signal,
+        );
+
+        await expectLater(
+          grant.execute(
+            context: contextA,
+            roleId: roleId,
+            permissionId: permissionId,
+          ),
+          throwsA(isA<NexaBizPermissionDeniedException>()),
+        );
+        await expectLater(
+          revoke.execute(
+            context: contextA,
+            roleId: roleId,
+            permissionId: permissionId,
+          ),
+          throwsA(isA<NexaBizPermissionDeniedException>()),
+        );
+
+        expect(store.callCount, 0);
+        expect(invalidationCount, 0);
+        expect(eventTrace, [
+          'guard.requirePermission:permissions.policy.manage',
+          'guard.requirePermission:permissions.policy.manage',
+        ]);
+      },
+    );
+
+    test(
+      'permission mutations reject cross-company before authorization',
+      () async {
+        final grant = GrantPermissionToRoleUseCase(
+          permissionGuard: guard,
+          mutationStore: store,
+          invalidationSignal: signal,
+        );
+        final revoke = RevokePermissionFromRoleUseCase(
+          permissionGuard: guard,
+          mutationStore: store,
+          invalidationSignal: signal,
+        );
+
+        await expectLater(
+          grant.execute(
+            context: contextA,
+            roleId: roleId,
+            permissionId: permissionId,
+            targetCompanyId: companyB,
+          ),
+          throwsA(isA<NexaBizAuthorizationCrossCompanyException>()),
+        );
+        await expectLater(
+          revoke.execute(
+            context: contextA,
+            roleId: roleId,
+            permissionId: permissionId,
+            targetCompanyId: companyB,
+          ),
+          throwsA(isA<NexaBizAuthorizationCrossCompanyException>()),
+        );
+
+        expect(guard.evaluatedPermissions, isEmpty);
+        expect(store.callCount, 0);
+        expect(invalidationCount, 0);
+      },
+    );
+
+    test(
+      'built-in and undeclared permission failures propagate without invalidation',
+      () async {
+        final grant = GrantPermissionToRoleUseCase(
+          permissionGuard: guard,
+          mutationStore: store,
+          invalidationSignal: signal,
+        );
+        final revoke = RevokePermissionFromRoleUseCase(
+          permissionGuard: guard,
+          mutationStore: store,
+          invalidationSignal: signal,
+        );
+        final builtInRole = NexaBizRoleId('company.owner');
+
+        store.throwError = NexaBizBuiltInRoleProtectedException(
+          roleId: builtInRole,
+          action: NexaBizBuiltInRoleProtectedAction.grantPermission,
+        );
+        await expectLater(
+          grant.execute(
+            context: contextA,
+            roleId: builtInRole,
+            permissionId: permissionId,
+          ),
+          throwsA(isA<NexaBizBuiltInRoleProtectedException>()),
+        );
+        store.throwError = NexaBizBuiltInRoleProtectedException(
+          roleId: builtInRole,
+          action: NexaBizBuiltInRoleProtectedAction.revokePermission,
+        );
+        await expectLater(
+          revoke.execute(
+            context: contextA,
+            roleId: builtInRole,
+            permissionId: permissionId,
+          ),
+          throwsA(isA<NexaBizBuiltInRoleProtectedException>()),
+        );
+
+        final undeclared = NexaBizPermissionId('future.feature.manage');
+        store.throwError = NexaBizUndeclaredPermissionException(undeclared);
+        await expectLater(
+          grant.execute(
+            context: contextA,
+            roleId: roleId,
+            permissionId: undeclared,
+          ),
+          throwsA(isA<NexaBizUndeclaredPermissionException>()),
+        );
+
+        expect(store.callCount, 3);
+        expect(invalidationCount, 0);
+      },
+    );
+
+    test(
       'Zero Side Effects on UNKNOWN: 0 store calls, 0 invalidations',
       () async {
         guard.decision = NexaBizPermissionDecision.unknown;
@@ -550,6 +719,86 @@ void main() {
       expect(store.callCount, 0);
       expect(invalidationCount, 0);
     });
+
+    test(
+      'assignment mutations reject target-company mismatch before guard and store',
+      () async {
+        final assign = AssignRoleToMembershipUseCase(
+          permissionGuard: guard,
+          mutationStore: store,
+          invalidationSignal: signal,
+        );
+        final unassign = UnassignRoleFromMembershipUseCase(
+          permissionGuard: guard,
+          mutationStore: store,
+          invalidationSignal: signal,
+        );
+
+        await expectLater(
+          assign.execute(
+            context: contextA,
+            membershipId: membershipId,
+            roleId: roleId,
+            targetCompanyId: companyB,
+          ),
+          throwsA(isA<NexaBizAuthorizationCrossCompanyException>()),
+        );
+        await expectLater(
+          unassign.execute(
+            context: contextA,
+            membershipId: membershipId,
+            roleId: roleId,
+            targetCompanyId: companyB,
+          ),
+          throwsA(isA<NexaBizAuthorizationCrossCompanyException>()),
+        );
+
+        expect(guard.evaluatedPermissions, isEmpty);
+        expect(store.callCount, 0);
+        expect(invalidationCount, 0);
+      },
+    );
+
+    test(
+      'review-only actor cannot assign or unassign and causes no side effects',
+      () async {
+        guard.decision = NexaBizPermissionDecision.deny;
+        final assign = AssignRoleToMembershipUseCase(
+          permissionGuard: guard,
+          mutationStore: store,
+          invalidationSignal: signal,
+        );
+        final unassign = UnassignRoleFromMembershipUseCase(
+          permissionGuard: guard,
+          mutationStore: store,
+          invalidationSignal: signal,
+        );
+
+        await expectLater(
+          assign.execute(
+            context: contextA,
+            membershipId: membershipId,
+            roleId: roleId,
+          ),
+          throwsA(isA<NexaBizPermissionDeniedException>()),
+        );
+        await expectLater(
+          unassign.execute(
+            context: contextA,
+            membershipId: membershipId,
+            roleId: roleId,
+          ),
+          throwsA(isA<NexaBizPermissionDeniedException>()),
+        );
+
+        expect(guard.evaluatedPermissions, [
+          NexaBizAuthorizationAdministrationPermissions.assignmentManage,
+          NexaBizAuthorizationAdministrationPermissions.assignmentManage,
+        ]);
+        expect(store.callCount, 0);
+        expect(invalidationCount, 0);
+      },
+    );
 
     test(
       'Idempotent outcome (changed: false) emits ZERO invalidations',

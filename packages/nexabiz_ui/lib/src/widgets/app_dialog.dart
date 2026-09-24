@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart' as shadcn;
 
+import '../localization/nexabiz_ui_localizations.dart';
 import '../theme/tokens/tokens.dart';
 import 'app_button.dart';
 import 'app_icon_avatar.dart';
@@ -26,6 +27,26 @@ enum AppDialogSize {
 /// Semantic tones for confirmation and alert dialogs.
 enum AppDialogTone { primary, info, warning, danger }
 
+/// Typed controller for externally dismissing a dialog opened by [AppDialog].
+///
+/// This keeps dialog-route ownership inside the design system while allowing
+/// session or tenant invalidation to close a stale mutation surface safely.
+class AppDialogController {
+  Future<void> Function()? _close;
+
+  bool get isAttached => _close != null;
+
+  Future<void> close() async {
+    final close = _close;
+    _close = null;
+    await close?.call();
+  }
+
+  void _attach(Future<void> Function() close) {
+    _close = close;
+  }
+}
+
 /// Canonical NexaBiz Central Dialog Component (`NexaBizDialog<T>`).
 ///
 /// Built natively on `shadcn_flutter` overlays and theme tokens.
@@ -47,8 +68,8 @@ class AppDialog<T> extends StatelessWidget {
     ),
     required this.child,
     this.actions,
-    this.confirmLabel = 'Confirm',
-    this.cancelLabel = 'Cancel',
+    this.confirmLabel,
+    this.cancelLabel,
     this.onConfirm,
     this.onCancel,
     this.isDestructive = false,
@@ -72,8 +93,8 @@ class AppDialog<T> extends StatelessWidget {
   final EdgeInsetsGeometry contentPadding;
   final Widget child;
   final List<Widget>? actions;
-  final String confirmLabel;
-  final String cancelLabel;
+  final String? confirmLabel;
+  final String? cancelLabel;
   final VoidCallback? onConfirm;
   final VoidCallback? onCancel;
   final bool isDestructive;
@@ -86,6 +107,7 @@ class AppDialog<T> extends StatelessWidget {
 
   static Future<T?> show<T>({
     required BuildContext context,
+    AppDialogController? controller,
     String? title,
     String? description,
     IconData? icon,
@@ -101,8 +123,8 @@ class AppDialog<T> extends StatelessWidget {
     ),
     required Widget child,
     List<Widget>? actions,
-    String confirmLabel = 'Confirm',
-    String cancelLabel = 'Cancel',
+    String? confirmLabel,
+    String? cancelLabel,
     VoidCallback? onConfirm,
     VoidCallback? onCancel,
     bool isDestructive = false,
@@ -115,39 +137,52 @@ class AppDialog<T> extends StatelessWidget {
     bool barrierDismissible = true,
     bool useRootNavigator = true,
   }) {
-    final completer = shadcn.showOverlay<T>(
-      context,
-      shadcn.DialogConfiguration(
-        builder: (overlayContext) {
-          return AppDialog<T>(
-            title: title,
-            description: description,
-            icon: icon,
-            leading: leading,
-            trailing: trailing,
-            errorMessage: errorMessage,
-            isLoading: isLoading,
-            size: size,
-            padding: padding,
-            contentPadding: contentPadding,
-            actions: actions,
-            confirmLabel: confirmLabel,
-            cancelLabel: cancelLabel,
-            onConfirm: onConfirm,
-            onCancel: onCancel,
-            isDestructive: isDestructive,
-            showCloseButton: showCloseButton,
-            showActions: showActions,
-            showCancelButton: showCancelButton,
-            showConfirmButton: showConfirmButton,
-            centerHeader: centerHeader,
-            centerContent: centerContent,
-            child: child,
-          );
-        },
-      ),
+    final completer = const shadcn.DialogOverlayHandler().show<T>(
+      context: context,
+      alignment: Alignment.center,
+      rootOverlay: useRootNavigator,
+      barrierDismissable: barrierDismissible,
+      builder: (overlayContext) {
+        return AppDialog<T>(
+          title: title,
+          description: description,
+          icon: icon,
+          leading: leading,
+          trailing: trailing,
+          errorMessage: errorMessage,
+          isLoading: isLoading,
+          size: size,
+          padding: padding,
+          contentPadding: contentPadding,
+          actions: actions,
+          confirmLabel: confirmLabel,
+          cancelLabel: cancelLabel,
+          onConfirm: onConfirm,
+          onCancel: onCancel,
+          isDestructive: isDestructive,
+          showCloseButton: showCloseButton,
+          showActions: showActions,
+          showCancelButton: showCancelButton,
+          showConfirmButton: showConfirmButton,
+          centerHeader: centerHeader,
+          centerContent: centerContent,
+          child: child,
+        );
+      },
     );
+    controller?._attach(() {
+      completer.remove();
+      return Future.value();
+    });
     return completer.future;
+  }
+
+  /// Closes the active dialog overlay with an optional typed [result].
+  ///
+  /// This is intended for commit-confirmed async flows whose content must keep
+  /// the dialog open until the operation succeeds.
+  static void close<T>(BuildContext context, [T? result]) {
+    shadcn.closeOverlay<T>(context, result);
   }
 
   /// Canonical Information Dialog helper.
@@ -155,10 +190,11 @@ class AppDialog<T> extends StatelessWidget {
     required BuildContext context,
     required String title,
     required String message,
-    String okLabel = 'OK',
+    String? okLabel,
     VoidCallback? onOk,
     bool barrierDismissible = true,
   }) {
+    final loc = NexaBizUiLocalizations.of(context);
     return show<void>(
       context: context,
       title: title,
@@ -166,7 +202,7 @@ class AppDialog<T> extends StatelessWidget {
       icon: shadcn.LucideIcons.info,
       size: AppDialogSize.small,
       showCancelButton: false,
-      confirmLabel: okLabel,
+      confirmLabel: okLabel ?? loc.ok,
       onConfirm: onOk,
       barrierDismissible: barrierDismissible,
       child: const SizedBox.shrink(),
@@ -178,14 +214,15 @@ class AppDialog<T> extends StatelessWidget {
     required BuildContext context,
     required String title,
     required String message,
-    String confirmLabel = 'Confirm',
-    String cancelLabel = 'Cancel',
+    String? confirmLabel,
+    String? cancelLabel,
     AppDialogTone tone = AppDialogTone.info,
     VoidCallback? onConfirm,
     VoidCallback? onCancel,
     bool barrierDismissible = true,
     Widget? customBody,
   }) {
+    final loc = NexaBizUiLocalizations.of(context);
     IconData? icon;
     if (tone == AppDialogTone.warning) {
       icon = shadcn.LucideIcons.triangleAlert;
@@ -200,8 +237,8 @@ class AppDialog<T> extends StatelessWidget {
       icon: icon,
       size: AppDialogSize.small,
       isDestructive: tone == AppDialogTone.danger,
-      confirmLabel: confirmLabel,
-      cancelLabel: cancelLabel,
+      confirmLabel: confirmLabel ?? loc.confirm,
+      cancelLabel: cancelLabel ?? loc.cancel,
       onConfirm: onConfirm,
       onCancel: onCancel,
       barrierDismissible: barrierDismissible,
@@ -214,18 +251,19 @@ class AppDialog<T> extends StatelessWidget {
     required BuildContext context,
     required String title,
     required String message,
-    String confirmLabel = 'Proceed',
-    String cancelLabel = 'Cancel',
+    String? confirmLabel,
+    String? cancelLabel,
     VoidCallback? onConfirm,
     VoidCallback? onCancel,
     bool barrierDismissible = true,
   }) {
+    final loc = NexaBizUiLocalizations.of(context);
     return confirm(
       context: context,
       title: title,
       message: message,
-      confirmLabel: confirmLabel,
-      cancelLabel: cancelLabel,
+      confirmLabel: confirmLabel ?? loc.proceed,
+      cancelLabel: cancelLabel ?? loc.cancel,
       tone: AppDialogTone.warning,
       onConfirm: onConfirm,
       onCancel: onCancel,
@@ -238,18 +276,19 @@ class AppDialog<T> extends StatelessWidget {
     required BuildContext context,
     required String title,
     required String message,
-    String confirmLabel = 'Delete',
-    String cancelLabel = 'Cancel',
+    String? confirmLabel,
+    String? cancelLabel,
     VoidCallback? onConfirm,
     VoidCallback? onCancel,
     bool barrierDismissible = true,
   }) {
+    final loc = NexaBizUiLocalizations.of(context);
     return confirm(
       context: context,
       title: title,
       message: message,
-      confirmLabel: confirmLabel,
-      cancelLabel: cancelLabel,
+      confirmLabel: confirmLabel ?? loc.delete,
+      cancelLabel: cancelLabel ?? loc.cancel,
       tone: AppDialogTone.danger,
       onConfirm: onConfirm,
       onCancel: onCancel,
@@ -471,8 +510,12 @@ class AppDialog<T> extends StatelessWidget {
               );
             }
 
+            final loc = NexaBizUiLocalizations.of(context);
+            final effectiveConfirmLabel = confirmLabel ?? loc.confirm;
+            final effectiveCancelLabel = cancelLabel ?? loc.cancel;
+
             final confirmBtn = AppButton(
-              label: confirmLabel,
+              label: effectiveConfirmLabel,
               variant: isDestructive
                   ? AppButtonVariant.destructive
                   : AppButtonVariant.filled,
@@ -486,9 +529,11 @@ class AppDialog<T> extends StatelessWidget {
                     },
             );
 
-            final cancelBtn = showCancelButton && confirmLabel != cancelLabel
+            final cancelBtn =
+                showCancelButton &&
+                    effectiveConfirmLabel != effectiveCancelLabel
                 ? AppButton(
-                    label: cancelLabel,
+                    label: effectiveCancelLabel,
                     variant: AppButtonVariant.outlined,
                     expand: true,
                     onPressed: isLoading

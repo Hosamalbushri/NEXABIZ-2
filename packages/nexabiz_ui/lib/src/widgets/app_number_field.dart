@@ -1,5 +1,5 @@
-import 'package:flutter/widgets.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart' as shadcn;
 
 import 'app_field_shell.dart';
@@ -15,6 +15,7 @@ class AppNumberField extends StatelessWidget {
     this.value,
     this.onChanged,
     this.label,
+    this.description,
     this.hint,
     this.placeholder,
     this.required = false,
@@ -39,6 +40,7 @@ class AppNumberField extends StatelessWidget {
   final num? value;
   final ValueChanged<num?>? onChanged;
   final String? label;
+  final String? description;
   final String? hint;
   final Widget? placeholder;
   final bool required;
@@ -84,32 +86,37 @@ class AppNumberField extends StatelessWidget {
         ),
     ];
 
-    final childInput = shadcn.TextField(
-      controller: controller,
-      initialValue: value?.toString(),
-      focusNode: focusNode,
-      autofocus: autofocus,
-      enabled: isInteractive,
-      readOnly: readOnly,
-      placeholder: placeholder ?? (hint != null ? Text(hint!) : null),
-      keyboardType: TextInputType.numberWithOptions(decimal: allowDecimals),
-      inputFormatters: formatters,
-      features: features,
-      padding: EdgeInsets.zero,
-      border: const Border(),
-      onChanged: (text) {
-        if (onChanged == null) return;
-        if (text.isEmpty) {
-          onChanged!(null);
-        } else {
-          final parsed = num.tryParse(text);
-          onChanged!(parsed);
-        }
-      },
+    final childInput = shadcn.ComponentTheme(
+      data: const shadcn.FocusOutlineTheme(border: Border()),
+      child: shadcn.TextField(
+        controller: controller,
+        initialValue: value?.toString(),
+        focusNode: focusNode,
+        autofocus: autofocus,
+        enabled: isInteractive,
+        readOnly: readOnly,
+        placeholder: placeholder ?? (hint != null ? Text(hint!) : null),
+        keyboardType: TextInputType.numberWithOptions(decimal: allowDecimals),
+        inputFormatters: formatters,
+        features: features,
+        padding: EdgeInsets.zero,
+        decoration: const BoxDecoration(),
+        border: const Border(),
+        onChanged: (text) {
+          if (onChanged == null) return;
+          if (text.isEmpty) {
+            onChanged!(null);
+          } else {
+            final parsed = num.tryParse(text);
+            onChanged!(parsed);
+          }
+        },
+      ),
     );
 
     return AppFieldShell(
       label: label,
+      description: description,
       required: required,
       errorText: errorText,
       helperText: helperText,

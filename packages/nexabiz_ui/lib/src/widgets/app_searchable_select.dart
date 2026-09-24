@@ -1,12 +1,18 @@
 import 'package:flutter/widgets.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart' as shadcn;
 
+import '../localization/nexabiz_ui_localizations.dart';
+import '../theme/tokens/tokens.dart';
+import 'app_field_shell.dart';
+import 'app_select_option.dart';
+import 'app_selection_foundation.dart';
+
 /// Generic searchable select dropdown field for NexaBiz ERP.
 ///
 /// Wraps `shadcn_flutter` [shadcn.Select] with a searchable popup dialog,
-/// client-side filtering matching `searchQuery`, label with required indicator,
-/// and error/helper text footers.
-class AppSearchableSelect<T> extends StatefulWidget {
+/// standardized [AppSelectionSearchMatcher] client-side filtering,
+/// and canonical [AppFieldShell] presentation layout.
+class AppSearchableSelect<T> extends StatelessWidget {
   const AppSearchableSelect({
     super.key,
     required this.items,
@@ -16,52 +22,79 @@ class AppSearchableSelect<T> extends StatefulWidget {
     this.searchValueBuilder,
     this.valueBuilder,
     this.label,
+    this.description,
     this.hint,
     this.placeholder,
-    this.searchPlaceholder = 'بحث...',
+    this.searchPlaceholder,
     this.required = false,
     this.enabled = true,
     this.readOnly = false,
     this.errorText,
     this.helperText,
     this.emptyBuilder,
+    this.density = AppFieldDensity.standard,
   });
 
+  /// The list of items of type [T].
   final List<T> items;
+
+  /// Builds each selectable item inside the popup menu.
   final Widget Function(BuildContext context, T item) itemBuilder;
+
+  /// The currently selected item.
   final T? value;
+
+  /// Callback fired when the selection changes.
   final ValueChanged<T?>? onChanged;
+
+  /// String extractor for searching items. Defaults to `item.toString()`.
   final String Function(T item)? searchValueBuilder;
+
+  /// Optional custom builder for the selected value trigger display.
   final Widget Function(BuildContext context, T item)? valueBuilder;
+
+  /// Primary label text.
   final String? label;
+
+  /// Secondary descriptive text.
+  final String? description;
+
+  /// Field hint string.
   final String? hint;
+
+  /// Custom placeholder widget.
   final Widget? placeholder;
-  final String searchPlaceholder;
+
+  /// Search input placeholder string.
+  final String? searchPlaceholder;
+
+  /// Whether the field is mandatory.
   final bool required;
+
+  /// Whether user interaction is enabled.
   final bool enabled;
+
+  /// Whether the field is read-only.
   final bool readOnly;
+
+  /// Validation error message string.
   final String? errorText;
+
+  /// Helper message string displayed below the field.
   final String? helperText;
+
+  /// Custom empty search results builder.
   final Widget Function(BuildContext context)? emptyBuilder;
 
-  @override
-  State<AppSearchableSelect<T>> createState() => _AppSearchableSelectState<T>();
-}
-
-class _AppSearchableSelectState<T> extends State<AppSearchableSelect<T>> {
-  String _searchQuery = '';
-
-  @override
-  void didUpdateWidget(covariant AppSearchableSelect<T> oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.items != oldWidget.items) {
-      _searchQuery = '';
-    }
-  }
+  /// Standardized ERP field density.
+  final AppFieldDensity density;
 
   String _getSearchText(T item) {
-    if (widget.searchValueBuilder != null) {
-      return widget.searchValueBuilder!(item);
+    if (searchValueBuilder != null) {
+      return searchValueBuilder!(item);
+    }
+    if (item is AppSelectOption) {
+      return item.searchKey ?? item.label;
     }
     return item.toString();
   }
@@ -69,137 +102,88 @@ class _AppSearchableSelectState<T> extends State<AppSearchableSelect<T>> {
   @override
   Widget build(BuildContext context) {
     final theme = shadcn.Theme.of(context);
-    final hasError = widget.errorText != null && widget.errorText!.isNotEmpty;
-    final isInteractive = widget.enabled && !widget.readOnly;
+    final loc = NexaBizUiLocalizations.of(context);
+    final isInteractive = enabled && !readOnly;
+    final hasError = errorText != null && errorText!.isNotEmpty;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        if (widget.label != null && widget.label!.isNotEmpty) ...[
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                widget.label!,
-                style: theme.typography.small.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: isInteractive
-                      ? theme.colorScheme.foreground
-                      : theme.colorScheme.mutedForeground,
-                ),
-              ),
-              if (widget.required) ...[
-                const SizedBox(width: 4),
-                Text(
-                  '*',
-                  style: TextStyle(
-                    color: theme.colorScheme.destructive,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ],
-          ),
-          const SizedBox(height: 6),
-        ],
-        shadcn.Select<T>(
-          value: widget.value,
-          onChanged: isInteractive ? widget.onChanged : null,
-          enabled: isInteractive,
-          placeholder:
-              widget.placeholder ??
-              (widget.hint != null ? Text(widget.hint!) : null),
-          itemBuilder: (context, value) {
-            if (widget.valueBuilder != null) {
-              return widget.valueBuilder!(context, value);
-            }
-            return widget.itemBuilder(context, value);
-          },
-          popup: (context) {
-            return StatefulBuilder(
-              builder: (context, setPopupState) {
-                final filteredItems = widget.items.where((item) {
-                  if (_searchQuery.isEmpty) return true;
-                  final searchText = _getSearchText(item).toLowerCase();
-                  return searchText.contains(_searchQuery.toLowerCase());
-                }).toList();
+    final effectiveHint = hint ?? loc.select;
+    final effectiveSearchPlaceholder =
+        searchPlaceholder ?? loc.searchPlaceholder;
 
-                return Container(
-                  constraints: const BoxConstraints(
-                    maxHeight: 300,
-                    minWidth: 220,
-                  ),
-                  padding: const EdgeInsets.all(8),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      shadcn.TextField(
-                        placeholder: Text(widget.searchPlaceholder),
-                        onChanged: (query) {
-                          setPopupState(() {
-                            _searchQuery = query;
-                          });
-                        },
-                      ),
-                      const SizedBox(height: 8),
-                      Expanded(
-                        child: filteredItems.isEmpty
-                            ? (widget.emptyBuilder != null
-                                  ? widget.emptyBuilder!(context)
-                                  : Center(
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(16.0),
-                                        child: Text(
-                                          'لا توجد نتائج',
-                                          style: theme.typography.small
-                                              .copyWith(
-                                                color: theme
-                                                    .colorScheme
-                                                    .mutedForeground,
-                                              ),
-                                        ),
-                                      ),
-                                    ))
-                            : ListView.builder(
-                                shrinkWrap: true,
-                                itemCount: filteredItems.length,
-                                itemBuilder: (context, index) {
-                                  final item = filteredItems[index];
-                                  return shadcn.SelectItemButton<T>(
-                                    value: item,
-                                    child: widget.itemBuilder(context, item),
-                                  );
-                                },
-                              ),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            );
-          },
-        ),
-        if (hasError) ...[
-          const SizedBox(height: 4),
+    final childSelect = shadcn.Select<T>(
+      value: value,
+      onChanged: isInteractive ? onChanged : null,
+      enabled: isInteractive,
+      placeholder:
+          placeholder ??
           Text(
-            widget.errorText!,
-            style: theme.typography.small.copyWith(
-              color: theme.colorScheme.destructive,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ] else if (widget.helperText != null &&
-            widget.helperText!.isNotEmpty) ...[
-          const SizedBox(height: 4),
-          Text(
-            widget.helperText!,
+            effectiveHint,
             style: theme.typography.small.copyWith(
               color: theme.colorScheme.mutedForeground,
             ),
           ),
-        ],
-      ],
+      itemBuilder: (context, itemValue) {
+        if (valueBuilder != null) {
+          return valueBuilder!(context, itemValue);
+        }
+        return itemBuilder(context, itemValue);
+      },
+      popup: shadcn.SelectPopup<T>.builder(
+        enableSearch: true,
+        searchPlaceholder: Text(effectiveSearchPlaceholder),
+        emptyBuilder: emptyBuilder != null
+            ? (context) => emptyBuilder!(context)
+            : (context) => Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(AppSpacing.md),
+                  child: Text(
+                    loc.noResults,
+                    style: theme.typography.small.copyWith(
+                      color: theme.colorScheme.mutedForeground,
+                    ),
+                  ),
+                ),
+              ),
+        builder: (context, searchQuery) {
+          final query = searchQuery ?? '';
+          final filteredItems = items.where((item) {
+            if (query.isEmpty) return true;
+            final searchText = _getSearchText(item);
+            return AppSelectionSearchMatcher.matches(
+              query: query,
+              target: searchText,
+            );
+          }).toList();
+
+          return shadcn.SelectItemList(
+            children: filteredItems.map((item) {
+              return shadcn.SelectItemButton<T>(
+                value: item,
+                child: itemBuilder(context, item),
+              );
+            }).toList(),
+          );
+        },
+      ).asBuilder,
+    );
+
+    final styledChild = wrapSelectWithErrorTheme(
+      context: context,
+      hasError: hasError,
+      child: childSelect,
+    );
+
+    return AppFieldShell(
+      label: label,
+      required: required,
+      description: description,
+      errorText: errorText,
+      helperText: helperText,
+      density: density,
+      enabled: enabled,
+      readOnly: readOnly,
+      borderless: true,
+      child: styledChild,
     );
   }
 }

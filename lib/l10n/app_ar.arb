@@ -8,6 +8,8 @@
   "navReports": "التقارير",
   "navSettings": "الإعدادات",
   "quickActionsTitle": "إجراءات سريعة",
+  "mainBranch": "الفرع الرئيسي",
+  "actionBack": "رجوع",
   "quickActionsSubtitle": "تنفيذ العمليات التجارية وأدوات المطور الشائعة",
   "quickActionMobilePlayground": "مختبر واجهات الجوال",
   "quickActionMobilePlaygroundDesc": "نماذج وتجارب واجهات الجوال لتخطيط الموارد",
@@ -132,6 +134,24 @@
   "settingsSecurityControlsSubtitle": "إدارة أدوار المستخدمين وصلاحيات الإمكانيات",
   "settingsOfflineSync": "المزامنة والتخزين المحلي",
   "settingsOfflineSyncSubtitle": "جميع قواعد البيانات المحلية محدثة",
+  "settingsAccountCode": "رقم الحساب / كود المنشأة",
+  "settingsRoleLabel": "الصفة / الدور",
+  "settingsDeviceManagement": "إدارة الأجهزة والجلسات",
+  "settingsDeviceManagementSubtitle": "الجلسة النشطة وأمان الجهاز",
+  "settingsAppCustomization": "تخصيص التطبيق",
+  "settingsAdditionalSettings": "إعدادات إضافية",
+  "settingsHelpSupport": "الدعم والمساعدة",
+  "settingsHelpSupportSubtitle": "نيكسابيز ERP v1.0.0 • مركز المساعدة",
+  "settingsQrTitle": "رمز الاستجابة السريعة للمنشأة والمستخدم",
+  "settingsQrDescription": "امسح الرمز للتحقق من هوية المنشأة وبيانات الاعتماد",
+  "settingsActiveDevice": "الجهاز الحالي",
+  "settingsActiveDeviceDesc": "محطة عمل نشطة • محلي",
+  "settingsSessionId": "معرّف الجلسة",
+  "settingsSupportTitle": "نظام نيكسابيز للمؤسسات",
+  "settingsSupportVersion": "الإصدار 1.0.0 (نسخة الإنتاج)",
+  "settingsSupportAssistance": "الدعم الفني للمؤسسات على مدار الساعة",
+  "settingsDefaultUser": "حسام حازم علي مصلح البشاري",
+  "settingsDefaultRole": "مسؤول النظام",
   "demoTitle": "إمكانية العرض التوضيحي لنيكسابيز",
   "demoSubtitle": "تم التحقق من تسجيل الإمكانية والبنية النظيفة مع تكامل shadcn_flutter",
   "demoBadge": "تم التحقق من بنية الإمكانية",
@@ -432,6 +452,19 @@
   "authAdminMemberStatusInactive": "غير نشط",
   "authAdminMemberEligible": "مؤهل",
   "authAdminMemberIneligible": "غير مؤهل",
+  "authAdminUnknownMember": "عضو بدون اسم",
+  "authAdminAssignMemberSemantics": "تعيين {memberName} لهذا الدور",
+  "@authAdminAssignMemberSemantics": {
+    "placeholders": {
+      "memberName": { "type": "String" }
+    }
+  },
+  "authAdminUnassignMemberSemantics": "إلغاء تعيين {memberName} من هذا الدور",
+  "@authAdminUnassignMemberSemantics": {
+    "placeholders": {
+      "memberName": { "type": "String" }
+    }
+  },
   "authAdminAvailableMembersSection": "الأعضاء المتاحون",
   "authAdminDeleteRoleConfirm": "هل أنت متأكد من حذف الدور \"{roleName}\"؟",
   "@authAdminDeleteRoleConfirm": {
@@ -518,5 +551,6 @@
   "authAdminCommittedSuccess": "تم حفظ التغييرات بنجاح.",
   "authAdminNoRoleSelected": "حدد دوراً لعرض تفاصيله.",
   "authAdminLoadMore": "تحميل المزيد",
-  "authAdminRolePermissionGranted": "ممنوحة"
+  "authAdminRolePermissionGranted": "ممنوحة",
+  "authAdminRolePermissionNotGranted": "غير ممنوحة"
 }

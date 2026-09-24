@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
-import '../theme/app_radius.dart';
-import '../theme/app_shadows.dart';
-import '../theme/app_spacing.dart';
+import '../theme/tokens/app_radii.dart';
+import '../theme/tokens/app_elevation.dart';
+import '../theme/tokens/app_spacing.dart';
 
 /// Single item descriptor for module hub pages.
 class AppModuleHubItem {

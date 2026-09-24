@@ -59,7 +59,11 @@ class AppBreadcrumb extends StatelessWidget {
       }
 
       if (!isLast && item.onTap != null) {
-        labelWidget = GestureDetector(onTap: item.onTap, child: labelWidget);
+        labelWidget = shadcn.GhostButton(
+          density: shadcn.ButtonDensity.compact,
+          onPressed: item.onTap,
+          child: labelWidget,
+        );
       }
 
       children.add(labelWidget);

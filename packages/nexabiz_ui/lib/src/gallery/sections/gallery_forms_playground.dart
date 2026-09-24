@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart' as shadcn;
 import '../../../nexabiz_ui.dart';
+import '../gallery_state_controller.dart';
 import '../gallery_preview_card.dart';
 
 class GalleryFormsPlayground extends StatefulWidget {
@@ -267,9 +268,9 @@ AppSelectField<String>(
   label: 'Functional Currency',
   value: _selectedCurrency,
   items: [
-    AppSelectItem(value: 'USD', label: 'USD - US Dollar'),
-    AppSelectItem(value: 'EUR', label: 'EUR - Euro'),
-    AppSelectItem(value: 'SAR', label: 'SAR - Saudi Riyal'),
+    AppSelectOption(value: 'USD', label: 'USD - US Dollar'),
+    AppSelectOption(value: 'EUR', label: 'EUR - Euro'),
+    AppSelectOption(value: 'SAR', label: 'SAR - Saudi Riyal'),
   ],
   onChanged: (val) {},
 )''',
@@ -279,10 +280,10 @@ AppSelectField<String>(
               label: 'Functional Currency',
               value: _selectedCurrency,
               items: const [
-                AppSelectItem(value: 'USD', label: 'USD - US Dollar'),
-                AppSelectItem(value: 'EUR', label: 'EUR - Euro'),
-                AppSelectItem(value: 'SAR', label: 'SAR - Saudi Riyal'),
-                AppSelectItem(value: 'AED', label: 'AED - UAE Dirham'),
+                AppSelectOption(value: 'USD', label: 'USD - US Dollar'),
+                AppSelectOption(value: 'EUR', label: 'EUR - Euro'),
+                AppSelectOption(value: 'SAR', label: 'SAR - Saudi Riyal'),
+                AppSelectOption(value: 'AED', label: 'AED - UAE Dirham'),
               ],
               onChanged: (val) {
                 if (val != null) setState(() => _selectedCurrency = val);

@@ -2,6 +2,8 @@ import 'package:flutter/widgets.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart' as shadcn;
 import '../theme/tokens/app_spacing.dart';
 
+export 'app_separator.dart' show AppDivider, AppSeparator;
+
 /// Canonical list tile primitive for NexaBiz UI built on `shadcn_flutter`.
 class AppListTile extends StatelessWidget {
   final Widget? leading;
@@ -11,6 +13,7 @@ class AppListTile extends StatelessWidget {
   final VoidCallback? onTap;
   final EdgeInsetsGeometry padding;
   final bool enabled;
+  final bool? wrapTrailing;
 
   const AppListTile({
     super.key,
@@ -24,6 +27,7 @@ class AppListTile extends StatelessWidget {
       vertical: AppSpacing.sm,
     ),
     this.enabled = true,
+    this.wrapTrailing,
   });
 
   @override
@@ -45,8 +49,9 @@ class AppListTile extends StatelessWidget {
     final tileContent = LayoutBuilder(
       builder: (context, constraints) {
         final availableWidth = constraints.maxWidth;
-        // Adapt layout when available component width is restricted (< 280px)
-        final isCompactTile = availableWidth.isFinite && availableWidth < 320.0;
+        // Adapt layout when available component width is restricted (< 320px)
+        final isCompactTile =
+            wrapTrailing ?? (availableWidth.isFinite && availableWidth < 320.0);
 
         final titleTextGroup = Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -120,32 +125,6 @@ class AppListTile extends StatelessWidget {
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: tileContent,
-    );
-  }
-}
-
-/// Canonical divider line for NexaBiz UI built on `shadcn_flutter`.
-class AppDivider extends StatelessWidget {
-  final double height;
-  final double thickness;
-  final Color? color;
-
-  const AppDivider({
-    super.key,
-    this.height = 1.0,
-    this.thickness = 1.0,
-    this.color,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = shadcn.Theme.of(context);
-    final effectiveColor = color ?? theme.colorScheme.border;
-    return SizedBox(
-      height: height,
-      child: Center(
-        child: Container(height: thickness, color: effectiveColor),
-      ),
     );
   }
 }

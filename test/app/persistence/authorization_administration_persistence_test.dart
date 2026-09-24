@@ -404,6 +404,29 @@ void main() {
         throwsA(isA<NexaBizMembershipIneligibleException>()),
       );
 
+      final inactiveUser = await addMembership(
+        suffix: 'inactive-user-direct',
+        userStatus: 'inactive',
+      );
+      await expectLater(
+        store.assignRoleToMembership(
+          companyId: companyA,
+          membershipId: inactiveUser,
+          roleId: operator,
+        ),
+        throwsA(isA<NexaBizMembershipIneligibleException>()),
+      );
+
+      final missingMembership = NexaBizMembershipId('membership-missing');
+      await expectLater(
+        store.assignRoleToMembership(
+          companyId: companyA,
+          membershipId: missingMembership,
+          roleId: operator,
+        ),
+        throwsA(isA<NexaBizMembershipNotFoundException>()),
+      );
+
       final roleRow = await (database.select(
         database.coreRoles,
       )..where((table) => table.roleKey.equals(operator.value))).getSingle();
@@ -467,6 +490,107 @@ void main() {
   );
 
   test(
+    'active company cannot lose its last active owner through Core identity writes',
+    () async {
+      final ownerMembership = await (database.select(
+        database.coreCompanyMemberships,
+      )..where((table) => table.id.equals(ownerMembershipA.value))).getSingle();
+
+      await expectLater(
+        (database.update(
+          database.coreCompanyMemberships,
+        )..where((table) => table.id.equals(ownerMembershipA.value))).write(
+          const CoreCompanyMembershipsCompanion(status: Value('inactive')),
+        ),
+        throwsA(isA<Exception>()),
+      );
+      await expectLater(
+        (database.update(database.coreUsers)
+              ..where((table) => table.id.equals(ownerMembership.userId)))
+            .write(const CoreUsersCompanion(status: Value('inactive'))),
+        throwsA(isA<Exception>()),
+      );
+      await expectLater(
+        (database.update(database.coreUsers)
+              ..where((table) => table.id.equals(ownerMembership.userId)))
+            .write(const CoreUsersCompanion(status: Value(null))),
+        throwsA(isA<Exception>()),
+      );
+      await expectLater(
+        (database.delete(
+          database.coreCompanyMemberships,
+        )..where((table) => table.id.equals(ownerMembershipA.value))).go(),
+        throwsA(isA<Exception>()),
+      );
+
+      await (database.update(database.coreCompanies)
+            ..where((table) => table.id.equals(companyA.value)))
+          .write(const CoreCompaniesCompanion(status: Value('inactive')));
+      await (database.update(
+        database.coreCompanyMemberships,
+      )..where((table) => table.id.equals(ownerMembershipA.value))).write(
+        const CoreCompanyMembershipsCompanion(status: Value('inactive')),
+      );
+      await expectLater(
+        (database.update(database.coreCompanies)
+              ..where((table) => table.id.equals(companyA.value)))
+            .write(const CoreCompaniesCompanion(status: Value('active'))),
+        throwsA(isA<Exception>()),
+      );
+    },
+  );
+
+  test(
+    'active company owner role cannot be renamed, reassigned, or cascade-deleted',
+    () async {
+      final replacement = role('owner_replacement');
+      await store.createCompanyRole(
+        companyId: companyA,
+        roleId: replacement,
+        metadata: metadata('Owner replacement'),
+      );
+      final replacementRow = await (database.select(
+        database.coreRoles,
+      )..where((table) => table.roleKey.equals(replacement.value))).getSingle();
+      final ownerRole =
+          await (database.select(database.coreRoles)..where(
+                (table) =>
+                    table.companyId.equals(companyA.value) &
+                    table.roleKey.equals(
+                      NexaBizBuiltInCompanyRoles.companyOwner.value,
+                    ),
+              ))
+              .getSingle();
+
+      await expectLater(
+        (database.update(
+          database.coreRoles,
+        )..where((table) => table.id.equals(ownerRole.id))).write(
+          const CoreRolesCompanion(roleKey: Value('company.former_owner')),
+        ),
+        throwsA(isA<Exception>()),
+      );
+      await expectLater(
+        (database.update(database.coreMembershipRoles)..where(
+              (table) =>
+                  table.membershipId.equals(ownerMembershipA.value) &
+                  table.roleId.equals(ownerRole.id),
+            ))
+            .write(
+              CoreMembershipRolesCompanion(roleId: Value(replacementRow.id)),
+            ),
+        throwsA(isA<Exception>()),
+      );
+      await expectLater(
+        (database.delete(
+          database.coreRoles,
+        )..where((table) => table.id.equals(ownerRole.id))).go(),
+        throwsA(isA<Exception>()),
+      );
+    },
+  );
+
+  test(
     'cross-company role and membership attacks return typed errors',
     () async {
       final companyB = await addCompany('b');
@@ -525,12 +649,58 @@ void main() {
         ),
         throwsA(isA<NexaBizAuthorizationCrossCompanyException>()),
       );
+      await expectLater(
+        store.unassignRoleFromMembership(
+          companyId: companyA,
+          membershipId: memberB,
+          roleId: roleA,
+        ),
+        throwsA(isA<NexaBizAuthorizationCrossCompanyException>()),
+      );
 
       final rolesA = await store.listCompanyRoles(
         companyId: companyA,
         page: NexaBizAuthorizationAdministrationPageRequest(limit: 100),
       );
       expect(rolesA.items.map((item) => item.roleId), isNot(contains(roleB)));
+    },
+  );
+
+  test(
+    'parent tenant updates cannot invalidate existing role assignments',
+    () async {
+      final companyB = await addCompany('parent-update-b');
+      final member = await addMembership(suffix: 'parent-update');
+      final assignedRole = role('parent_update');
+      await store.createCompanyRole(
+        companyId: companyA,
+        roleId: assignedRole,
+        metadata: metadata('Parent Update'),
+      );
+      await store.assignRoleToMembership(
+        companyId: companyA,
+        membershipId: member,
+        roleId: assignedRole,
+      );
+      final roleRow =
+          await (database.select(database.coreRoles)
+                ..where((table) => table.roleKey.equals(assignedRole.value)))
+              .getSingle();
+
+      await expectLater(
+        (database.update(
+          database.coreCompanyMemberships,
+        )..where((table) => table.id.equals(member.value))).write(
+          CoreCompanyMembershipsCompanion(companyId: Value(companyB.value)),
+        ),
+        throwsA(isA<Exception>()),
+      );
+      await expectLater(
+        (database.update(database.coreRoles)
+              ..where((table) => table.id.equals(roleRow.id)))
+            .write(CoreRolesCompanion(companyId: Value(companyB.value))),
+        throwsA(isA<Exception>()),
+      );
     },
   );
 
@@ -778,6 +948,79 @@ void main() {
             .where((result) => result.changed),
         hasLength(1),
       );
+      final remaining = await databaseOne
+          .customSelect(
+            '''
+      SELECT COUNT(*) AS count
+      FROM core_membership_roles mr
+      JOIN core_roles r ON r.id = mr.role_id
+      JOIN core_company_memberships m ON m.id = mr.membership_id
+      JOIN core_users u ON u.id = m.user_id
+      WHERE r.role_key = ? AND r.company_id = ?
+        AND m.status = 'active' AND u.status = 'active'
+      ''',
+            variables: [
+              Variable.withString(
+                NexaBizBuiltInCompanyRoles.companyOwner.value,
+              ),
+              Variable.withString(companyA.value),
+            ],
+          )
+          .getSingle();
+      expect(remaining.read<int>('count'), 1);
+      await databaseOne.close();
+      await databaseTwo.close();
+    },
+  );
+
+  test(
+    'two database connections cannot concurrently deactivate both owners',
+    () async {
+      final secondOwner = await addMembership(suffix: 'deactivation-owner');
+      await store.assignRoleToMembership(
+        companyId: companyA,
+        membershipId: secondOwner,
+        roleId: NexaBizBuiltInCompanyRoles.companyOwner,
+      );
+      await installation!.close();
+      installation = null;
+
+      QueryExecutor backgroundExecutor() => NativeDatabase.createInBackground(
+        File(databasePath),
+        setup: (rawDatabase) {
+          rawDatabase.execute('PRAGMA busy_timeout = 5000');
+          rawDatabase.execute('PRAGMA foreign_keys = ON');
+          rawDatabase.execute('PRAGMA journal_mode = WAL');
+        },
+      );
+
+      final databaseOne = DriftCoreDatabase(backgroundExecutor());
+      await databaseOne.customSelect('SELECT 1').get();
+      final databaseTwo = DriftCoreDatabase(backgroundExecutor());
+      await databaseTwo.customSelect('SELECT 1').get();
+
+      Future<Object> deactivate(
+        DriftCoreDatabase target,
+        NexaBizMembershipId membershipId,
+      ) async {
+        try {
+          return await (target.update(
+            target.coreCompanyMemberships,
+          )..where((table) => table.id.equals(membershipId.value))).write(
+            const CoreCompanyMembershipsCompanion(status: Value('inactive')),
+          );
+        } on Object catch (error) {
+          return error;
+        }
+      }
+
+      final results = await Future.wait([
+        deactivate(databaseOne, ownerMembershipA),
+        deactivate(databaseTwo, secondOwner),
+      ]);
+      expect(results.whereType<int>(), [1]);
+      expect(results.whereType<Exception>(), hasLength(1));
+
       final remaining = await databaseOne
           .customSelect(
             '''

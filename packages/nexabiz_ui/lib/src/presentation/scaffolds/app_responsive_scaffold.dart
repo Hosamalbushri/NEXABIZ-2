@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 export 'package:flutter/material.dart' show FloatingActionButtonLocation;
-import '../../constants/app_constants.dart';
-import 'app_responsive.dart';
+import '../../layout/layout.dart';
 
 /// Standardized responsive scaffold container with desktop content constraints,
 /// mobile bottom bar, and keyboard-aware bottom action bar support.
@@ -18,9 +17,7 @@ class AppResponsiveScaffold extends StatelessWidget {
     this.floatingActionButton,
     this.floatingActionButtonLocation,
     this.extendBody = false,
-    this.currentIndex,
-    this.onNavigationIndexChanged,
-    this.maxContentWidth = AppConstants.maxContentWidth,
+    this.maxContentWidth = AppLayoutTokens.maxPageWidth,
     this.resizeToAvoidBottomInset = true,
     this.backgroundColor,
   });
@@ -35,24 +32,21 @@ class AppResponsiveScaffold extends StatelessWidget {
   final Widget? floatingActionButton;
   final FloatingActionButtonLocation? floatingActionButtonLocation;
   final bool extendBody;
-  final int? currentIndex;
-  final ValueChanged<int>? onNavigationIndexChanged;
   final double maxContentWidth;
   final bool resizeToAvoidBottomInset;
   final Color? backgroundColor;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: backgroundColor,
-      resizeToAvoidBottomInset: resizeToAvoidBottomInset,
-      extendBody: extendBody,
-      appBar: appBar,
-      body: SafeArea(
-        top: false,
-        bottom: bottomActions == null && mobileBottomBar == null,
-        child: Column(
+    return AppResponsive.builder(
+      builder: (context, tier, constraints) {
+        final desktop =
+            tier == AppBreakpointTier.expanded ||
+            tier == AppBreakpointTier.wide;
+        final displaySidebar = showSidebar ?? desktop;
+        final content = Column(
           children: [
+            if (desktop) ?topHeader,
             Expanded(
               child: AppContentConstraint(
                 maxWidth: maxContentWidth,
@@ -61,11 +55,29 @@ class AppResponsiveScaffold extends StatelessWidget {
             ),
             ?bottomActions,
           ],
-        ),
-      ),
-      bottomNavigationBar: mobileBottomBar,
-      floatingActionButton: floatingActionButton,
-      floatingActionButtonLocation: floatingActionButtonLocation,
+        );
+
+        return Scaffold(
+          backgroundColor: backgroundColor,
+          resizeToAvoidBottomInset: resizeToAvoidBottomInset,
+          extendBody: extendBody,
+          appBar: appBar,
+          body: SafeArea(
+            top: false,
+            bottom:
+                bottomActions == null && (!desktop && mobileBottomBar == null),
+            child: Row(
+              children: [
+                if (displaySidebar) ?sidebar,
+                Expanded(child: content),
+              ],
+            ),
+          ),
+          bottomNavigationBar: desktop ? null : mobileBottomBar,
+          floatingActionButton: floatingActionButton,
+          floatingActionButtonLocation: floatingActionButtonLocation,
+        );
+      },
     );
   }
 }

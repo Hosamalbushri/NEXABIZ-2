@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../theme/app_radius.dart';
-import '../theme/app_spacing.dart';
+import '../theme/tokens/app_radii.dart';
+import '../theme/tokens/app_spacing.dart';
 
 /// Canonical surface card container for detail page sections.
 class AppDetailSurfaceCard extends StatelessWidget {

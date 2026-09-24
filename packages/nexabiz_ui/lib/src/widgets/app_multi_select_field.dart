@@ -1,12 +1,16 @@
 import 'package:flutter/widgets.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart' as shadcn;
+
+import '../localization/nexabiz_ui_localizations.dart';
 import 'app_field_shell.dart';
+import 'app_select_option.dart';
+import 'app_selection_foundation.dart';
 
 /// Canonical multi-select field primitive for NexaBiz ERP.
 ///
 /// Wraps `shadcn_flutter` [shadcn.ControlledMultiSelect] in a type-safe generic (`T`)
-/// field wrapper that adheres to NexaBiz ERP form field layout rules (`label`,
-/// `required`, `errorText`, `helperText`, `density`).
+/// field wrapper that adheres to [AppFieldShell] form field layout rules (`label`,
+/// `required`, `description`, `errorText`, `helperText`, `density`).
 class AppMultiSelectField<T> extends StatelessWidget {
   const AppMultiSelectField({
     super.key,
@@ -15,7 +19,8 @@ class AppMultiSelectField<T> extends StatelessWidget {
     this.value,
     this.onChanged,
     this.label,
-    this.hint = 'اختر العناصر...',
+    this.description,
+    this.hint,
     this.placeholder,
     this.required = false,
     this.enabled = true,
@@ -41,8 +46,11 @@ class AppMultiSelectField<T> extends StatelessWidget {
   /// Field label text displayed above the component.
   final String? label;
 
+  /// Secondary description displayed below the label.
+  final String? description;
+
   /// Default hint text when no items are selected.
-  final String hint;
+  final String? hint;
 
   /// Custom placeholder widget.
   final Widget? placeholder;
@@ -71,93 +79,65 @@ class AppMultiSelectField<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = shadcn.Theme.of(context);
-    final hasError = errorText != null && errorText!.isNotEmpty;
     final isInteractive = enabled && !readOnly;
+    final hasError = errorText != null && errorText!.isNotEmpty;
+    final effectiveHint =
+        hint ?? NexaBizUiLocalizations.of(context).selectItems;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        if (label != null && label!.isNotEmpty) ...[
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                label!,
-                style: theme.typography.small.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: isInteractive
-                      ? theme.colorScheme.foreground
-                      : theme.colorScheme.mutedForeground,
-                ),
-              ),
-              if (required) ...[
-                const SizedBox(width: 4),
-                Text(
-                  '*',
-                  style: TextStyle(
-                    color: theme.colorScheme.destructive,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ],
-          ),
-          const SizedBox(height: 6),
-        ],
-        shadcn.ControlledMultiSelect<T>(
-          initialValue: value,
-          onChanged: isInteractive ? onChanged : null,
-          enabled: isInteractive,
-          placeholder: placeholder ?? Text(hint),
-          popup: (context) {
-            return shadcn.SelectGroup(
-              children: items.map((item) {
-                final displayLabel = itemLabelBuilder(item);
-                if (itemBuilder != null) {
-                  return shadcn.SelectItemButton<T>(
-                    value: item,
-                    child: Builder(
-                      builder: (ctx) {
-                        final popupHandle =
-                            shadcn.Data.maybeOf<shadcn.SelectPopupHandle>(ctx);
-                        final selected = popupHandle?.isSelected(item) ?? false;
-                        return itemBuilder!(ctx, item, selected);
-                      },
-                    ),
+    final childSelect = shadcn.ControlledMultiSelect<T>(
+      initialValue: value,
+      onChanged: isInteractive ? onChanged : null,
+      enabled: isInteractive,
+      placeholder: placeholder ?? Text(effectiveHint),
+      popup: (context) {
+        return shadcn.SelectGroup(
+          children: items.map((item) {
+            final displayLabel = itemLabelBuilder(item);
+            return shadcn.SelectItemButton<T>(
+              value: item,
+              child: Builder(
+                builder: (ctx) {
+                  final popupHandle =
+                      shadcn.Data.maybeOf<shadcn.SelectPopupHandle>(ctx);
+                  final selected = popupHandle?.isSelected(item) ?? false;
+                  if (itemBuilder != null) {
+                    return itemBuilder!(ctx, item, selected);
+                  }
+                  return AppSelectOptionTile<T>(
+                    option: item is AppSelectOption<T>
+                        ? item
+                        : AppSelectOption<T>(value: item, label: displayLabel),
+                    isSelected: selected,
+                    showCheckmark: true,
                   );
-                }
-                return shadcn.SelectItemButton<T>(
-                  value: item,
-                  child: Text(displayLabel),
-                );
-              }).toList(),
+                },
+              ),
             );
-          },
-          itemBuilder: (context, itemValue) {
-            return Text(itemLabelBuilder(itemValue));
-          },
-        ),
-        if (hasError) ...[
-          const SizedBox(height: 4),
-          Text(
-            errorText!,
-            style: theme.typography.small.copyWith(
-              color: theme.colorScheme.destructive,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ] else if (helperText != null && helperText!.isNotEmpty) ...[
-          const SizedBox(height: 4),
-          Text(
-            helperText!,
-            style: theme.typography.small.copyWith(
-              color: theme.colorScheme.mutedForeground,
-            ),
-          ),
-        ],
-      ],
+          }).toList(),
+        );
+      },
+      itemBuilder: (context, itemValue) {
+        return Text(itemLabelBuilder(itemValue));
+      },
+    );
+
+    final styledChild = wrapSelectWithErrorTheme(
+      context: context,
+      hasError: hasError,
+      child: childSelect,
+    );
+
+    return AppFieldShell(
+      label: label,
+      required: required,
+      description: description,
+      errorText: errorText,
+      helperText: helperText,
+      density: density,
+      enabled: enabled,
+      readOnly: readOnly,
+      borderless: true,
+      child: styledChild,
     );
   }
 }

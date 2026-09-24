@@ -82,6 +82,55 @@ void main() {
         expect(find.text('Dark Mode'), findsOneWidget);
         expect(find.text('Company & Currency Profile'), findsOneWidget);
         expect(find.text('Select Company'), findsOneWidget);
+        expect(find.text('Account No. / Code'), findsOneWidget);
+        expect(find.text('Role / Membership'), findsOneWidget);
+        expect(find.byIcon(AppIcons.qr), findsOneWidget);
+        expect(find.text('Device & Session Management'), findsOneWidget);
+        expect(find.text('Help & Support'), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'SettingsScreen taps on QR button, device management, and support open dialogs cleanly',
+      (tester) async {
+        tester.view.physicalSize = const Size(800, 1200);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(tester.view.resetPhysicalSize);
+
+        await tester.pumpWidget(wrapWithApp(const SettingsScreen()));
+        await tester.pumpAndSettle();
+
+        // 1. Tap QR Button and verify QR dialog
+        await tester.tap(find.byIcon(AppIcons.qr));
+        await tester.pumpAndSettle();
+        expect(find.text('Company & Identity QR'), findsOneWidget);
+
+        // Dismiss dialog by tapping outside or popping
+        final navigator = tester.state<NavigatorState>(
+          find.byType(Navigator).last,
+        );
+        navigator.pop();
+        await tester.pumpAndSettle();
+        expect(find.text('Company & Identity QR'), findsNothing);
+
+        // 2. Tap Device Management and verify dialog
+        await tester.tap(find.text('Device & Session Management'));
+        await tester.pumpAndSettle();
+        expect(find.text('Active Device'), findsOneWidget);
+
+        navigator.pop();
+        await tester.pumpAndSettle();
+        expect(find.text('Active Device'), findsNothing);
+
+        // 3. Tap Help & Support and verify dialog
+        await tester.scrollUntilVisible(find.text('Help & Support'), 200);
+        await tester.tap(find.text('Help & Support'));
+        await tester.pumpAndSettle();
+        expect(find.text('NexaBiz Enterprise ERP'), findsOneWidget);
+
+        navigator.pop();
+        await tester.pumpAndSettle();
+        expect(find.text('NexaBiz Enterprise ERP'), findsNothing);
       },
     );
 

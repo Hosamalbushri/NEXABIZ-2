@@ -2,15 +2,16 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
-import '../theme/app_radius.dart';
-import '../theme/app_spacing.dart';
+import '../localization/nexabiz_ui_localizations.dart';
+import '../theme/tokens/app_radii.dart';
+import '../theme/tokens/app_spacing.dart';
 
 /// Specification for a typed column in [AppEditableTableShell].
 class AppEditableTableColumn<T> {
   const AppEditableTableColumn({
     required this.label,
     required this.width,
-    this.alignment = Alignment.centerLeft,
+    this.alignment = AlignmentDirectional.centerStart,
     this.headerAlignment = TextAlign.start,
   });
 
@@ -21,7 +22,7 @@ class AppEditableTableColumn<T> {
   final double width;
 
   /// Content alignment within the cell.
-  final Alignment alignment;
+  final AlignmentGeometry alignment;
 
   /// Header text alignment.
   final TextAlign headerAlignment;
@@ -95,9 +96,9 @@ class AppEditableTableShell<T> extends StatefulWidget {
     this.footerSummaryBuilder,
     this.onAddRow,
     this.onScan,
-    this.addLabel = 'إضافة سطر',
-    this.scanLabel = 'مسح الضوئي',
-    this.emptyLabel = 'لا توجد عناصر في الجدول',
+    this.addLabel,
+    this.scanLabel,
+    this.emptyLabel,
     this.showIndexColumn = true,
     this.indexColumnWidth = 44.0,
     this.actionsColumnWidth = 48.0,
@@ -140,13 +141,13 @@ class AppEditableTableShell<T> extends StatefulWidget {
   final VoidCallback? onScan;
 
   /// Label for Add Row button.
-  final String addLabel;
+  final String? addLabel;
 
   /// Label for Scan Barcode button.
-  final String scanLabel;
+  final String? scanLabel;
 
   /// Label for empty table state.
-  final String emptyLabel;
+  final String? emptyLabel;
 
   /// Whether to show the leading numeric index counter column `#`.
   final bool showIndexColumn;
@@ -199,76 +200,83 @@ class _AppEditableTableShellState<T> extends State<AppEditableTableShell<T>> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
-    final viewportWidth = MediaQuery.sizeOf(context).width;
-    final tableWidth = math.max(_totalWidth, viewportWidth - 48);
     final hasContent = widget.items.isNotEmpty || widget.draftRows.isNotEmpty;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        if (widget.sectionHeader != null) ...[
-          widget.sectionHeader!,
-          const SizedBox(height: AppSpacing.md),
-        ],
-        if (!hasContent && !widget.isReadOnly)
-          _buildEmptyAddCard(context)
-        else
-          DecoratedBox(
-            decoration: BoxDecoration(
-              color: scheme.surface,
-              borderRadius: BorderRadius.circular(AppRadius.lg),
-              border: Border.all(
-                color: scheme.outlineVariant.withValues(alpha: 0.5),
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: scheme.shadow.withValues(alpha: 0.05),
-                  blurRadius: 20,
-                  offset: const Offset(0, 8),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final localWidth = constraints.hasBoundedWidth
+            ? constraints.maxWidth
+            : _totalWidth;
+        final tableWidth = math.max(_totalWidth, localWidth);
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (widget.sectionHeader != null) ...[
+              widget.sectionHeader!,
+              const SizedBox(height: AppSpacing.md),
+            ],
+            if (!hasContent && !widget.isReadOnly)
+              _buildEmptyAddCard(context)
+            else
+              DecoratedBox(
+                decoration: BoxDecoration(
+                  color: scheme.surface,
+                  borderRadius: BorderRadius.circular(AppRadius.lg),
+                  border: Border.all(
+                    color: scheme.outlineVariant.withValues(alpha: 0.5),
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: scheme.shadow.withValues(alpha: 0.05),
+                      blurRadius: 20,
+                      offset: const Offset(0, 8),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(AppRadius.lg),
-              child: Column(
-                children: [
-                  Scrollbar(
-                    controller: _horizontalScroll,
-                    thumbVisibility: true,
-                    radius: const Radius.circular(8),
-                    notificationPredicate: (n) =>
-                        n.metrics.axis == Axis.horizontal,
-                    child: SingleChildScrollView(
-                      controller: _horizontalScroll,
-                      scrollDirection: Axis.horizontal,
-                      child: SizedBox(
-                        width: tableWidth,
-                        child: FocusTraversalGroup(
-                          policy: ReadingOrderTraversalPolicy(),
-                          child: Column(
-                            children: [
-                              _buildTableHeader(context),
-                              for (var i = 0; i < widget.items.length; i++)
-                                _buildTableRow(context, i, widget.items[i]),
-                              if (widget.items.isNotEmpty &&
-                                  widget.footerSummaryBuilder != null)
-                                widget.footerSummaryBuilder!(context),
-                            ],
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(AppRadius.lg),
+                  child: Column(
+                    children: [
+                      Scrollbar(
+                        controller: _horizontalScroll,
+                        thumbVisibility: true,
+                        radius: const Radius.circular(8),
+                        notificationPredicate: (n) =>
+                            n.metrics.axis == Axis.horizontal,
+                        child: SingleChildScrollView(
+                          controller: _horizontalScroll,
+                          scrollDirection: Axis.horizontal,
+                          child: SizedBox(
+                            width: tableWidth,
+                            child: FocusTraversalGroup(
+                              policy: ReadingOrderTraversalPolicy(),
+                              child: Column(
+                                children: [
+                                  _buildTableHeader(context),
+                                  for (var i = 0; i < widget.items.length; i++)
+                                    _buildTableRow(context, i, widget.items[i]),
+                                  if (widget.items.isNotEmpty &&
+                                      widget.footerSummaryBuilder != null)
+                                    widget.footerSummaryBuilder!(context),
+                                ],
+                              ),
+                            ),
                           ),
                         ),
                       ),
-                    ),
+                      if (widget.draftRowBuilder != null)
+                        for (final draftId in widget.draftRows)
+                          widget.draftRowBuilder!(context, draftId),
+                      if (!widget.isReadOnly && widget.onAddRow != null)
+                        _buildTableActionsBar(context),
+                    ],
                   ),
-                  if (widget.draftRowBuilder != null)
-                    for (final draftId in widget.draftRows)
-                      widget.draftRowBuilder!(context, draftId),
-                  if (!widget.isReadOnly && widget.onAddRow != null)
-                    _buildTableActionsBar(context),
-                ],
+                ),
               ),
-            ),
-          ),
-      ],
+          ],
+        );
+      },
     );
   }
 
@@ -386,8 +394,12 @@ class _AppEditableTableShellState<T> extends State<AppEditableTableShell<T>> {
   }
 
   Widget _buildEmptyAddCard(BuildContext context) {
+    final loc = NexaBizUiLocalizations.of(context);
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
+    final effectiveEmptyLabel = widget.emptyLabel ?? loc.noItemsInTable;
+    final effectiveAddLabel = widget.addLabel ?? loc.addLine;
+    final effectiveScanLabel = widget.scanLabel ?? loc.scanBarcode;
 
     return Material(
       color: scheme.surface,
@@ -399,7 +411,7 @@ class _AppEditableTableShellState<T> extends State<AppEditableTableShell<T>> {
           borderRadius: AppRadius.lg,
         ),
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(
+          padding: const EdgeInsetsDirectional.fromSTEB(
             AppSpacing.lg,
             AppSpacing.xl,
             AppSpacing.lg,
@@ -429,7 +441,7 @@ class _AppEditableTableShellState<T> extends State<AppEditableTableShell<T>> {
               ),
               const SizedBox(height: AppSpacing.md),
               Text(
-                widget.emptyLabel,
+                effectiveEmptyLabel,
                 textAlign: TextAlign.center,
                 style: theme.textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.w800,
@@ -441,14 +453,14 @@ class _AppEditableTableShellState<T> extends State<AppEditableTableShell<T>> {
                   if (widget.onAddRow != null)
                     Expanded(
                       child: _AddRowButton(
-                        label: widget.addLabel,
+                        label: effectiveAddLabel,
                         onTap: widget.onAddRow!,
                       ),
                     ),
                   if (widget.onScan != null) ...[
                     const SizedBox(width: AppSpacing.sm),
                     _ScanIconButton(
-                      label: widget.scanLabel,
+                      label: effectiveScanLabel,
                       onTap: widget.onScan!,
                     ),
                   ],
@@ -462,11 +474,14 @@ class _AppEditableTableShellState<T> extends State<AppEditableTableShell<T>> {
   }
 
   Widget _buildTableActionsBar(BuildContext context) {
+    final loc = NexaBizUiLocalizations.of(context);
     final scheme = Theme.of(context).colorScheme;
+    final effectiveAddLabel = widget.addLabel ?? loc.addLine;
+    final effectiveScanLabel = widget.scanLabel ?? loc.scanBarcode;
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(
+      padding: const EdgeInsetsDirectional.fromSTEB(
         AppSpacing.md,
         AppSpacing.sm + 4,
         AppSpacing.md,
@@ -483,13 +498,13 @@ class _AppEditableTableShellState<T> extends State<AppEditableTableShell<T>> {
           if (widget.onAddRow != null)
             Expanded(
               child: _AddRowButton(
-                label: widget.addLabel,
+                label: effectiveAddLabel,
                 onTap: widget.onAddRow!,
               ),
             ),
           if (widget.onScan != null) ...[
             const SizedBox(width: AppSpacing.sm),
-            _ScanIconButton(label: widget.scanLabel, onTap: widget.onScan!),
+            _ScanIconButton(label: effectiveScanLabel, onTap: widget.onScan!),
           ],
         ],
       ),

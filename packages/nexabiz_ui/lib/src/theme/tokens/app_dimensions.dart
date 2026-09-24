@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../layout/app_layout_tokens.dart';
+
 /// Touch target sizes, control heights, and layout dimensions for NexaBiz.
 class AppDimensions {
   const AppDimensions._();
@@ -16,11 +18,14 @@ class AppDimensions {
   /// Compact button height.
   static const double buttonHeightCompact = 36.0;
 
-  /// Input field height.
+  /// Standard input field height.
   static const double inputHeight = 48.0;
 
   /// Desktop/dense input field height.
   static const double desktopInputHeight = 40.0;
+
+  /// Large input field height.
+  static const double inputHeightLarge = 56.0;
 
   /// Search bar height.
   static const double searchBarHeight = 44.0;
@@ -38,19 +43,24 @@ class AppDimensions {
   static const double appBarHeight = 64.0;
 
   /// Navigation Rail / Collapsed Sidebar width.
-  static const double navRailWidth = 64.0;
+  static const double navRailWidth = navCollapsedSidebarWidth;
 
   /// Enterprise structured top header height.
   static const double topHeaderHeight = 48.0;
 
   /// Navigation Sidebar expanded width.
-  static const double navSidebarWidth = 240.0;
+  /// Deprecated: Authoritative layout tokens reside in [AppLayoutTokens.navSidebarWidth].
+  @Deprecated('Use AppLayoutTokens.navSidebarWidth instead')
+  static const double navSidebarWidth = AppLayoutTokens.navSidebarWidth;
 
   /// Navigation Drawer expanded width (aliased to [navSidebarWidth]).
   static const double navDrawerWidth = navSidebarWidth;
 
   /// Navigation Collapsed Sidebar width.
-  static const double navCollapsedSidebarWidth = 64.0;
+  /// Deprecated: Authoritative layout tokens reside in [AppLayoutTokens.navCollapsedSidebarWidth].
+  @Deprecated('Use AppLayoutTokens.navCollapsedSidebarWidth instead')
+  static const double navCollapsedSidebarWidth =
+      AppLayoutTokens.navCollapsedSidebarWidth;
 
   /// Standard minimum button size.
   static const Size minimumButtonSize = Size(64.0, buttonHeight);

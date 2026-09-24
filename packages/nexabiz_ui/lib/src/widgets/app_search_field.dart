@@ -1,7 +1,10 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' show Icons;
+import 'package:flutter/widgets.dart';
 
-import '../theme/tokens/app_icons.dart';
+import '../localization/nexabiz_ui_localizations.dart';
+import '../theme/tokens/tokens.dart';
 import 'app_field_shell.dart';
+import 'app_icon_button.dart';
 import 'app_text_field.dart';
 
 /// Canonical search field primitive for NexaBiz ERP.
@@ -12,7 +15,7 @@ class AppSearchField extends StatefulWidget {
   const AppSearchField({
     super.key,
     this.controller,
-    this.hint = 'Search...',
+    this.hint,
     this.onChanged,
     this.onSubmitted,
     this.onClear,
@@ -22,7 +25,7 @@ class AppSearchField extends StatefulWidget {
   });
 
   final TextEditingController? controller;
-  final String hint;
+  final String? hint;
   final ValueChanged<String>? onChanged;
   final ValueChanged<String>? onSubmitted;
   final VoidCallback? onClear;
@@ -68,11 +71,12 @@ class _AppSearchFieldState extends State<AppSearchField> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = NexaBizUiLocalizations.of(context);
     final hasText = _effectiveController.text.isNotEmpty;
 
     return AppTextField(
       controller: _effectiveController,
-      hint: widget.hint,
+      hint: widget.hint ?? loc.searchHint,
       prefixIcon: Icons.search_rounded,
       enabled: widget.enabled,
       autofocus: widget.autofocus,
@@ -80,8 +84,10 @@ class _AppSearchFieldState extends State<AppSearchField> {
       onChanged: widget.onChanged,
       onSubmitted: widget.onSubmitted,
       suffixIcon: hasText && widget.enabled
-          ? IconButton(
-              icon: const Icon(Icons.close_rounded, size: AppIcons.xs),
+          ? AppIconButton(
+              icon: Icons.close_rounded,
+              iconSize: AppIcons.xs,
+              tooltip: loc.clear,
               onPressed: () {
                 _effectiveController.clear();
                 widget.onChanged?.call('');

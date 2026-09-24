@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../localization/nexabiz_ui_localizations.dart';
 import '../theme/tokens/tokens.dart';
 import 'app_bottom_actions.dart';
 import 'app_button.dart';
@@ -12,9 +13,9 @@ class AppFormActions extends StatelessWidget {
   const AppFormActions({
     super.key,
     required this.onSubmit,
-    this.submitLabel = 'Save',
+    this.submitLabel,
     this.onCancel,
-    this.cancelLabel = 'Cancel',
+    this.cancelLabel,
     this.isLoading = false,
     this.isSticky = true,
     this.submitIcon = Icons.check_rounded,
@@ -23,9 +24,9 @@ class AppFormActions extends StatelessWidget {
   });
 
   final VoidCallback? onSubmit;
-  final String submitLabel;
+  final String? submitLabel;
   final VoidCallback? onCancel;
-  final String cancelLabel;
+  final String? cancelLabel;
   final bool isLoading;
   final bool isSticky;
   final IconData? submitIcon;
@@ -34,8 +35,12 @@ class AppFormActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = NexaBizUiLocalizations.of(context);
+    final effectiveSubmitLabel = submitLabel ?? loc.save;
+    final effectiveCancelLabel = cancelLabel ?? loc.cancel;
+
     final primaryBtn = AppButton(
-      label: submitLabel,
+      label: effectiveSubmitLabel,
       onPressed: isLoading ? null : onSubmit,
       variant: AppButtonVariant.filled,
       icon: submitIcon,
@@ -45,7 +50,7 @@ class AppFormActions extends StatelessWidget {
 
     final secondaryBtn = onCancel != null
         ? AppButton(
-            label: cancelLabel,
+            label: effectiveCancelLabel,
             onPressed: isLoading ? null : onCancel,
             variant: AppButtonVariant.outlined,
             icon: cancelIcon,
@@ -53,24 +58,19 @@ class AppFormActions extends StatelessWidget {
           )
         : null;
 
-    if (!isSticky) {
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          if (extraActions != null) ...[...extraActions!, const Spacer()],
-          if (secondaryBtn != null) ...[
-            Expanded(child: secondaryBtn),
-            const SizedBox(width: AppSpacing.sm),
-          ],
-          Expanded(child: primaryBtn),
-        ],
-      );
-    }
-
     return AppBottomActions(
       primaryAction: primaryBtn,
       secondaryAction: secondaryBtn,
       extraActions: extraActions,
+      padding: isSticky
+          ? const EdgeInsetsDirectional.fromSTEB(
+              AppSpacing.md,
+              AppSpacing.sm,
+              AppSpacing.md,
+              AppSpacing.sm,
+            )
+          : EdgeInsets.zero,
+      showBorder: isSticky,
     );
   }
 }

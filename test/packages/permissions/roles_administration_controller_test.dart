@@ -41,6 +41,11 @@ class FakeAdminStore implements NexaBizAuthorizationAdministrationStore {
   final List<String> recordedEvents = [];
   Completer<void>? delayCompleter;
   Completer<void>? mutationDelayCompleter;
+  final Map<NexaBizPermissionId, Completer<void>> permissionMutationCompleters =
+      {};
+  final Map<NexaBizMembershipId, Completer<void>> membershipMutationCompleters =
+      {};
+  final Map<String?, Completer<void>> assignableQueryCompleters = {};
   Object? throwOnMutation;
   Object? throwOnQuery;
 
@@ -153,6 +158,13 @@ class FakeAdminStore implements NexaBizAuthorizationAdministrationStore {
     final existing = roleDetailsByRole[roleId.value];
     if (existing != null) return existing;
 
+    final roleExists = (rolesByCompany[companyId.value] ?? []).any(
+      (role) => role.roleId == roleId,
+    );
+    if (!roleExists) {
+      throw NexaBizRoleNotFoundException(companyId: companyId, roleId: roleId);
+    }
+
     return NexaBizCompanyRoleDetails(
       companyId: companyId,
       roleId: roleId,
@@ -212,9 +224,19 @@ class FakeAdminStore implements NexaBizAuthorizationAdministrationStore {
     if (throwOnQuery != null) throw throwOnQuery!;
 
     final list = assignmentsByRole[roleId.value] ?? [];
+    final start = page.cursor == null
+        ? 0
+        : list.indexWhere(
+                (member) => member.membershipId.value == page.cursor,
+              ) +
+              1;
+    final items = list.skip(start).take(page.limit).toList();
+    final hasMore = start + page.limit < list.length;
     return NexaBizAuthorizationAdministrationPage(
-      items: list,
-      nextCursor: null,
+      items: items,
+      nextCursor: hasMore && items.isNotEmpty
+          ? items.last.membershipId.value
+          : null,
     );
   }
 
@@ -227,6 +249,9 @@ class FakeAdminStore implements NexaBizAuthorizationAdministrationStore {
     String? search,
   }) async {
     recordedEvents.add('listAssignableMembershipsForRole:${roleId.value}');
+    if (assignableQueryCompleters[search] case final completer?) {
+      await completer.future;
+    }
     if (delayCompleter != null) await delayCompleter!.future;
     if (throwOnQuery != null) throw throwOnQuery!;
 
@@ -242,9 +267,19 @@ class FakeAdminStore implements NexaBizAuthorizationAdministrationStore {
           .toList();
     }
 
+    final start = page.cursor == null
+        ? 0
+        : list.indexWhere(
+                (member) => member.membershipId.value == page.cursor,
+              ) +
+              1;
+    final items = list.skip(start).take(page.limit).toList();
+    final hasMore = start + page.limit < list.length;
     return NexaBizAuthorizationAdministrationPage(
-      items: list,
-      nextCursor: null,
+      items: items,
+      nextCursor: hasMore && items.isNotEmpty
+          ? items.last.membershipId.value
+          : null,
     );
   }
 
@@ -358,6 +393,9 @@ class FakeAdminStore implements NexaBizAuthorizationAdministrationStore {
     required NexaBizPermissionId permissionId,
   }) async {
     recordedEvents.add('grantPermission:${permissionId.value}');
+    if (permissionMutationCompleters[permissionId] case final completer?) {
+      await completer.future;
+    }
     if (mutationDelayCompleter != null) await mutationDelayCompleter!.future;
     if (throwOnMutation != null) throw throwOnMutation!;
 
@@ -387,6 +425,9 @@ class FakeAdminStore implements NexaBizAuthorizationAdministrationStore {
     required NexaBizPermissionId permissionId,
   }) async {
     recordedEvents.add('revokePermission:${permissionId.value}');
+    if (permissionMutationCompleters[permissionId] case final completer?) {
+      await completer.future;
+    }
     if (mutationDelayCompleter != null) await mutationDelayCompleter!.future;
     if (throwOnMutation != null) throw throwOnMutation!;
 
@@ -416,6 +457,9 @@ class FakeAdminStore implements NexaBizAuthorizationAdministrationStore {
     required NexaBizRoleId roleId,
   }) async {
     recordedEvents.add('assignRoleToMembership:${membershipId.value}');
+    if (membershipMutationCompleters[membershipId] case final completer?) {
+      await completer.future;
+    }
     if (mutationDelayCompleter != null) await mutationDelayCompleter!.future;
     if (throwOnMutation != null) throw throwOnMutation!;
 
@@ -453,6 +497,9 @@ class FakeAdminStore implements NexaBizAuthorizationAdministrationStore {
     required NexaBizRoleId roleId,
   }) async {
     recordedEvents.add('unassignRoleFromMembership:${membershipId.value}');
+    if (membershipMutationCompleters[membershipId] case final completer?) {
+      await completer.future;
+    }
     if (mutationDelayCompleter != null) await mutationDelayCompleter!.future;
     if (throwOnMutation != null) throw throwOnMutation!;
 
@@ -845,6 +892,64 @@ void main() {
       },
     );
 
+    test('company switch drops an in-flight create completion', () async {
+      await controller.initialize();
+      store.rolesByCompany[companyB.value] = [];
+      store.mutationDelayCompleter = Completer<void>();
+
+      final future = controller.createRole(
+        roleId: NexaBizRoleId('company.cashier'),
+        displayName: NexaBizRoleDisplayName('Cashier'),
+      );
+      await controller.updateContext(contextB);
+      store.mutationDelayCompleter!.complete();
+
+      expect(await future, isFalse);
+      expect(controller.state.companyId, companyB);
+      expect(
+        controller.state.roles.any(
+          (role) => role.roleId.value == 'company.cashier',
+        ),
+        isFalse,
+      );
+      expect(controller.state.isCreatingRole, isFalse);
+    });
+
+    test('company switch drops an in-flight metadata update', () async {
+      await controller.initialize();
+      await controller.selectRole(role1);
+      store.rolesByCompany[companyB.value] = [];
+      store.mutationDelayCompleter = Completer<void>();
+
+      final future = controller.updateRoleMetadata(
+        roleId: role1,
+        displayName: NexaBizRoleDisplayName('Changed in A'),
+      );
+      await controller.updateContext(contextB);
+      store.mutationDelayCompleter!.complete();
+
+      expect(await future, isFalse);
+      expect(controller.state.companyId, companyB);
+      expect(controller.state.selectedRoleId, isNull);
+      expect(controller.state.isUpdatingRole, isFalse);
+    });
+
+    test('company switch drops an in-flight delete completion', () async {
+      await controller.initialize();
+      await controller.selectRole(role1);
+      store.rolesByCompany[companyB.value] = [];
+      store.mutationDelayCompleter = Completer<void>();
+
+      final future = controller.deleteRole(role1);
+      await controller.updateContext(contextB);
+      store.mutationDelayCompleter!.complete();
+
+      expect(await future, isFalse);
+      expect(controller.state.companyId, companyB);
+      expect(controller.state.selectedRoleId, isNull);
+      expect(controller.state.isDeletingRole, isFalse);
+    });
+
     test(
       'grantPermission: sequencing guard drops duplicate call; commits grant on success',
       () async {
@@ -894,6 +999,172 @@ void main() {
           controller.state.mutationError!.resolveMessage(l10nAr),
           equals(l10nAr.authAdminErrorBuiltInPermissions),
         );
+        expect(controller.state.mutationError!.permissionId, permissionView);
+      },
+    );
+
+    test('direct revoke failure retains the granted permission', () async {
+      store.permissionsByRole[role1.value] = {permissionView};
+      await controller.initialize();
+      await controller.selectRole(role1);
+      store.throwOnMutation = NexaBizBuiltInRoleProtectedException(
+        roleId: role1,
+        action: NexaBizBuiltInRoleProtectedAction.revokePermission,
+      );
+
+      expect(await controller.revokePermission(permissionView), isFalse);
+      expect(controller.state.isPermissionGranted(permissionView), isTrue);
+      expect(controller.state.pendingPermissionIds, isEmpty);
+      expect(controller.state.mutationError?.permissionId, permissionView);
+    });
+
+    test('role switch drops a late permission mutation completion', () async {
+      await controller.initialize();
+      await controller.selectRole(role1);
+      final completer = Completer<void>();
+      store.permissionMutationCompleters[permissionView] = completer;
+
+      final future = controller.grantPermission(permissionView);
+      expect(controller.state.isPermissionPending(permissionView), isTrue);
+
+      await controller.selectRole(role2);
+      expect(controller.state.pendingPermissionIds, isEmpty);
+      completer.complete();
+
+      expect(await future, isFalse);
+      expect(controller.state.selectedRoleId, role2);
+      expect(controller.state.isPermissionGranted(permissionView), isFalse);
+    });
+
+    test(
+      'company switch drops a late permission mutation completion',
+      () async {
+        await controller.initialize();
+        await controller.selectRole(role1);
+        store.rolesByCompany[companyB.value] = [];
+        final completer = Completer<void>();
+        store.permissionMutationCompleters[permissionView] = completer;
+
+        final future = controller.grantPermission(permissionView);
+        await controller.updateContext(contextB);
+        completer.complete();
+
+        expect(await future, isFalse);
+        expect(controller.state.companyId, companyB);
+        expect(controller.state.selectedRoleId, isNull);
+        expect(controller.state.pendingPermissionIds, isEmpty);
+      },
+    );
+
+    test('logout drops a late permission mutation completion', () async {
+      await controller.initialize();
+      await controller.selectRole(role1);
+      final completer = Completer<void>();
+      store.permissionMutationCompleters[permissionView] = completer;
+
+      final future = controller.grantPermission(permissionView);
+      controller.handleLogout();
+      completer.complete();
+
+      expect(await future, isFalse);
+      expect(controller.state.companyId, isNull);
+      expect(controller.state.selectedRolePermissions, isEmpty);
+      expect(controller.state.pendingPermissionIds, isEmpty);
+    });
+
+    test(
+      'dispose drops a late permission completion without notifying',
+      () async {
+        await controller.initialize();
+        await controller.selectRole(role1);
+        final completer = Completer<void>();
+        store.permissionMutationCompleters[permissionView] = completer;
+        var notificationCount = 0;
+        controller.addListener(() => notificationCount++);
+
+        final future = controller.grantPermission(permissionView);
+        final countBeforeDispose = notificationCount;
+        controller.dispose();
+        completer.complete();
+
+        expect(await future, isFalse);
+        expect(notificationCount, countBeforeDispose);
+      },
+    );
+
+    test(
+      'different permission mutations complete independently out of order',
+      () async {
+        await controller.initialize();
+        await controller.selectRole(role1);
+        final firstCompleter = Completer<void>();
+        final secondCompleter = Completer<void>();
+        store.permissionMutationCompleters[permissionView] = firstCompleter;
+        store.permissionMutationCompleters[permissionManage] = secondCompleter;
+
+        final first = controller.grantPermission(permissionView);
+        final second = controller.grantPermission(permissionManage);
+        expect(
+          controller.state.pendingPermissionIds,
+          containsAll([permissionView, permissionManage]),
+        );
+
+        secondCompleter.complete();
+        expect(await second, isTrue);
+        expect(controller.state.isPermissionGranted(permissionManage), isTrue);
+        expect(controller.state.isPermissionPending(permissionView), isTrue);
+
+        firstCompleter.complete();
+        expect(await first, isTrue);
+        expect(controller.state.isPermissionGranted(permissionView), isTrue);
+        expect(controller.state.pendingPermissionIds, isEmpty);
+      },
+    );
+
+    test(
+      'external invalidation during permission mutation reaches final canonical state',
+      () async {
+        await controller.initialize();
+        await controller.selectRole(role1);
+        final completer = Completer<void>();
+        store.permissionMutationCompleters[permissionView] = completer;
+
+        final mutation = controller.grantPermission(permissionView);
+        invalidationSignal.notifyAuthorizationChanged();
+        await Future<void>.delayed(Duration.zero);
+        expect(controller.state.isPermissionPending(permissionView), isTrue);
+
+        completer.complete();
+        expect(await mutation, isTrue);
+        await Future<void>.delayed(Duration.zero);
+
+        expect(controller.state.isPermissionGranted(permissionView), isTrue);
+        expect(controller.state.pendingPermissionIds, isEmpty);
+      },
+    );
+
+    test(
+      'role deletion during permission mutation cannot resurrect details',
+      () async {
+        await controller.initialize();
+        await controller.selectRole(role1);
+        final completer = Completer<void>();
+        store.permissionMutationCompleters[permissionView] = completer;
+
+        final mutation = controller.grantPermission(permissionView);
+        store.rolesByCompany[companyA.value]!.removeWhere(
+          (role) => role.roleId == role1,
+        );
+        invalidationSignal.notifyAuthorizationChanged();
+        await Future<void>.delayed(Duration.zero);
+        await Future<void>.delayed(Duration.zero);
+
+        completer.complete();
+        expect(await mutation, isFalse);
+        await Future<void>.delayed(Duration.zero);
+        expect(controller.state.selectedRoleId, isNull);
+        expect(controller.state.selectedRoleDetails, isNull);
+        expect(controller.state.selectedRolePermissions, isEmpty);
       },
     );
 
@@ -948,6 +1219,449 @@ void main() {
       },
     );
 
+    test('role switch drops a late membership assignment completion', () async {
+      final candidateId = NexaBizMembershipId('member-role-switch');
+      store.assignablesByRole[role1.value] = [
+        store.dummyAssignable(
+          companyId: companyA,
+          membershipId: candidateId,
+          userId: NexaBizUserId('user-role-switch'),
+        ),
+      ];
+      await controller.initialize();
+      await controller.selectRole(role1);
+      await controller.loadAssignableMembers();
+      final completer = Completer<void>();
+      store.membershipMutationCompleters[candidateId] = completer;
+
+      final mutation = controller.assignMember(candidateId);
+      expect(controller.state.isMembershipPending(candidateId), isTrue);
+
+      await controller.selectRole(role2);
+      expect(controller.state.pendingMembershipIds, isEmpty);
+      completer.complete();
+
+      expect(await mutation, isFalse);
+      expect(controller.state.selectedRoleId, role2);
+      expect(
+        controller.state.assignedMembers.any(
+          (member) => member.membershipId == candidateId,
+        ),
+        isFalse,
+      );
+    });
+
+    test(
+      'role switch drops a late membership unassignment completion',
+      () async {
+        store.assignmentsByRole[role1.value] = [
+          store.dummyAssignment(
+            companyId: companyA,
+            membershipId: membershipA,
+            userId: user1,
+            roleId: role1,
+          ),
+        ];
+        await controller.initialize();
+        await controller.selectRole(role1);
+        final completer = Completer<void>();
+        store.membershipMutationCompleters[membershipA] = completer;
+
+        final mutation = controller.unassignMember(membershipA);
+        await controller.selectRole(role2);
+        completer.complete();
+
+        expect(await mutation, isFalse);
+        expect(controller.state.selectedRoleId, role2);
+        expect(controller.state.assignedMembers, isEmpty);
+        expect(controller.state.pendingMembershipIds, isEmpty);
+      },
+    );
+
+    test(
+      'starting another member mutation preserves an unrelated error',
+      () async {
+        final firstId = NexaBizMembershipId('member-error-first');
+        final secondId = NexaBizMembershipId('member-error-second');
+        store.assignablesByRole[role1.value] = [
+          store.dummyAssignable(
+            companyId: companyA,
+            membershipId: firstId,
+            userId: NexaBizUserId('user-error-first'),
+          ),
+          store.dummyAssignable(
+            companyId: companyA,
+            membershipId: secondId,
+            userId: NexaBizUserId('user-error-second'),
+          ),
+        ];
+        await controller.initialize();
+        await controller.selectRole(role1);
+        await controller.loadAssignableMembers();
+        store.throwOnMutation = NexaBizMembershipIneligibleException(
+          membershipId: firstId,
+          reason: NexaBizMembershipIneligibilityReason.inactiveMembership,
+        );
+
+        expect(await controller.assignMember(firstId), isFalse);
+        expect(controller.state.mutationError?.membershipId, firstId);
+
+        store.throwOnMutation = null;
+        final completer = Completer<void>();
+        store.membershipMutationCompleters[secondId] = completer;
+        final secondMutation = controller.assignMember(secondId);
+
+        expect(controller.state.mutationError?.membershipId, firstId);
+        completer.complete();
+        expect(await secondMutation, isTrue);
+      },
+    );
+
+    test('company switch drops late assign and unassign completions', () async {
+      final candidateId = NexaBizMembershipId('member-company-switch');
+      store.assignablesByRole[role1.value] = [
+        store.dummyAssignable(
+          companyId: companyA,
+          membershipId: candidateId,
+          userId: NexaBizUserId('user-company-switch'),
+        ),
+      ];
+      store.assignmentsByRole[role1.value] = [
+        store.dummyAssignment(
+          companyId: companyA,
+          membershipId: membershipA,
+          userId: user1,
+          roleId: role1,
+        ),
+      ];
+      store.rolesByCompany[companyB.value] = [];
+      await controller.initialize();
+      await controller.selectRole(role1);
+      await controller.loadAssignableMembers();
+      final assignCompleter = Completer<void>();
+      final unassignCompleter = Completer<void>();
+      store.membershipMutationCompleters[candidateId] = assignCompleter;
+      store.membershipMutationCompleters[membershipA] = unassignCompleter;
+
+      final assign = controller.assignMember(candidateId);
+      final unassign = controller.unassignMember(membershipA);
+      await controller.updateContext(contextB);
+      assignCompleter.complete();
+      unassignCompleter.complete();
+
+      expect(await assign, isFalse);
+      expect(await unassign, isFalse);
+      expect(controller.state.companyId, companyB);
+      expect(controller.state.pendingMembershipIds, isEmpty);
+      expect(controller.state.assignedMembers, isEmpty);
+    });
+
+    test('logout drops a late membership mutation completion', () async {
+      final candidateId = NexaBizMembershipId('member-logout');
+      store.assignablesByRole[role1.value] = [
+        store.dummyAssignable(
+          companyId: companyA,
+          membershipId: candidateId,
+          userId: NexaBizUserId('user-logout'),
+        ),
+      ];
+      await controller.initialize();
+      await controller.selectRole(role1);
+      await controller.loadAssignableMembers();
+      final completer = Completer<void>();
+      store.membershipMutationCompleters[candidateId] = completer;
+
+      final mutation = controller.assignMember(candidateId);
+      controller.handleLogout();
+      completer.complete();
+
+      expect(await mutation, isFalse);
+      expect(controller.state.companyId, isNull);
+      expect(controller.state.pendingMembershipIds, isEmpty);
+      expect(controller.state.assignedMembers, isEmpty);
+    });
+
+    test(
+      'dispose drops a late membership completion without notifying',
+      () async {
+        final candidateId = NexaBizMembershipId('member-dispose');
+        store.assignablesByRole[role1.value] = [
+          store.dummyAssignable(
+            companyId: companyA,
+            membershipId: candidateId,
+            userId: NexaBizUserId('user-dispose'),
+          ),
+        ];
+        await controller.initialize();
+        await controller.selectRole(role1);
+        await controller.loadAssignableMembers();
+        final completer = Completer<void>();
+        store.membershipMutationCompleters[candidateId] = completer;
+        var notificationCount = 0;
+        controller.addListener(() => notificationCount++);
+
+        final mutation = controller.assignMember(candidateId);
+        final countBeforeDispose = notificationCount;
+        controller.dispose();
+        completer.complete();
+
+        expect(await mutation, isFalse);
+        expect(notificationCount, countBeforeDispose);
+      },
+    );
+
+    test(
+      'different membership mutations complete independently out of order',
+      () async {
+        final firstId = NexaBizMembershipId('member-overlap-first');
+        final secondId = NexaBizMembershipId('member-overlap-second');
+        store.assignablesByRole[role1.value] = [
+          store.dummyAssignable(
+            companyId: companyA,
+            membershipId: firstId,
+            userId: NexaBizUserId('user-overlap-first'),
+          ),
+          store.dummyAssignable(
+            companyId: companyA,
+            membershipId: secondId,
+            userId: NexaBizUserId('user-overlap-second'),
+          ),
+        ];
+        await controller.initialize();
+        await controller.selectRole(role1);
+        await controller.loadAssignableMembers();
+        final firstCompleter = Completer<void>();
+        final secondCompleter = Completer<void>();
+        store.membershipMutationCompleters[firstId] = firstCompleter;
+        store.membershipMutationCompleters[secondId] = secondCompleter;
+
+        final first = controller.assignMember(firstId);
+        final second = controller.assignMember(secondId);
+        expect(
+          controller.state.pendingMembershipIds,
+          containsAll([firstId, secondId]),
+        );
+
+        secondCompleter.complete();
+        expect(await second, isTrue);
+        expect(controller.state.isMembershipPending(firstId), isTrue);
+        firstCompleter.complete();
+        expect(await first, isTrue);
+        expect(controller.state.pendingMembershipIds, isEmpty);
+        expect(
+          controller.state.assignedMembers.map((item) => item.membershipId),
+          containsAll([firstId, secondId]),
+        );
+      },
+    );
+
+    test('assign and unassign different memberships may overlap', () async {
+      final candidateId = NexaBizMembershipId('member-mixed-assign');
+      store.assignablesByRole[role1.value] = [
+        store.dummyAssignable(
+          companyId: companyA,
+          membershipId: candidateId,
+          userId: NexaBizUserId('user-mixed-assign'),
+        ),
+      ];
+      store.assignmentsByRole[role1.value] = [
+        store.dummyAssignment(
+          companyId: companyA,
+          membershipId: membershipA,
+          userId: user1,
+          roleId: role1,
+        ),
+      ];
+      await controller.initialize();
+      await controller.selectRole(role1);
+      await controller.loadAssignableMembers();
+      final assignCompleter = Completer<void>();
+      final unassignCompleter = Completer<void>();
+      store.membershipMutationCompleters[candidateId] = assignCompleter;
+      store.membershipMutationCompleters[membershipA] = unassignCompleter;
+
+      final assign = controller.assignMember(candidateId);
+      final unassign = controller.unassignMember(membershipA);
+      unassignCompleter.complete();
+      expect(await unassign, isTrue);
+      assignCompleter.complete();
+      expect(await assign, isTrue);
+
+      expect(controller.state.pendingMembershipIds, isEmpty);
+      expect(
+        controller.state.assignedMembers.map((item) => item.membershipId),
+        [candidateId],
+      );
+      expect(
+        controller.state.selectedRoleDetails?.membershipAssignmentCount,
+        1,
+      );
+    });
+
+    test(
+      'external invalidation during membership mutation reaches canonical state',
+      () async {
+        final candidateId = NexaBizMembershipId('member-invalidation');
+        store.assignablesByRole[role1.value] = [
+          store.dummyAssignable(
+            companyId: companyA,
+            membershipId: candidateId,
+            userId: NexaBizUserId('user-invalidation'),
+          ),
+        ];
+        await controller.initialize();
+        await controller.selectRole(role1);
+        await controller.loadAssignableMembers();
+        final completer = Completer<void>();
+        store.membershipMutationCompleters[candidateId] = completer;
+
+        final mutation = controller.assignMember(candidateId);
+        invalidationSignal.notifyAuthorizationChanged();
+        await Future<void>.delayed(Duration.zero);
+        expect(controller.state.isMembershipPending(candidateId), isTrue);
+
+        completer.complete();
+        expect(await mutation, isTrue);
+        await Future<void>.delayed(Duration.zero);
+        expect(controller.state.pendingMembershipIds, isEmpty);
+        expect(
+          controller.state.assignedMembers.where(
+            (item) => item.membershipId == candidateId,
+          ),
+          hasLength(1),
+        );
+      },
+    );
+
+    test('assignable search race retains the newest query results', () async {
+      final firstId = NexaBizMembershipId('member-search-alan');
+      final secondId = NexaBizMembershipId('member-search-alice');
+      store.assignablesByRole[role1.value] = [
+        store.dummyAssignable(
+          companyId: companyA,
+          membershipId: firstId,
+          userId: NexaBizUserId('user-search-alan'),
+          name: 'Alan',
+        ),
+        store.dummyAssignable(
+          companyId: companyA,
+          membershipId: secondId,
+          userId: NexaBizUserId('user-search-alice'),
+          name: 'Alice',
+        ),
+      ];
+      await controller.initialize();
+      await controller.selectRole(role1);
+      final slow = Completer<void>();
+      store.assignableQueryCompleters['a'] = slow;
+
+      final oldSearch = controller.loadAssignableMembers(search: 'a');
+      await controller.loadAssignableMembers(search: 'Alice');
+      slow.complete();
+      await oldSearch;
+
+      expect(controller.state.assignableMembers, hasLength(1));
+      expect(controller.state.assignableMembers.single.membershipId, secondId);
+      expect(controller.state.assignableMembersSearchQuery, 'Alice');
+    });
+
+    test('role switch discards an in-flight assignable query', () async {
+      final candidateId = NexaBizMembershipId('member-query-role-a');
+      store.assignablesByRole[role1.value] = [
+        store.dummyAssignable(
+          companyId: companyA,
+          membershipId: candidateId,
+          userId: NexaBizUserId('user-query-role-a'),
+          name: 'Slow Candidate',
+        ),
+      ];
+      await controller.initialize();
+      await controller.selectRole(role1);
+      final slow = Completer<void>();
+      store.assignableQueryCompleters['Slow'] = slow;
+
+      final query = controller.loadAssignableMembers(search: 'Slow');
+      await controller.selectRole(role2);
+      slow.complete();
+      await query;
+
+      expect(controller.state.selectedRoleId, role2);
+      expect(controller.state.assignableMembers, isEmpty);
+      expect(controller.state.assignableMembersSearchQuery, isNull);
+    });
+
+    test('assignable pagination appends without duplicates', () async {
+      final firstId = NexaBizMembershipId('member-page-1');
+      final secondId = NexaBizMembershipId('member-page-2');
+      store.assignablesByRole[role1.value] = [
+        store.dummyAssignable(
+          companyId: companyA,
+          membershipId: firstId,
+          userId: NexaBizUserId('user-page-1'),
+        ),
+        store.dummyAssignable(
+          companyId: companyA,
+          membershipId: secondId,
+          userId: NexaBizUserId('user-page-2'),
+        ),
+      ];
+      final pagedController = RolesAdministrationController(
+        administration: administration,
+        initialContext: contextA,
+        pageSize: 1,
+      );
+      addTearDown(pagedController.dispose);
+      await pagedController.initialize();
+      await pagedController.selectRole(role1);
+
+      await pagedController.loadAssignableMembers();
+      expect(pagedController.state.assignableMembers, hasLength(1));
+      expect(pagedController.state.hasMoreAssignableMembers, isTrue);
+      await pagedController.loadMoreAssignableMembers();
+
+      expect(
+        pagedController.state.assignableMembers.map(
+          (item) => item.membershipId,
+        ),
+        [firstId, secondId],
+      );
+      expect(pagedController.state.hasMoreAssignableMembers, isFalse);
+    });
+
+    test(
+      'role deletion during membership mutation cannot resurrect details',
+      () async {
+        final candidateId = NexaBizMembershipId('member-role-delete');
+        store.assignablesByRole[role1.value] = [
+          store.dummyAssignable(
+            companyId: companyA,
+            membershipId: candidateId,
+            userId: NexaBizUserId('user-role-delete'),
+          ),
+        ];
+        await controller.initialize();
+        await controller.selectRole(role1);
+        await controller.loadAssignableMembers();
+        final completer = Completer<void>();
+        store.membershipMutationCompleters[candidateId] = completer;
+
+        final mutation = controller.assignMember(candidateId);
+        store.rolesByCompany[companyA.value]!.removeWhere(
+          (role) => role.roleId == role1,
+        );
+        invalidationSignal.notifyAuthorizationChanged();
+        await Future<void>.delayed(Duration.zero);
+        await Future<void>.delayed(Duration.zero);
+        completer.complete();
+
+        expect(await mutation, isFalse);
+        await Future<void>.delayed(Duration.zero);
+        expect(controller.state.selectedRoleId, isNull);
+        expect(controller.state.selectedRoleDetails, isNull);
+        expect(controller.state.assignedMembers, isEmpty);
+      },
+    );
+
     test(
       'deleteRole rollback: failure keeps role in list and active selection',
       () async {
@@ -972,6 +1686,51 @@ void main() {
         );
       },
     );
+
+    test('direct built-in metadata update and delete fail closed', () async {
+      final builtInRole = NexaBizRoleId('company.owner');
+      store.rolesByCompany[companyA.value]!.add(
+        store.dummySummary(
+          companyId: companyA,
+          roleId: builtInRole,
+          name: 'Owner',
+          kind: NexaBizCompanyRoleKind.builtIn,
+        ),
+      );
+      await controller.initialize();
+      await controller.selectRole(builtInRole);
+
+      store.throwOnMutation = NexaBizBuiltInRoleProtectedException(
+        roleId: builtInRole,
+        action: NexaBizBuiltInRoleProtectedAction.updateMetadata,
+      );
+      expect(
+        await controller.updateRoleMetadata(
+          roleId: builtInRole,
+          displayName: NexaBizRoleDisplayName('Changed Owner'),
+        ),
+        isFalse,
+      );
+      expect(
+        controller.state.mutationError!.resolveMessage(l10nEn),
+        l10nEn.authAdminErrorBuiltInUpdate,
+      );
+
+      store.throwOnMutation = NexaBizBuiltInRoleProtectedException(
+        roleId: builtInRole,
+        action: NexaBizBuiltInRoleProtectedAction.delete,
+      );
+      expect(await controller.deleteRole(builtInRole), isFalse);
+      expect(
+        controller.state.roles.any((role) => role.roleId == builtInRole),
+        isTrue,
+      );
+      expect(controller.state.selectedRoleId, builtInRole);
+      expect(
+        controller.state.mutationError!.resolveMessage(l10nEn),
+        l10nEn.authAdminErrorBuiltInDelete,
+      );
+    });
   });
 
   group('Locale Neutrality & Error Resolution', () {

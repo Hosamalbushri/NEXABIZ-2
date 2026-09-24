@@ -1,6 +1,8 @@
 import 'package:flutter/widgets.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart' as shadcn;
 
+import 'app_field_shell.dart';
+
 /// Canonical Chip Input control for NexaBiz ERP backed by `shadcn_flutter`.
 ///
 /// Allows users to type and create removable tag/chip elements inline.
@@ -102,7 +104,7 @@ class _AppChipInputState<T> extends State<AppChipInput<T>> {
   Widget build(BuildContext context) {
     final effectivePlaceholder = widget.placeholder ?? widget.hintText;
 
-    return shadcn.ChipInput<T>(
+    final childInput = shadcn.ChipInput<T>(
       controller: _effectiveController,
       chipBuilder: widget.chipBuilder,
       onChipSubmitted: widget.onChipSubmitted,
@@ -117,5 +119,17 @@ class _AppChipInputState<T> extends State<AppChipInput<T>> {
       autoInsertSuggestion: widget.autoInsertSuggestion,
       clipboardHandler: widget.clipboardHandler,
     );
+
+    if (widget.label != null && widget.label!.isNotEmpty) {
+      return AppFieldShell(
+        label: widget.label,
+        enabled: widget.enabled,
+        readOnly: widget.readOnly,
+        borderless: true,
+        child: childInput,
+      );
+    }
+
+    return childInput;
   }
 }

@@ -90,8 +90,8 @@ class _DashboardPlaygroundBanner extends StatelessWidget {
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
         ),
-        trailing: const Icon(
-          AppIcons.chevronRight,
+        trailing: Icon(
+          AppIcons.chevronForward(context),
           size: 18,
           color: AppColors.primaryBlue,
         ),

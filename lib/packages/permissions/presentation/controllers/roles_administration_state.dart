@@ -60,11 +60,13 @@ final class NexaBizAuthorizationPresentationError {
   const NexaBizAuthorizationPresentationError({
     required this.error,
     this.roleId,
+    this.permissionId,
     this.membershipId,
   });
 
   final Object error;
   final NexaBizRoleId? roleId;
+  final NexaBizPermissionId? permissionId;
   final NexaBizMembershipId? membershipId;
 
   String resolveMessage(
@@ -81,10 +83,11 @@ final class NexaBizAuthorizationPresentationError {
       other is NexaBizAuthorizationPresentationError &&
           error == other.error &&
           roleId == other.roleId &&
+          permissionId == other.permissionId &&
           membershipId == other.membershipId;
 
   @override
-  int get hashCode => Object.hash(error, roleId, membershipId);
+  int get hashCode => Object.hash(error, roleId, permissionId, membershipId);
 }
 
 /// Immutable Presentation State for Roles Administration.

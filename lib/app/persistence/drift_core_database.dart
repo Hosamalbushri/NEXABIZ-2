@@ -444,10 +444,114 @@ class DriftCoreDatabase extends _$DriftCoreDatabase {
       END;
     ''');
 
+    // Parent-row updates must not bypass the assignment-table tenant trigger.
+    // SQLite does not re-run a child table's UPDATE trigger when a referenced
+    // membership or role changes its company.
+    await customStatement('''
+      CREATE TRIGGER IF NOT EXISTS trg_core_memberships_assignment_tenant_update
+      BEFORE UPDATE OF company_id ON core_company_memberships
+      WHEN EXISTS (
+        SELECT 1
+        FROM core_membership_roles mr
+        JOIN core_roles r ON r.id = mr.role_id
+        WHERE mr.membership_id = OLD.id
+          AND (r.scope <> 'company' OR r.company_id <> NEW.company_id)
+      )
+      BEGIN
+        SELECT RAISE(ABORT, 'Cross-tenant role assignment after membership company update');
+      END;
+    ''');
+
+    await customStatement('''
+      CREATE TRIGGER IF NOT EXISTS trg_core_roles_assignment_tenant_update
+      BEFORE UPDATE OF scope, company_id ON core_roles
+      WHEN EXISTS (
+        SELECT 1
+        FROM core_membership_roles mr
+        JOIN core_company_memberships m ON m.id = mr.membership_id
+        WHERE mr.role_id = OLD.id
+          AND (NEW.scope <> 'company' OR NEW.company_id IS NULL OR m.company_id <> NEW.company_id)
+      )
+      BEGIN
+        SELECT RAISE(ABORT, 'Cross-tenant role assignment after role scope update');
+      END;
+    ''');
+
     // Database-level defense for writes outside the administration store. The
     // typed store performs the same check before deletion so expected failures
     // are returned as domain exceptions rather than parsed SQLite messages.
     final ownerRoleKey = NexaBizBuiltInCompanyRoles.companyOwner.value;
+    await customStatement('''
+      CREATE TRIGGER IF NOT EXISTS trg_core_memberships_last_owner_delete
+      BEFORE DELETE ON core_company_memberships
+      WHEN OLD.status = 'active'
+        AND (SELECT c.status FROM core_companies c WHERE c.id = OLD.company_id) = 'active'
+        AND (SELECT u.status FROM core_users u WHERE u.id = OLD.user_id) = 'active'
+        AND EXISTS (
+          SELECT 1
+          FROM core_membership_roles mr
+          JOIN core_roles r ON r.id = mr.role_id
+          WHERE mr.membership_id = OLD.id
+            AND r.scope = 'company'
+            AND r.company_id = OLD.company_id
+            AND r.role_key = '$ownerRoleKey'
+        )
+        AND (SELECT COUNT(*)
+             FROM core_membership_roles mr
+             JOIN core_roles r ON r.id = mr.role_id
+             JOIN core_company_memberships m ON m.id = mr.membership_id
+             JOIN core_users u ON u.id = m.user_id
+             WHERE r.role_key = '$ownerRoleKey'
+               AND r.scope = 'company'
+               AND r.company_id = OLD.company_id
+               AND m.status = 'active'
+               AND u.status = 'active') <= 1
+      BEGIN
+        SELECT RAISE(ABORT, 'Active company requires an active owner');
+      END;
+    ''');
+
+    await customStatement('''
+      CREATE TRIGGER IF NOT EXISTS trg_core_roles_last_owner_delete
+      BEFORE DELETE ON core_roles
+      WHEN OLD.scope = 'company'
+        AND OLD.role_key = '$ownerRoleKey'
+        AND (SELECT c.status FROM core_companies c WHERE c.id = OLD.company_id) = 'active'
+        AND EXISTS (
+          SELECT 1
+          FROM core_membership_roles mr
+          JOIN core_company_memberships m ON m.id = mr.membership_id
+          JOIN core_users u ON u.id = m.user_id
+          WHERE mr.role_id = OLD.id
+            AND m.status = 'active'
+            AND u.status = 'active'
+        )
+      BEGIN
+        SELECT RAISE(ABORT, 'Active company requires an active owner');
+      END;
+    ''');
+
+    await customStatement('''
+      CREATE TRIGGER IF NOT EXISTS trg_core_roles_last_owner_update
+      BEFORE UPDATE OF role_key ON core_roles
+      WHEN OLD.scope = 'company'
+        AND OLD.role_key = '$ownerRoleKey'
+        AND NEW.role_key <> '$ownerRoleKey'
+        AND (SELECT c.status FROM core_companies c WHERE c.id = OLD.company_id) = 'active'
+        AND EXISTS (
+          SELECT 1
+          FROM core_membership_roles mr
+          JOIN core_company_memberships m ON m.id = mr.membership_id
+          JOIN core_users u ON u.id = m.user_id
+          WHERE mr.role_id = OLD.id
+            AND m.status = 'active'
+            AND u.status = 'active'
+        )
+      BEGIN
+        SELECT RAISE(ABORT, 'Active company requires an active owner');
+      END;
+    ''');
+
     await customStatement('''
       CREATE TRIGGER IF NOT EXISTS trg_core_membership_roles_last_owner_delete
       BEFORE DELETE ON core_membership_roles
@@ -477,6 +581,144 @@ class DriftCoreDatabase extends _$DriftCoreDatabase {
                AND c.status = 'active'
                AND m.status = 'active'
                AND u.status = 'active') <= 1
+      BEGIN
+        SELECT RAISE(ABORT, 'Active company requires an active owner');
+      END;
+    ''');
+
+    await customStatement('''
+      CREATE TRIGGER IF NOT EXISTS trg_core_membership_roles_last_owner_update
+      BEFORE UPDATE OF membership_id, role_id ON core_membership_roles
+      WHEN (SELECT r.role_key FROM core_roles r WHERE r.id = OLD.role_id) = '$ownerRoleKey'
+        AND (SELECT r.scope FROM core_roles r WHERE r.id = OLD.role_id) = 'company'
+        AND (SELECT m.status FROM core_company_memberships m WHERE m.id = OLD.membership_id) = 'active'
+        AND (SELECT u.status
+             FROM core_company_memberships m
+             JOIN core_users u ON u.id = m.user_id
+             WHERE m.id = OLD.membership_id) = 'active'
+        AND (SELECT c.status
+             FROM core_roles r
+             JOIN core_companies c ON c.id = r.company_id
+             WHERE r.id = OLD.role_id) = 'active'
+        AND NOT EXISTS (
+          SELECT 1
+          FROM core_roles nr
+          JOIN core_company_memberships nm ON nm.id = NEW.membership_id
+          JOIN core_users nu ON nu.id = nm.user_id
+          JOIN core_roles old_role ON old_role.id = OLD.role_id
+          WHERE nr.id = NEW.role_id
+            AND nr.role_key = '$ownerRoleKey'
+            AND nr.scope = 'company'
+            AND nr.company_id = old_role.company_id
+            AND nm.company_id = old_role.company_id
+            AND nm.status = 'active'
+            AND nu.status = 'active'
+        )
+        AND (SELECT COUNT(*)
+             FROM core_membership_roles mr
+             JOIN core_roles r ON r.id = mr.role_id
+             JOIN core_company_memberships m ON m.id = mr.membership_id
+             JOIN core_users u ON u.id = m.user_id
+             WHERE r.role_key = '$ownerRoleKey'
+               AND r.scope = 'company'
+               AND r.company_id = (SELECT company_id FROM core_roles WHERE id = OLD.role_id)
+               AND m.status = 'active'
+               AND u.status = 'active') <= 1
+      BEGIN
+        SELECT RAISE(ABORT, 'Active company requires an active owner');
+      END;
+    ''');
+
+    // The same invariant must survive identity lifecycle writes outside the
+    // role-administration store. These triggers protect membership/user
+    // deactivation and prevent an ownerless company from becoming active.
+    await customStatement('''
+      CREATE TRIGGER IF NOT EXISTS trg_core_memberships_last_owner_update
+      BEFORE UPDATE OF status, user_id, company_id ON core_company_memberships
+      WHEN OLD.status = 'active'
+        AND (SELECT c.status FROM core_companies c WHERE c.id = OLD.company_id) = 'active'
+        AND (SELECT u.status FROM core_users u WHERE u.id = OLD.user_id) = 'active'
+        AND EXISTS (
+          SELECT 1
+          FROM core_membership_roles mr
+          JOIN core_roles r ON r.id = mr.role_id
+          WHERE mr.membership_id = OLD.id
+            AND r.scope = 'company'
+            AND r.company_id = OLD.company_id
+            AND r.role_key = '$ownerRoleKey'
+        )
+        AND (
+          NEW.status IS NOT 'active'
+          OR NEW.company_id <> OLD.company_id
+          OR NOT EXISTS (
+            SELECT 1 FROM core_users u
+            WHERE u.id = NEW.user_id AND u.status = 'active'
+          )
+        )
+        AND (SELECT COUNT(*)
+             FROM core_membership_roles mr
+             JOIN core_roles r ON r.id = mr.role_id
+             JOIN core_company_memberships m ON m.id = mr.membership_id
+             JOIN core_users u ON u.id = m.user_id
+             WHERE r.role_key = '$ownerRoleKey'
+               AND r.scope = 'company'
+               AND r.company_id = OLD.company_id
+               AND m.status = 'active'
+               AND u.status = 'active') <= 1
+      BEGIN
+        SELECT RAISE(ABORT, 'Active company requires an active owner');
+      END;
+    ''');
+
+    await customStatement('''
+      CREATE TRIGGER IF NOT EXISTS trg_core_users_last_owner_update
+      BEFORE UPDATE OF status ON core_users
+      WHEN OLD.status = 'active'
+        AND NEW.status IS NOT 'active'
+        AND EXISTS (
+          SELECT 1
+          FROM core_company_memberships m
+          JOIN core_companies c ON c.id = m.company_id
+          JOIN core_membership_roles mr ON mr.membership_id = m.id
+          JOIN core_roles r ON r.id = mr.role_id
+          WHERE m.user_id = OLD.id
+            AND m.status = 'active'
+            AND c.status = 'active'
+            AND r.scope = 'company'
+            AND r.company_id = m.company_id
+            AND r.role_key = '$ownerRoleKey'
+            AND (SELECT COUNT(*)
+                 FROM core_membership_roles mr2
+                 JOIN core_roles r2 ON r2.id = mr2.role_id
+                 JOIN core_company_memberships m2 ON m2.id = mr2.membership_id
+                 JOIN core_users u2 ON u2.id = m2.user_id
+                 WHERE r2.role_key = '$ownerRoleKey'
+                   AND r2.scope = 'company'
+                   AND r2.company_id = m.company_id
+                   AND m2.status = 'active'
+                   AND u2.status = 'active') <= 1
+        )
+      BEGIN
+        SELECT RAISE(ABORT, 'Active company requires an active owner');
+      END;
+    ''');
+
+    await customStatement('''
+      CREATE TRIGGER IF NOT EXISTS trg_core_companies_owner_activation_update
+      BEFORE UPDATE OF status ON core_companies
+      WHEN NEW.status = 'active'
+        AND OLD.status IS NOT 'active'
+        AND (SELECT COUNT(*)
+             FROM core_membership_roles mr
+             JOIN core_roles r ON r.id = mr.role_id
+             JOIN core_company_memberships m ON m.id = mr.membership_id
+             JOIN core_users u ON u.id = m.user_id
+             WHERE r.role_key = '$ownerRoleKey'
+               AND r.scope = 'company'
+               AND r.company_id = NEW.id
+               AND m.company_id = NEW.id
+               AND m.status = 'active'
+               AND u.status = 'active') = 0
       BEGIN
         SELECT RAISE(ABORT, 'Active company requires an active owner');
       END;

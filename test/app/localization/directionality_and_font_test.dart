@@ -30,20 +30,21 @@ void main() {
       await tester.pumpWidget(
         buildTestApp(
           child: AppCustomBottomNav(
-            currentIndex: 0,
+            selectedId: '/',
             items: const [
-              AppNavItem(
+              AppNavigationItem(
+                id: '/',
                 label: 'الرئيسية',
                 icon: AppIcons.dashboard,
-                routePath: '/',
               ),
-              AppNavItem(
+              AppNavigationItem(
+                id: '/services',
                 label: 'الخدمات',
                 icon: AppIcons.grid,
-                routePath: '/services',
               ),
             ],
-            onTap: (_) {},
+            onSelected: (_) {},
+            fabTooltip: 'إجراءات سريعة',
           ),
         ),
       );

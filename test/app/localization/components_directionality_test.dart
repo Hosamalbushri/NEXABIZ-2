@@ -92,15 +92,15 @@ void main() {
       expect(ltrIconWidget, isNotNull);
     });
 
-    testWidgets('AppDropdown hint adapts dynamically to locale', (
+    testWidgets('AppSelectField hint adapts dynamically to locale', (
       tester,
     ) async {
       // RTL
       await tester.pumpWidget(
         buildTestApp(
           locale: const Locale('ar'),
-          child: AppDropdown<String>(
-            items: const [AppDropdownItem(value: '1', label: 'الخيار 1')],
+          child: AppSelectField<String>(
+            items: const [AppSelectOption(value: '1', label: 'الخيار 1')],
             onChanged: (_) {},
           ),
         ),
@@ -113,8 +113,8 @@ void main() {
       await tester.pumpWidget(
         buildTestApp(
           locale: const Locale('en'),
-          child: AppDropdown<String>(
-            items: const [AppDropdownItem(value: '1', label: 'Option 1')],
+          child: AppSelectField<String>(
+            items: const [AppSelectOption(value: '1', label: 'Option 1')],
             onChanged: (_) {},
           ),
         ),

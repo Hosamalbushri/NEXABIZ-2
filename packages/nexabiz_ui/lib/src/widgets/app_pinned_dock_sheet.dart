@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart' as shadcn;
 
+import '../localization/nexabiz_ui_localizations.dart';
+import 'app_icon_button.dart';
+
 /// Canonical ERP staged dock panel built on `shadcn.PinnedSheet` and `shadcn.SheetController`.
 ///
 /// Provides staged bottom or side snap points (peek drag handle, fraction, expanded),
@@ -119,8 +122,13 @@ class AppPinnedDockSheet extends StatelessWidget {
                         ),
                       ),
                       if (controller != null)
-                        shadcn.IconButton.ghost(
-                          icon: const Icon(Icons.unfold_more, size: 16),
+                        AppIconButton(
+                          variant: AppIconButtonVariant.ghost,
+                          icon: shadcn.LucideIcons.chevronsUpDown,
+                          iconSize: 16,
+                          tooltip: NexaBizUiLocalizations.of(
+                            context,
+                          ).showFullText,
                           onPressed: () {
                             if (controller!.fraction > 0.5) {
                               controller!.animateTo(

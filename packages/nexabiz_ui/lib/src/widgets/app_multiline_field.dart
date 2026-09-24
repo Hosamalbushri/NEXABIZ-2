@@ -1,10 +1,12 @@
 import 'package:flutter/widgets.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart' as shadcn;
 
+import 'app_field_shell.dart';
+
 /// Canonical multiline text field component for NexaBiz ERP.
 ///
-/// Wraps `shadcn_flutter` [shadcn.TextArea] with NexaBiz form field layout contracts:
-/// `label`, `required` asterisk, resizable height handle (`expandableHeight`),
+/// Wraps `shadcn_flutter` [shadcn.TextArea] with [AppFieldShell] layout contracts:
+/// `label`, `required` asterisk, `description`, resizable height handle (`expandableHeight`),
 /// and error/helper footers.
 class AppMultilineField extends StatelessWidget {
   const AppMultilineField({
@@ -13,6 +15,7 @@ class AppMultilineField extends StatelessWidget {
     this.initialValue,
     this.onChanged,
     this.label,
+    this.description,
     this.hint,
     this.placeholder,
     this.required = false,
@@ -31,6 +34,7 @@ class AppMultilineField extends StatelessWidget {
   final String? initialValue;
   final ValueChanged<String>? onChanged;
   final String? label;
+  final String? description;
   final String? hint;
   final Widget? placeholder;
   final bool required;
@@ -46,73 +50,28 @@ class AppMultilineField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = shadcn.Theme.of(context);
-    final hasError = errorText != null && errorText!.isNotEmpty;
-    final isInteractive = enabled && !readOnly;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        if (label != null && label!.isNotEmpty) ...[
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                label!,
-                style: theme.typography.small.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: isInteractive
-                      ? theme.colorScheme.foreground
-                      : theme.colorScheme.mutedForeground,
-                ),
-              ),
-              if (required) ...[
-                const SizedBox(width: 4),
-                Text(
-                  '*',
-                  style: TextStyle(
-                    color: theme.colorScheme.destructive,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ],
-          ),
-          const SizedBox(height: 6),
-        ],
-        shadcn.TextArea(
-          controller: controller,
-          initialValue: initialValue,
-          onChanged: onChanged,
-          enabled: enabled,
-          readOnly: readOnly,
-          expandableHeight: expandableHeight,
-          initialHeight: initialHeight,
-          minHeight: minHeight,
-          maxHeight: maxHeight,
-          maxLength: maxLength,
-          placeholder: placeholder ?? (hint != null ? Text(hint!) : null),
-        ),
-        if (hasError) ...[
-          const SizedBox(height: 4),
-          Text(
-            errorText!,
-            style: theme.typography.small.copyWith(
-              color: theme.colorScheme.destructive,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ] else if (helperText != null && helperText!.isNotEmpty) ...[
-          const SizedBox(height: 4),
-          Text(
-            helperText!,
-            style: theme.typography.small.copyWith(
-              color: theme.colorScheme.mutedForeground,
-            ),
-          ),
-        ],
-      ],
+    return AppFieldShell(
+      label: label,
+      required: required,
+      description: description,
+      errorText: errorText,
+      helperText: helperText,
+      enabled: enabled,
+      readOnly: readOnly,
+      borderless: true,
+      child: shadcn.TextArea(
+        controller: controller,
+        initialValue: initialValue,
+        onChanged: onChanged,
+        enabled: enabled,
+        readOnly: readOnly,
+        expandableHeight: expandableHeight,
+        initialHeight: initialHeight,
+        minHeight: minHeight,
+        maxHeight: maxHeight,
+        maxLength: maxLength,
+        placeholder: placeholder ?? (hint != null ? Text(hint!) : null),
+      ),
     );
   }
 }

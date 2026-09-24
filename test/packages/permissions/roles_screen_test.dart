@@ -8,16 +8,20 @@ import 'package:nexabiz/app/authorization/nexabiz_authorization_administration.d
 import 'package:nexabiz/app/authorization/nexabiz_authorization_invalidation_signal.dart';
 import 'package:nexabiz/app/localization/app_locale_controller.dart';
 import 'package:nexabiz/core/authorization/administration/nexabiz_authorization_administration_models.dart';
+import 'package:nexabiz/core/authorization/administration/nexabiz_authorization_administration_errors.dart';
+import 'package:nexabiz/core/authorization/administration/nexabiz_authorization_administration_permissions.dart';
 import 'package:nexabiz/core/authorization/administration/nexabiz_authorization_administration_store.dart';
 import 'package:nexabiz/core/authorization/nexabiz_authorization_context.dart';
 import 'package:nexabiz/core/authorization/nexabiz_membership_id.dart';
 import 'package:nexabiz/core/authorization/nexabiz_permission_catalog.dart';
 import 'package:nexabiz/core/authorization/nexabiz_permission_evaluator.dart';
 import 'package:nexabiz/core/authorization/nexabiz_permission_guard.dart';
+import 'package:nexabiz/core/authorization/nexabiz_permission_denied_exception.dart';
 import 'package:nexabiz/core/company/nexabiz_company_scope.dart';
 import 'package:nexabiz/core/identity/authenticate_local_user.dart';
 import 'package:nexabiz/core/permissions/nexabiz_permission_intent.dart';
 import 'package:nexabiz/core/roles/nexabiz_role_id.dart';
+import 'package:nexabiz/core/roles/nexabiz_role_scope.dart';
 import 'package:nexabiz/core/session/core_session_controller.dart';
 import 'package:nexabiz/core/session/nexabiz_session.dart';
 import 'package:nexabiz/core/setup/initialize_nexabiz_core.dart';
@@ -42,11 +46,29 @@ final class _FakePermissionGuard implements NexaBizPermissionGuard {
 }
 
 class _FakePermissionEvaluator implements NexaBizPermissionEvaluator {
+  bool allowRoleManagement = true;
+  bool allowPolicyManagement = true;
+  bool allowAssignmentManagement = true;
+
   @override
   Future<NexaBizPermissionDecision> evaluate({
     required NexaBizAuthorizationContext context,
     required NexaBizPermissionId permissionId,
-  }) async => NexaBizPermissionDecision.allow;
+  }) async {
+    if (permissionId.value == 'permissions.role.manage' &&
+        !allowRoleManagement) {
+      return NexaBizPermissionDecision.deny;
+    }
+    if (permissionId.value == 'permissions.policy.manage' &&
+        !allowPolicyManagement) {
+      return NexaBizPermissionDecision.deny;
+    }
+    if (permissionId.value == 'permissions.assignment.manage' &&
+        !allowAssignmentManagement) {
+      return NexaBizPermissionDecision.deny;
+    }
+    return NexaBizPermissionDecision.allow;
+  }
 }
 
 final class _TestMockIdentityStore implements CoreIdentityQueryStore {
@@ -321,7 +343,56 @@ class _FakeAdminStore implements NexaBizAuthorizationAdministrationStore {
     required NexaBizCompanyId companyId,
     required NexaBizRoleId roleId,
     required NexaBizRoleMetadata metadata,
-  }) async => throw UnimplementedError('Read-only in Step 05');
+  }) async {
+    recordedEvents.add('createCompanyRole:${roleId.value}');
+    if (mutationDelayCompleter != null) {
+      await mutationDelayCompleter!.future;
+    }
+    if (throwOnMutation != null) throw throwOnMutation!;
+    final roles = rolesByCompany.putIfAbsent(companyId.value, () => []);
+    if (roles.any((role) => role.roleId == roleId)) {
+      throw NexaBizAuthorizationAdministrationConflictException(
+        type: NexaBizAuthorizationAdministrationConflictType.duplicateRoleKey,
+        roleId: roleId,
+      );
+    }
+    if (roles.any(
+      (role) =>
+          role.metadata.displayName.comparisonKey ==
+          metadata.displayName.comparisonKey,
+    )) {
+      throw NexaBizAuthorizationAdministrationConflictException(
+        type: NexaBizAuthorizationAdministrationConflictType
+            .duplicateRoleDisplayName,
+        roleId: roleId,
+      );
+    }
+    final details = NexaBizCompanyRoleDetails(
+      companyId: companyId,
+      roleId: roleId,
+      metadata: metadata,
+      kind: NexaBizCompanyRoleKind.custom,
+      membershipAssignmentCount: 0,
+      permissionAssignmentCount: 0,
+      createdAt: DateTime.utc(2026, 1, 1),
+      updatedAt: DateTime.utc(2026, 1, 1),
+    );
+    roles.add(
+      NexaBizCompanyRoleSummary(
+        companyId: companyId,
+        roleId: roleId,
+        metadata: metadata,
+        kind: NexaBizCompanyRoleKind.custom,
+        membershipAssignmentCount: 0,
+      ),
+    );
+    roleDetailsByRole['${companyId.value}:${roleId.value}'] = details;
+    return NexaBizAuthorizationAdministrationMutationResult(
+      outcome: NexaBizAuthorizationAdministrationMutationOutcome.changed,
+      before: null,
+      after: details,
+    );
+  }
 
   @override
   Future<
@@ -331,7 +402,49 @@ class _FakeAdminStore implements NexaBizAuthorizationAdministrationStore {
     required NexaBizCompanyId companyId,
     required NexaBizRoleId roleId,
     required NexaBizRoleMetadata metadata,
-  }) async => throw UnimplementedError('Read-only in Step 05');
+  }) async {
+    recordedEvents.add('updateCompanyRoleMetadata:${roleId.value}');
+    if (mutationDelayCompleter != null) {
+      await mutationDelayCompleter!.future;
+    }
+    if (throwOnMutation != null) throw throwOnMutation!;
+    final roles = rolesByCompany[companyId.value] ?? [];
+    final index = roles.indexWhere((role) => role.roleId == roleId);
+    if (index < 0) {
+      throw NexaBizRoleNotFoundException(companyId: companyId, roleId: roleId);
+    }
+    final beforeSummary = roles[index];
+    if (beforeSummary.isBuiltIn) {
+      throw NexaBizBuiltInRoleProtectedException(
+        roleId: roleId,
+        action: NexaBizBuiltInRoleProtectedAction.updateMetadata,
+      );
+    }
+    final before = await readCompanyRole(companyId: companyId, roleId: roleId);
+    final after = NexaBizCompanyRoleDetails(
+      companyId: companyId,
+      roleId: roleId,
+      metadata: metadata,
+      kind: before.kind,
+      membershipAssignmentCount: before.membershipAssignmentCount,
+      permissionAssignmentCount: before.permissionAssignmentCount,
+      createdAt: before.createdAt,
+      updatedAt: DateTime.utc(2026, 1, 2),
+    );
+    roles[index] = NexaBizCompanyRoleSummary(
+      companyId: companyId,
+      roleId: roleId,
+      metadata: metadata,
+      kind: beforeSummary.kind,
+      membershipAssignmentCount: beforeSummary.membershipAssignmentCount,
+    );
+    roleDetailsByRole['${companyId.value}:${roleId.value}'] = after;
+    return NexaBizAuthorizationAdministrationMutationResult(
+      outcome: NexaBizAuthorizationAdministrationMutationOutcome.changed,
+      before: before,
+      after: after,
+    );
+  }
 
   @override
   Future<
@@ -340,7 +453,40 @@ class _FakeAdminStore implements NexaBizAuthorizationAdministrationStore {
   deleteCompanyRole({
     required NexaBizCompanyId companyId,
     required NexaBizRoleId roleId,
-  }) async => throw UnimplementedError('Read-only in Step 05');
+  }) async {
+    recordedEvents.add('deleteCompanyRole:${roleId.value}');
+    if (mutationDelayCompleter != null) {
+      await mutationDelayCompleter!.future;
+    }
+    if (throwOnMutation != null) throw throwOnMutation!;
+    final roles = rolesByCompany[companyId.value] ?? [];
+    final index = roles.indexWhere((role) => role.roleId == roleId);
+    if (index < 0) {
+      throw NexaBizRoleNotFoundException(companyId: companyId, roleId: roleId);
+    }
+    final summary = roles[index];
+    if (summary.isBuiltIn) {
+      throw NexaBizBuiltInRoleProtectedException(
+        roleId: roleId,
+        action: NexaBizBuiltInRoleProtectedAction.delete,
+      );
+    }
+    if (summary.membershipAssignmentCount > 0) {
+      throw NexaBizAuthorizationAdministrationConflictException(
+        type: NexaBizAuthorizationAdministrationConflictType
+            .roleHasMembershipAssignments,
+        roleId: roleId,
+      );
+    }
+    final before = await readCompanyRole(companyId: companyId, roleId: roleId);
+    roles.removeAt(index);
+    roleDetailsByRole.remove('${companyId.value}:${roleId.value}');
+    return NexaBizAuthorizationAdministrationMutationResult(
+      outcome: NexaBizAuthorizationAdministrationMutationOutcome.changed,
+      before: before,
+      after: null,
+    );
+  }
 
   @override
   Future<
@@ -352,7 +498,33 @@ class _FakeAdminStore implements NexaBizAuthorizationAdministrationStore {
     required NexaBizCompanyId companyId,
     required NexaBizRoleId roleId,
     required NexaBizPermissionId permissionId,
-  }) async => throw UnimplementedError('Read-only in Step 05');
+  }) async {
+    recordedEvents.add(
+      'grantPermissionToRole:${roleId.value}:${permissionId.value}',
+    );
+    if (mutationDelayCompleter != null) {
+      await mutationDelayCompleter!.future;
+    }
+    if (throwOnMutation != null) throw throwOnMutation!;
+    final permissions = permissionsByRole.putIfAbsent(
+      '${companyId.value}:${roleId.value}',
+      () => <NexaBizPermissionId>{},
+    );
+    final changed = permissions.add(permissionId);
+    final assignment = NexaBizRolePermissionAssignment(
+      companyId: companyId,
+      roleId: roleId,
+      permissionId: permissionId,
+      assignedAt: DateTime.utc(2026, 1, 1),
+    );
+    return NexaBizAuthorizationAdministrationMutationResult(
+      outcome: changed
+          ? NexaBizAuthorizationAdministrationMutationOutcome.changed
+          : NexaBizAuthorizationAdministrationMutationOutcome.unchanged,
+      before: changed ? null : assignment,
+      after: assignment,
+    );
+  }
 
   @override
   Future<
@@ -364,7 +536,33 @@ class _FakeAdminStore implements NexaBizAuthorizationAdministrationStore {
     required NexaBizCompanyId companyId,
     required NexaBizRoleId roleId,
     required NexaBizPermissionId permissionId,
-  }) async => throw UnimplementedError('Read-only in Step 05');
+  }) async {
+    recordedEvents.add(
+      'revokePermissionFromRole:${roleId.value}:${permissionId.value}',
+    );
+    if (mutationDelayCompleter != null) {
+      await mutationDelayCompleter!.future;
+    }
+    if (throwOnMutation != null) throw throwOnMutation!;
+    final permissions = permissionsByRole.putIfAbsent(
+      '${companyId.value}:${roleId.value}',
+      () => <NexaBizPermissionId>{},
+    );
+    final changed = permissions.remove(permissionId);
+    final assignment = NexaBizRolePermissionAssignment(
+      companyId: companyId,
+      roleId: roleId,
+      permissionId: permissionId,
+      assignedAt: DateTime.utc(2026, 1, 1),
+    );
+    return NexaBizAuthorizationAdministrationMutationResult(
+      outcome: changed
+          ? NexaBizAuthorizationAdministrationMutationOutcome.changed
+          : NexaBizAuthorizationAdministrationMutationOutcome.unchanged,
+      before: changed ? assignment : null,
+      after: null,
+    );
+  }
 
   @override
   Future<
@@ -376,7 +574,49 @@ class _FakeAdminStore implements NexaBizAuthorizationAdministrationStore {
     required NexaBizCompanyId companyId,
     required NexaBizMembershipId membershipId,
     required NexaBizRoleId roleId,
-  }) async => throw UnimplementedError('Read-only in Step 05');
+  }) async {
+    recordedEvents.add(
+      'assignRoleToMembership:${roleId.value}:${membershipId.value}',
+    );
+    if (mutationDelayCompleter != null) {
+      await mutationDelayCompleter!.future;
+    }
+    if (throwOnMutation != null) throw throwOnMutation!;
+    final key = '${companyId.value}:${roleId.value}';
+    final candidates = assignablesByRole.putIfAbsent(key, () => []);
+    final candidate = candidates.firstWhere(
+      (item) => item.membershipId == membershipId,
+    );
+    final assignments = assignmentsByRole.putIfAbsent(key, () => []);
+    final existing = assignments
+        .cast<NexaBizMembershipRoleAssignment?>()
+        .firstWhere(
+          (item) => item?.membershipId == membershipId,
+          orElse: () => null,
+        );
+    final assignment =
+        existing ??
+        NexaBizMembershipRoleAssignment(
+          companyId: companyId,
+          membershipId: membershipId,
+          userId: candidate.userId,
+          roleId: roleId,
+          userName: candidate.userName,
+          userEmail: candidate.userEmail,
+          membershipIsActive: candidate.membershipIsActive,
+          userIsActive: candidate.userIsActive,
+          assignedAt: DateTime.utc(2026, 1, 1),
+        );
+    if (existing == null) assignments.add(assignment);
+    candidates.removeWhere((item) => item.membershipId == membershipId);
+    return NexaBizAuthorizationAdministrationMutationResult(
+      outcome: existing == null
+          ? NexaBizAuthorizationAdministrationMutationOutcome.changed
+          : NexaBizAuthorizationAdministrationMutationOutcome.unchanged,
+      before: existing,
+      after: assignment,
+    );
+  }
 
   @override
   Future<
@@ -388,7 +628,46 @@ class _FakeAdminStore implements NexaBizAuthorizationAdministrationStore {
     required NexaBizCompanyId companyId,
     required NexaBizMembershipId membershipId,
     required NexaBizRoleId roleId,
-  }) async => throw UnimplementedError('Read-only in Step 05');
+  }) async {
+    recordedEvents.add(
+      'unassignRoleFromMembership:${roleId.value}:${membershipId.value}',
+    );
+    if (mutationDelayCompleter != null) {
+      await mutationDelayCompleter!.future;
+    }
+    if (throwOnMutation != null) throw throwOnMutation!;
+    final key = '${companyId.value}:${roleId.value}';
+    final assignments = assignmentsByRole.putIfAbsent(key, () => []);
+    final existing = assignments
+        .cast<NexaBizMembershipRoleAssignment?>()
+        .firstWhere(
+          (item) => item?.membershipId == membershipId,
+          orElse: () => null,
+        );
+    assignments.removeWhere((item) => item.membershipId == membershipId);
+    if (existing != null && existing.isEligible) {
+      assignablesByRole
+          .putIfAbsent(key, () => [])
+          .add(
+            NexaBizAssignableMembership(
+              companyId: companyId,
+              membershipId: membershipId,
+              userId: existing.userId,
+              userName: existing.userName,
+              userEmail: existing.userEmail,
+              membershipIsActive: existing.membershipIsActive,
+              userIsActive: existing.userIsActive,
+            ),
+          );
+    }
+    return NexaBizAuthorizationAdministrationMutationResult(
+      outcome: existing == null
+          ? NexaBizAuthorizationAdministrationMutationOutcome.unchanged
+          : NexaBizAuthorizationAdministrationMutationOutcome.changed,
+      before: existing,
+      after: null,
+    );
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -401,6 +680,7 @@ void main() {
   late _FakeAdminStore fakeStore;
   late NexaBizAuthorizationAdministration adminFacade;
   late NexaBizAuthorizationInvalidationSignal invalidationSignal;
+  late _FakePermissionEvaluator permissionEvaluator;
   late CoreSessionController sessionController;
   late RolesAdministrationController controller;
 
@@ -414,6 +694,7 @@ void main() {
 
     fakeStore = _FakeAdminStore();
     invalidationSignal = NexaBizAuthorizationInvalidationSignal();
+    permissionEvaluator = _FakePermissionEvaluator();
 
     adminFacade = NexaBizAuthorizationAdministration.create(
       permissionGuard: const _FakePermissionGuard(),
@@ -523,7 +804,7 @@ void main() {
         textScaler: TextScaler.linear(textScaleFactor),
       ),
       child: AppPermissionScope(
-        permissionEvaluator: _FakePermissionEvaluator(),
+        permissionEvaluator: permissionEvaluator,
         sessionController: sessionController,
         invalidationSignal: invalidationSignal,
         authorizationAdministration: adminFacade,
@@ -543,7 +824,7 @@ void main() {
     );
   }
 
-  group('RolesScreen — Step 05 Read-Only UI Shell Verification', () {
+  group('RolesScreen — Step 06 Role Lifecycle UI', () {
     testWidgets(
       '72. Initial render: lists roles with display name and status',
       (tester) async {
@@ -592,7 +873,7 @@ void main() {
     });
 
     testWidgets(
-      '75. Built-in role: displays built-in badge, help explanation, no mutation controls',
+      '75. Built-in role: displays help and no edit/delete controls',
       (tester) async {
         await controller.refreshRoles();
         await controller.selectRole(roleA);
@@ -605,8 +886,7 @@ void main() {
           findsOneWidget,
         );
 
-        // Verification of STRICT READ-ONLY invariant: zero mutation affordances
-        expect(find.text('Create Role'), findsNothing);
+        expect(find.text('Create Role'), findsWidgets);
         expect(find.text('Edit Role'), findsNothing);
         expect(find.text('Delete Role'), findsNothing);
         expect(find.text('Assign Member'), findsNothing);
@@ -616,7 +896,7 @@ void main() {
     );
 
     testWidgets(
-      '76. Custom role: renders custom status and read-only details',
+      '76. Custom role: renders lifecycle actions without permission/member mutations',
       (tester) async {
         await controller.refreshRoles();
         await controller.selectRole(roleB);
@@ -628,6 +908,10 @@ void main() {
           find.textContaining('Built-in roles are system-defined'),
           findsNothing,
         );
+        expect(find.text('Edit Role'), findsOneWidget);
+        expect(find.text('Delete Role'), findsOneWidget);
+        expect(find.text('Assign Member'), findsNothing);
+        expect(find.byType(AppSwitch), findsNothing);
       },
     );
 
@@ -665,6 +949,17 @@ void main() {
       await tester.tap(find.text('Permissions').first);
       await tester.pumpAndSettle();
 
+      await tester.scrollUntilVisible(
+        find.byKey(const ValueKey('billing.invoice.archive')),
+        200,
+        scrollable: find
+            .byWidgetPredicate(
+              (widget) =>
+                  widget is Scrollable &&
+                  axisDirectionToAxis(widget.axisDirection) == Axis.vertical,
+            )
+            .last,
+      );
       expect(find.text('billing.invoice.archive'), findsWidgets);
     });
 
@@ -682,6 +977,233 @@ void main() {
       expect(find.text('Company Workspace'), findsOneWidget);
       expect(find.text('Access Control & Roles'), findsOneWidget);
     });
+
+    testWidgets(
+      'Step 07 grant and revoke are per-row pending and commit-confirmed',
+      (tester) async {
+        final permissionId = NexaBizPermissionId('company.profile.view');
+        await controller.refreshRoles();
+        await controller.selectRole(roleB);
+        await tester.pumpWidget(buildTestWidget(tester: tester));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Permissions').first);
+        await tester.pumpAndSettle();
+
+        expect(controller.state.isPermissionGranted(permissionId), isFalse);
+
+        fakeStore.mutationDelayCompleter = Completer<void>();
+        await tester.tap(find.byKey(ValueKey(permissionId)));
+        await tester.pump();
+
+        expect(controller.state.isPermissionPending(permissionId), isTrue);
+        expect(controller.state.isPermissionGranted(permissionId), isFalse);
+        expect(
+          fakeStore.recordedEvents.where(
+            (event) =>
+                event ==
+                'grantPermissionToRole:company.manager:company.profile.view',
+          ),
+          hasLength(1),
+        );
+
+        fakeStore.mutationDelayCompleter!.complete();
+        await tester.pumpAndSettle();
+        expect(controller.state.isPermissionGranted(permissionId), isTrue);
+        expect(
+          tester.widget<AppCheckbox>(find.byKey(ValueKey(permissionId))).value,
+          isTrue,
+        );
+
+        fakeStore.mutationDelayCompleter = Completer<void>();
+        await tester.tap(find.byKey(ValueKey(permissionId)));
+        await tester.pump();
+        expect(controller.state.isPermissionPending(permissionId), isTrue);
+        expect(controller.state.isPermissionGranted(permissionId), isTrue);
+
+        fakeStore.mutationDelayCompleter!.complete();
+        await tester.pumpAndSettle();
+        expect(controller.state.isPermissionGranted(permissionId), isFalse);
+      },
+    );
+
+    testWidgets(
+      'Step 07 typed grant and revoke failures retain committed truth',
+      (tester) async {
+        final permissionId = NexaBizPermissionId('company.profile.view');
+        await controller.refreshRoles();
+        await controller.selectRole(roleB);
+        await tester.pumpWidget(buildTestWidget(tester: tester));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Permissions').first);
+        await tester.pumpAndSettle();
+
+        fakeStore.throwOnMutation = NexaBizPermissionDeniedException(
+          permissionId:
+              NexaBizAuthorizationAdministrationPermissions.policyManage,
+          contextScope: NexaBizRoleScope.company,
+          decision: NexaBizPermissionDecision.deny,
+        );
+        await tester.tap(find.byKey(ValueKey(permissionId)));
+        await tester.pumpAndSettle();
+        expect(controller.state.isPermissionGranted(permissionId), isFalse);
+        expect(
+          find.text(
+            'You do not have permission to perform this administration action.',
+          ),
+          findsOneWidget,
+        );
+
+        fakeStore.throwOnMutation = null;
+        await controller.grantPermission(permissionId);
+        fakeStore.throwOnMutation = NexaBizPermissionDeniedException(
+          permissionId:
+              NexaBizAuthorizationAdministrationPermissions.policyManage,
+          contextScope: NexaBizRoleScope.company,
+          decision: NexaBizPermissionDecision.deny,
+        );
+        await tester.pumpAndSettle();
+        await tester.tap(find.byKey(ValueKey(permissionId)));
+        await tester.pumpAndSettle();
+        expect(controller.state.isPermissionGranted(permissionId), isTrue);
+      },
+    );
+
+    testWidgets(
+      'Step 07 review-only and built-in roles remain readable without controls',
+      (tester) async {
+        await controller.refreshRoles();
+        await controller.selectRole(roleB);
+        permissionEvaluator.allowPolicyManagement = false;
+        await tester.pumpWidget(buildTestWidget(tester: tester));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Permissions').first);
+        await tester.pumpAndSettle();
+
+        expect(find.text('View company profile'), findsOneWidget);
+        expect(find.text('Not granted'), findsWidgets);
+        expect(find.byType(AppCheckbox), findsNothing);
+
+        permissionEvaluator.allowPolicyManagement = true;
+        invalidationSignal.notifyAuthorizationChanged();
+        await tester.pumpAndSettle();
+        expect(find.byType(AppCheckbox), findsWidgets);
+
+        permissionEvaluator.allowPolicyManagement = false;
+        invalidationSignal.notifyAuthorizationChanged();
+        await tester.pumpAndSettle();
+        expect(find.text('View company profile'), findsOneWidget);
+        expect(find.byType(AppCheckbox), findsNothing);
+
+        await controller.selectRole(roleA);
+        permissionEvaluator.allowPolicyManagement = true;
+        invalidationSignal.notifyAuthorizationChanged();
+        await tester.pumpAndSettle();
+        expect(find.text('View company profile'), findsOneWidget);
+        expect(find.byType(AppCheckbox), findsNothing);
+      },
+    );
+
+    testWidgets(
+      'Step 07 unknown declared permission is manageable and accessible',
+      (tester) async {
+        final unknownId = NexaBizPermissionId('billing.invoice.archive');
+        await controller.refreshRoles();
+        await controller.selectRole(roleB);
+        await tester.pumpWidget(buildTestWidget(tester: tester));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Permissions').first);
+        await tester.pumpAndSettle();
+
+        await tester.scrollUntilVisible(
+          find.byKey(const ValueKey('billing.invoice.archive')),
+          200,
+          scrollable: find
+              .byWidgetPredicate(
+                (widget) =>
+                    widget is Scrollable &&
+                    axisDirectionToAxis(widget.axisDirection) == Axis.vertical,
+              )
+              .last,
+        );
+        expect(find.text('billing.invoice.archive'), findsWidgets);
+        expect(find.byKey(ValueKey(unknownId)), findsWidgets);
+        expect(
+          find.bySemanticsLabel(RegExp('billing\\.invoice\\.archive')),
+          findsWidgets,
+        );
+      },
+    );
+
+    testWidgets(
+      'Step 07 compact Arabic at 2x keeps canonical permission IDs LTR',
+      (tester) async {
+        await controller.refreshRoles();
+        await controller.selectRole(roleB);
+        await tester.pumpWidget(
+          buildTestWidget(
+            tester: tester,
+            viewport: const Size(400, 800),
+            locale: const Locale('ar'),
+            textScaleFactor: 2,
+          ),
+        );
+        await tester.pumpAndSettle();
+        await tester.scrollUntilVisible(
+          find.text('Manager'),
+          120,
+          scrollable: find
+              .byWidgetPredicate(
+                (widget) =>
+                    widget is Scrollable &&
+                    axisDirectionToAxis(widget.axisDirection) == Axis.vertical,
+              )
+              .last,
+        );
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Manager'));
+        await tester.pumpAndSettle();
+        await tester.scrollUntilVisible(
+          find.text('الصلاحيات').first,
+          100,
+          scrollable: find
+              .byWidgetPredicate(
+                (widget) =>
+                    widget is Scrollable &&
+                    axisDirectionToAxis(widget.axisDirection) == Axis.vertical,
+              )
+              .last,
+        );
+        final horizontalTabs = find.byWidgetPredicate(
+          (widget) =>
+              widget is Scrollable &&
+              axisDirectionToAxis(widget.axisDirection) == Axis.horizontal,
+        );
+        await tester.scrollUntilVisible(
+          find.text('الصلاحيات').first,
+          100,
+          scrollable: horizontalTabs.last,
+        );
+        await tester.tap(find.text('الصلاحيات').first);
+        await tester.pumpAndSettle();
+
+        final technicalId = find.text('company.profile.view');
+        expect(technicalId, findsOneWidget);
+        expect(
+          tester
+              .widget<Directionality>(
+                find
+                    .ancestor(
+                      of: technicalId,
+                      matching: find.byType(Directionality),
+                    )
+                    .first,
+              )
+              .textDirection,
+          TextDirection.ltr,
+        );
+        expect(tester.takeException(), isNull);
+      },
+    );
 
     testWidgets(
       '80. Assigned member: human-readable user identity, no raw UUID primary',
@@ -713,6 +1235,295 @@ void main() {
       expect(find.text('bob@example.com'), findsOneWidget);
       expect(find.text('Ineligible'), findsOneWidget);
     });
+
+    testWidgets(
+      'Step 08 assignment is per-member pending and commit-confirmed',
+      (tester) async {
+        final candidateId = NexaBizMembershipId('mem_candidate');
+        fakeStore.assignablesByRole['${testCompanyId.value}:${roleB.value}'] = [
+          NexaBizAssignableMembership(
+            companyId: testCompanyId,
+            membershipId: candidateId,
+            userId: NexaBizUserId('usr_candidate'),
+            userName: 'Candidate Person',
+            userEmail: 'candidate@example.com',
+            membershipIsActive: true,
+            userIsActive: true,
+          ),
+        ];
+        await controller.refreshRoles();
+        await controller.selectRole(roleB);
+        await tester.pumpWidget(buildTestWidget(tester: tester));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Assigned Members').first);
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.byKey(const ValueKey('assign-member-action')));
+        await tester.pumpAndSettle();
+        expect(find.byType(AppDialog<void>), findsOneWidget);
+        expect(find.text('Candidate Person'), findsOneWidget);
+        expect(find.text('candidate@example.com'), findsOneWidget);
+
+        fakeStore.mutationDelayCompleter = Completer<void>();
+        await tester.tap(find.widgetWithText(AppButton, 'Assign').last);
+        await tester.pump();
+
+        expect(controller.state.isMembershipPending(candidateId), isTrue);
+        expect(find.text('Candidate Person'), findsOneWidget);
+        expect(
+          controller.state.assignedMembers.any(
+            (member) => member.membershipId == candidateId,
+          ),
+          isFalse,
+        );
+        expect(
+          fakeStore.recordedEvents.where(
+            (event) =>
+                event == 'assignRoleToMembership:company.manager:mem_candidate',
+          ),
+          hasLength(1),
+        );
+
+        fakeStore.mutationDelayCompleter!.complete();
+        await tester.pumpAndSettle();
+        expect(controller.state.isMembershipPending(candidateId), isFalse);
+        expect(
+          controller.state.assignedMembers.where(
+            (member) => member.membershipId == candidateId,
+          ),
+          hasLength(1),
+        );
+        expect(controller.state.assignableMembers, isEmpty);
+      },
+    );
+
+    testWidgets(
+      'Step 08 unassignment confirms and retains committed truth on failure',
+      (tester) async {
+        await controller.refreshRoles();
+        await controller.selectRole(roleA);
+        await tester.pumpWidget(buildTestWidget(tester: tester));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Assigned Members').first);
+        await tester.pumpAndSettle();
+
+        final alice = NexaBizMembershipId('mem_alpha');
+        await tester.tap(find.byKey(ValueKey(('unassign', alice))));
+        await tester.pumpAndSettle();
+        expect(
+          find.text('Remove "Alice Smith" from role "Owner"?'),
+          findsOneWidget,
+        );
+
+        fakeStore.throwOnMutation = NexaBizLastOwnerProtectedException(
+          testCompanyId,
+        );
+        await tester.tap(find.widgetWithText(AppButton, 'Unassign').last);
+        await tester.pumpAndSettle();
+        expect(
+          controller.state.assignedMembers.any(
+            (member) => member.membershipId == alice,
+          ),
+          isTrue,
+        );
+        expect(
+          find.textContaining('Cannot remove the last active company owner'),
+          findsWidgets,
+        );
+
+        fakeStore.throwOnMutation = null;
+        await tester.tap(find.widgetWithText(AppButton, 'Unassign').last);
+        await tester.pumpAndSettle();
+        expect(
+          controller.state.assignedMembers.any(
+            (member) => member.membershipId == alice,
+          ),
+          isFalse,
+        );
+      },
+    );
+
+    testWidgets('Step 08 assignment failure keeps candidate and search input', (
+      tester,
+    ) async {
+      final candidateId = NexaBizMembershipId('mem_failure');
+      fakeStore.assignablesByRole['${testCompanyId.value}:${roleB.value}'] = [
+        NexaBizAssignableMembership(
+          companyId: testCompanyId,
+          membershipId: candidateId,
+          userId: NexaBizUserId('usr_failure'),
+          userName: 'Failure Candidate',
+          userEmail: 'failure@example.com',
+          membershipIsActive: true,
+          userIsActive: true,
+        ),
+      ];
+      await controller.refreshRoles();
+      await controller.selectRole(roleB);
+      await tester.pumpWidget(buildTestWidget(tester: tester));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Assigned Members').first);
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const ValueKey('assign-member-action')));
+      await tester.pumpAndSettle();
+
+      final search = find.byKey(const ValueKey('role-membership-search'));
+      await tester.enterText(search, 'Failure');
+      await tester.pumpAndSettle();
+      fakeStore.throwOnMutation = NexaBizMembershipIneligibleException(
+        membershipId: candidateId,
+        reason: NexaBizMembershipIneligibilityReason.inactiveMembership,
+      );
+      await tester.tap(find.widgetWithText(AppButton, 'Assign').last);
+      await tester.pumpAndSettle();
+
+      expect(find.text('Failure Candidate'), findsOneWidget);
+      expect(
+        find.textContaining('member is currently inactive'),
+        findsOneWidget,
+      );
+      expect(tester.widget<AppSearchField>(search).controller!.text, 'Failure');
+      expect(controller.state.assignedMembers, isEmpty);
+      expect(controller.state.pendingMembershipIds, isEmpty);
+    });
+
+    testWidgets('Step 08 missing identity uses localized neutral fallback', (
+      tester,
+    ) async {
+      fakeStore.assignmentsByRole['${testCompanyId.value}:${roleB.value}'] = [
+        NexaBizMembershipRoleAssignment(
+          companyId: testCompanyId,
+          membershipId: NexaBizMembershipId('mem_unnamed'),
+          userId: NexaBizUserId('usr_unnamed'),
+          roleId: roleB,
+          membershipIsActive: true,
+          userIsActive: true,
+          assignedAt: DateTime.utc(2026, 1, 1),
+        ),
+      ];
+      await controller.refreshRoles();
+      await controller.selectRole(roleB);
+      await tester.pumpWidget(buildTestWidget(tester: tester));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Assigned Members').first);
+      await tester.pumpAndSettle();
+
+      expect(find.text('Unnamed member'), findsOneWidget);
+      expect(find.text('usr_unnamed'), findsNothing);
+      expect(find.text('mem_unnamed'), findsNothing);
+    });
+
+    testWidgets(
+      'Step 08 assignment.manage gate is live and owner role remains mutable',
+      (tester) async {
+        await controller.refreshRoles();
+        await controller.selectRole(roleA);
+        await tester.pumpWidget(buildTestWidget(tester: tester));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Assigned Members').first);
+        await tester.pumpAndSettle();
+
+        expect(
+          find.byKey(const ValueKey('assign-member-action')),
+          findsOneWidget,
+        );
+        expect(find.widgetWithText(AppButton, 'Unassign'), findsWidgets);
+
+        await tester.tap(find.byKey(const ValueKey('assign-member-action')));
+        await tester.pumpAndSettle();
+        permissionEvaluator.allowAssignmentManagement = false;
+        invalidationSignal.notifyAuthorizationChanged();
+        await tester.pumpAndSettle();
+
+        expect(find.text('Alice Smith'), findsWidgets);
+        final search = tester.widget<AppSearchField>(
+          find.byKey(const ValueKey('role-membership-search')),
+        );
+        expect(search.enabled, isFalse);
+        expect(find.widgetWithText(AppButton, 'Assign'), findsNothing);
+
+        await tester.tap(find.widgetWithText(AppButton, 'Close'));
+        await tester.pumpAndSettle();
+        expect(
+          find.byKey(const ValueKey('assign-member-action')),
+          findsNothing,
+        );
+        expect(find.widgetWithText(AppButton, 'Unassign'), findsNothing);
+        expect(find.text('Alice Smith'), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'Step 08 compact Arabic assignment surface supports 2x text scale',
+      (tester) async {
+        fakeStore.assignablesByRole['${testCompanyId.value}:${roleB.value}'] = [
+          NexaBizAssignableMembership(
+            companyId: testCompanyId,
+            membershipId: NexaBizMembershipId('mem_ar'),
+            userId: NexaBizUserId('usr_ar'),
+            userName: 'عضو تجريبي',
+            userEmail: 'arabic@example.com',
+            membershipIsActive: true,
+            userIsActive: true,
+          ),
+        ];
+        await controller.refreshRoles();
+        await controller.selectRole(roleB);
+        await tester.pumpWidget(
+          buildTestWidget(
+            tester: tester,
+            viewport: const Size(400, 800),
+            locale: const Locale('ar'),
+            textScaleFactor: 2,
+          ),
+        );
+        await tester.pumpAndSettle();
+        await tester.scrollUntilVisible(
+          find.text('Manager'),
+          120,
+          scrollable: find
+              .byWidgetPredicate(
+                (widget) =>
+                    widget is Scrollable &&
+                    axisDirectionToAxis(widget.axisDirection) == Axis.vertical,
+              )
+              .last,
+        );
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Manager'));
+        await tester.pumpAndSettle();
+        await tester.scrollUntilVisible(
+          find.text('الأعضاء المعينون').first,
+          100,
+          scrollable: find
+              .byWidgetPredicate(
+                (widget) =>
+                    widget is Scrollable &&
+                    axisDirectionToAxis(widget.axisDirection) == Axis.vertical,
+              )
+              .last,
+        );
+        final horizontalTabs = find.byWidgetPredicate(
+          (widget) =>
+              widget is Scrollable &&
+              axisDirectionToAxis(widget.axisDirection) == Axis.horizontal,
+        );
+        await tester.scrollUntilVisible(
+          find.text('الأعضاء المعينون').first,
+          100,
+          scrollable: horizontalTabs.last,
+        );
+        await tester.tap(find.text('الأعضاء المعينون').first);
+        await tester.pumpAndSettle();
+        await tester.tap(find.byKey(const ValueKey('assign-member-action')));
+        await tester.pumpAndSettle();
+
+        expect(find.byType(AppBottomSheet), findsOneWidget);
+        expect(find.text('عضو تجريبي'), findsOneWidget);
+        expect(find.text('arabic@example.com'), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      },
+    );
 
     testWidgets('82. Empty states: no roles, no permissions, no members', (
       tester,
@@ -901,6 +1712,327 @@ void main() {
 
       expect(tester.takeException(), isNull);
       expect(find.text('Roles & Access Control'), findsOneWidget);
+    });
+
+    testWidgets(
+      'Create: validates typed values, commits once, closes, and selects the role',
+      (tester) async {
+        await controller.refreshRoles();
+        await tester.pumpWidget(buildTestWidget(tester: tester));
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.widgetWithText(AppButton, 'Create Role').first);
+        await tester.pumpAndSettle();
+
+        final fields = find.byType(AppTextField);
+        expect(fields, findsNWidgets(4));
+        await tester.enterText(fields.at(1), 'Auditor');
+        await tester.enterText(fields.at(2), 'company.auditor');
+        await tester.enterText(fields.at(3), 'Reviews financial activity');
+
+        await tester.tap(find.widgetWithText(AppButton, 'Create Role').last);
+        await tester.pumpAndSettle();
+
+        expect(find.text('Reviews financial activity'), findsOneWidget);
+        expect(
+          controller.state.selectedRoleId,
+          NexaBizRoleId('company.auditor'),
+        );
+        expect(
+          fakeStore.recordedEvents.where(
+            (event) => event == 'createCompanyRole:company.auditor',
+          ),
+          hasLength(1),
+        );
+      },
+    );
+
+    testWidgets(
+      'Create failures retain input and show localized duplicate/invalid errors',
+      (tester) async {
+        await controller.refreshRoles();
+        await tester.pumpWidget(buildTestWidget(tester: tester));
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.widgetWithText(AppButton, 'Create Role').first);
+        await tester.pumpAndSettle();
+        var fields = find.byType(AppTextField);
+        await tester.enterText(fields.at(1), 'Another Manager');
+        await tester.enterText(fields.at(2), 'INVALID KEY');
+        await tester.tap(find.widgetWithText(AppButton, 'Create Role').last);
+        await tester.pump();
+        expect(
+          find.textContaining('Invalid role identifier format'),
+          findsOneWidget,
+        );
+        expect(find.text('Another Manager'), findsOneWidget);
+
+        fields = find.byType(AppTextField);
+        await tester.enterText(fields.at(2), 'company.manager');
+        await tester.tap(find.widgetWithText(AppButton, 'Create Role').last);
+        await tester.pumpAndSettle();
+        expect(
+          find.text(
+            'A role with this identifier already exists in this company.',
+          ),
+          findsOneWidget,
+        );
+        expect(find.text('Another Manager'), findsOneWidget);
+        expect(
+          controller.state.roles.where((role) => role.roleId == roleB).length,
+          1,
+        );
+
+        fields = find.byType(AppTextField);
+        await tester.enterText(fields.at(1), ' manager ');
+        await tester.enterText(fields.at(2), 'company.other_manager');
+        await tester.tap(find.widgetWithText(AppButton, 'Create Role').last);
+        await tester.pumpAndSettle();
+        expect(
+          find.text('A role with this name already exists in this company.'),
+          findsOneWidget,
+        );
+        expect(find.text(' manager '), findsOneWidget);
+      },
+    );
+
+    testWidgets('Edit failure retains committed metadata and editable input', (
+      tester,
+    ) async {
+      await controller.refreshRoles();
+      await controller.selectRole(roleB);
+      await tester.pumpWidget(buildTestWidget(tester: tester));
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(AppButton, 'Edit Role'));
+      await tester.pumpAndSettle();
+
+      final fields = find.byType(AppTextField);
+      await tester.enterText(fields.at(1), 'Conflicting Name');
+      fakeStore.throwOnMutation =
+          NexaBizAuthorizationAdministrationConflictException(
+            type: NexaBizAuthorizationAdministrationConflictType
+                .duplicateRoleDisplayName,
+            roleId: roleB,
+          );
+      await tester.tap(find.widgetWithText(AppButton, 'Save Changes'));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text('A role with this name already exists in this company.'),
+        findsOneWidget,
+      );
+      expect(find.text('Conflicting Name'), findsOneWidget);
+      expect(
+        controller.state.selectedRoleSummary!.metadata.displayName.value,
+        'Manager',
+      );
+      expect(
+        controller.state.selectedRoleDetails!.metadata.displayName.value,
+        'Manager',
+      );
+    });
+
+    testWidgets(
+      'Edit: role key is immutable and metadata is commit-confirmed',
+      (tester) async {
+        await controller.refreshRoles();
+        await controller.selectRole(roleB);
+        await tester.pumpWidget(buildTestWidget(tester: tester));
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.widgetWithText(AppButton, 'Edit Role'));
+        await tester.pumpAndSettle();
+        final fields = find.byType(AppTextField);
+        final roleKeyField = tester.widget<AppTextField>(fields.at(2));
+        expect(roleKeyField.readOnly, isTrue);
+        expect(roleKeyField.enabled, isFalse);
+        expect(roleKeyField.controller!.text, 'company.manager');
+
+        await tester.enterText(fields.at(1), 'Operations Manager');
+        await tester.enterText(fields.at(3), 'Runs daily operations');
+        await tester.tap(find.widgetWithText(AppButton, 'Save Changes'));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Operations Manager'), findsWidgets);
+        expect(find.text('Runs daily operations'), findsOneWidget);
+        expect(controller.state.selectedRoleId, roleB);
+      },
+    );
+
+    testWidgets(
+      'Delete: confirms, commits, and failure retains the selected role',
+      (tester) async {
+        await controller.refreshRoles();
+        await controller.selectRole(roleB);
+        await tester.pumpWidget(buildTestWidget(tester: tester));
+        await tester.pumpAndSettle();
+
+        fakeStore.throwOnMutation =
+            NexaBizAuthorizationAdministrationConflictException(
+              type: NexaBizAuthorizationAdministrationConflictType
+                  .roleHasMembershipAssignments,
+              roleId: roleB,
+            );
+        await tester.tap(find.widgetWithText(AppButton, 'Delete Role').last);
+        await tester.pumpAndSettle();
+        expect(
+          find.text('Are you sure you want to delete role "Manager"?'),
+          findsOneWidget,
+        );
+        await tester.tap(find.widgetWithText(AppButton, 'Delete Role').last);
+        await tester.pumpAndSettle();
+        expect(
+          find.textContaining('members are currently assigned'),
+          findsOneWidget,
+        );
+        expect(controller.state.selectedRoleId, roleB);
+        expect(
+          controller.state.roles.any((role) => role.roleId == roleB),
+          isTrue,
+        );
+
+        fakeStore.throwOnMutation = null;
+        await tester.tap(find.widgetWithText(AppButton, 'Delete Role').last);
+        await tester.pumpAndSettle();
+        expect(
+          controller.state.roles.any((role) => role.roleId == roleB),
+          isFalse,
+        );
+        expect(controller.state.selectedRoleId, isNull);
+      },
+    );
+
+    testWidgets(
+      'role.manage gate reacts live while policy-review content remains readable',
+      (tester) async {
+        await controller.refreshRoles();
+        await controller.selectRole(roleB);
+        await tester.pumpWidget(buildTestWidget(tester: tester));
+        await tester.pumpAndSettle();
+        expect(find.widgetWithText(AppButton, 'Create Role'), findsOneWidget);
+        expect(find.widgetWithText(AppButton, 'Edit Role'), findsOneWidget);
+
+        await tester.tap(find.widgetWithText(AppButton, 'Create Role'));
+        await tester.pumpAndSettle();
+        expect(find.text('Role Name'), findsWidgets);
+
+        permissionEvaluator.allowRoleManagement = false;
+        invalidationSignal.notifyAuthorizationChanged();
+        await tester.pumpAndSettle();
+
+        expect(find.text('Roles & Access Control'), findsOneWidget);
+        expect(find.text('Manager'), findsWidgets);
+        expect(find.text('Role Name'), findsWidgets);
+        expect(find.widgetWithText(AppButton, 'Create Role'), findsNothing);
+        expect(find.widgetWithText(AppButton, 'Edit Role'), findsNothing);
+        expect(find.widgetWithText(AppButton, 'Delete Role'), findsNothing);
+      },
+    );
+
+    testWidgets(
+      'compact Arabic form uses a sheet, keeps technical key LTR, and scales to 2x',
+      (tester) async {
+        await controller.refreshRoles();
+        await tester.pumpWidget(
+          buildTestWidget(
+            tester: tester,
+            viewport: const Size(400, 800),
+            locale: const Locale('ar'),
+            textScaleFactor: 2,
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.widgetWithText(AppButton, 'إنشاء الدور'));
+        await tester.pumpAndSettle();
+        expect(find.byType(AppBottomSheet), findsOneWidget);
+        expect(find.text('اسم الدور'), findsOneWidget);
+        final fields = find.byType(AppTextField);
+        final keyField = tester.widget<AppTextField>(fields.at(2));
+        expect(keyField.textDirection, TextDirection.ltr);
+        expect(tester.takeException(), isNull);
+      },
+    );
+
+    testWidgets('open mutation surface closes on company switch and logout', (
+      tester,
+    ) async {
+      await controller.refreshRoles();
+      await tester.pumpWidget(buildTestWidget(tester: tester));
+      await tester.pump();
+      await tester.pump(const Duration(seconds: 1));
+
+      await tester.tap(find.widgetWithText(AppButton, 'Create Role').first);
+      await tester.pump();
+      await tester.pump(const Duration(seconds: 1));
+      expect(find.byType(AppDialog<void>), findsOneWidget);
+
+      await tester.tap(find.widgetWithText(AppButton, 'Cancel'));
+      await tester.pumpAndSettle();
+      expect(find.byType(AppDialog<void>), findsNothing);
+      await tester.tap(find.widgetWithText(AppButton, 'Create Role').first);
+      await tester.pumpAndSettle();
+
+      final companyB = NexaBizCompanyId('company_456');
+      fakeStore.rolesByCompany[companyB.value] = [];
+      final companyBSession = NexaBizSession.active(
+        sessionId: 'sess_2',
+        userId: NexaBizUserId('usr_1'),
+        membershipId: NexaBizMembershipId('mem_2'),
+        companyId: companyB,
+        companyName: 'Company B',
+        role: 'reviewer',
+      );
+      await controller.updateContext(
+        NexaBizCompanyAuthorizationContext.fromSession(companyBSession),
+      );
+      await tester.pump();
+      for (var i = 0; i < 10; i++) {
+        await tester.pump(const Duration(milliseconds: 100));
+      }
+      expect(controller.state.companyId, companyB);
+      expect(find.byType(AppDialog<void>), findsNothing);
+
+      sessionController.setSessionForTesting(companyBSession);
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(AppButton, 'Create Role').first);
+      await tester.pumpAndSettle();
+      sessionController.logout();
+      controller.handleLogout();
+      await tester.pump();
+      for (var i = 0; i < 10; i++) {
+        await tester.pump(const Duration(milliseconds: 100));
+      }
+      expect(find.byType(AppDialog<void>), findsNothing);
+      expect(controller.state.companyId, isNull);
+    });
+
+    testWidgets('rapid create activation reaches the mutation store once', (
+      tester,
+    ) async {
+      await controller.refreshRoles();
+      await tester.pumpWidget(buildTestWidget(tester: tester));
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(AppButton, 'Create Role').first);
+      await tester.pumpAndSettle();
+      final fields = find.byType(AppTextField);
+      await tester.enterText(fields.at(1), 'Cashier');
+      await tester.enterText(fields.at(2), 'company.cashier');
+      fakeStore.mutationDelayCompleter = Completer<void>();
+
+      final submit = find.widgetWithText(AppButton, 'Create Role').last;
+      await tester.tap(submit);
+      await tester.tap(submit);
+      await tester.pump();
+      expect(
+        fakeStore.recordedEvents.where(
+          (event) => event == 'createCompanyRole:company.cashier',
+        ),
+        hasLength(1),
+      );
+
+      fakeStore.mutationDelayCompleter!.complete();
+      await tester.pumpAndSettle();
     });
   });
 }

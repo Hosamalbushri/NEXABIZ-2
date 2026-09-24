@@ -20,8 +20,21 @@ abstract final class AppLocaleController {
   /// Get current active Locale.
   static Locale get currentLocale => localeNotifier.value;
 
-  /// Check whether current locale is RTL (Arabic).
-  static bool get isRtl => localeNotifier.value.languageCode == 'ar';
+  /// Known RTL language codes (Arabic, Hebrew, Persian/Farsi, Urdu, Pashto, Yiddish, Sindhi, Uyghur).
+  static const Set<String> _rtlLanguageCodes = {
+    'ar',
+    'fa',
+    'he',
+    'ps',
+    'ur',
+    'yi',
+    'sd',
+    'ug',
+  };
+
+  /// Check whether current locale has RTL text direction.
+  static bool get isRtl =>
+      _rtlLanguageCodes.contains(localeNotifier.value.languageCode);
 
   /// Initialize locale controller from persistent storage or system environment.
   static Future<void> initialize() async {

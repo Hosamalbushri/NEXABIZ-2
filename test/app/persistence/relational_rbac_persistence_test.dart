@@ -616,6 +616,7 @@ void main() {
       final db = store.database;
       final membership =
           (await db.select(db.coreCompanyMemberships).get()).single;
+      await addSecondActiveOwner(store);
 
       // Deactivate membership
       await (db.update(
@@ -671,6 +672,7 @@ void main() {
       final user = (await db.select(db.coreUsers).get()).single;
       final membership =
           (await db.select(db.coreCompanyMemberships).get()).single;
+      await addSecondActiveOwner(store);
 
       // Disable user
       await (db.update(db.coreUsers)..where((t) => t.id.equals(user.id))).write(

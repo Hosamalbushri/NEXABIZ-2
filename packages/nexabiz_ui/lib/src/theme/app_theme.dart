@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart' as shadcn;
 
-import 'app_colors.dart';
-import 'app_typography.dart';
+import 'tokens/app_colors.dart';
+import 'tokens/app_typography.dart';
 
 /// Central Design System Theme Architecture for NexaBiz ERP.
 ///
@@ -112,11 +112,11 @@ class AppTheme {
       error: AppColors.error,
       onError: Colors.white,
       surface: AppColors.lightSurface,
-      onSurface: Color(0xFF0F172A),
+      onSurface: AppColors.darkBackground,
       surfaceContainer: AppColors.lightBackground,
       surfaceContainerLow: AppColors.lightBackground,
       surfaceContainerHigh: Color(0xFFF1F5F9),
-      surfaceContainerHighest: Color(0xFFE2E8F0),
+      surfaceContainerHighest: AppColors.borderLight,
       onSurfaceVariant: AppColors.mutedTextLight,
       outline: Color(0xFFCBD5E1),
       outlineVariant: AppColors.borderLight,
@@ -145,13 +145,13 @@ class AppTheme {
       error: AppColors.error,
       onError: Colors.white,
       surface: AppColors.darkSurface,
-      onSurface: Color(0xFFF8FAFC),
+      onSurface: AppColors.lightBackground,
       surfaceContainer: AppColors.darkBackground,
       surfaceContainerLow: AppColors.darkBackground,
-      surfaceContainerHigh: Color(0xFF334155),
+      surfaceContainerHigh: AppColors.borderDark,
       surfaceContainerHighest: Color(0xFF475569),
       onSurfaceVariant: AppColors.mutedTextDark,
-      outline: Color(0xFF64748B),
+      outline: AppColors.mutedTextLight,
       outlineVariant: AppColors.borderDark,
     );
 

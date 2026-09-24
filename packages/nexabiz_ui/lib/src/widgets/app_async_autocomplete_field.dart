@@ -1,14 +1,19 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
+import 'package:shadcn_flutter/shadcn_flutter.dart' as shadcn;
 
-import '../theme/app_radius.dart';
-import '../theme/app_spacing.dart';
+import '../localization/nexabiz_ui_localizations.dart';
+import '../theme/tokens/tokens.dart';
 import '../utils/async_search_token.dart';
 import '../utils/digit_normalization.dart';
+import 'app_field_shell.dart';
+import 'app_select_option.dart';
+import 'app_selection_foundation.dart';
 
-/// Generic debounced async autocomplete search field.
+/// Generic debounced async autocomplete search field built natively on [shadcn.TextField]
+/// and canonical [AppFieldShell].
 ///
 /// Handles input normalization, debouncing, and stale result discarding via [AsyncSearchToken].
 class AppAsyncAutocompleteField<T> extends StatefulWidget {
@@ -24,6 +29,7 @@ class AppAsyncAutocompleteField<T> extends StatefulWidget {
     this.controller,
     this.focusNode,
     this.label,
+    this.description,
     this.hint,
     this.debounceDuration = const Duration(milliseconds: 300),
     this.minQueryLength = 1,
@@ -42,6 +48,7 @@ class AppAsyncAutocompleteField<T> extends StatefulWidget {
     this.errorText,
     this.maxResultsHeight = 180,
     this.showLabelAbove = false,
+    this.density = AppFieldDensity.standard,
   });
 
   /// Async or sync callback to fetch autocomplete items for [query].
@@ -71,8 +78,11 @@ class AppAsyncAutocompleteField<T> extends StatefulWidget {
   /// Optional focus node override.
   final FocusNode? focusNode;
 
-  /// Label string (rendered above or in decoration depending on [showLabelAbove]).
+  /// Label string rendered above the field.
   final String? label;
+
+  /// Secondary description string rendered below the label.
+  final String? description;
 
   /// Hint string for the text field.
   final String? hint;
@@ -95,8 +105,8 @@ class AppAsyncAutocompleteField<T> extends StatefulWidget {
   /// Custom suffix icon or widget (shown when not loading).
   final Widget? suffixIcon;
 
-  /// Explicit decoration override.
-  final InputDecoration? decoration;
+  /// Deprecated decoration parameter preserved for backwards-compatible API contracts.
+  final dynamic decoration;
 
   /// TextInputFormatters for digit normalization or formatting.
   final List<TextInputFormatter>? inputFormatters;
@@ -127,6 +137,9 @@ class AppAsyncAutocompleteField<T> extends StatefulWidget {
 
   /// Whether to render [label] as a bold header widget above the text field.
   final bool showLabelAbove;
+
+  /// Standardized ERP field density.
+  final AppFieldDensity density;
 
   @override
   State<AppAsyncAutocompleteField<T>> createState() =>
@@ -268,6 +281,8 @@ class _AppAsyncAutocompleteFieldState<T>
   void _selectOption(T option) {
     if (widget.itemLabelBuilder != null) {
       _controller.text = widget.itemLabelBuilder!(option);
+    } else if (option is AppSelectOption) {
+      _controller.text = option.label;
     }
     widget.onSelected?.call(option);
     setState(() {
@@ -281,144 +296,132 @@ class _AppAsyncAutocompleteFieldState<T>
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final scheme = theme.colorScheme;
+    final theme = shadcn.Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final loc = NexaBizUiLocalizations.of(context);
     final query = _normalizedQuery;
 
-    final defaultDecoration = InputDecoration(
-      isDense: true,
-      filled: true,
-      fillColor: scheme.surface,
-      labelText: widget.showLabelAbove ? null : widget.label,
-      hintText: widget.hint,
-      prefixIcon:
-          widget.prefixIcon ??
-          Icon(Icons.search_rounded, color: scheme.primary),
-      suffixIcon: _isLoading
-          ? const Padding(
-              padding: EdgeInsets.all(12),
-              child: SizedBox(
-                width: 18,
-                height: 18,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              ),
-            )
-          : widget.suffixIcon,
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(AppRadius.sm),
+    final effectiveErrorText = widget.errorText ?? loc.searchFailed;
+    final effectiveNoResultsText = widget.noResultsText ?? loc.noResults;
+
+    final prefixWidget =
+        widget.prefixIcon ??
+        Icon(
+          shadcn.LucideIcons.search,
+          size: AppIcons.sm,
+          color: colorScheme.mutedForeground,
+        );
+
+    final suffixWidget = _isLoading
+        ? const Padding(
+            padding: EdgeInsets.all(AppSpacing.xxs),
+            child: SizedBox(
+              width: 16,
+              height: 16,
+              child: shadcn.CircularProgressIndicator(strokeWidth: 2),
+            ),
+          )
+        : widget.suffixIcon;
+
+    final childInput = shadcn.ComponentTheme(
+      data: const shadcn.FocusOutlineTheme(border: Border()),
+      child: shadcn.TextField(
+        controller: _controller,
+        focusNode: _focusNode,
+        enabled: widget.enabled,
+        autofocus: widget.autofocus,
+        textInputAction: widget.textInputAction,
+        inputFormatters:
+            widget.inputFormatters ?? const [WesternDigitsInputFormatter()],
+        placeholder: widget.hint != null
+            ? Text(
+                widget.hint!,
+                style: theme.typography.small.copyWith(
+                  color: colorScheme.mutedForeground,
+                ),
+              )
+            : null,
+        padding: EdgeInsets.zero,
+        decoration: const BoxDecoration(),
+        border: const Border(),
+        features: const [],
+        onChanged: _onQueryChanged,
+        onSubmitted: (val) {
+          widget.onSubmitted?.call(val);
+          _focusNode.unfocus();
+        },
       ),
     );
-
-    final effectiveDecoration = widget.decoration != null
-        ? widget.decoration!.copyWith(
-            suffixIcon: _isLoading
-                ? const Padding(
-                    padding: EdgeInsets.all(12),
-                    child: SizedBox(
-                      width: 18,
-                      height: 18,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    ),
-                  )
-                : (widget.decoration!.suffixIcon ?? widget.suffixIcon),
-          )
-        : defaultDecoration;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
       children: [
-        if (widget.showLabelAbove && widget.label != null) ...[
-          Text(
-            widget.label!,
-            style: theme.textTheme.labelLarge?.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          const SizedBox(height: AppSpacing.xs),
-        ],
-        TextField(
-          controller: _controller,
-          focusNode: _focusNode,
+        AppFieldShell(
+          label: widget.label,
+          description: widget.description,
+          density: widget.density,
           enabled: widget.enabled,
-          autofocus: widget.autofocus,
-          textInputAction: widget.textInputAction,
-          inputFormatters:
-              widget.inputFormatters ?? const [WesternDigitsInputFormatter()],
-          decoration: effectiveDecoration,
-          onChanged: _onQueryChanged,
-          onEditingComplete: () {
-            widget.onEditingComplete?.call();
-            _focusNode.unfocus();
-          },
-          onSubmitted: (val) {
-            widget.onSubmitted?.call(val);
-            _focusNode.unfocus();
-          },
+          errorText: widget.errorText,
+          prefix: prefixWidget,
+          suffix: suffixWidget,
+          child: childInput,
         ),
         if (_showResults && query.length >= widget.minQueryLength) ...[
-          const SizedBox(height: AppSpacing.xs),
-          Material(
-            color: scheme.surface,
-            elevation: 2,
-            shadowColor: scheme.shadow.withValues(alpha: 0.12),
-            borderRadius: BorderRadius.circular(AppRadius.md),
-            clipBehavior: Clip.antiAlias,
-            child: ConstrainedBox(
-              constraints: BoxConstraints(maxHeight: widget.maxResultsHeight),
-              child: _isLoading
-                  ? const Padding(
-                      padding: EdgeInsets.all(AppSpacing.md),
-                      child: Center(
-                        child: SizedBox(
-                          width: 22,
-                          height: 22,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        ),
+          const SizedBox(height: AppSpacing.xxs),
+          AppSelectOverlayContainer(
+            maxHeight: widget.maxResultsHeight,
+            child: _isLoading
+                ? const Padding(
+                    padding: EdgeInsets.all(AppSpacing.md),
+                    child: Center(
+                      child: SizedBox(
+                        width: 22,
+                        height: 22,
+                        child: shadcn.CircularProgressIndicator(strokeWidth: 2),
                       ),
-                    )
-                  : _searchFailed
-                  ? (widget.errorBuilder?.call(context) ??
-                        Padding(
-                          padding: const EdgeInsets.all(AppSpacing.md),
-                          child: Text(
-                            widget.errorText ?? 'Search failed',
-                            textAlign: TextAlign.center,
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: scheme.error,
-                            ),
-                          ),
-                        ))
-                  : _options.isEmpty
-                  ? (widget.emptyBuilder?.call(context) ??
-                        (widget.noResultsText != null
-                            ? Padding(
-                                padding: const EdgeInsets.all(AppSpacing.md),
-                                child: Text(
-                                  widget.noResultsText!,
-                                  textAlign: TextAlign.center,
-                                  style: theme.textTheme.bodyMedium?.copyWith(
-                                    color: scheme.onSurfaceVariant,
-                                  ),
-                                ),
-                              )
-                            : const SizedBox.shrink()))
-                  : ListView.separated(
-                      shrinkWrap: true,
-                      itemCount: _options.length,
-                      separatorBuilder: (_, _) => Divider(
-                        height: 1,
-                        color: scheme.outlineVariant.withValues(alpha: 0.35),
-                      ),
-                      itemBuilder: (context, index) {
-                        final option = _options[index];
-                        return InkWell(
-                          onTap: () => _selectOption(option),
-                          child: widget.itemBuilder(context, option),
-                        );
-                      },
                     ),
-            ),
+                  )
+                : _searchFailed
+                ? (widget.errorBuilder?.call(context) ??
+                      Padding(
+                        padding: const EdgeInsets.all(AppSpacing.md),
+                        child: Text(
+                          effectiveErrorText,
+                          textAlign: TextAlign.center,
+                          style: theme.typography.small.copyWith(
+                            color: colorScheme.destructive,
+                          ),
+                        ),
+                      ))
+                : _options.isEmpty
+                ? (widget.emptyBuilder?.call(context) ??
+                      Padding(
+                        padding: const EdgeInsets.all(AppSpacing.md),
+                        child: Text(
+                          effectiveNoResultsText,
+                          textAlign: TextAlign.center,
+                          style: theme.typography.small.copyWith(
+                            color: colorScheme.mutedForeground,
+                          ),
+                        ),
+                      ))
+                : ListView.separated(
+                    shrinkWrap: true,
+                    itemCount: _options.length,
+                    separatorBuilder: (_, _) => Container(
+                      height: AppBorders.thin,
+                      color: colorScheme.border.withValues(alpha: 0.35),
+                    ),
+                    itemBuilder: (context, index) {
+                      final option = _options[index];
+                      return GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () => _selectOption(option),
+                        child: widget.itemBuilder(context, option),
+                      );
+                    },
+                  ),
           ),
         ],
       ],

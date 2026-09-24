@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart' as shadcn;
 
-import '../theme/app_radius.dart';
-import '../theme/app_spacing.dart';
+import '../localization/nexabiz_ui_localizations.dart';
+import '../theme/tokens/app_radii.dart';
+import '../theme/tokens/app_spacing.dart';
 
 /// Shared pagination control used across inventory list / grid screens.
 ///
@@ -40,6 +41,7 @@ class AppPaginationBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = NexaBizUiLocalizations.of(context);
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final from = totalCount == 0 ? 0 : page * pageSize + 1;
@@ -68,7 +70,7 @@ class AppPaginationBar extends StatelessWidget {
               _PageSizeSelector(
                 pageSize: pageSize,
                 options: pageSizeOptions,
-                tooltip: 'Items per page',
+                tooltip: loc.itemsPerPage,
                 onChanged: onPageSizeChanged!,
               )
             else

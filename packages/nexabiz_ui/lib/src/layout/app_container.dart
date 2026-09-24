@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 
 import '../theme/tokens/app_spacing.dart';
 import 'app_breakpoints.dart';
+import 'app_responsive.dart';
 
 /// Semantic container width presets for the NexaBiz ERP UI foundation.
 class AppContainerWidths {
@@ -151,41 +152,48 @@ class AppContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final isCompact = AppBreakpoints.isCompact(screenWidth);
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final parentScope = AppResponsiveScope.maybeOf(context);
+        final availableWidth = constraints.hasBoundedWidth
+            ? constraints.maxWidth
+            : (parentScope?.availableWidth ?? MediaQuery.sizeOf(context).width);
+        final isCompact = AppBreakpoints.isCompact(availableWidth);
 
-    // Responsive default horizontal padding: compact = 16px, tablet/desktop = 24px
-    final defaultPadding = EdgeInsets.symmetric(
-      horizontal: isCompact ? AppSpacing.md : AppSpacing.lg,
-      vertical: isCompact ? AppSpacing.md : AppSpacing.lg,
+        // Responsive default horizontal padding: compact = 16px, tablet/desktop = 24px
+        final defaultPadding = EdgeInsets.symmetric(
+          horizontal: isCompact ? AppSpacing.md : AppSpacing.lg,
+          vertical: isCompact ? AppSpacing.md : AppSpacing.lg,
+        );
+
+        final effectivePadding = padding ?? defaultPadding;
+
+        Widget content =
+            BoxConstraints(maxWidth: maxWidth, minWidth: minWidth ?? 0.0) !=
+                const BoxConstraints()
+            ? ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxWidth: maxWidth,
+                  minWidth: minWidth ?? 0.0,
+                ),
+                child: Padding(padding: effectivePadding, child: child),
+              )
+            : Padding(padding: effectivePadding, child: child);
+
+        if (centerContent) {
+          content = Align(alignment: alignment, child: content);
+        }
+
+        if (scrollable) {
+          content = SingleChildScrollView(
+            controller: scrollController,
+            physics: physics ?? const BouncingScrollPhysics(),
+            child: content,
+          );
+        }
+
+        return content;
+      },
     );
-
-    final effectivePadding = padding ?? defaultPadding;
-
-    Widget content =
-        BoxConstraints(maxWidth: maxWidth, minWidth: minWidth ?? 0.0) !=
-            const BoxConstraints()
-        ? ConstrainedBox(
-            constraints: BoxConstraints(
-              maxWidth: maxWidth,
-              minWidth: minWidth ?? 0.0,
-            ),
-            child: Padding(padding: effectivePadding, child: child),
-          )
-        : Padding(padding: effectivePadding, child: child);
-
-    if (centerContent) {
-      content = Align(alignment: alignment, child: content);
-    }
-
-    if (scrollable) {
-      content = SingleChildScrollView(
-        controller: scrollController,
-        physics: physics ?? const BouncingScrollPhysics(),
-        child: content,
-      );
-    }
-
-    return content;
   }
 }

@@ -2,6 +2,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart' as shadcn;
 
+import '../localization/nexabiz_ui_localizations.dart';
+import 'app_icon_button.dart';
+
 /// Canonical ERP modal form-in-sheet container built on `shadcn_flutter`.
 ///
 /// Features a standardized header, scrollable `Form` body, validation feedback,
@@ -15,8 +18,8 @@ class AppFormSheet extends StatefulWidget {
     this.icon,
     this.onSubmit,
     this.controller,
-    this.submitLabel = 'حفظ',
-    this.cancelLabel = 'إلغاء',
+    this.submitLabel,
+    this.cancelLabel,
     this.onClose,
   });
 
@@ -42,11 +45,11 @@ class AppFormSheet extends StatefulWidget {
   /// Optional external form controller.
   final shadcn.FormController? controller;
 
-  /// Submit button label text.
-  final String submitLabel;
+  /// Submit button label text (default: localized 'Save').
+  final String? submitLabel;
 
-  /// Cancel button label text.
-  final String cancelLabel;
+  /// Cancel button label text (default: localized 'Cancel').
+  final String? cancelLabel;
 
   /// Optional callback invoked when close / cancel button is pressed.
   final VoidCallback? onClose;
@@ -61,8 +64,8 @@ class AppFormSheet extends StatefulWidget {
     FutureOr<void> Function(BuildContext context, shadcn.FormMapValues values)?
     onSubmit,
     shadcn.FormController? controller,
-    String submitLabel = 'حفظ',
-    String cancelLabel = 'إلغاء',
+    String? submitLabel,
+    String? cancelLabel,
     bool barrierDismissible = true,
     shadcn.OverlayPosition position = shadcn.OverlayPosition.bottom,
   }) {
@@ -182,6 +185,10 @@ class _AppFormSheetState extends State<AppFormSheet> {
       controller: _controller,
       child: Builder(
         builder: (formContext) {
+          final loc = NexaBizUiLocalizations.of(context);
+          final effectiveSubmitLabel = widget.submitLabel ?? loc.save;
+          final effectiveCancelLabel = widget.cancelLabel ?? loc.cancel;
+
           return Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -233,8 +240,11 @@ class _AppFormSheetState extends State<AppFormSheet> {
                           ],
                         ),
                       ),
-                      shadcn.IconButton.ghost(
-                        icon: const Icon(Icons.close, size: 18),
+                      AppIconButton(
+                        variant: AppIconButtonVariant.ghost,
+                        icon: shadcn.LucideIcons.x,
+                        iconSize: 18,
+                        tooltip: loc.close,
                         onPressed: () {
                           if (widget.onClose != null) {
                             widget.onClose!();
@@ -304,7 +314,7 @@ class _AppFormSheetState extends State<AppFormSheet> {
                                 shadcn.closeSheet(context);
                               }
                             },
-                      child: Text(widget.cancelLabel),
+                      child: Text(effectiveCancelLabel),
                     ),
                     const SizedBox(width: 8),
                     shadcn.Button.primary(
@@ -315,9 +325,11 @@ class _AppFormSheetState extends State<AppFormSheet> {
                           ? const SizedBox(
                               width: 16,
                               height: 16,
-                              child: CircularProgressIndicator(strokeWidth: 2),
+                              child: shadcn.CircularProgressIndicator(
+                                strokeWidth: 2,
+                              ),
                             )
-                          : Text(widget.submitLabel),
+                          : Text(effectiveSubmitLabel),
                     ),
                   ],
                 ),

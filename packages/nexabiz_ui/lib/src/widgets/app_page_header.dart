@@ -1,17 +1,14 @@
+import 'dart:math' as math;
+
 import 'package:flutter/widgets.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart' as shadcn;
 
+import '../localization/nexabiz_ui_localizations.dart';
+import '../layout/app_layout_tokens.dart';
 import '../theme/tokens/tokens.dart';
 import 'app_icon_button.dart';
-
-/// Resolved font size for page header titles based on title length,
-/// matching the exact [CustomAppBarTitleSize] logic of the application.
-double _resolveTitleFontSize(String title) {
-  final length = title.trim().length;
-  if (length <= 14) return 22.0;
-  if (length <= 24) return 18.0;
-  return 16.0;
-}
+import 'app_breadcrumb.dart';
+import 'app_expandable_text.dart';
 
 /// Canonical page header composite for NexaBiz ERP screens built on [shadcn_flutter],
 /// visually matching the application's canonical [CustomAppBar] formatting and scaling.
@@ -54,6 +51,7 @@ class AppPageHeader extends StatelessWidget {
     final theme = shadcn.Theme.of(context);
     final colorScheme = theme.colorScheme;
     final isDark = theme.brightness == Brightness.dark;
+    final loc = NexaBizUiLocalizations.of(context);
 
     final isRtl = Directionality.of(context) == TextDirection.rtl;
     final canPop = Navigator.canPop(context);
@@ -66,7 +64,7 @@ class AppPageHeader extends StatelessWidget {
             icon: isRtl
                 ? shadcn.LucideIcons.arrowRight
                 : shadcn.LucideIcons.arrowLeft,
-            tooltip: isRtl ? 'رجوع' : 'Back',
+            tooltip: loc.back,
             onPressed: onBack ?? () => Navigator.of(context).maybePop(),
           )
         : null;
@@ -76,7 +74,7 @@ class AppPageHeader extends StatelessWidget {
             variant: AppIconButtonVariant.chip,
             iconSize: 18.0,
             icon: shadcn.LucideIcons.slidersHorizontal,
-            tooltip: isRtl ? 'تصفية' : 'Filter',
+            tooltip: loc.filter,
             badgeCount: filterCount > 0 ? filterCount : null,
             onPressed: onFilterTap,
           )
@@ -89,9 +87,7 @@ class AppPageHeader extends StatelessWidget {
             icon: isSearching
                 ? shadcn.LucideIcons.x
                 : shadcn.LucideIcons.search,
-            tooltip: isSearching
-                ? (isRtl ? 'إغلاق البحث' : 'Close Search')
-                : (isRtl ? 'بحث' : 'Search'),
+            tooltip: isSearching ? loc.closeSearch : loc.search,
             onPressed: onSearchTap,
           )
         : null;
@@ -100,27 +96,49 @@ class AppPageHeader extends StatelessWidget {
 
     final endCluster = <Widget>[?searchButton, ?filterButton, ...?actions];
 
-    final fontSize = _resolveTitleFontSize(title);
-
-    final titleWidget = FittedBox(
-      fit: BoxFit.scaleDown,
-      alignment: centerTitle
-          ? Alignment.center
-          : AlignmentDirectional.centerStart,
-      child: Text(
-        title,
-        maxLines: 1,
-        softWrap: false,
-        overflow: TextOverflow.visible,
-        textAlign: centerTitle ? TextAlign.center : TextAlign.start,
-        style: theme.typography.h3.copyWith(
-          fontSize: fontSize,
-          fontWeight: FontWeight.w700,
-          letterSpacing: -0.6,
-          height: 1.05,
-          color: colorScheme.foreground,
-        ),
+    final titleWidget = Text(
+      title,
+      textAlign: centerTitle ? TextAlign.center : TextAlign.start,
+      style: theme.typography.h3.copyWith(
+        fontWeight: FontWeight.w700,
+        letterSpacing: -0.6,
+        height: 1.05,
+        color: colorScheme.foreground,
       ),
+    );
+    final titleBlock = Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: centerTitle
+          ? CrossAxisAlignment.center
+          : CrossAxisAlignment.start,
+      children: [
+        titleWidget,
+        if (subtitle != null && subtitle!.isNotEmpty) ...[
+          const SizedBox(height: 2),
+          AppExpandableText(
+            text: subtitle!,
+            maxCollapsedLines: 2,
+            style: theme.typography.xSmall.copyWith(
+              color: colorScheme.mutedForeground,
+            ),
+          ),
+        ],
+      ],
+    );
+    final startActions = Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        for (var i = 0; i < startCluster.length; i++) ...[
+          if (i > 0) const SizedBox(width: AppSpacing.sm),
+          startCluster[i],
+        ],
+      ],
+    );
+    final endActions = Wrap(
+      alignment: WrapAlignment.end,
+      spacing: AppSpacing.sm,
+      runSpacing: AppSpacing.xs,
+      children: endCluster,
     );
 
     final headerContent = Column(
@@ -130,110 +148,98 @@ class AppPageHeader extends StatelessWidget {
           : CrossAxisAlignment.start,
       children: [
         if (breadcrumbs != null && breadcrumbs!.isNotEmpty) ...[
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: centerTitle
-                ? MainAxisAlignment.center
-                : MainAxisAlignment.start,
-            children: [
-              for (int i = 0; i < breadcrumbs!.length; i++) ...[
-                Text(
-                  breadcrumbs![i],
-                  style: theme.typography.small.copyWith(
-                    color: i == breadcrumbs!.length - 1
-                        ? colorScheme.primary
-                        : colorScheme.mutedForeground,
-                    fontWeight: i == breadcrumbs!.length - 1
-                        ? FontWeight.w700
-                        : FontWeight.w400,
-                  ),
-                ),
-                if (i < breadcrumbs!.length - 1)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.xxs,
-                    ),
-                    child: Icon(
-                      isRtl
-                          ? shadcn.LucideIcons.chevronLeft
-                          : shadcn.LucideIcons.chevronRight,
-                      size: 14,
-                      color: colorScheme.mutedForeground,
-                    ),
-                  ),
-              ],
+          AppBreadcrumb(
+            items: [
+              for (final label in breadcrumbs!) AppBreadcrumbItem(label: label),
             ],
           ),
           const SizedBox(height: AppSpacing.xs),
         ],
 
-        // Top Header Row matching CustomAppBar geometry and layout
-        Stack(
-          alignment: Alignment.center,
-          children: [
-            if (startCluster.isNotEmpty)
-              Align(
-                alignment: AlignmentDirectional.centerStart,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    for (var i = 0; i < startCluster.length; i++) ...[
-                      if (i > 0) const SizedBox(width: 8),
-                      startCluster[i],
-                    ],
-                  ],
-                ),
-              ),
-            Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: startCluster.isNotEmpty || endCluster.isNotEmpty
-                    ? 52.0
-                    : 0.0,
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: centerTitle
-                    ? CrossAxisAlignment.center
-                    : CrossAxisAlignment.start,
+        LayoutBuilder(
+          builder: (context, constraints) {
+            final stackControls =
+                (startCluster.isNotEmpty || endCluster.isNotEmpty) &&
+                (!constraints.hasBoundedWidth ||
+                    constraints.maxWidth <
+                        AppLayoutTokens.sectionHeaderStackMaxWidth);
+            if (stackControls) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  titleWidget,
-                  if (subtitle != null && subtitle!.isNotEmpty) ...[
-                    const SizedBox(height: 2),
-                    FittedBox(
-                      fit: BoxFit.scaleDown,
-                      alignment: centerTitle
-                          ? Alignment.center
-                          : AlignmentDirectional.centerStart,
-                      child: Text(
-                        subtitle!,
-                        textAlign: centerTitle
-                            ? TextAlign.center
-                            : TextAlign.start,
-                        maxLines: 1,
-                        style: theme.typography.xSmall.copyWith(
-                          fontSize: 12.0,
-                          color: colorScheme.mutedForeground,
-                        ),
-                      ),
-                    ),
-                  ],
-                ],
-              ),
-            ),
-            if (endCluster.isNotEmpty)
-              Align(
-                alignment: AlignmentDirectional.centerEnd,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    for (var i = 0; i < endCluster.length; i++) ...[
-                      if (i > 0) const SizedBox(width: 8),
-                      endCluster[i],
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (startCluster.isNotEmpty) startActions,
+                      if (startCluster.isNotEmpty && endCluster.isNotEmpty)
+                        const SizedBox(width: AppSpacing.sm),
+                      if (endCluster.isNotEmpty) Expanded(child: endActions),
                     ],
-                  ],
+                  ),
+                  const SizedBox(height: AppSpacing.sm),
+                  titleBlock,
+                ],
+              );
+            }
+
+            return Stack(
+              alignment: Alignment.center,
+              children: [
+                if (startCluster.isNotEmpty)
+                  Align(
+                    alignment: AlignmentDirectional.centerStart,
+                    child: startActions,
+                  ),
+                Padding(
+                  padding: centerTitle
+                      ? EdgeInsets.symmetric(
+                          horizontal:
+                              (startCluster.isNotEmpty || endCluster.isNotEmpty)
+                              ? math.max(
+                                  52.0,
+                                  math.max(
+                                    startCluster.isEmpty
+                                        ? 0.0
+                                        : startCluster.length * 36.0 +
+                                              (startCluster.length - 1) * 8.0 +
+                                              12.0,
+                                    endCluster.isEmpty
+                                        ? 0.0
+                                        : endCluster.length * 36.0 +
+                                              (endCluster.length - 1) * 8.0 +
+                                              12.0,
+                                  ),
+                                )
+                              : 0.0,
+                        )
+                      : EdgeInsetsDirectional.only(
+                          start: startCluster.isNotEmpty
+                              ? math.max(
+                                  52.0,
+                                  startCluster.length * 36.0 +
+                                      (startCluster.length - 1) * 8.0 +
+                                      12.0,
+                                )
+                              : 0.0,
+                          end: endCluster.isNotEmpty
+                              ? math.max(
+                                  52.0,
+                                  endCluster.length * 36.0 +
+                                      (endCluster.length - 1) * 8.0 +
+                                      12.0,
+                                )
+                              : 0.0,
+                        ),
+                  child: titleBlock,
                 ),
-              ),
-          ],
+                if (endCluster.isNotEmpty)
+                  Align(
+                    alignment: AlignmentDirectional.centerEnd,
+                    child: endActions,
+                  ),
+              ],
+            );
+          },
         ),
       ],
     );

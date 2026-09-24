@@ -8,6 +8,8 @@
   "navReports": "Reports",
   "navSettings": "Settings",
   "quickActionsTitle": "Quick Actions",
+  "mainBranch": "Main Branch",
+  "actionBack": "Back",
   "quickActionsSubtitle": "Execute common business operations & developer tools",
   "quickActionMobilePlayground": "Mobile UI Playground",
   "quickActionMobilePlaygroundDesc": "Audit patterns & mobile ERP scenarios",
@@ -132,6 +134,24 @@
   "settingsSecurityControlsSubtitle": "Manage user roles and capability permissions",
   "settingsOfflineSync": "Offline Sync & Storage",
   "settingsOfflineSyncSubtitle": "All local databases up to date",
+  "settingsAccountCode": "Account No. / Code",
+  "settingsRoleLabel": "Role / Membership",
+  "settingsDeviceManagement": "Device & Session Management",
+  "settingsDeviceManagementSubtitle": "Active local session and device security",
+  "settingsAppCustomization": "App Customization",
+  "settingsAdditionalSettings": "Additional Settings",
+  "settingsHelpSupport": "Help & Support",
+  "settingsHelpSupportSubtitle": "NexaBiz ERP v1.0.0 • Help Center",
+  "settingsQrTitle": "Company & Identity QR",
+  "settingsQrDescription": "Scan to verify entity credentials and workspace access",
+  "settingsActiveDevice": "Active Device",
+  "settingsActiveDeviceDesc": "Linux Workstation (x86_64) • Active",
+  "settingsSessionId": "Session ID",
+  "settingsSupportTitle": "NexaBiz Enterprise ERP",
+  "settingsSupportVersion": "Version 1.0.0 (Production Release)",
+  "settingsSupportAssistance": "24/7 Enterprise Assistance",
+  "settingsDefaultUser": "Hosam Hazem Ali",
+  "settingsDefaultRole": "System Administrator",
   "demoTitle": "NexaBiz Demo Capability",
   "demoSubtitle": "Verified clean architecture capability registration & shadcn_flutter integration",
   "demoBadge": "Capability Architecture Verified",
@@ -432,6 +452,19 @@
   "authAdminMemberStatusInactive": "Inactive",
   "authAdminMemberEligible": "Eligible",
   "authAdminMemberIneligible": "Ineligible",
+  "authAdminUnknownMember": "Unnamed member",
+  "authAdminAssignMemberSemantics": "Assign {memberName} to this role",
+  "@authAdminAssignMemberSemantics": {
+    "placeholders": {
+      "memberName": { "type": "String" }
+    }
+  },
+  "authAdminUnassignMemberSemantics": "Unassign {memberName} from this role",
+  "@authAdminUnassignMemberSemantics": {
+    "placeholders": {
+      "memberName": { "type": "String" }
+    }
+  },
   "authAdminAvailableMembersSection": "Available Members",
   "authAdminDeleteRoleConfirm": "Are you sure you want to delete role \"{roleName}\"?",
   "@authAdminDeleteRoleConfirm": {
@@ -518,5 +551,6 @@
   "authAdminCommittedSuccess": "Changes saved successfully.",
   "authAdminNoRoleSelected": "Select a role to view its details.",
   "authAdminLoadMore": "Load More",
-  "authAdminRolePermissionGranted": "Granted"
+  "authAdminRolePermissionGranted": "Granted",
+  "authAdminRolePermissionNotGranted": "Not granted"
 }

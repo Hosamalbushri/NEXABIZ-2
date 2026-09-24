@@ -100,7 +100,7 @@ class AppChoiceCardGroup<T> extends StatelessWidget {
       return Padding(
         padding: direction == Axis.vertical
             ? const EdgeInsets.only(bottom: 8.0)
-            : const EdgeInsets.only(right: 8.0),
+            : const EdgeInsetsDirectional.only(end: 8.0),
         child: buildCard(option),
       );
     }).toList();

@@ -1,4 +1,4 @@
-import 'package:nexabiz_ui/nexabiz_ui.dart';
+import 'package:nexabiz_ui/nexabiz_ui_dev.dart';
 import '../../core/capabilities/capability_metadata.dart';
 import '../../core/capabilities/nexabiz_capability.dart';
 import '../../core/navigation/nexabiz_navigation_contribution.dart';

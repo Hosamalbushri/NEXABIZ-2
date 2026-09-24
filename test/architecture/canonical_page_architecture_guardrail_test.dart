@@ -4,7 +4,7 @@ import 'architecture_exception_registry.dart';
 
 void main() {
   group('Guardrail 6 — Canonical Page Architecture Tests', () {
-    test('New feature code MUST NOT consume deprecated page wrappers', () {
+    test('Production code MUST NOT consume removed page wrappers', () {
       final appProductionFiles = _getAppProductionDartFiles();
       final legacyWrappers = [
         'AppPageShell',
@@ -29,6 +29,23 @@ void main() {
 
       ArchitectureExceptionRegistry.assertExactViolations(
         ruleId: 'RULE-02-DEPRECATED-PAGE-WRAPPERS',
+        scannedViolatingFiles: violatingFiles,
+      );
+    });
+
+    test('Production feature screens MUST NOT use raw Scaffold', () {
+      final appProductionFiles = _getAppProductionDartFiles();
+      final violatingFiles = <String>[];
+
+      for (final file in appProductionFiles) {
+        final content = file.readAsStringSync();
+        if (RegExp(r'\bScaffold\s*\(').hasMatch(content)) {
+          violatingFiles.add(file.path);
+        }
+      }
+
+      ArchitectureExceptionRegistry.assertExactViolations(
+        ruleId: 'RULE-08-RAW-SCAFFOLD',
         scannedViolatingFiles: violatingFiles,
       );
     });

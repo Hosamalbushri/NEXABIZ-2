@@ -33,6 +33,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get quickActionsTitle => 'Quick Actions';
 
   @override
+  String get mainBranch => 'Main Branch';
+
+  @override
+  String get actionBack => 'Back';
+
+  @override
   String get quickActionsSubtitle =>
       'Execute common business operations & developer tools';
 
@@ -425,6 +431,62 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsOfflineSyncSubtitle => 'All local databases up to date';
+
+  @override
+  String get settingsAccountCode => 'Account No. / Code';
+
+  @override
+  String get settingsRoleLabel => 'Role / Membership';
+
+  @override
+  String get settingsDeviceManagement => 'Device & Session Management';
+
+  @override
+  String get settingsDeviceManagementSubtitle =>
+      'Active local session and device security';
+
+  @override
+  String get settingsAppCustomization => 'App Customization';
+
+  @override
+  String get settingsAdditionalSettings => 'Additional Settings';
+
+  @override
+  String get settingsHelpSupport => 'Help & Support';
+
+  @override
+  String get settingsHelpSupportSubtitle => 'NexaBiz ERP v1.0.0 • Help Center';
+
+  @override
+  String get settingsQrTitle => 'Company & Identity QR';
+
+  @override
+  String get settingsQrDescription =>
+      'Scan to verify entity credentials and workspace access';
+
+  @override
+  String get settingsActiveDevice => 'Active Device';
+
+  @override
+  String get settingsActiveDeviceDesc => 'Linux Workstation (x86_64) • Active';
+
+  @override
+  String get settingsSessionId => 'Session ID';
+
+  @override
+  String get settingsSupportTitle => 'NexaBiz Enterprise ERP';
+
+  @override
+  String get settingsSupportVersion => 'Version 1.0.0 (Production Release)';
+
+  @override
+  String get settingsSupportAssistance => '24/7 Enterprise Assistance';
+
+  @override
+  String get settingsDefaultUser => 'Hosam Hazem Ali';
+
+  @override
+  String get settingsDefaultRole => 'System Administrator';
 
   @override
   String get demoTitle => 'NexaBiz Demo Capability';
@@ -1146,6 +1208,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authAdminMemberIneligible => 'Ineligible';
 
   @override
+  String get authAdminUnknownMember => 'Unnamed member';
+
+  @override
+  String authAdminAssignMemberSemantics(String memberName) {
+    return 'Assign $memberName to this role';
+  }
+
+  @override
+  String authAdminUnassignMemberSemantics(String memberName) {
+    return 'Unassign $memberName from this role';
+  }
+
+  @override
   String get authAdminAvailableMembersSection => 'Available Members';
 
   @override
@@ -1368,4 +1443,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get authAdminRolePermissionGranted => 'Granted';
+
+  @override
+  String get authAdminRolePermissionNotGranted => 'Not granted';
 }

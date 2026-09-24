@@ -1,8 +1,8 @@
 import 'package:flutter/widgets.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart' as shadcn;
 
-import '../theme/app_breakpoints.dart';
-import '../theme/app_spacing.dart';
+import '../layout/app_breakpoints.dart';
+import '../theme/tokens/app_spacing.dart';
 import 'app_card.dart';
 import 'app_empty_state.dart';
 import 'app_loading.dart';

@@ -1,7 +1,10 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart' as shadcn;
 
 import '../theme/tokens/tokens.dart';
+import '../layout/app_layout_tokens.dart';
 import 'app_form_actions.dart';
 
 /// Canonical NexaBiz Form Section Container.
@@ -123,35 +126,91 @@ class AppFormSection extends StatelessWidget {
   }
 }
 
-/// Canonical NexaBiz Form Row Layout.
+/// Canonical constraint-aware form composition for NexaBiz forms.
 ///
-/// Places two or more form fields side-by-side in a single row with equal width
-/// allocation and standard ERP design spacing.
+/// Fields use the width granted by the immediate parent, a minimum useful
+/// column width, and text scaling to choose a safe column count. This is a
+/// local composition policy, not a device-tier breakpoint. [fullWidthChildren]
+/// remain full width at every column count.
 class AppFormRow extends StatelessWidget {
   const AppFormRow({
     super.key,
     required this.children,
+    this.fullWidthChildren = const [],
     this.spacing = AppSpacing.md,
+    this.runSpacing = AppSpacing.md,
+    this.minColumnWidth = AppLayoutTokens.formColumnMinWidth,
+    this.maxColumns = AppLayoutTokens.formMaxColumns,
     this.crossAxisAlignment = CrossAxisAlignment.start,
-  });
+  }) : assert(minColumnWidth > 0),
+       assert(maxColumns > 0);
 
   final List<Widget> children;
+  final List<Widget> fullWidthChildren;
   final double spacing;
+  final double runSpacing;
+  final double minColumnWidth;
+  final int maxColumns;
   final CrossAxisAlignment crossAxisAlignment;
 
   @override
   Widget build(BuildContext context) {
-    if (children.isEmpty) return const SizedBox.shrink();
-    if (children.length == 1) return children.first;
+    if (children.isEmpty && fullWidthChildren.isEmpty) {
+      return const SizedBox.shrink();
+    }
 
-    return Row(
-      crossAxisAlignment: crossAxisAlignment,
-      children: [
-        for (int i = 0; i < children.length; i++) ...[
-          Expanded(child: children[i]),
-          if (i < children.length - 1) SizedBox(width: spacing),
-        ],
-      ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final textScaler = MediaQuery.textScalerOf(context);
+        final textScaleFactor = (textScaler.scale(14) / 14).clamp(1.0, 1.5);
+        final effectiveMinWidth = minColumnWidth * textScaleFactor;
+        final availableWidth = constraints.hasBoundedWidth
+            ? constraints.maxWidth
+            : effectiveMinWidth;
+        final computedColumns =
+            ((availableWidth + spacing) / (effectiveMinWidth + spacing))
+                .floor();
+        final columns = math.max(1, math.min(maxColumns, computedColumns));
+
+        final regularFields = columns == 1
+            ? Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  for (var index = 0; index < children.length; index++) ...[
+                    if (index > 0) SizedBox(height: runSpacing),
+                    children[index],
+                  ],
+                ],
+              )
+            : Wrap(
+                spacing: spacing,
+                runSpacing: runSpacing,
+                crossAxisAlignment: WrapCrossAlignment.start,
+                children: [
+                  for (final child in children)
+                    SizedBox(
+                      width:
+                          (availableWidth - spacing * (columns - 1)) / columns,
+                      child: child,
+                    ),
+                ],
+              );
+
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: crossAxisAlignment,
+          children: [
+            if (children.isNotEmpty)
+              SizedBox(width: double.infinity, child: regularFields),
+            for (var index = 0; index < fullWidthChildren.length; index++) ...[
+              if (children.isNotEmpty || index > 0)
+                SizedBox(height: runSpacing),
+              SizedBox(width: double.infinity, child: fullWidthChildren[index]),
+            ],
+          ],
+        );
+      },
     );
   }
 }
@@ -198,9 +257,9 @@ class AppForm extends StatelessWidget {
     this.errorMessage,
     required this.children,
     this.onSubmit,
-    this.submitLabel = 'Save',
+    this.submitLabel,
     this.onCancel,
-    this.cancelLabel = 'Cancel',
+    this.cancelLabel,
     this.isSubmitting = false,
     this.maxWidth = 640,
     this.padding = const EdgeInsets.all(AppSpacing.lg),
@@ -216,9 +275,9 @@ class AppForm extends StatelessWidget {
   final String? errorMessage;
   final List<Widget> children;
   final VoidCallback? onSubmit;
-  final String submitLabel;
+  final String? submitLabel;
   final VoidCallback? onCancel;
-  final String cancelLabel;
+  final String? cancelLabel;
   final bool isSubmitting;
   final double maxWidth;
   final EdgeInsetsGeometry padding;

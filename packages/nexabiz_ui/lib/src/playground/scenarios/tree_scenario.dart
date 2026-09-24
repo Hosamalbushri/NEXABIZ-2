@@ -3,7 +3,7 @@ import 'package:shadcn_flutter/shadcn_flutter.dart' as shadcn;
 
 import '../../theme/tokens/tokens.dart';
 import '../../widgets/app_button.dart';
-import '../../widgets/app_dropdown.dart';
+import '../../widgets/app_select_field.dart';
 import '../../widgets/app_form.dart';
 import '../../widgets/app_form_sheet.dart';
 import '../../widgets/app_switch.dart';
@@ -200,13 +200,13 @@ class _TreeScenarioState extends State<TreeScenario> {
     return false;
   }
 
-  List<AppDropdownItem<String>> _getParentDropdownItems() {
-    final items = <AppDropdownItem<String>>[];
+  List<AppSelectOption<String>> _getParentDropdownItems() {
+    final items = <AppSelectOption<String>>[];
     void collect(List<AccountNodeData> list) {
       for (final node in list) {
         if (node.isParent) {
           items.add(
-            AppDropdownItem(
+            AppSelectOption(
               value: node.code,
               label:
                   '${node.code} - ${widget.isArabic ? node.titleAr : node.titleEn}',
@@ -283,6 +283,8 @@ class _TreeScenarioState extends State<TreeScenario> {
       subtitle: isAr
           ? 'إضافة حساب فرعي أو رئيسي تدرجياً تحت المجموعة المُحددة'
           : 'Create sub-account or parent node under target group',
+      submitLabel: isAr ? 'حفظ' : 'Save',
+      cancelLabel: isAr ? 'إلغاء' : 'Cancel',
       onSubmit: (ctx, values) {},
       child: AppTreeCreationForm(
         isArabic: isAr,
@@ -645,7 +647,7 @@ class AppTreeCreationForm extends StatefulWidget {
   });
 
   final bool isArabic;
-  final List<AppDropdownItem<String>> parentGroups;
+  final List<AppSelectOption<String>> parentGroups;
   final String initialParentCode;
   final void Function(AccountNodeData account, String parentCode) onAddAccount;
 
@@ -731,7 +733,7 @@ class _AppTreeCreationFormState extends State<AppTreeCreationForm> {
                   required: true,
                   hint: 'e.g. 1113',
                 ),
-                AppDropdown<String>(
+                AppSelectField<String>(
                   label: isAr ? 'الحساب الأب (المجموعة)' : 'Parent Group',
                   value: _parentAccount,
                   required: true,
@@ -766,15 +768,15 @@ class _AppTreeCreationFormState extends State<AppTreeCreationForm> {
             ),
             AppFormRow(
               children: [
-                AppDropdown<String>(
+                AppSelectField<String>(
                   label: isAr ? 'نوع العقدة' : 'Node Type',
                   value: _accountType,
                   items: [
-                    AppDropdownItem(
+                    AppSelectOption(
                       value: 'parent',
                       label: isAr ? 'حساب رئيسي (مجموعة)' : 'Parent Group',
                     ),
-                    AppDropdownItem(
+                    AppSelectOption(
                       value: 'sub',
                       label: isAr ? 'حساب فرعي (تفصيلي)' : 'Sub Account',
                     ),
@@ -783,17 +785,17 @@ class _AppTreeCreationFormState extends State<AppTreeCreationForm> {
                     if (val != null) setState(() => _accountType = val);
                   },
                 ),
-                AppDropdown<String>(
+                AppSelectField<String>(
                   label: isAr ? 'تصنيف القائمة' : 'Financial Statement',
                   value: _category,
                   items: [
-                    AppDropdownItem(
+                    AppSelectOption(
                       value: 'asset',
                       label: isAr
                           ? 'الميزانية - الأصول'
                           : 'Balance Sheet - Assets',
                     ),
-                    AppDropdownItem(
+                    AppSelectOption(
                       value: 'liability',
                       label: isAr
                           ? 'الميزانية - الالتزامات'

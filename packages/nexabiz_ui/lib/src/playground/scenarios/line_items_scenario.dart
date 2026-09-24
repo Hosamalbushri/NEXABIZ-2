@@ -5,7 +5,7 @@ import '../../theme/tokens/tokens.dart';
 import '../../widgets/app_bottom_sheet.dart';
 import '../../widgets/app_button.dart';
 import '../../widgets/app_card.dart';
-import '../../widgets/app_dropdown.dart';
+import '../../widgets/app_select_field.dart';
 import '../../widgets/app_number_field.dart';
 import '../../widgets/app_status_badge.dart';
 import '../../widgets/app_surface.dart';
@@ -62,11 +62,11 @@ class _LineItemsScenarioState extends State<LineItemsScenario> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              AppDropdown<String>(
+              AppSelectField<String>(
                 label: isAr ? 'الحساب' : 'Account',
                 value: selectedAccountCode,
                 items: accounts.map((a) {
-                  return AppDropdownItem(
+                  return AppSelectOption(
                     value: a.code,
                     label: '${a.code} - ${a.name(isAr)}',
                   );

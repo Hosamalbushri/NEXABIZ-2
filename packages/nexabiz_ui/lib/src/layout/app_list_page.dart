@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../localization/nexabiz_ui_localizations.dart';
 import '../widgets/app_empty_state.dart';
 import '../widgets/app_error_state.dart';
 import '../widgets/app_loading.dart';
@@ -28,7 +29,7 @@ class AppListPage<T> extends StatefulWidget {
     this.searchController,
     this.onSearchChanged,
     this.onSearchClear,
-    this.searchHint = 'بحث...',
+    this.searchHint,
     this.onFilterTap,
     this.activeFilterCount = 0,
     this.activeFilterChips = const [],
@@ -36,8 +37,8 @@ class AppListPage<T> extends StatefulWidget {
     this.isLoading = false,
     this.errorText,
     this.onRetry,
-    this.emptyTitle = 'لا توجد سجلات',
-    this.emptySubtitle = 'جرّب تعديل كلمة البحث أو تصفية البيانات',
+    this.emptyTitle,
+    this.emptySubtitle,
     this.onEmptyAction,
     this.emptyActionLabel,
     this.page = 0,
@@ -64,7 +65,7 @@ class AppListPage<T> extends StatefulWidget {
   final TextEditingController? searchController;
   final ValueChanged<String>? onSearchChanged;
   final VoidCallback? onSearchClear;
-  final String searchHint;
+  final String? searchHint;
   final VoidCallback? onFilterTap;
   final int activeFilterCount;
   final List<Widget> activeFilterChips;
@@ -74,8 +75,8 @@ class AppListPage<T> extends StatefulWidget {
   final bool isLoading;
   final String? errorText;
   final VoidCallback? onRetry;
-  final String emptyTitle;
-  final String emptySubtitle;
+  final String? emptyTitle;
+  final String? emptySubtitle;
   final VoidCallback? onEmptyAction;
   final String? emptyActionLabel;
 
@@ -143,20 +144,26 @@ class _AppListPageState<T> extends State<AppListPage<T>> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           if (hasSearch && showSearchToolbar) ...[
-            AppSearchToolbar(
-              searchController: widget.searchController,
-              onSearchChanged: widget.onSearchChanged,
-              onSearchClear: () {
-                widget.onSearchClear?.call();
-                setState(() {
-                  _isSearchExpanded = false;
-                });
+            Builder(
+              builder: (ctx) {
+                final loc = NexaBizUiLocalizations.of(ctx);
+                final effectiveSearchHint = widget.searchHint ?? loc.searchHint;
+                return AppSearchToolbar(
+                  searchController: widget.searchController,
+                  onSearchChanged: widget.onSearchChanged,
+                  onSearchClear: () {
+                    widget.onSearchClear?.call();
+                    setState(() {
+                      _isSearchExpanded = false;
+                    });
+                  },
+                  searchHint: effectiveSearchHint,
+                  onFilterTap: widget.showFilterInHeader
+                      ? null
+                      : widget.onFilterTap,
+                  filterCount: widget.activeFilterCount,
+                );
               },
-              searchHint: widget.searchHint,
-              onFilterTap: widget.showFilterInHeader
-                  ? null
-                  : widget.onFilterTap,
-              filterCount: widget.activeFilterCount,
             ),
           ],
           if (widget.activeFilterChips.isNotEmpty) ...[
@@ -195,9 +202,10 @@ class _AppListPageState<T> extends State<AppListPage<T>> {
     }
 
     if (widget.items.isEmpty) {
+      final loc = NexaBizUiLocalizations.of(context);
       return AppEmptyState(
-        title: widget.emptyTitle,
-        subtitle: widget.emptySubtitle,
+        title: widget.emptyTitle ?? loc.noRecords,
+        subtitle: widget.emptySubtitle ?? loc.noRecordsSubtitle,
         onAction: widget.onEmptyAction,
         actionLabel: widget.emptyActionLabel,
       );

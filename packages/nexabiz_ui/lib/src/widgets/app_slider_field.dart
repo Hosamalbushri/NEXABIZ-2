@@ -1,10 +1,13 @@
 import 'package:flutter/widgets.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart' as shadcn;
 
+import '../theme/tokens/tokens.dart';
+import 'app_field_shell.dart';
+
 /// Canonical slider form field component for NexaBiz ERP.
 ///
-/// Wraps `shadcn_flutter` [shadcn.Slider] with a NexaBiz form field header (`label`, `required`, formatted value badge),
-/// range labels (`min`, `max`), and error/helper footers.
+/// Wraps `shadcn_flutter` [shadcn.Slider] with [AppFieldShell] presentation layout (`label`, `required`,
+/// `description`, formatted value badge, range labels, and error/helper footers).
 class AppSliderField extends StatelessWidget {
   const AppSliderField({
     super.key,
@@ -16,6 +19,7 @@ class AppSliderField extends StatelessWidget {
     this.max = 100.0,
     this.divisions,
     this.label,
+    this.description,
     this.valueFormatter,
     this.required = false,
     this.enabled = true,
@@ -32,6 +36,7 @@ class AppSliderField extends StatelessWidget {
   final double max;
   final int? divisions;
   final String? label;
+  final String? description;
   final String Function(shadcn.SliderValue value)? valueFormatter;
   final bool required;
   final bool enabled;
@@ -49,49 +54,34 @@ class AppSliderField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = shadcn.Theme.of(context);
-    final hasError = errorText != null && errorText!.isNotEmpty;
     final isInteractive = enabled && onChanged != null;
     final formattedValue = valueFormatter != null
         ? valueFormatter!(value)
         : _defaultFormat(value);
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        if (label != null && label!.isNotEmpty) ...[
+    return AppFieldShell(
+      label: label,
+      required: required,
+      description: description,
+      errorText: errorText,
+      helperText: helperText,
+      enabled: enabled,
+      borderless: true,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: MainAxisSize.min,
+        children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    label!,
-                    style: theme.typography.small.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: isInteractive
-                          ? theme.colorScheme.foreground
-                          : theme.colorScheme.mutedForeground,
-                    ),
-                  ),
-                  if (required) ...[
-                    const SizedBox(width: 4),
-                    Text(
-                      '*',
-                      style: TextStyle(
-                        color: theme.colorScheme.destructive,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ],
-              ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.xs,
+                  vertical: 2,
+                ),
                 decoration: BoxDecoration(
                   color: theme.colorScheme.secondary,
-                  borderRadius: BorderRadius.circular(theme.radiusSm),
+                  borderRadius: BorderRadius.circular(AppRadii.smOf(context)),
                 ),
                 child: Text(
                   formattedValue,
@@ -103,62 +93,44 @@ class AppSliderField extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 8),
-        ],
-        shadcn.Slider(
-          value: value,
-          onChanged: isInteractive ? onChanged : null,
-          onChangeStart: onChangeStart,
-          onChangeEnd: onChangeEnd,
-          min: min,
-          max: max,
-          divisions: divisions,
-          enabled: isInteractive,
-        ),
-        if (showMinMaxLabels) ...[
-          const SizedBox(height: 4),
-          Directionality(
-            textDirection: TextDirection.ltr,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  min.toStringAsFixed(0),
-                  style: theme.typography.small.copyWith(
-                    color: theme.colorScheme.mutedForeground,
-                    fontSize: 11,
+          const SizedBox(height: AppSpacing.xxs),
+          shadcn.Slider(
+            value: value,
+            onChanged: isInteractive ? onChanged : null,
+            onChangeStart: onChangeStart,
+            onChangeEnd: onChangeEnd,
+            min: min,
+            max: max,
+            divisions: divisions,
+            enabled: isInteractive,
+          ),
+          if (showMinMaxLabels) ...[
+            const SizedBox(height: AppSpacing.xxs),
+            Directionality(
+              textDirection: TextDirection.ltr,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    min.toStringAsFixed(0),
+                    style: theme.typography.small.copyWith(
+                      color: theme.colorScheme.mutedForeground,
+                      fontSize: 11,
+                    ),
                   ),
-                ),
-                Text(
-                  max.toStringAsFixed(0),
-                  style: theme.typography.small.copyWith(
-                    color: theme.colorScheme.mutedForeground,
-                    fontSize: 11,
+                  Text(
+                    max.toStringAsFixed(0),
+                    style: theme.typography.small.copyWith(
+                      color: theme.colorScheme.mutedForeground,
+                      fontSize: 11,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
+          ],
         ],
-        if (hasError) ...[
-          const SizedBox(height: 4),
-          Text(
-            errorText!,
-            style: theme.typography.small.copyWith(
-              color: theme.colorScheme.destructive,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ] else if (helperText != null && helperText!.isNotEmpty) ...[
-          const SizedBox(height: 4),
-          Text(
-            helperText!,
-            style: theme.typography.small.copyWith(
-              color: theme.colorScheme.mutedForeground,
-            ),
-          ),
-        ],
-      ],
+      ),
     );
   }
 }

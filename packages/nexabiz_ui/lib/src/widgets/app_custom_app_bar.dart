@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart' as shadcn;
 
+import '../localization/nexabiz_ui_localizations.dart';
 import '../theme/tokens/app_icons.dart';
 import '../theme/tokens/app_spacing.dart';
 import '../theme/tokens/app_typography.dart';
@@ -117,6 +118,7 @@ class AppCustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         colorScheme.primary.withValues(alpha: isDark ? 0.18 : 0.12);
 
     final isRtl = Directionality.of(context) == TextDirection.rtl;
+    final loc = NexaBizUiLocalizations.of(context);
     final canPop = Navigator.canPop(context);
     final shouldShowBack = showBackButton || canPop;
 
@@ -128,7 +130,7 @@ class AppCustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         variant: AppIconButtonVariant.chip,
         iconSize: 18.0,
         icon: isRtl ? AppIcons.chevronRight : AppIcons.chevronLeft,
-        tooltip: isRtl ? 'رجوع' : 'Back',
+        tooltip: loc.back,
         onPressed: onBack ?? () => Navigator.of(context).maybePop(),
       );
     } else if (showMenuButton) {
@@ -136,7 +138,7 @@ class AppCustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         variant: AppIconButtonVariant.chip,
         iconSize: 18.0,
         icon: AppIcons.grid,
-        tooltip: isRtl ? 'القائمة' : 'Menu',
+        tooltip: loc.menu,
         onPressed: onMenu,
       );
     }
@@ -148,7 +150,7 @@ class AppCustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           variant: AppIconButtonVariant.chip,
           iconSize: 18.0,
           icon: shadcn.LucideIcons.search,
-          tooltip: isRtl ? 'بحث' : 'Search',
+          tooltip: loc.search,
           onPressed: onSearch,
         ),
       if (showNotifications)
@@ -156,7 +158,7 @@ class AppCustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           variant: AppIconButtonVariant.chip,
           iconSize: 18.0,
           icon: shadcn.LucideIcons.bell,
-          tooltip: isRtl ? 'الإشعارات' : 'Notifications',
+          tooltip: loc.notifications,
           badgeCount: notificationCount > 0 ? notificationCount : null,
           onPressed: onNotifications,
         ),

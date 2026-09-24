@@ -65,7 +65,7 @@ All pages in NexaBiz MUST use one of the 8 canonical page primitives exported by
 | `AppMasterDetailPage` | Dual-pane split view layout for tablet and desktop viewports. |
 
 ### Deprecated Page Wrappers
-Legacy wrappers (`AppPageShell`, `AppListPagePattern`, `AppFormPagePattern`, `AppDetailPagePattern`, `ModuleListScaffold`, `ModuleFormScaffold`) are annotated `@Deprecated`. New feature code **MUST NOT** consume deprecated wrappers. Guardrail `canonical_page_architecture_guardrail_test.dart` enforces this mandate.
+Legacy wrappers (`AppPageShell`, `AppListPagePattern`, `AppFormPagePattern`, `AppDetailPagePattern`, `ModuleListScaffold`, `ModuleFormScaffold`) were removed after their production-consumer count reached zero. They **MUST NOT** be reintroduced. Guardrails enforce both consumer and declaration absence.
 
 ---
 
@@ -86,7 +86,10 @@ Arbitrary `Color(0xFF...)` literals inside presentation code are prohibited (enf
 
 ## 5. RESPONSIVE & RTL CONTRACT
 
-- Responsive adaptation MUST use `AppBreakpoints` or responsive primitives (`AppResponsive`, `AppResponsiveScaffold`).
+- Window/shell structural adaptation MUST use `AppBreakpoints` or responsive primitives (`AppResponsive`, `AppResponsiveScaffold`).
+- Local component composition MUST use the `BoxConstraints` granted by its immediate parent. It MUST NOT infer local width from the global screen or device tier.
+- Canonical form composition owns field columns and full-width fields. Feature pages MUST NOT introduce page-specific form breakpoints or repeated `Row`/`Expanded` field layouts.
+- Content surfaces grow naturally; fixed dimensions are reserved for controls, icons, separators, and other explicitly bounded UI mechanics.
 - Arbitrary `MediaQuery.of(context).size.width` checks in feature code are prohibited.
 - RTL compatibility MUST be preserved using directional geometry (`EdgeInsetsDirectional`, `AlignmentDirectional`, `PositionedDirectional`).
 

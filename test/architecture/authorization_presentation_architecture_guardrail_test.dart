@@ -183,5 +183,119 @@ void main() {
         }
       }
     });
+
+    test('Step 06 lifecycle surfaces remain mutation-scope isolated', () {
+      final lifecycleFiles = [
+        File(
+          'lib/packages/permissions/presentation/role_lifecycle_surfaces.dart',
+        ),
+      ];
+      final forbiddenTerms = [
+        'grantPermission(',
+        'revokePermission(',
+        'assignMember(',
+        'unassignMember(',
+        'AppSwitch(',
+        'drift_authorization_administration_store.dart',
+        '/app/persistence/',
+        'package:shadcn_flutter/',
+      ];
+
+      for (final file in lifecycleFiles) {
+        final source = file.readAsStringSync();
+        for (final term in forbiddenTerms) {
+          expect(
+            source,
+            isNot(contains(term)),
+            reason:
+                '${file.path} must not contain out-of-scope Step 06 primitive $term',
+          );
+        }
+      }
+    });
+
+    test(
+      'Step 07 permission UI has no persistence, arbitrary IDs, or membership mutations',
+      () {
+        final permissionUi = File(
+          'lib/packages/permissions/presentation/roles_screen.dart',
+        );
+        final fullSource = permissionUi.readAsStringSync();
+        final start = fullSource.indexOf('Widget _buildPermissionsTab(');
+        final end = fullSource.indexOf('Widget _buildAssignedMembersTab(');
+        expect(start, greaterThanOrEqualTo(0));
+        expect(end, greaterThan(start));
+        final source = fullSource.substring(start, end);
+        final forbiddenTerms = [
+          'assignMember(',
+          'unassignMember(',
+          'AppTextField(',
+          'NexaBizPermissionId(',
+          'drift_authorization_administration_store.dart',
+          '/app/persistence/',
+          'package:drift/',
+          'package:sqlite3/',
+          'package:shadcn_flutter/',
+        ];
+
+        for (final term in forbiddenTerms) {
+          expect(
+            source,
+            isNot(contains(term)),
+            reason:
+                '${permissionUi.path} contains out-of-scope Step 07 primitive $term',
+          );
+        }
+      },
+    );
+
+    test(
+      'Step 08 membership UI preserves typed IDs and has no policy, persistence, owner-count, or user-management authority',
+      () {
+        final rolesScreen = File(
+          'lib/packages/permissions/presentation/roles_screen.dart',
+        );
+        final fullScreenSource = rolesScreen.readAsStringSync();
+        final assignedStart = fullScreenSource.indexOf(
+          'Widget _buildAssignedMembersTab(',
+        );
+        expect(assignedStart, greaterThanOrEqualTo(0));
+
+        final membershipSources = {
+          rolesScreen.path: fullScreenSource.substring(assignedStart),
+          'lib/packages/permissions/presentation/role_membership_surfaces.dart':
+              File(
+                'lib/packages/permissions/presentation/role_membership_surfaces.dart',
+              ).readAsStringSync(),
+        };
+        final forbiddenTerms = [
+          'NexaBizMembershipId(',
+          'grantPermission(',
+          'revokePermission(',
+          'activeOwnerCount',
+          'ownerCount ==',
+          "'company.owner'",
+          'createUser(',
+          'inviteUser(',
+          'activateUser(',
+          'drift_authorization_administration_store.dart',
+          '/app/persistence/',
+          'package:drift/',
+          'package:sqlite3/',
+          'package:shadcn_flutter/',
+        ];
+
+        for (final entry in membershipSources.entries) {
+          for (final term in forbiddenTerms) {
+            expect(
+              entry.value,
+              isNot(contains(term)),
+              reason:
+                  '${entry.key} contains forbidden Step 08 source primitive $term',
+            );
+          }
+        }
+      },
+    );
   });
 }

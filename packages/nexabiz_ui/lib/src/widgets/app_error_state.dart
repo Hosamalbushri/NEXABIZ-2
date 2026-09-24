@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../theme/app_spacing.dart';
+import '../theme/tokens/app_spacing.dart';
 import 'app_button.dart';
 
 /// Error state with optional retry action.

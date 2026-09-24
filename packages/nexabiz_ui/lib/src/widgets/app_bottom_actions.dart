@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart' as shadcn;
 
+import '../layout/app_layout_tokens.dart';
 import '../theme/tokens/tokens.dart';
 
 /// Canonical Mobile Bottom Actions Container for NexaBiz ERP.
@@ -14,7 +15,7 @@ class AppBottomActions extends StatelessWidget {
     required this.primaryAction,
     this.secondaryAction,
     this.extraActions,
-    this.padding = const EdgeInsets.fromLTRB(
+    this.padding = const EdgeInsetsDirectional.fromSTEB(
       AppSpacing.md,
       AppSpacing.sm,
       AppSpacing.md,
@@ -65,14 +66,15 @@ class AppBottomActions extends StatelessWidget {
     final effectiveBottomInset = keyboardInset > 0 ? 4.0 : safeBottom;
 
     return Container(
-      padding: (padding as EdgeInsets).add(
-        EdgeInsets.only(bottom: effectiveBottomInset),
-      ),
+      padding: padding
+          .resolve(Directionality.of(context))
+          .add(EdgeInsets.only(bottom: effectiveBottomInset)),
       decoration: BoxDecoration(color: bg, border: border),
       child: LayoutBuilder(
         builder: (context, constraints) {
           final isNarrow =
-              mediaQuery.size.width <= 360 || constraints.maxWidth < 280;
+              !constraints.hasBoundedWidth ||
+              constraints.maxWidth < AppLayoutTokens.actionStackMaxWidth;
 
           if (isNarrow) {
             return Column(

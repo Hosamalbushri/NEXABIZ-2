@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../constants/app_constants.dart';
-import '../theme/app_breakpoints.dart';
-import '../theme/app_spacing.dart';
+import '../layout/app_layout_tokens.dart';
+import '../layout/app_breakpoints.dart';
+import '../theme/tokens/app_spacing.dart';
 
 enum AppCollectionViewMode { list, grid }
 
@@ -49,7 +49,8 @@ class AppCollectionView<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final effectivePadding = padding ?? AppConstants.pageInsets(context);
+    final effectivePadding =
+        padding ?? AppLayoutTokens.pagePaddingDirectionalStandard;
     final totalCount = items.length + footerItemCount;
 
     if (viewMode == AppCollectionViewMode.grid) {

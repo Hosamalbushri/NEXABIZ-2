@@ -25,7 +25,7 @@ Architecture guardrails are executable Dart tests located in `test/architecture/
 | Guardrail ID | Test File | Responsibility |
 | :--- | :--- | :--- |
 | `RULE-01-PACKAGE-SRC-IMPORT` | `test/architecture/package_boundary_test.dart` | Ensures external code does not import `package:nexabiz_ui/src/...` directly. |
-| `RULE-02-DEPRECATED-PAGE-WRAPPERS` | `test/architecture/canonical_page_architecture_guardrail_test.dart` | Prevents consumption of deprecated page wrappers. |
+| `RULE-02-DEPRECATED-PAGE-WRAPPERS` | `test/architecture/canonical_page_architecture_guardrail_test.dart` | Prevents consumption or reintroduction of removed page wrappers. |
 | `RULE-03-DIRECT-SHADCN` & `UI-01` | `test/app/architecture/ui_architecture_guardrails_test.dart` | Enforces design system encapsulation (no direct `shadcn_flutter` imports in features). |
 | `RULE-04-HARDCODED-STRINGS` | `test/architecture/localization_hardcoded_string_guardrail_test.dart` | Scans presentation code for hardcoded string literals. |
 | `RULE-05-GOVERNANCE-PROTECTION` | `test/architecture/governance_protection_guardrail_test.dart` | Protects `/AGENTS.md` and `docs/architecture/` contract files against unauthorized modification or deletion. |

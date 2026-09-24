@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart' as shadcn;
 
 import '../layout/app_breakpoints.dart';
+import '../localization/nexabiz_ui_localizations.dart';
 import '../theme/tokens/app_radii.dart';
 
 /// Item definition for [AppBottomSheet.showSelection].
@@ -250,11 +251,15 @@ class AppBottomSheet extends StatelessWidget {
     required BuildContext context,
     required String title,
     required String message,
-    String confirmLabel = 'موافق',
-    String cancelLabel = 'إلغاء',
+    String? confirmLabel,
+    String? cancelLabel,
     IconData? icon,
     bool isDestructive = false,
   }) async {
+    final loc = NexaBizUiLocalizations.of(context);
+    final effectiveConfirmLabel = confirmLabel ?? loc.confirm;
+    final effectiveCancelLabel = cancelLabel ?? loc.cancel;
+
     final completer = show<bool>(
       context: context,
       title: title,
@@ -275,17 +280,17 @@ class AppBottomSheet extends StatelessWidget {
       actions: [
         shadcn.Button.outline(
           onPressed: () => close<bool>(context, false),
-          child: Text(cancelLabel),
+          child: Text(effectiveCancelLabel),
         ),
         const SizedBox(width: 8),
         isDestructive
             ? shadcn.Button.destructive(
                 onPressed: () => close<bool>(context, true),
-                child: Text(confirmLabel),
+                child: Text(effectiveConfirmLabel),
               )
             : shadcn.Button.primary(
                 onPressed: () => close<bool>(context, true),
-                child: Text(confirmLabel),
+                child: Text(effectiveConfirmLabel),
               ),
       ],
     );
@@ -319,7 +324,12 @@ class AppBottomSheet extends StatelessWidget {
         // Standardized Header
         if (title != null || icon != null)
           Container(
-            padding: const EdgeInsets.fromLTRB(20.0, 10.0, 16.0, 14.0),
+            padding: const EdgeInsetsDirectional.fromSTEB(
+              20.0,
+              10.0,
+              16.0,
+              14.0,
+            ),
             decoration: BoxDecoration(
               border: Border(
                 bottom: BorderSide(
@@ -449,10 +459,11 @@ class AppBottomSheet extends StatelessWidget {
         // Content Area with Keyboard Insets & Safe Areas
         Flexible(
           child: isLoading
-              ? Container(
-                  height: 120,
-                  alignment: Alignment.center,
-                  child: const shadcn.CircularProgressIndicator(),
+              ? ConstrainedBox(
+                  constraints: const BoxConstraints(minHeight: 120),
+                  child: const Center(
+                    child: shadcn.CircularProgressIndicator(),
+                  ),
                 )
               : (scrollable
                     ? SingleChildScrollView(

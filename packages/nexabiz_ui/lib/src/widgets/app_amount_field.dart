@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart' as shadcn;
 
 import '../theme/tokens/tokens.dart';
@@ -17,6 +17,7 @@ class AppAmountField extends StatelessWidget {
     this.controller,
     this.focusNode,
     this.label,
+    this.description,
     this.hint = '0.00',
     this.required = false,
     this.errorText,
@@ -35,6 +36,7 @@ class AppAmountField extends StatelessWidget {
   final TextEditingController? controller;
   final FocusNode? focusNode;
   final String? label;
+  final String? description;
   final String? hint;
   final bool required;
   final String? errorText;
@@ -66,7 +68,7 @@ class AppAmountField extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
         decoration: BoxDecoration(
           color: colorScheme.primary.withValues(alpha: 0.12),
-          borderRadius: BorderRadius.circular(4),
+          borderRadius: BorderRadius.circular(AppRadii.xs),
         ),
         child: Text(
           'DR',
@@ -82,7 +84,7 @@ class AppAmountField extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
         decoration: BoxDecoration(
           color: colorScheme.destructive.withValues(alpha: 0.12),
-          borderRadius: BorderRadius.circular(4),
+          borderRadius: BorderRadius.circular(AppRadii.xs),
         ),
         child: Text(
           'CR',
@@ -114,53 +116,62 @@ class AppAmountField extends StatelessWidget {
     final suffixWidget = toneBadge != null
         ? Row(
             mainAxisSize: MainAxisSize.min,
-            children: [?currencyWidget, const SizedBox(width: 4), toneBadge],
+            children: [
+              ?currencyWidget,
+              const SizedBox(width: AppSpacing.xxs),
+              toneBadge,
+            ],
           )
         : currencyWidget;
 
     final childInput = Directionality(
       textDirection: TextDirection.ltr,
-      child: shadcn.TextField(
-        controller: controller,
-        focusNode: focusNode,
-        enabled: enabled,
-        readOnly: readOnly,
-        keyboardType: const TextInputType.numberWithOptions(
-          decimal: true,
-          signed: true,
+      child: shadcn.ComponentTheme(
+        data: const shadcn.FocusOutlineTheme(border: Border()),
+        child: shadcn.TextField(
+          controller: controller,
+          focusNode: focusNode,
+          enabled: enabled,
+          readOnly: readOnly,
+          keyboardType: const TextInputType.numberWithOptions(
+            decimal: true,
+            signed: true,
+          ),
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+          ],
+          onChanged: onChanged != null
+              ? (value) {
+                  final binding = WidgetsBinding.instance;
+                  if (binding.buildOwner?.debugBuilding ?? false) {
+                    binding.addPostFrameCallback((_) => onChanged!(value));
+                  } else {
+                    onChanged!(value);
+                  }
+                }
+              : null,
+          onSubmitted: onSubmitted != null
+              ? (value) {
+                  final binding = WidgetsBinding.instance;
+                  if (binding.buildOwner?.debugBuilding ?? false) {
+                    binding.addPostFrameCallback((_) => onSubmitted!(value));
+                  } else {
+                    onSubmitted!(value);
+                  }
+                }
+              : null,
+          placeholder: hint != null ? Text(hint!, style: hintTextStyle) : null,
+          padding: EdgeInsets.zero,
+          decoration: const BoxDecoration(),
+          border: const Border(),
+          features: const [],
         ),
-        inputFormatters: [
-          FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
-        ],
-        onChanged: onChanged != null
-            ? (value) {
-                final binding = WidgetsBinding.instance;
-                if (binding.buildOwner?.debugBuilding ?? false) {
-                  binding.addPostFrameCallback((_) => onChanged!(value));
-                } else {
-                  onChanged!(value);
-                }
-              }
-            : null,
-        onSubmitted: onSubmitted != null
-            ? (value) {
-                final binding = WidgetsBinding.instance;
-                if (binding.buildOwner?.debugBuilding ?? false) {
-                  binding.addPostFrameCallback((_) => onSubmitted!(value));
-                } else {
-                  onSubmitted!(value);
-                }
-              }
-            : null,
-        placeholder: hint != null ? Text(hint!, style: hintTextStyle) : null,
-        padding: EdgeInsets.zero,
-        border: const Border(),
-        features: const [],
       ),
     );
 
     return AppFieldShell(
       label: label,
+      description: description,
       required: required,
       errorText: errorText,
       helperText: helperText,

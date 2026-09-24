@@ -2,15 +2,19 @@ import 'package:flutter/widgets.dart';
 import 'package:nexabiz_ui/nexabiz_ui.dart';
 
 import '../../../app/authorization/app_permission_scope.dart';
+import '../../../app/authorization/app_permission_gate.dart';
 import '../../../app/authorization/nexabiz_authorization_invalidation_signal.dart';
 import '../../../core/authorization/administration/nexabiz_authorization_administration_models.dart';
+import '../../../core/authorization/administration/nexabiz_authorization_administration_permissions.dart';
 import '../../../core/roles/nexabiz_role_id.dart';
 import '../../../l10n/app_localizations.dart';
 import 'controllers/roles_administration_controller.dart';
 import 'controllers/roles_administration_state.dart';
 import 'metadata/nexabiz_permission_presentation_models.dart';
+import 'role_lifecycle_surfaces.dart';
+import 'role_membership_surfaces.dart';
 
-/// Canonical Roles Administration Screen — Strict Read-Only Mode.
+/// Canonical Roles Administration Screen.
 ///
 /// Implements master-detail inspection of company roles, metadata,
 /// permission assignments, and assigned company members.
@@ -18,7 +22,7 @@ import 'metadata/nexabiz_permission_presentation_models.dart';
 /// Adheres to:
 /// - `AGENTS.md` and repository architectural contracts.
 /// - Single-flight invalidation and race safety via [RolesAdministrationController].
-/// - Strict Read-Only: Zero mutation buttons, dialogs, sheets, or toggles.
+/// - Role lifecycle affordances remain UX-gated; UseCases are authoritative.
 class RolesScreen extends StatefulWidget {
   const RolesScreen({super.key, this.controller});
 
@@ -129,142 +133,178 @@ class _RolesScreenState extends State<RolesScreen> {
     RolesAdministrationController controller,
     RolesAdministrationState state,
   ) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        // 1. Search Bar
-        AppSearchField(
-          hint: l10n.authAdminSearchRolesPlaceholder,
-          onChanged: (query) => controller.searchRoles(query),
-        ),
-        const SizedBox(height: AppSpacing.sm),
-
-        // 2. Role Kind Filter Options
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: AppExclusiveToggleGroup<NexaBizCompanyRoleKind?>(
-            value: state.roleKindFilter,
-            onChanged: (kind) => controller.filterRoleKind(kind),
-            options: [
-              ToggleOption(
-                value: null,
-                child: Text(
-                  l10n.authAdminFilterAllRoles,
-                  style: const TextStyle(fontSize: 12),
+    return CustomScrollView(
+      slivers: [
+        SliverToBoxAdapter(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              AppPermissionGate.hide(
+                permissionId:
+                    NexaBizAuthorizationAdministrationPermissions.roleManage,
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: AppSpacing.md),
+                  child: AppButton(
+                    label: l10n.authAdminActionCreate,
+                    icon: AppIcons.plus,
+                    expand: true,
+                    onPressed: () async {
+                      await showCreateRoleSurface(
+                        context: context,
+                        controller: controller,
+                      );
+                    },
+                  ),
                 ),
               ),
-              ToggleOption(
-                value: NexaBizCompanyRoleKind.builtIn,
-                child: Text(
-                  l10n.authAdminFilterBuiltInRoles,
-                  style: const TextStyle(fontSize: 12),
+              AppSearchField(
+                hint: l10n.authAdminSearchRolesPlaceholder,
+                onChanged: (query) => controller.searchRoles(query),
+              ),
+              const SizedBox(height: AppSpacing.sm),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: AppExclusiveToggleGroup<NexaBizCompanyRoleKind?>(
+                  value: state.roleKindFilter,
+                  onChanged: (kind) => controller.filterRoleKind(kind),
+                  options: [
+                    ToggleOption(
+                      value: null,
+                      child: Text(
+                        l10n.authAdminFilterAllRoles,
+                        style: const TextStyle(fontSize: 12),
+                      ),
+                    ),
+                    ToggleOption(
+                      value: NexaBizCompanyRoleKind.builtIn,
+                      child: Text(
+                        l10n.authAdminFilterBuiltInRoles,
+                        style: const TextStyle(fontSize: 12),
+                      ),
+                    ),
+                    ToggleOption(
+                      value: NexaBizCompanyRoleKind.custom,
+                      child: Text(
+                        l10n.authAdminFilterCustomRoles,
+                        style: const TextStyle(fontSize: 12),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              ToggleOption(
-                value: NexaBizCompanyRoleKind.custom,
-                child: Text(
-                  l10n.authAdminFilterCustomRoles,
-                  style: const TextStyle(fontSize: 12),
-                ),
-              ),
+              const SizedBox(height: AppSpacing.md),
             ],
           ),
         ),
-        const SizedBox(height: AppSpacing.md),
-
-        // 3. Role List Content
-        Expanded(
-          child: _buildRoleListContent(context, l10n, controller, state),
-        ),
+        ..._buildRoleListSlivers(context, l10n, controller, state),
       ],
     );
   }
 
-  Widget _buildRoleListContent(
+  List<Widget> _buildRoleListSlivers(
     BuildContext context,
     AppLocalizations l10n,
     RolesAdministrationController controller,
     RolesAdministrationState state,
   ) {
     if (state.isLoadingRoles && state.roles.isEmpty) {
-      return const AppLoading(style: AppLoadingStyle.skeletonList);
+      return const [
+        SliverFillRemaining(
+          child: AppLoading(style: AppLoadingStyle.skeletonList),
+        ),
+      ];
     }
 
     if (state.rolesError != null && state.roles.isEmpty) {
-      return AppErrorState(
-        message: state.rolesError!.resolveMessage(l10n),
-        onRetry: () => controller.refreshRoles(),
-      );
+      return [
+        SliverToBoxAdapter(
+          child: AppErrorState(
+            message: state.rolesError!.resolveMessage(l10n),
+            onRetry: () => controller.refreshRoles(),
+          ),
+        ),
+      ];
     }
 
     if (state.roles.isEmpty) {
       final isSearching =
           state.roleSearchQuery != null && state.roleSearchQuery!.isNotEmpty;
-      return AppEmptyState(
-        title: isSearching
-            ? l10n.authAdminEmptyRolesSearch
-            : l10n.authAdminEmptyRoles,
-        icon: AppIcons.shield,
-      );
+      return [
+        SliverToBoxAdapter(
+          child: AppEmptyState(
+            title: isSearching
+                ? l10n.authAdminEmptyRolesSearch
+                : l10n.authAdminEmptyRoles,
+            icon: AppIcons.shield,
+          ),
+        ),
+      ];
     }
 
-    return ListView.separated(
-      itemCount: state.roles.length + (state.rolesNextCursor != null ? 1 : 0),
-      separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.xs),
-      itemBuilder: (context, index) {
-        if (index == state.roles.length) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
-            child: Center(
-              child: AppButton(
-                label: l10n.authAdminLoadMore,
-                icon: AppIcons.refresh,
-                isLoading: state.isLoadingMoreRoles,
-                onPressed: () => controller.loadMoreRoles(),
-                variant: AppButtonVariant.outlined,
+    final itemCount =
+        state.roles.length + (state.rolesNextCursor != null ? 1 : 0);
+    return [
+      SliverList(
+        delegate: SliverChildBuilderDelegate((context, rawIndex) {
+          if (rawIndex.isOdd) {
+            return const SizedBox(height: AppSpacing.xs);
+          }
+          final index = rawIndex ~/ 2;
+          if (index == state.roles.length) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
+              child: Center(
+                child: AppButton(
+                  label: l10n.authAdminLoadMore,
+                  icon: AppIcons.refresh,
+                  isLoading: state.isLoadingMoreRoles,
+                  onPressed: controller.loadMoreRoles,
+                  variant: AppButtonVariant.outlined,
+                ),
+              ),
+            );
+          }
+
+          final role = state.roles[index];
+          final isSelected = state.selectedRoleId == role.roleId;
+          return AppCard(
+            padding: EdgeInsets.zero,
+            color: isSelected
+                ? AppColors.primaryBlue.withValues(alpha: 0.1)
+                : null,
+            child: AppListTile(
+              onTap: () => _handleRoleSelected(role.roleId),
+              leading: Icon(
+                role.isBuiltIn ? AppIcons.shield : AppIcons.settings,
+                color: role.isBuiltIn
+                    ? AppColors.accentPurple
+                    : AppColors.primaryBlue,
+              ),
+              title: Text(
+                role.metadata.displayName.value,
+                style: TextStyle(
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
+                  color: isSelected ? AppColors.primaryBlue : null,
+                ),
+              ),
+              subtitle: Text(
+                role.roleId.value,
+                style: const TextStyle(fontSize: 12),
+              ),
+              trailing: AppStatusBadge(
+                label: role.isBuiltIn
+                    ? l10n.authAdminRoleTypeBuiltIn
+                    : l10n.authAdminRoleTypeCustom,
+                tone: role.isBuiltIn
+                    ? AppStatusTone.neutral
+                    : AppStatusTone.info,
+                animate: false,
               ),
             ),
           );
-        }
-
-        final role = state.roles[index];
-        final isSelected = state.selectedRoleId == role.roleId;
-
-        return AppCard(
-          padding: EdgeInsets.zero,
-          color: isSelected
-              ? AppColors.primaryBlue.withValues(alpha: 0.1)
-              : null,
-          child: AppListTile(
-            onTap: () => _handleRoleSelected(role.roleId),
-            leading: Icon(
-              role.isBuiltIn ? AppIcons.shield : AppIcons.settings,
-              color: role.isBuiltIn
-                  ? AppColors.accentPurple
-                  : AppColors.primaryBlue,
-            ),
-            title: Text(
-              role.metadata.displayName.value,
-              style: TextStyle(
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
-                color: isSelected ? AppColors.primaryBlue : null,
-              ),
-            ),
-            subtitle: Text(
-              role.roleId.value,
-              style: const TextStyle(fontSize: 12),
-            ),
-            trailing: AppStatusBadge(
-              label: role.isBuiltIn
-                  ? l10n.authAdminRoleTypeBuiltIn
-                  : l10n.authAdminRoleTypeCustom,
-              tone: role.isBuiltIn ? AppStatusTone.neutral : AppStatusTone.info,
-              animate: false,
-            ),
-          ),
-        );
-      },
-    );
+        }, childCount: itemCount * 2 - 1),
+      ),
+    ];
   }
 
   Widget _buildDetailView(
@@ -287,57 +327,65 @@ class _RolesScreenState extends State<RolesScreen> {
     final isCompactOrMedium =
         tier == AppBreakpointTier.compact || tier == AppBreakpointTier.medium;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        // 1. Compact / Medium Back Affordance & Detail Header
-        Row(
-          children: [
-            if (isCompactOrMedium) ...[
-              AppIconButton(
-                icon: AppIcons.chevronLeft,
-                onPressed: () {
-                  setState(() {
-                    _showDetailOnCompact = false;
-                  });
-                },
-              ),
-              const SizedBox(width: AppSpacing.xs),
-            ],
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+    return CustomScrollView(
+      slivers: [
+        SliverToBoxAdapter(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
                 children: [
-                  Text(
-                    state.selectedRoleSummary?.metadata.displayName.value ??
-                        state.selectedRoleId!.value,
-                    style: AppTypography.sectionTitle(context),
+                  if (isCompactOrMedium) ...[
+                    AppIconButton(
+                      icon: AppIcons.chevronLeft,
+                      tooltip: l10n.actionBack,
+                      onPressed: () {
+                        setState(() {
+                          _showDetailOnCompact = false;
+                        });
+                      },
+                    ),
+                    const SizedBox(width: AppSpacing.xs),
+                  ],
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          state
+                                  .selectedRoleSummary
+                                  ?.metadata
+                                  .displayName
+                                  .value ??
+                              state.selectedRoleId!.value,
+                          style: AppTypography.sectionTitle(context),
+                        ),
+                        Text(
+                          state.selectedRoleId!.value,
+                          style: AppTypography.caption(context),
+                        ),
+                      ],
+                    ),
                   ),
-                  Text(
-                    state.selectedRoleId!.value,
-                    style: AppTypography.caption(context),
-                  ),
+                  if (state.selectedRoleSummary != null)
+                    AppStatusBadge(
+                      label: state.selectedRoleSummary!.isBuiltIn
+                          ? l10n.authAdminRoleTypeBuiltIn
+                          : l10n.authAdminRoleTypeCustom,
+                      tone: state.selectedRoleSummary!.isBuiltIn
+                          ? AppStatusTone.neutral
+                          : AppStatusTone.info,
+                      animate: false,
+                    ),
                 ],
               ),
-            ),
-            if (state.selectedRoleSummary != null)
-              AppStatusBadge(
-                label: state.selectedRoleSummary!.isBuiltIn
-                    ? l10n.authAdminRoleTypeBuiltIn
-                    : l10n.authAdminRoleTypeCustom,
-                tone: state.selectedRoleSummary!.isBuiltIn
-                    ? AppStatusTone.neutral
-                    : AppStatusTone.info,
-                animate: false,
-              ),
-          ],
+              const SizedBox(height: AppSpacing.sm),
+              const AppDivider(),
+              const SizedBox(height: AppSpacing.xs),
+            ],
+          ),
         ),
-        const SizedBox(height: AppSpacing.sm),
-        const AppDivider(),
-        const SizedBox(height: AppSpacing.xs),
-
-        // 2. Main Tabs (Overview, Permissions, Assigned Members)
-        Expanded(
+        SliverFillRemaining(
           child: AppTabs(
             index: _selectedTabIndex,
             onChanged: (index) {
@@ -407,6 +455,44 @@ class _RolesScreenState extends State<RolesScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          if (!details.isBuiltIn) ...[
+            AppPermissionGate.hide(
+              permissionId:
+                  NexaBizAuthorizationAdministrationPermissions.roleManage,
+              child: Wrap(
+                alignment: WrapAlignment.end,
+                spacing: AppSpacing.sm,
+                runSpacing: AppSpacing.sm,
+                children: [
+                  AppButton(
+                    label: l10n.authAdminEditRoleTitle,
+                    icon: AppIcons.edit,
+                    variant: AppButtonVariant.outlined,
+                    onPressed: () async {
+                      await showEditRoleSurface(
+                        context: context,
+                        controller: controller,
+                        role: details,
+                      );
+                    },
+                  ),
+                  AppButton(
+                    label: l10n.authAdminActionDelete,
+                    variant: AppButtonVariant.destructive,
+                    onPressed: () async {
+                      await showDeleteRoleSurface(
+                        context: context,
+                        controller: controller,
+                        role: details,
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: AppSpacing.md),
+          ],
+
           // Built-in Explanation Alert
           if (details.isBuiltIn) ...[
             AppCard(
@@ -485,113 +571,181 @@ class _RolesScreenState extends State<RolesScreen> {
       return const Center(child: AppLoading());
     }
 
-    final grantedPermissions = state.selectedRolePermissions
-        .where((p) => p.isGranted)
-        .toList();
+    final targetIsMutable =
+        state.selectedRoleDetails != null &&
+        !state.selectedRoleDetails!.isBuiltIn;
 
-    if (grantedPermissions.isEmpty) {
-      return Center(
-        child: AppEmptyState(
-          title: l10n.permissionsResponsibilityNoRuntimeGrants,
-          icon: AppIcons.lock,
+    return AppPermissionGate.builder(
+      permissionId: NexaBizAuthorizationAdministrationPermissions.policyManage,
+      builder: (context, actorCanManagePolicy) {
+        final visiblePermissions = targetIsMutable
+            ? state.selectedRolePermissions
+            : state.selectedRolePermissions
+                  .where((permission) => permission.isGranted)
+                  .toList();
+
+        if (visiblePermissions.isEmpty) {
+          return Center(
+            child: AppEmptyState(
+              title: l10n.permissionsResponsibilityNoRuntimeGrants,
+              icon: AppIcons.lock,
+            ),
+          );
+        }
+
+        final permissionsByGroup =
+            <
+              NexaBizPermissionPresentationGroup,
+              List<NexaBizRolePermissionItem>
+            >{};
+        for (final permission in visiblePermissions) {
+          permissionsByGroup
+              .putIfAbsent(permission.group, () => [])
+              .add(permission);
+        }
+
+        final sortedGroups = permissionsByGroup.keys.toList()
+          ..sort((a, b) => a.order.compareTo(b.order));
+        final canMutate = targetIsMutable && actorCanManagePolicy;
+
+        return ListView.builder(
+          padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
+          itemCount: sortedGroups.length,
+          itemBuilder: (context, groupIndex) {
+            final group = sortedGroups[groupIndex];
+            final groupPermissions = permissionsByGroup[group]!;
+
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.xs,
+                    vertical: AppSpacing.xs,
+                  ),
+                  child: Text(
+                    group.resolveTitle(l10n),
+                    style: AppTypography.bodyBold(
+                      context,
+                    ).copyWith(color: AppColors.mutedTextLight),
+                  ),
+                ),
+                ...groupPermissions.map(
+                  (permission) => _buildPermissionRow(
+                    context: context,
+                    l10n: l10n,
+                    controller: controller,
+                    state: state,
+                    permission: permission,
+                    canMutate: canMutate,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildPermissionRow({
+    required BuildContext context,
+    required AppLocalizations l10n,
+    required RolesAdministrationController controller,
+    required RolesAdministrationState state,
+    required NexaBizRolePermissionItem permission,
+    required bool canMutate,
+  }) {
+    final isPending = state.isPermissionPending(permission.permissionId);
+    final stateLabel = permission.isGranted
+        ? l10n.authAdminRolePermissionGranted
+        : l10n.authAdminRolePermissionNotGranted;
+    final permissionError =
+        state.mutationError?.permissionId == permission.permissionId
+        ? state.mutationError!.resolveMessage(l10n)
+        : null;
+
+    final Widget trailing;
+    if (isPending) {
+      trailing = Semantics(
+        label: permission.resolveTitle(l10n),
+        value: stateLabel,
+        hint: l10n.authAdminPendingApplying,
+        liveRegion: true,
+        child: const SizedBox.square(
+          dimension: AppDimensions.minTouchTarget,
+          child: AppLoading(showMessage: false),
         ),
+      );
+    } else if (canMutate) {
+      trailing = Semantics(
+        label: permission.resolveTitle(l10n),
+        value: stateLabel,
+        toggled: permission.isGranted,
+        enabled: true,
+        child: AppCheckbox(
+          key: ValueKey(permission.permissionId),
+          value: permission.isGranted,
+          onChanged: (nextValue) {
+            if (nextValue == true && !permission.isGranted) {
+              controller.grantPermission(permission.permissionId);
+            } else if (nextValue == false && permission.isGranted) {
+              controller.revokePermission(permission.permissionId);
+            }
+          },
+        ),
+      );
+    } else {
+      trailing = AppStatusBadge(
+        label: stateLabel,
+        tone: permission.isGranted
+            ? AppStatusTone.success
+            : AppStatusTone.neutral,
+        animate: false,
       );
     }
 
-    // Deterministic Grouping
-    final permissionsByGroup =
-        <NexaBizPermissionPresentationGroup, List<NexaBizRolePermissionItem>>{};
-    for (final perm in grantedPermissions) {
-      permissionsByGroup.putIfAbsent(perm.group, () => []).add(perm);
-    }
-
-    final sortedGroups = permissionsByGroup.keys.toList()
-      ..sort((a, b) => a.order.compareTo(b.order));
-
-    return ListView.builder(
-      padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
-      itemCount: sortedGroups.length,
-      itemBuilder: (context, groupIndex) {
-        final group = sortedGroups[groupIndex];
-        final groupPerms = permissionsByGroup[group]!;
-
-        return Column(
+    return AppCard(
+      margin: const EdgeInsetsDirectional.only(bottom: AppSpacing.xs),
+      padding: EdgeInsets.zero,
+      child: AppListTile(
+        title: Text(
+          permission.resolveTitle(l10n),
+          style: AppTypography.bodyBold(context),
+        ),
+        subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.xs,
-                vertical: AppSpacing.xs,
-              ),
-              child: Text(
-                group.resolveTitle(l10n),
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 13,
-                  color: AppColors.mutedTextLight,
+            Directionality(
+              textDirection: TextDirection.ltr,
+              child: Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: Text(
+                  permission.permissionId.value,
+                  key: ValueKey(permission.permissionId.value),
+                  style: AppTypography.caption(
+                    context,
+                  ).copyWith(color: AppColors.mutedTextLight),
                 ),
               ),
             ),
-            ...groupPerms.map((perm) {
-              return AppCard(
-                margin: const EdgeInsets.only(bottom: AppSpacing.xs),
-                padding: const EdgeInsets.all(AppSpacing.sm),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.only(top: 2),
-                      child: Icon(
-                        AppIcons.check,
-                        color: AppColors.success,
-                        size: 16,
-                      ),
-                    ),
-                    const SizedBox(width: AppSpacing.sm),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            perm.resolveTitle(l10n),
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 14,
-                            ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            perm.permissionId.value,
-                            style: const TextStyle(
-                              fontSize: 11,
-                              color: AppColors.mutedTextLight,
-                              fontFamily: 'monospace',
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            perm.resolveDescription(l10n),
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: AppColors.mutedTextLight,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    AppStatusBadge(
-                      label: l10n.authAdminRolePermissionGranted,
-                      tone: AppStatusTone.success,
-                      animate: false,
-                    ),
-                  ],
-                ),
-              );
-            }),
-            const SizedBox(height: AppSpacing.sm),
+            const SizedBox(height: AppSpacing.xxs),
+            Text(permission.resolveDescription(l10n)),
+            if (permissionError != null) ...[
+              const SizedBox(height: AppSpacing.xs),
+              Text(
+                permissionError,
+                style: AppTypography.bodySmall(
+                  context,
+                ).copyWith(color: AppColors.error),
+              ),
+            ],
           ],
-        );
-      },
+        ),
+        trailing: trailing,
+      ),
     );
   }
 
@@ -601,12 +755,67 @@ class _RolesScreenState extends State<RolesScreen> {
     RolesAdministrationController controller,
     RolesAdministrationState state,
   ) {
+    final role = state.selectedRoleDetails;
+    if (role == null) return const SizedBox.shrink();
+
+    return AppPermissionGate.builder(
+      permissionId:
+          NexaBizAuthorizationAdministrationPermissions.assignmentManage,
+      builder: (context, canManageAssignments) {
+        return CustomScrollView(
+          slivers: [
+            if (canManageAssignments) ...[
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.only(top: AppSpacing.md),
+                  child: Align(
+                    alignment: AlignmentDirectional.centerEnd,
+                    child: AppButton(
+                      key: const ValueKey('assign-member-action'),
+                      label: l10n.authAdminAssignMemberTitle,
+                      icon: AppIcons.userAdd,
+                      onPressed: () => showAssignMemberSurface(
+                        context: context,
+                        controller: controller,
+                        role: role,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SliverToBoxAdapter(child: SizedBox(height: AppSpacing.sm)),
+            ],
+            SliverFillRemaining(
+              child: _buildAssignedMembersContent(
+                context: context,
+                l10n: l10n,
+                controller: controller,
+                state: state,
+                role: role,
+                canManageAssignments: canManageAssignments,
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildAssignedMembersContent({
+    required BuildContext context,
+    required AppLocalizations l10n,
+    required RolesAdministrationController controller,
+    required RolesAdministrationState state,
+    required NexaBizCompanyRoleDetails role,
+    required bool canManageAssignments,
+  }) {
     if (state.isLoadingAssignedMembers && state.assignedMembers.isEmpty) {
       return const Center(child: AppLoading());
     }
 
     if (state.assignedMembersError != null && state.assignedMembers.isEmpty) {
       return AppErrorState(
+        title: l10n.authAdminAssignedMembersTitle,
         message: state.assignedMembersError!.resolveMessage(l10n),
         onRetry: () => controller.refreshSelectedRole(),
       );
@@ -636,7 +845,9 @@ class _RolesScreenState extends State<RolesScreen> {
                 label: l10n.authAdminLoadMore,
                 icon: AppIcons.refresh,
                 isLoading: state.isLoadingMoreAssignedMembers,
-                onPressed: () => controller.loadMoreAssignedMembers(),
+                onPressed: state.isLoadingMoreAssignedMembers
+                    ? null
+                    : controller.loadMoreAssignedMembers,
                 variant: AppButtonVariant.outlined,
               ),
             ),
@@ -644,46 +855,112 @@ class _RolesScreenState extends State<RolesScreen> {
         }
 
         final member = state.assignedMembers[index];
-
-        // Safe Human Label Fallback (Section 38)
-        final String displayName;
-        final String? secondaryIdentifier;
-
-        if (member.userName != null && member.userName!.trim().isNotEmpty) {
-          displayName = member.userName!.trim();
-          secondaryIdentifier = member.userEmail?.trim();
-        } else if (member.userEmail != null &&
-            member.userEmail!.trim().isNotEmpty) {
-          displayName = member.userEmail!.trim();
-          secondaryIdentifier = null;
-        } else {
-          displayName = member.userId.value;
-          secondaryIdentifier = null;
-        }
+        final displayName = _resolveMemberName(
+          l10n: l10n,
+          userName: member.userName,
+          userEmail: member.userEmail,
+        );
+        final secondaryEmail = _secondaryMemberEmail(
+          userName: member.userName,
+          userEmail: member.userEmail,
+        );
+        final pending = state.isMembershipPending(member.membershipId);
+        final error = state.mutationError?.membershipId == member.membershipId
+            ? state.mutationError!.resolveMessage(l10n)
+            : null;
 
         return AppCard(
+          key: ValueKey(member.membershipId),
           padding: EdgeInsets.zero,
           child: AppListTile(
             leading: const Icon(AppIcons.user, color: AppColors.primaryBlue),
-            title: Text(
-              displayName,
-              style: const TextStyle(fontWeight: FontWeight.w600),
+            title: Text(displayName, style: AppTypography.bodyBold(context)),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (secondaryEmail != null)
+                  Directionality(
+                    textDirection: TextDirection.ltr,
+                    child: Align(
+                      alignment: AlignmentDirectional.centerStart,
+                      child: Text(secondaryEmail),
+                    ),
+                  ),
+                if (error != null) ...[
+                  const SizedBox(height: AppSpacing.xs),
+                  Text(
+                    error,
+                    style: AppTypography.bodySmall(
+                      context,
+                    ).copyWith(color: AppColors.error),
+                  ),
+                ],
+              ],
             ),
-            subtitle: secondaryIdentifier != null
-                ? Text(secondaryIdentifier)
-                : null,
-            trailing: AppStatusBadge(
-              label: member.isEligible
-                  ? l10n.authAdminMemberEligible
-                  : l10n.authAdminMemberIneligible,
-              tone: member.isEligible
-                  ? AppStatusTone.success
-                  : AppStatusTone.neutral,
-              animate: false,
+            trailing: Wrap(
+              spacing: AppSpacing.sm,
+              runSpacing: AppSpacing.xs,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                AppStatusBadge(
+                  label: member.isEligible
+                      ? l10n.authAdminMemberEligible
+                      : l10n.authAdminMemberIneligible,
+                  tone: member.isEligible
+                      ? AppStatusTone.success
+                      : AppStatusTone.neutral,
+                  animate: false,
+                ),
+                if (canManageAssignments)
+                  Semantics(
+                    label: l10n.authAdminUnassignMemberSemantics(displayName),
+                    liveRegion: pending,
+                    child: AppButton(
+                      key: ValueKey(('unassign', member.membershipId)),
+                      label: l10n.authAdminActionUnassign,
+                      variant: AppButtonVariant.destructive,
+                      isCompact: true,
+                      isLoading: pending,
+                      onPressed: pending
+                          ? null
+                          : () => showUnassignMemberSurface(
+                              context: context,
+                              controller: controller,
+                              role: role,
+                              member: member,
+                            ),
+                    ),
+                  ),
+              ],
             ),
           ),
         );
       },
     );
+  }
+
+  String _resolveMemberName({
+    required AppLocalizations l10n,
+    required String? userName,
+    required String? userEmail,
+  }) {
+    final name = userName?.trim();
+    if (name != null && name.isNotEmpty) return name;
+    final email = userEmail?.trim();
+    if (email != null && email.isNotEmpty) return email;
+    return l10n.authAdminUnknownMember;
+  }
+
+  String? _secondaryMemberEmail({
+    required String? userName,
+    required String? userEmail,
+  }) {
+    final name = userName?.trim();
+    final email = userEmail?.trim();
+    if (name == null || name.isEmpty || email == null || email.isEmpty) {
+      return null;
+    }
+    return email;
   }
 }

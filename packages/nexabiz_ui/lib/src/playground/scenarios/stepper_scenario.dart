@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart' as shadcn;
 
 import '../../theme/tokens/tokens.dart';
-import '../../widgets/app_dropdown.dart';
+import '../../widgets/app_select_field.dart';
 import '../../widgets/app_form.dart';
 import '../../widgets/app_stepper.dart';
 import '../../widgets/app_switch.dart';
@@ -129,29 +129,29 @@ class _StepperScenarioState extends State<StepperScenario> {
             const SizedBox(height: AppSpacing.md),
             AppFormRow(
               children: [
-                AppDropdown<String>(
+                AppSelectField<String>(
                   label: isAr ? 'العملة الرئيسية' : 'Base Currency',
                   value: _selectedCurrency,
                   items: const [
-                    AppDropdownItem(value: 'SAR', label: 'SAR - ريال سعودي'),
-                    AppDropdownItem(value: 'USD', label: 'USD - دولار أمريكي'),
-                    AppDropdownItem(value: 'AED', label: 'AED - درهم إماراتي'),
+                    AppSelectOption(value: 'SAR', label: 'SAR - ريال سعودي'),
+                    AppSelectOption(value: 'USD', label: 'USD - دولار أمريكي'),
+                    AppSelectOption(value: 'AED', label: 'AED - درهم إماراتي'),
                   ],
                   onChanged: (val) {
                     if (val != null) setState(() => _selectedCurrency = val);
                   },
                 ),
-                AppDropdown<String>(
+                AppSelectField<String>(
                   label: isAr ? 'بداية السنة المالية' : 'Fiscal Year Start',
                   value: _fiscalYearStart,
                   items: [
-                    AppDropdownItem(
+                    AppSelectOption(
                       value: '01-01',
                       label: isAr
                           ? '١ يناير (تقويم ميلادي)'
                           : 'Jan 1st (Gregorian)',
                     ),
-                    AppDropdownItem(
+                    AppSelectOption(
                       value: '01-07',
                       label: isAr ? '١ يوليو (نصف سنوي)' : 'Jul 1st (Mid-year)',
                     ),

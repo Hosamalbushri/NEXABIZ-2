@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart' as shadcn;
 import '../../nexabiz_ui.dart';
+import 'gallery_state_controller.dart';
 
 /// Reusable card component for displaying an interactive preview,
 /// live controls, description, and verified Dart code snippet for a component.

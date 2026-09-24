@@ -141,10 +141,7 @@ class AppTree<T> extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Padding(
-          padding: EdgeInsets.only(
-            left: isRtl ? 0 : level * indentWidth,
-            right: isRtl ? level * indentWidth : 0,
-          ),
+          padding: EdgeInsetsDirectional.only(start: level * indentWidth),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [

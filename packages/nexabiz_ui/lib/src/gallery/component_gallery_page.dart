@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart' as shadcn;
 import '../../nexabiz_ui.dart';
+import 'gallery_state_controller.dart';
 import 'sections/gallery_actions_playground.dart';
 import 'sections/gallery_data_playground.dart';
 import 'sections/gallery_datetime_playground.dart';
@@ -107,7 +108,7 @@ class _ComponentGalleryPageState extends State<ComponentGalleryPage> {
                               },
                               items: GalleryViewportSize.values
                                   .map(
-                                    (sz) => AppSelectItem(
+                                    (sz) => AppSelectOption(
                                       value: sz,
                                       label: sz.label,
                                     ),

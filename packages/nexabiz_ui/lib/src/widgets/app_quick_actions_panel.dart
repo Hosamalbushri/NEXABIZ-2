@@ -3,8 +3,10 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart' as shadcn;
 
+import '../localization/nexabiz_ui_localizations.dart';
 import '../theme/tokens/app_spacing.dart';
 import 'app_bottom_sheet.dart';
+import 'app_icon_button.dart';
 
 /// Single item descriptor for quick actions grid.
 class AppQuickActionItem {
@@ -190,8 +192,11 @@ class AppQuickActionsPanel extends StatelessWidget {
                         ],
                       ),
                     ),
-                    shadcn.IconButton.ghost(
-                      icon: const Icon(shadcn.LucideIcons.x, size: 18),
+                    AppIconButton(
+                      variant: AppIconButtonVariant.ghost,
+                      icon: shadcn.LucideIcons.x,
+                      iconSize: 18,
+                      tooltip: NexaBizUiLocalizations.of(context).close,
                       onPressed: onClose ?? () => close(context),
                     ),
                   ],

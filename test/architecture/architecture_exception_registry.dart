@@ -36,6 +36,14 @@ class ArchitectureExceptionRegistry {
       reason: 'Showcase gallery layout width query',
       targetPhase: 'Phase 04',
     ),
+
+    // Rule 8: Raw Scaffold in production feature pages
+    ArchitectureException(
+      ruleId: 'RULE-08-RAW-SCAFFOLD',
+      filePath: 'lib/presentation/showcase/nexabiz_ui_showcase_page.dart',
+      reason: 'Showcase gallery standalone Scaffold preview',
+      targetPhase: 'Phase 08',
+    ),
   ];
 
   static List<ArchitectureException> get exceptions =>
